@@ -83,10 +83,10 @@ class TestCompteRenduSampleCommand extends Command
                 $binary = stream_get_contents($raw);
                 fclose($raw);
             } else {
-                $binary = $raw;
+                $binary = is_string($raw) ? $raw : false;
             }
 
-            if ($binary === null || $binary === false || $binary === '') {
+            if ($binary === false || $binary === '') {
                 $output->writeln("⚠️  ID {$id} : vide");
                 continue;
             }

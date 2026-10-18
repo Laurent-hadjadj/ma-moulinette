@@ -65,7 +65,7 @@ class PortefeuilleAjaxControllerTest extends TestCase
         ]);
 
         $response = $this->controller->listProjets(new Request(['groupe' => 'java']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertCount(1, $data);
         $this->assertSame('App1', $data[0]['name']);
@@ -89,7 +89,7 @@ class PortefeuilleAjaxControllerTest extends TestCase
         ]);
 
         $response = $this->controller->listProjets(new Request(['groupe' => 'groupe-sans-tag']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertCount(2, $data);
     }
@@ -109,7 +109,7 @@ class PortefeuilleAjaxControllerTest extends TestCase
         ]);
 
         $response = $this->controller->listProjets(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertCount(2, $data);
     }

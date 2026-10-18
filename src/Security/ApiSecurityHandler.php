@@ -27,8 +27,8 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
 {
 
     public function __construct(
-      private LoggerInterface $logger,
-      private TokenStorageInterface $tokenStorage
+        private LoggerInterface $logger,
+        private TokenStorageInterface $tokenStorage
     )
     {
     }
@@ -48,7 +48,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
      */
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
-      $this->logger->error('[API-Auth] ☠️ Tentative d’accès non autorisée à une API', [
+        $this->logger->error('[API-Auth] ☠️ Tentative d’accès non autorisée à une API', [
             'path' => $request->getPathInfo(),
             'ip' =>$request->getClientIp(),
             'message' => $authException?->getMessage(),
@@ -84,29 +84,29 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
      */
     public function handle(Request $request, AccessDeniedException $accessDeniedException): Response
     {
-      $token = $this->tokenStorage->getToken();
-      $user = $token?->getUser();
+        $token = $this->tokenStorage->getToken();
+        $user = $token?->getUser();
 
-      // Si pas de token ou pas d'utilisateur -> session expirée -> 401
-      // (Symfony 6+ : plus de marqueur 'anon.', un user absent suffit)
-      if (!$token || !$user) {
-          return $this->start($request, null); // renvoie 401
-      }
+        // Si pas de token ou pas d'utilisateur -> session expirée -> 401
+        // (Symfony 6+ : plus de marqueur 'anon.', un user absent suffit)
+        if (!$token || !$user) {
+            return $this->start($request, null); // renvoie 401
+        }
 
-      $this->logger->error('[API-Credential] 👻 Accès refusé à une ressource API', [
-              'path' => $request->getPathInfo(),
-              'ip' => $request->getClientIp(),
-              'user' => $request->getUser(),
-              'message' => $accessDeniedException->getMessage(),
-      ]);
+        $this->logger->error('[API-Credential] 👻 Accès refusé à une ressource API', [
+                'path' => $request->getPathInfo(),
+                'ip' => $request->getClientIp(),
+                'user' => $request->getUser(),
+                'message' => $accessDeniedException->getMessage(),
+        ]);
 
-      // Récupère le rôle requis depuis l'attribut de la route
+        // Récupère le rôle requis depuis l'attribut de la route
         $requiredRole = $request->attributes->get('role');
 
         $web_message = $requiredRole
-          ? "Vous devez avoir le rôle <strong>$requiredRole</strong> pour accéder à cette ressource (Erreur 403)."
-          : "Vous n’avez pas les droits pour accéder à cette ressource.";
-        $api_message = '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.';
+            ? "Vous devez avoir le rôle <strong>$requiredRole</strong> pour accéder à cette ressource (Erreur 403)."
+            : "Vous n’avez pas les droits pour accéder à cette ressource.";
+            $api_message = '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.';
 
         // Vérifie un header spécifique pour décider si on renvoie HTTP 200 ou 403
         $useHttp200 = (bool) $request->headers->get('X-Api-Custom-403');

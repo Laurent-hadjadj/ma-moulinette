@@ -82,7 +82,7 @@ class DashboardControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>home</html>', $response->getContent());
+        $this->assertSame('<html>home</html>', (string) $response->getContent());
     }
 
     public function testBatchSuiviRedirectsToProjet(): void

@@ -122,11 +122,15 @@ Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution de
 
 ### 🏀 Bloc « Projet » (volumétrie + qualité interne)
 
-- Statut de la **Quality Gate** SonarQube (badge coloré) ;
+- Statut de la **Quality Gate** SonarQube (badge coloré), et juste à côté la note **RCI** (Risk Criticality Index) ;
 - Volumétrie : nombre de lignes, lignes de code, commentaires, fichiers, classes, méthodes, déclarations ;
 - 5 indicateurs notés A-E : complexité cyclomatique, complexité cognitive, couverture de tests, densité de duplication, densité de commentaires ;
 - Tests unitaires : nombre total, erreurs, échecs, ignorés, taux de succès ;
 - Violations acceptées / faux positifs (marquées comme telles après revue).
+
+!!! note "✅ 2026-09-29 : note RCI et détail par module"
+    Une note A-E **RCI** (Risk Criticality Index, plugin `sonar-rci` porté en PHP) s'affiche désormais à côté de la Quality Gate. Un bouton ouvre une fenêtre modale avec le détail : un tableau (RCI, taux de dette, note) pour le global **et** pour chaque module (frontend/backend/autre/inconnu), plus un graphique en barres empilées RCI/Dette par colonne.
+    Le détail par module repose sur une classification par mots-clés (chemins de fichiers) — marge d'erreur à prendre en compte, en particulier sur des projets au référentiel de règles ou à l'arborescence atypiques (bandeau d'avertissement affiché dans la modale).
 
 !!! note "✅ Aide branchée sur la complexité"
     Un bouton **ℹ️** (« Aide ») a été ajouté au titre du bloc « Projet », ouvrant `_modal_complexity.html.twig` : une page pédagogique qui explique la complexité cyclomatique et cognitive (concepts SonarQube), **et** la formule réellement utilisée par Ma-Moulinette pour la note A-E affichée (`ratio = ncloc ÷ complexité`, seuils `≤3→E … >18→A`).
@@ -146,6 +150,25 @@ Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution de
 - Nombre de violations à corriger (bouton vers la répartition par sévérité).
 
 Aucun seuil de couleur n'est codé en dur dans les templates : les badges de notes A-E et les couleurs conditionnelles sont posés dynamiquement en JavaScript après réception des données.
+
+!!! note "📌 Qu'est-ce qu'une anomalie « active » ? (statuses / issueStatuses)"
+    Les comptages bugs/vulnérabilités/mauvaises pratiques interrogent `/api/issues/search` avec un filtre de statut, pour ne compter que les anomalies **encore actives** (pas déjà traitées).<br> Ce filtre change de paramètre et de vocabulaire selon la version du serveur SonarQube — le paramètre `statuses` est marqué déprécié depuis la version 10.4, remplacé par `issueStatuses`.
+
+**Règle retenue** :
+
+| Modèle | Serveur | Paramètre | Valeurs incluses | Valeurs exclues (= plus une anomalie) |
+| --- | --- | --- | --- | --- |
+| Ancien | 8, 9, 10 | `statuses` | `OPEN, CONFIRMED, REOPENED` | `RESOLVED`, `CLOSED` |
+| Nouveau | 2024, 2025, 2026… | `issueStatuses` | `OPEN, CONFIRMED, ACCEPTED` | `FALSE_POSITIVE`, `FIXED` |
+
+`FALSE_POSITIVE` et `FIXED` ne sont pas des anomalies (faux positif écarté, ou déjà corrigé).
+`ACCEPTED` (nouveau modèle) est **inclus** : d'après la documentation SonarQube, *« You can accept an issue to fix it later »* — le défaut est toujours réel et non corrigé, juste reporté. Ce n'est donc pas l'équivalent de l'ancienne résolution « won't fix » (classement définitif) : c'est un report, pas une clôture. Compter `ACCEPTED` comme une anomalie active est donc cohérent avec le reste de la logique (un défaut présent dans le code tant qu'il n'est pas corrigé).
+
+!!! warning "⚠️ Changement de comportement assumé par rapport à l'ancien modèle"
+    En interne, « Accept » reste représenté par `status=RESOLVED` + `resolution=WONTFIX` côté ancien modèle — avec l'**ancien** filtre (`statuses=OPEN,CONFIRMED,REOPENED`), faire « Accept » sur une anomalie la **retire** du compteur (comme un `RESOLVED` classique).<br>
+    Avec la règle retenue ici (`issueStatuses` incluant `ACCEPTED`), faire « Accept » ne fait **plus baisser** le compteur d'anomalies actives. C'est un choix délibéré, cohérent avec la doc SonarQube (le défaut reste réel tant qu'il n'est pas corrigé), mais une équipe habituée à l'ancien comportement (le compteur baissait après un triage « Accept ») verra une différence perceptible après la migration.
+
+**Vérifié en conditions réelles** (comparaison live des deux filtres, serveur SonarQube 26.9.0, projet `monAppliation`) : avant bascule, `statuses=OPEN,CONFIRME REOPENED` et `issueStatuses=OPEN,CONFIRMED` valaient tous les deux 595. Après avoir basculé une issue BUG/BLOCKER en « Accept » dans l'interface SonarQube : `statuses=OPEN,CONFIRMED,REOPENED` et `issueStatuses=OPEN,CONFIRMED` descendent tous les deux à 594 (perdent l'issue), tandis que `issueStatuses=OPEN,CONFIRMED ACCEPTED` reste à 595 (la récupère) — confirmant que la règle retenue reproduit exactement le total de l'ancien modèle **avant** triage, tout en gardant les issues `ACCEPTED` dans le décompte après triage, contrairement à l'ancien modèle.
 
 ## 🔄 Le flux Collecte → Peinture → Sauvegarde
 
@@ -167,11 +190,11 @@ sequenceDiagram
 
     U->>JS: Sélectionne un projet
     U->>JS: Clique « Collecte »
-    JS->>Col: 20 appels POST séquentiels (ROLE_COLLECTE)
+    JS->>Col: 23 appels POST séquentiels (ROLE_COLLECTE)
     Col->>DB: DELETE puis INSERT par indicateur
     Note over Col,DB: Une erreur à l'étape N stoppe<br/>les appels réseau suivants (cascade silencieuse)
     U->>JS: Clique « Afficher »
-    JS->>Pein: 9 appels POST séquentiels (aucun rôle requis)
+    JS->>Pein: 12 appels POST séquentiels (aucun rôle requis)
     Pein->>DB: SELECT sur les tables brutes
     Pein-->>JS: Données à peindre dans le DOM
     U->>JS: Clique « Enregistrer »
@@ -200,6 +223,45 @@ sequenceDiagram
     `ApiCollecteController` envoyait aussi un texte placeholder (« Pas de données disponible. ») à la place d'une trace technique absente, ce qui affichait à tort un bouton « détails techniques » vide côté JS — corrigé pour envoyer `null`.
     .
     Ce genre de 403 vient le plus souvent d'un `SONAR_TOKEN` du **mauvais type** (jeton d'analyse au lieu de jeton personnel) — voir [Jetons d'authentification SonarQube](../developpement/securite.md#-jetons-dauthentification-sonarqube).
+
+## 🤖 Deux pipelines de collecte : interactif et batch/cron
+
+Le schéma « Collecte → Peinture → Sauvegarde » ci-dessus ne décrit que le **pipeline interactif** (bouton « Collecte » de la page Projet, piloté par `ApiCollecteController`). Il existe un **second pipeline**, totalement séparé, pour la collecte automatique/manuelle en masse (cron nocturne, file de traitement) — les deux s'appuient sur les **mêmes classes métier** (`Batch*Controller`), mais via des orchestrateurs et des chemins de persistance différents.
+
+### 🚦 Qui déclenche quoi
+
+```mermaid
+flowchart LR
+    U["🖱️ Utilisateur<br/>page Projet"] -->|clic Collecte| ACC["ApiCollecteController"]
+
+    Cron["⏱️ Cron nocturne<br/>(Supercronic)"] --> BAC["BatchAutoController"]
+    Trait["🖱️ Traitement manuel<br/>(file de traitement)"] --> BMC["BatchManuelController"]
+    Console["⌨️ app:collecte:run-one<br/>(dev)"] --> CRC["CollecteRunOneCommand"]
+
+    BAC --> CC["CollecteController::collecte()"]
+    BMC --> CC
+    CRC --> CC
+```
+
+- **Pipeline interactif** : `ApiCollecteController` expose une méthode par indicateur (`apiCollecteRci()`, `apiCollecteOwasp()`, …), appelées une à une en séquence par `index-projet.js` — c'est la seule voie qui peut être suivie visuellement, indicateur par indicateur, dans le navigateur.
+- **Pipeline batch/cron** : trois déclencheurs différents (cron, file de traitement, commande console de dev) convergent tous vers **une seule méthode**, `CollecteController::collecte()`, qui enchaîne elle-même tous les indicateurs dans un seul appel serveur.
+
+### 🔗 Une seule logique métier, deux points d'entrée
+
+```mermaid
+flowchart LR
+    ACC["ApiCollecteController<br/>apiCollecteRci()"] --> BCRC["BatchCollecteRciController<br/>buildRciMeasures()"]
+    CC["CollecteController<br/>collecte()"] --> BCRC
+
+    BCRC -->|DELETE puis INSERT| RCI[("table rci")]
+```
+
+`BatchCollecteRciController::buildRciMeasures()` calcule **et** persiste le RCI de façon autonome (elle ne dépend d'aucune autre collecte préalable) — c'est pour cela qu'elle peut être appelée indifféremment par l'un ou l'autre pipeline, avec un résultat identique.
+
+### 🗄️ Où atterrit `historique` selon le pipeline
+
+- **Interactif** : `CollecteController` n'intervient pas — les indicateurs sont écrits dans les tables brutes (dont `rci`) un par un. Pour la plupart des indicateurs (dont RCI), le clic **« Enregistrer »** ne relit rien côté serveur : `enregistrement.js` reprend les valeurs déjà chargées dans le DOM par la peinture et les envoie dans le payload à `ApiEnregistrementController`, qui se contente de les reporter dans `historique`. `clean_code` est l'exception : son contrôleur relit directement sa table en base à cet instant. Voir « Cas à connaître » plus haut : sans le clic Enregistrer, `historique` reste inchangé dans tous les cas.
+- **Batch/cron** : `CollecteController::collecte()` écrit dans les tables brutes **et** dans `historique` au sein du même appel — pas d'étape « Enregistrer » séparée, la collecte automatique est toujours historisée.
 
 ## ⚠️ Messages remontés par la page
 

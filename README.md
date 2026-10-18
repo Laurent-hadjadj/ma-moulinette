@@ -4,10 +4,10 @@
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.6-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-3740%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-10023-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-80.03%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%206-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
+[![Tests](https://img.shields.io/badge/tests-4097%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11018-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-80.59%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ┏┓┏┓┏┓━┏━━┓━┏━━━┓\
@@ -15,21 +15,38 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.1.0 Release on September 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.2.0 Release on October 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
 Elle s’appuie sur les **API publiques** de SonarQube et est **compatible** avec les versions :
 
 - SonarQube **8.9.9 LTS**
-- SonarQube **9.9.4 LTS**
+- SonarQube **9.9.8 LTS**
 - SonarQube **10 LTA**
 - SonarQube **2024 LTA**
 - SonarQube **2025 LTA**
-- SonarQube **2026LTA**
+- SonarQube **2026**
 
 > [!NOTE]
 > L'application est compatible pour la version 8 et 9 avec l'extension track-logger-method-1.4.0-RELEASE et avec la version track-logger-method-2.0.0-RELEASE pour SonarQube 10 , 2024, 2025 et 2026.
+
+_
+> [!CAUTION]
+> Pour les versions **8, 9, 10, 2024 et 2025**, l'application part du principe que le serveur SonarQube interrogé est sur la **dernière version LTS/LTA connue** de sa ligne (tableau ci-dessous) — un point-release intermédiaire peut manquer des métriques récentes.
+>
+> **Exception : l'année en cours (2026)**. Aucune LTA finale n'est encore connue pour cette ligne, donc aucune version précise n'est exigée. Certaines métriques apparues en cours d'année (ex. `maintainability_issue_severity`, `reliability_issue_severity`, `security_issue_severity`, cf. [CHANGELOG](CHANGELOG.md)) peuvent être absentes selon le point-release exact de votre serveur — ce n'est pas bloquant : elles sont collectées via un appel séparé et non bloquant, et remontent `null` si le serveur ne les connaît pas encore.
+>
+> | `SONAR_VERSION` | Dernière LTS/LTA connue | Statut |
+> | --- | --- | --- |
+> | `8` | 8.9.9 | Clôturée |
+> | `9` | 9.9.8 | Clôturée |
+> | `10` | 10.7 | Clôturée |
+> | `2024` | 24.12.0 | Clôturée |
+> | `2025` | 25.12.0 | Clôturée |
+> | `2026` | *(en cours — pas encore de LTA finale)* | Année en cours, voir ci-dessus |
+>
+> ⚠️ À mettre à jour lors du passage à l'année 2027 : ajouter une ligne `2027` et fixer la LTA finale de la ligne 2026 dans ce tableau.
 
 ## 💡 Philosophie du projet
 
@@ -70,30 +87,28 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 20/09/2026)
+> [!NOTE] Information sur le projet (relevé du 18/10/2026)
 >
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-| PHP       |  277      | 49357  | 20890        | 9105  | 79352 |
-| HTML      |  148      | 26652  |  1004        | 1931  | 29587 |
-| JS        |  92       | 10242  |  4212        | 1695  | 16149 |
-| CSS       |  38       | 6062   |  1118        | 1296  | 8476  |
-| SQL       |  75       | 2945   |  1471        | 671   | 5087  |
-| MIGRATION |  2        | 38     | 18           | 7     | 63    |
+|  PHP      |  315      | 55058  | 24004        | 10126 | 89188 |
+|  HTML    |  154      | 27637  | 1068         | 1992  | 30697 |
+|  JS      |  93       | 10875  | 4394         | 1757  | 17026 |
+|  CSS     |  39       | 6392   | 1166         | 1364  | 8922 |
+|  SQL     |  82       | 3350   | 1694         | 757   | 5801 |
+|  MIGRATION |  12     | 701    | 200          | 139   | 1040 |
 
-### 📊 Qualité du code (relevé du 06/09/2026)
+### 📊 Qualité du code (relevé du 18/10/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 138** tests / 8 670 assertions |
-| Tests d'intégration (`tests/Integration`) | **602** tests / 1 353 assertions (2 skips volontaires) |
-| **Total** | **3 740** tests / **10 023** assertions |
+| Tests unitaires (`tests/Unit`) | **3 423** tests / 9 393 assertions |
+| Tests d'intégration (`tests/Integration`) | **674** tests / 1 625 assertions |
+| **Total** | **4 097** tests / **11 018** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **80,03 %** (20 642 / 25 790) |
-| Couverture — méthodes | 84,64 % (2 393 / 2 827) |
-| Couverture — classes | 51,50 % (120 / 233) |
-| Analyse statique | **PHPStan niveau 6** (150 erreurs résiduelles, campagne en cours) |
+| Couverture — lignes | **80,59 %** |
+| Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
 > Le détail des suites, la procédure de relevé et la stratégie d'analyse statique sont décrits dans
@@ -122,8 +137,8 @@ La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (3 740 tests, 10 023 assertions — voir le tableau « Qualité du code » ci-dessus) ;
-- [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 6).
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 097 tests, 11 018 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 
 ### 🧱 Fonctionnalités en cours de finalisation
 

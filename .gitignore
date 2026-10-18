@@ -107,3 +107,4 @@ phpstan.neon
 .claude/
 ###< claude ###
 config/reference.php
+AGENTS.md

@@ -64,7 +64,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->indicateur($this->jsonRequest(['indicateur' => 'utilisateur']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         // Refacto sémantique : 404 → 403 (Forbidden plus correct pour absence de rôle)
         $this->assertSame(403, $data['code']);
@@ -75,7 +75,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->indicateur($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -85,7 +85,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->indicateur($this->jsonRequest(['other' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -95,7 +95,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->indicateur($this->jsonRequest(['indicateur' => 'bogus']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -109,7 +109,7 @@ class ProfilingApiControllerTest extends TestCase
             ->willReturn(['nb' => 5]);
 
         $response = $this->controller->indicateur($this->jsonRequest(['indicateur' => 'utilisateur']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(['nb' => 5], $data['indicateur']);
@@ -122,7 +122,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->summary();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame([], $data['summary']);
     }
@@ -135,7 +135,7 @@ class ProfilingApiControllerTest extends TestCase
             ->willReturn(['summary' => [['projets' => 10]]]);
 
         $response = $this->controller->summary();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(['projets' => 10], $data['summary']);
@@ -148,7 +148,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->latest();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame([], $data['latest']);
     }
@@ -162,7 +162,7 @@ class ProfilingApiControllerTest extends TestCase
             ->willReturn([['id' => 1]]);
 
         $response = $this->controller->latest();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(1, $data['latest']);
@@ -182,7 +182,7 @@ class ProfilingApiControllerTest extends TestCase
             ]);
 
         $response = $this->controller->weekly();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(['S14', 'S15'], $data['weekly']['labels']);
@@ -202,7 +202,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->monthlyAll();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame([], $data['monthly']);
     }
@@ -217,7 +217,7 @@ class ProfilingApiControllerTest extends TestCase
             ]);
 
         $response = $this->controller->monthlyAll();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(['2026-03'], $data['monthly']['labels']);
@@ -228,7 +228,7 @@ class ProfilingApiControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->users();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame([], $data['user']);
     }
@@ -243,7 +243,7 @@ class ProfilingApiControllerTest extends TestCase
             ]);
 
         $response = $this->controller->users();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(['alice@x'], $data['user']['labels']);
@@ -259,7 +259,7 @@ class ProfilingApiControllerTest extends TestCase
             ]);
 
         $response = $this->controller->allPortefeuille();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(['P1'], $data['portefeuille']['labels']);
@@ -272,7 +272,7 @@ class ProfilingApiControllerTest extends TestCase
      */
     private function jsonRequest(array|string $body): Request
     {
-        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT);
+        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
         return new Request([], [], [], [], [], [], $content);
     }
 }

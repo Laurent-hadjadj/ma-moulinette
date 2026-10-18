@@ -22,7 +22,7 @@ use App\Service\{ClientService, UrlBuilderService};
  */
 class SonarAnalysisFetcherService
 {
-    private static $sonarUrl = "sonar.url";
+    private static string $sonarUrl = "sonar.url";
 
     public function __construct(
         private ClientService $client,

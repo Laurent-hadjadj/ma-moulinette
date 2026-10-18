@@ -87,6 +87,9 @@ security:
         # la CI GitLab (machine-to-machine). Pas de session utilisateur, l'auth se fait
         # via DependencyCheckTokenSubscriber avec un bearer token dédié.
         - { path: ^/api/secure/dependency-check/, roles: PUBLIC_ACCESS }
+        # MODIF 2026-10-13 : idem pour les endpoints ZAP (DAST), authentification
+        # via ZapIngestTokenSubscriber (bearer token dédié, pas de session).
+        - { path: ^/api/secure/zap/, roles: PUBLIC_ACCESS }
         - { path: ^/api/secure/, roles: ROLE_UTILISATEUR }
 
         # Web (public)

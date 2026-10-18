@@ -76,7 +76,7 @@ class ApiActivityControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->sauvegardeHistorique();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -87,7 +87,7 @@ class ApiActivityControllerTest extends TestCase
         $this->activityRepo->method('premiereDate')->willReturn(['code' => 200, 'liste' => []]);
 
         $response = $this->controller->sauvegardeHistorique();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(204, $data['code']);
         $this->assertSame('warning', $data['type']);
@@ -125,7 +125,7 @@ class ApiActivityControllerTest extends TestCase
             });
 
         $response = $this->controller->sauvegardeHistorique();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
 
@@ -167,7 +167,7 @@ class ApiActivityControllerTest extends TestCase
         $this->historiqueRepo->expects($this->once())->method('updateHistoriqueActivity');
 
         $response = $this->controller->sauvegardeHistorique();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -179,7 +179,7 @@ class ApiActivityControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->apiDessin($this->jsonRequest(['source' => 'analyse']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -189,7 +189,7 @@ class ApiActivityControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->apiDessin($this->jsonRequest(['other' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -199,7 +199,7 @@ class ApiActivityControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->apiDessin($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -212,7 +212,7 @@ class ApiActivityControllerTest extends TestCase
             ->willReturn(['code' => 200, 'request' => []]);
 
         $response = $this->controller->apiDessin($this->jsonRequest(['source' => 'analyse']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -225,7 +225,7 @@ class ApiActivityControllerTest extends TestCase
             ->willReturn(['code' => 200, 'request' => []]);
 
         $response = $this->controller->apiDessin($this->jsonRequest(['source' => 'projet']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -238,7 +238,7 @@ class ApiActivityControllerTest extends TestCase
             ->willReturn(['code' => 200, 'request' => []]);
 
         $response = $this->controller->apiDessin($this->jsonRequest(['source' => 'projet_analyse']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -251,7 +251,7 @@ class ApiActivityControllerTest extends TestCase
         $this->activityRepo->expects($this->never())->method('listeAnalyseProjet');
 
         $response = $this->controller->apiDessin($this->jsonRequest(['source' => 'bogus']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
         $this->assertStringContainsString('inconnue', $data['message']);
@@ -264,7 +264,7 @@ class ApiActivityControllerTest extends TestCase
      */
     private function jsonRequest(array|string $body): Request
     {
-        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT);
+        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
         return new Request([], [], [], [], [], [], $content);
     }
 }

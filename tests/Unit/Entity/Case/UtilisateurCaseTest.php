@@ -30,11 +30,14 @@ class UtilisateurCaseTest extends TestCase
   public static string $courriel = 'admin@ma-moulinette.fr';
   public static string $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
   public static bool $actif = true;
-  public static $roles = ["ROLE_GESTIONNAIRE"];
+  /** @var array<int, string> */
+  public static array $roles = ["ROLE_GESTIONNAIRE"];
   public static string $groupeUtilisateur = 'admin';
   public static string $groupeId = 'gest-001';
-  public static $listeGroupeFonctionnel = ['fr.ma-moulinette:ma-moulinette'];
-  public static $preference = ['{
+  /** @var array<int, string> */
+  public static array $listeGroupeFonctionnel = ['fr.ma-moulinette:ma-moulinette'];
+  /** @var array<int, string> */
+  public static array $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false},
     "projet":[],"favori":[],"version":[]}'];
   public static string $lastActivityAt = '2024-12-15 09:42:00';

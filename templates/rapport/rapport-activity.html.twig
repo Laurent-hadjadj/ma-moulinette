@@ -1,0 +1,213 @@
+{% set title = 'Rapport Activité — ' ~ (rapport.periode_label|default('')) %}
+{#
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
+#}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+      body {
+        font-family: "DejaVu Sans", Arial, sans-serif;
+        font-size: 11px;
+        margin: 20px;
+        color: #00445b;
+      }
+      @page { margin-bottom: 50px; }
+      h1 { font-size: 18px; margin: 0 0 6px 0; }
+      h2 {
+        font-size: 14px;
+        margin: 18px 0 8px 0;
+        padding-bottom: 4px;
+        border-bottom: 2px solid #00445b;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #00445b;
+        padding-bottom: 10px;
+      }
+      .logo { max-height: 40px; }
+      .header-title { text-align: right; }
+      .header-title h1 { font-size: 16px; margin: 0; }
+      .header-title .subtitle { font-size: 11px; color: #666; }
+
+      /* Bandeau KPI : 4 tuiles côte à côte. */
+      .kpi-row { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+      .kpi-row td {
+        width: 25%;
+        padding: 10px 8px;
+        border: 1px solid #ddd;
+        text-align: center;
+        vertical-align: top;
+      }
+      .kpi-label { font-size: 9px; text-transform: uppercase; color: #666; display: block; margin-bottom: 4px; }
+      .kpi-value { font-size: 20px; font-weight: bold; color: #00445b; display: block; }
+      .kpi-sub { font-size: 9px; color: #888; display: block; margin-top: 2px; }
+
+      /* Histogramme hebdomadaire (même pattern que rapport-owasp : barre + libellé). */
+      .histogram { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+      .histogram .bar-cell {
+        vertical-align: bottom;
+        text-align: center;
+        height: 130px;
+        padding: 0 1px;
+        border-bottom: 1px solid #00445b;
+      }
+      .histogram .bar { display: block; margin: 0 auto; width: 70%; min-height: 1px; }
+      .histogram .bar.total { background: #00445b; }
+      .histogram .bar.pic-large { background: #f08a24; }
+      .histogram .bar.pic-concentre { background: #cc4b37; }
+      .histogram .bar-value { display: block; font-size: 8px; font-weight: bold; margin-bottom: 2px; }
+      .histogram .bar-label { text-align: center; font-size: 7px; font-weight: bold; padding: 3px 0; white-space: nowrap; }
+
+      .legende { font-size: 9px; color: #666; margin: 4px 0 0 0; }
+      .legende .puce { display: inline-block; width: 8px; height: 8px; margin-right: 3px; vertical-align: middle; }
+
+      table.data { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      table.data th, table.data td { padding: 5px 8px; border: 1px solid #ddd; }
+      table.data th { background: #00445b; color: #fff; text-align: left; font-size: 11px; }
+      table.data td.num { text-align: right; font-weight: bold; width: 70px; }
+      table.data tr:nth-child(even) { background: #f9f9f9; }
+
+      .badge-type { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: bold; color: #fff; }
+      .badge-type.large { background: #f08a24; }
+      .badge-type.concentre { background: #cc4b37; }
+
+      .page-break-before { page-break-before: always; }
+      .empty { text-align: center; color: #888; padding: 12px; font-style: italic; }
+    </style>
+  </head>
+  <body>
+
+    <header class="header">
+      <div><img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo Ma-Moulinette" class="logo"></div>
+      <div class="header-title">
+        <h1>Rapport Activité SonarQube</h1>
+        <div class="subtitle">Période analysée : {{ rapport.periode_label|default('—') }}</div>
+      </div>
+    </header>
+
+    <h2>Synthèse</h2>
+    <table class="kpi-row">
+      <th><th>
+      <tr>
+        <td>
+          <span class="kpi-label">Analyses totales</span>
+          <span class="kpi-value">{{ rapport.total_analyses|default(0) }}</span>
+        </td>
+        <td>
+          <span class="kpi-label">Projets distincts</span>
+          <span class="kpi-value">{{ rapport.total_projets|default(0) }}</span>
+        </td>
+        <td>
+          <span class="kpi-label">Moyenne / jour</span>
+          <span class="kpi-value">{{ rapport.moyenne_jour|default(0) }}</span>
+        </td>
+        <td>
+          <span class="kpi-label">Jour de pointe</span>
+          <span class="kpi-value">{{ rapport.jour_pic.analyse|default(0) }}</span>
+          <span class="kpi-sub">{{ rapport.jour_pic.date|default('—') }}</span>
+        </td>
+      </tr>
+    </table>
+
+    <h2>Volume d'analyses par semaine</h2>
+    {% if rapport.semaines|default([])|length > 0 %}
+      {% set maxTotal = 0 %}
+      {% for s in rapport.semaines %}
+        {% if s.total > maxTotal %}{% set maxTotal = s.total %}{% endif %}
+      {% endfor %}
+      <table class="histogram">
+        <th><th>
+        <tr>
+          {% for s in rapport.semaines %}
+            {% set heightPx = (maxTotal > 0) ? ((s.total / maxTotal) * 110)|round : 0 %}
+            {% set barClass = s.pic == 'large' ? 'pic-large' : (s.pic == 'concentre' ? 'pic-concentre' : 'total') %}
+            <td class="bar-cell">
+              <span class="bar-value">{{ s.total }}</span>
+              <span class="bar {{ barClass }}" style="height: {{ heightPx }}px;"></span>
+            </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          {% for s in rapport.semaines %}
+            <td class="bar-label">{{ s.label }}</td>
+          {% endfor %}
+        </tr>
+      </table>
+      <p class="legende">
+        <span class="puce" style="background:#00445b;"></span>Semaine normale
+        <span class="puce" style="background:#f08a24; margin-left:10px;"></span>Pic large (beaucoup de projets distincts)
+        <span class="puce" style="background:#cc4b37; margin-left:10px;"></span>Pic concentré (ré-analyses répétées sur peu de projets)
+      </p>
+    {% else %}
+      <p class="empty">Aucune donnée d'activité sur la période.</p>
+    {% endif %}
+
+    <div class="page-break-before"></div>
+
+    <h2>Journées de pic détectées</h2>
+    {% if rapport.pics|default([])|length > 0 %}
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th class="num">Analyses</th>
+            <th class="num">Projets distincts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pic in rapport.pics %}
+            <tr>
+              <td>{{ pic.date }}</td>
+              <td><span class="badge-type {{ pic.type }}">{{ pic.type == 'large' ? 'LARGE' : 'CONCENTRÉ' }}</span></td>
+              <td class="num">{{ pic.analyse }}</td>
+              <td class="num">{{ pic.projet }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Aucune journée de pic détectée sur la période.</p>
+    {% endif %}
+
+    <h2>Top projets par nombre d'analyses</h2>
+    {% if rapport.top_projets|default([])|length > 0 %}
+      <table class="data">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Projet</th>
+            <th class="num">Analyses</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in rapport.top_projets %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ p.project_name }}</td>
+              <td class="num">{{ p.analyse }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Aucun projet sur la période.</p>
+    {% endif %}
+
+  </body>
+</html>

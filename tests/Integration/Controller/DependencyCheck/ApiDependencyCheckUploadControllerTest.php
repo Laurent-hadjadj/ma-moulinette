@@ -65,7 +65,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         ], self::VALID_JSON);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $body = json_decode($this->client->getResponse()->getContent(), true);
+        $body = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('error', $body['type']);
         $this->assertStringContainsString('X-DependencyCheck-Token', $body['message']);
     }
@@ -78,7 +78,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         ], self::VALID_JSON);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $body = json_decode($this->client->getResponse()->getContent(), true);
+        $body = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('error', $body['type']);
         $this->assertStringContainsString('invalide', $body['message']);
     }
@@ -104,7 +104,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         $body = '{"foo":"bar"}';
         $this->postWithToken($body, self::CONTENT_TYPE);
         $this->assertSame(422, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertStringContainsString('reportSchema', $payload['message']);
     }
 
@@ -127,7 +127,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
 
         $this->assertSame(202, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('info', $payload['type']);
         $this->assertSame(DcProcessingQueue::STATUS_QUEUED, $payload['status']);
         $this->assertNotEmpty($payload['ulid']);
@@ -146,10 +146,11 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
     public function testReturns202OnValidGzip(): void
     {
         $compressed = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($compressed);
         $this->postWithToken($compressed, 'application/gzip');
 
         $this->assertSame(202, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         $entity = $this->repo->findByUlid($payload['ulid']);
         $this->assertSame(DcProcessingQueue::CONTENT_GZIP, $entity->getContentType());
@@ -160,12 +161,12 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         // 1er post : 202
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
         $this->assertSame(202, $this->client->getResponse()->getStatusCode());
-        $first = json_decode($this->client->getResponse()->getContent(), true);
+        $first = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         // 2eme post : meme payload -> 200 idempotence
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $second = json_decode($this->client->getResponse()->getContent(), true);
+        $second = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         $this->assertSame('warning', $second['type']);
         $this->assertSame($first['ulid'], $second['ulid']);
@@ -179,13 +180,14 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
     {
         // Post JSON brut
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
-        $first = json_decode($this->client->getResponse()->getContent(), true);
+        $first = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         // Post meme JSON gzippe -> sha256 identique (calcul sur décompresse)
         // -> idempotence reconnue
         $compressed = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($compressed);
         $this->postWithToken($compressed, 'application/gzip');
-        $second = json_decode($this->client->getResponse()->getContent(), true);
+        $second = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertSame($first['ulid'], $second['ulid']);
@@ -208,7 +210,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
             'HTTP_X_DEPENDENCYCHECK_TOKEN' => self::TOKEN,
         ]);
         $this->assertSame(404, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('warning', $payload['type']);
         $this->assertSame('01ABCDEFGHJKMNPQRSTVWXYZ12', $payload['ulid']);
     }
@@ -217,7 +219,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
     {
         // 1. Poste un payload valide pour créer une entree en queue
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
-        $uploadPayload = json_decode($this->client->getResponse()->getContent(), true);
+        $uploadPayload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $ulid = $uploadPayload['ulid'];
 
         // 2. Polling status sur ce ulid
@@ -226,7 +228,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         ]);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame($ulid, $payload['ulid']);
         $this->assertSame('queued', $payload['status']);
         $this->assertSame($uploadPayload['sha256'], $payload['sha256']);

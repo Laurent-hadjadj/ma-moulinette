@@ -119,6 +119,7 @@ class DcCveRepositoryTest extends TestCase
         ]);
 
         $result = $repo->countProjectsByCwe();
+        assert(array_key_exists('liste', $result));
 
         $this->assertSame(200, $result['code']);
         $this->assertSame('', $result['erreur']);
@@ -143,6 +144,7 @@ class DcCveRepositoryTest extends TestCase
         ]);
 
         $result = $repo->countProjectsByCwe();
+        assert(array_key_exists('liste', $result));
         $this->assertSame([], $result['liste'][0]['projets']);
     }
 
@@ -181,6 +183,7 @@ class DcCveRepositoryTest extends TestCase
         ], expectedMinParam: 2);
 
         $result = $repo->findCriticalCvesAcrossProjects(2);
+        assert(array_key_exists('liste', $result));
 
         $this->assertSame(200, $result['code']);
         $this->assertSame('', $result['erreur']);
@@ -198,6 +201,7 @@ class DcCveRepositoryTest extends TestCase
         $repo = $this->buildRepo([], expectedMinParam: 5);
 
         $result = $repo->findCriticalCvesAcrossProjects(5);
+        assert(array_key_exists('liste', $result));
 
         $this->assertSame(200, $result['code']);
         $this->assertSame([], $result['liste']);
@@ -239,6 +243,7 @@ class DcCveRepositoryTest extends TestCase
         ]);
 
         $result = $repo->listTopCriticalCves(10);
+        assert(array_key_exists('liste', $result));
 
         $this->assertSame(200, $result['code']);
         $this->assertSame('', $result['erreur']);
@@ -268,6 +273,7 @@ class DcCveRepositoryTest extends TestCase
         $repo = $this->buildRepo([]);
 
         $result = $repo->listTopCriticalCves(10);
+        assert(array_key_exists('liste', $result));
 
         $this->assertSame(200, $result['code']);
         $this->assertSame([], $result['liste']);
@@ -318,6 +324,7 @@ class DcCveRepositoryTest extends TestCase
         ]);
 
         $result = $repo->listNewCriticalSinceLastScan();
+        assert(array_key_exists('liste', $result));
 
         $this->assertSame(200, $result['code']);
         $this->assertSame('', $result['erreur']);
@@ -352,6 +359,7 @@ class DcCveRepositoryTest extends TestCase
         $result = $repo->listNewCriticalSinceLastScan();
 
         $this->assertSame(200, $result['code']);
+        assert(array_key_exists('liste', $result));
         $this->assertSame([], $result['liste']);
     }
 

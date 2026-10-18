@@ -208,6 +208,94 @@ class HistoriqueCaseTest extends TestCase
         // Mode collecte / utilisateur
         yield 'modeCollecte' => ['ModeCollecte', 'COLLECTE'];
         yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'admin@ma-moulinette.fr'];
+
+        // MODIF 2026-10-08 : marqueur version du serveur SonarQube (traçabilité, pas d'UI).
+        yield 'sonarqubeServerVersion' => ['SonarqubeServerVersion', '10.4.1'];
+
+        // MODIF 2026-10-11 : couverture — 58 attributs ajoutés aux sessions précédentes
+        // (RCI, scope, Empreinte Écologique, Clean Code 10+) n'avaient jamais été
+        // exercés par ce dataProvider malgré testCountAttribut() à jour.
+
+        // Clean Code attribute categories (SonarQube 10+)
+        yield 'ccConsistent' => ['CcConsistent', 12];
+        yield 'ccIntentional' => ['CcIntentional', 8];
+        yield 'ccAdaptable' => ['CcAdaptable', 5];
+        yield 'ccResponsible' => ['CcResponsible', 3];
+
+        // Impact software qualities / severities (SonarQube 10+)
+        yield 'qualityMaintainability' => ['QualityMaintainability', 20];
+        yield 'qualityReliability' => ['QualityReliability', 10];
+        yield 'qualitySecurity' => ['QualitySecurity', 5];
+        yield 'impactBlocker' => ['ImpactBlocker', 1];
+        yield 'impactHigh' => ['ImpactHigh', 2];
+        yield 'impactMedium' => ['ImpactMedium', 3];
+        yield 'impactLow' => ['ImpactLow', 4];
+        yield 'impactInfo' => ['ImpactInfo', 5];
+
+        // Compliance (OWASP Top 10 / SANS Top 25 / CWE)
+        yield 'owaspTop10' => ['OwaspTop10', 7];
+        yield 'sansTop25' => ['SansTop25', 4];
+        yield 'cwe' => ['Cwe', 9];
+
+        // RCI (Risk Criticality Index) — global + par module
+        yield 'rciIndicator' => ['RciIndicator', 2.5];
+        yield 'rciRating' => ['RciRating', 'B'];
+        yield 'rciNcloc' => ['RciNcloc', 15000];
+        yield 'rciWeight' => ['RciWeight', 300];
+        yield 'rciFrontendIndicator' => ['RciFrontendIndicator', 1.8];
+        yield 'rciFrontendRating' => ['RciFrontendRating', 'A'];
+        yield 'rciFrontendNcloc' => ['RciFrontendNcloc', 5000];
+        yield 'rciFrontendWeight' => ['RciFrontendWeight', 90];
+        yield 'rciBackendIndicator' => ['RciBackendIndicator', 3.1];
+        yield 'rciBackendRating' => ['RciBackendRating', 'C'];
+        yield 'rciBackendNcloc' => ['RciBackendNcloc', 7000];
+        yield 'rciBackendWeight' => ['RciBackendWeight', 150];
+        yield 'rciAutreIndicator' => ['RciAutreIndicator', 0.5];
+        yield 'rciAutreRating' => ['RciAutreRating', 'A'];
+        yield 'rciAutreNcloc' => ['RciAutreNcloc', 2000];
+        yield 'rciAutreWeight' => ['RciAutreWeight', 30];
+        yield 'rciInconnuIndicator' => ['RciInconnuIndicator', 0.0];
+        yield 'rciInconnuRating' => ['RciInconnuRating', 'A'];
+        yield 'rciInconnuNcloc' => ['RciInconnuNcloc', 1000];
+        yield 'rciInconnuWeight' => ['RciInconnuWeight', 30];
+
+        // Empreinte Écologique (plugins SonarQube Creedengo) — global + par langage
+        yield 'ecoAnomalies' => ['EcoAnomalies', 25];
+        yield 'ecoDetteMinute' => ['EcoDetteMinute', 300];
+        yield 'ecoRating' => ['EcoRating', 'B'];
+        yield 'ecoJavaAnomalies' => ['EcoJavaAnomalies', 10];
+        yield 'ecoJavaDetteMinute' => ['EcoJavaDetteMinute', 120];
+        yield 'ecoJavaRating' => ['EcoJavaRating', 'A'];
+        yield 'ecoJavascriptAnomalies' => ['EcoJavascriptAnomalies', 8];
+        yield 'ecoJavascriptDetteMinute' => ['EcoJavascriptDetteMinute', 90];
+        yield 'ecoJavascriptRating' => ['EcoJavascriptRating', 'B'];
+        yield 'ecoPhpAnomalies' => ['EcoPhpAnomalies', 5];
+        yield 'ecoPhpDetteMinute' => ['EcoPhpDetteMinute', 60];
+        yield 'ecoPhpRating' => ['EcoPhpRating', 'A'];
+        yield 'ecoPythonAnomalies' => ['EcoPythonAnomalies', 2];
+        yield 'ecoPythonDetteMinute' => ['EcoPythonDetteMinute', 30];
+        yield 'ecoPythonRating' => ['EcoPythonRating', 'A'];
+
+        // Répartition par portée SonarQube (MAIN/TEST), globale et par catégorie
+        yield 'scopeMain' => ['ScopeMain', 80];
+        yield 'scopeTest' => ['ScopeTest', 20];
+        yield 'bugScopeMain' => ['BugScopeMain', 5];
+        yield 'bugScopeTest' => ['BugScopeTest', 1];
+        yield 'vulnerabilityScopeMain' => ['VulnerabilityScopeMain', 3];
+        yield 'vulnerabilityScopeTest' => ['VulnerabilityScopeTest', 0];
+        yield 'codeSmellScopeMain' => ['CodeSmellScopeMain', 72];
+        yield 'codeSmellScopeTest' => ['CodeSmellScopeTest', 19];
+
+        // Métriques "optionnelles" (pas encore LTS, cf. BuildMapHistoryService::optionalMetricsKey())
+        yield 'maintainabilityIssueSeverity' => ['MaintainabilityIssueSeverity', 25];
+        yield 'reliabilityIssueSeverity' => ['ReliabilityIssueSeverity', 15];
+        yield 'securityIssueSeverity' => ['SecurityIssueSeverity', 25];
+
+        // Oubliés de la première passe (getter/setter jamais exercés)
+        yield 'webTodo' => ['WebTodo', 2];
+        yield 'coverageRating' => ['CoverageRating', 'B'];
+        yield 'duplicatedLinesRating' => ['DuplicatedLinesRating', 'A'];
+        yield 'loggerBreakdown' => ['LoggerBreakdown', ['info' => ['SLF4J' => 3], 'warn' => []]];
     }
 
     #[DataProvider('attributesProvider')]
@@ -244,10 +332,22 @@ class HistoriqueCaseTest extends TestCase
      * coverageRating + duplicatedLinesRating oubliées de l’entité).
      * MODIF 2026-05-17 : 138 → 153 (+15 colonnes
      * cc_*, quality_*, impact_*, owasp_top10, sans_top25, cwe).
+     * MODIF 2026-09-29 : 163 → 173 (+10 colonnes ncloc/weight brutes,
+     * global + par module, en plus de l'indicateur/note RCI déjà présents).
+     * MODIF 2026-10-06 : 173 → 181 (+8 colonnes de répartition par portée
+     * SonarQube MAIN/TEST, globale et par catégorie bug/vulnerability/code_smell).
+     * MODIF 2026-10-08 : 181 → 182 (+1 colonne sonarqube_server_version,
+     * simple marqueur de traçabilité, pas d'UI associée).
+     * MODIF 2026-10-08 : 182 → 184 (+2 colonnes eco_anomalies/eco_dette_minute,
+     * Empreinte Écologique, plugins SonarQube Creedengo).
+     * MODIF 2026-10-09 : 184 → 197 (+13 colonnes : eco_rating global + détail
+     * par langage java/javascript/php/python, 3 colonnes chacun).
+     * MODIF 2026-10-11 : 197 → 200 (+3 colonnes maintainability/reliability/
+     * security_issue_severity, métriques optionnelles pas encore LTS).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(153, count($reflectionClass->getProperties()));
+        $this->assertEquals(200, count($reflectionClass->getProperties()));
     }
 }

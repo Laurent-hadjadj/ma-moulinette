@@ -146,6 +146,18 @@ calcules dans le controller depuis le dernier scan DC pour ce maven_key. Le bout
     <span aria-hidden="true">📦</span> Dependency-Check
     </a>
 {% endif %}
+
+{% if is_granted('ROLE_SECURITY') and has_zap_scan %}
+    <a
+    id="bouton-ouvrir-rapport-zap"
+    href="{{ path('zap', {token: zap_link_token}) }}"
+    class="button open-sans focus-dark-light"
+    title="Résultats du scan DAST ZAP — complément OWASP"
+    aria-label="Ouvrir le rapport ZAP (DAST)"
+    >
+    <span aria-hidden="true">👻</span> ZAP (DAST)
+    </a>
+{% endif %}
 </div>
 </header>
 

@@ -16,7 +16,7 @@ namespace App\Controller\Suivi;
 use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\{Request, Response};
+use Symfony\Component\HttpFoundation\{RedirectResponse, Request, Response};
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -172,7 +172,7 @@ class SuiviController extends AbstractController
         }
 
         $parts = preg_split("/[|]+/", $decoded);
-        if (count($parts) !== 2) {
+        if ($parts === false || count($parts) !== 2) {
             $this->logger->warning('[Suivi] ⚠️ Format de token invalide après décodage', ['decoded' => $decoded]);
             return null;
         }
@@ -200,7 +200,7 @@ class SuiviController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
-    public function setSession(Request $request)
+    public function setSession(Request $request): RedirectResponse
     {
         $token = $request->query->get('token');
         $maven_key = null;
@@ -303,6 +303,49 @@ class SuiviController extends AbstractController
     }
 
     /**
+     * [Description for buildRciScopeChartData]
+     * Construit les 3 séries (RCI global, Scope Main, Scope Test, toutes en %)
+     * pour le graphique en lignes pleines de la page Suivi — même format que
+     * LanguageDistributionService::buildDistributionMatrix (labels + datasets
+     * Chart.js prêts à l'emploi, couleurs incluses côté serveur).
+     *
+     * @param array<int, array<string, mixed>> $suivi
+     *
+     * @return array{labels: list<mixed>, datasets: list<array<string, mixed>>}
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function buildRciScopeChartData(array $suivi): array
+    {
+        $labels = [];
+        $rci = [];
+        $scopeMain = [];
+        $scopeTest = [];
+
+        foreach ($suivi as $row) {
+            $labels[] = $row['date'] ?? null;
+            $rci[] = $row['rci_indicator'] ?? null;
+
+            $main = (float) ($row['scope_main'] ?? 0);
+            $test = (float) ($row['scope_test'] ?? 0);
+            $total = $main + $test;
+            $scopeMain[] = $total > 0 ? round($main / $total * 100, 1) : null;
+            $scopeTest[] = $total > 0 ? round($test / $total * 100, 1) : null;
+        }
+
+        return [
+            'labels' => $labels,
+            'datasets' => [
+                ['label' => 'RCI (%)', 'data' => $rci, 'borderColor' => '#0a0', 'backgroundColor' => 'rgba(0,170,0,0.2)'],
+                ['label' => 'Scope Main (%)', 'data' => $scopeMain, 'borderColor' => '#3690eb', 'backgroundColor' => 'rgba(54,144,235,0.2)'],
+                ['label' => 'Scope Test (%)', 'data' => $scopeTest, 'borderColor' => '#ff9f40', 'backgroundColor' => 'rgba(255,159,64,0.2)'],
+            ],
+        ];
+    }
+
+    /**
      * [Description for suivi]
      * On remonte les 10 dernières version + la version initiale
      *
@@ -341,6 +384,7 @@ class SuiviController extends AbstractController
         $render['mavenKey'] = $maven_key ?? '';
         $render['langueDistribution']= $this->languageDistribution->buildDistributionMatrix([]);
         $render['data1'] = $render['data2'] = $render['data3'] = $render['labels'] = 0;
+        $render['rciScopeChart'] = json_encode(['labels' => [], 'datasets' => []]);
 
         // Vérifications initiales
         if (empty($maven_key)) {
@@ -416,6 +460,7 @@ class SuiviController extends AbstractController
             $render['data2'] = json_encode($graphData['sec']);
             $render['data3'] = json_encode($graphData['codeSmell']);
             $render['labels'] = json_encode($graphData['date']);
+            $render['rciScopeChart'] = json_encode($this->buildRciScopeChartData($suivi['request']));
 
             $message = "✅ Les données ont été correctement récupérées.";
             $this->logger->info('[Suivi] ' . $message);

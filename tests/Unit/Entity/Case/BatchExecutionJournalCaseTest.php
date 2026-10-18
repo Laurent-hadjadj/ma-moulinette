@@ -143,7 +143,7 @@ class BatchExecutionJournalCaseTest extends TestCase
     {
         $entity = new BatchExecutionJournal();
         $this->expectException(\Error::class);
-        $entity->getId();
+        $id = $entity->getId();
     }
 
     /* MODIF 2026-06-08 : getCompteRendu retourne '' quand compteRendu vaut null (via Reflection).
@@ -154,6 +154,38 @@ class BatchExecutionJournalCaseTest extends TestCase
         $ref = new \ReflectionProperty($entity, 'compteRendu');
         $ref->setValue($entity, null);
         $this->assertSame('', $entity->getCompteRendu());
+    }
+
+    /* MODIF 2026-10-11 : Doctrine hydrate parfois une colonne BINARY en flux
+     * (resource) plutôt qu'en chaîne — selon le driver PDO. */
+    public function testGetCompteRenduReadsStreamResource(): void
+    {
+        $entity = new BatchExecutionJournal();
+        $html = '<p>Rapport via flux</p>';
+        $stream = fopen('php://memory', 'r+');
+        self::assertNotFalse($stream);
+        $gzip = gzencode($html, 9);
+        self::assertNotFalse($gzip);
+        fwrite($stream, $gzip);
+        rewind($stream);
+
+        $ref = new \ReflectionProperty($entity, 'compteRendu');
+        $ref->setValue($entity, $stream);
+
+        $this->assertSame($html, $entity->getCompteRendu());
+    }
+
+    /* MODIF 2026-10-11 : lignes anciennes stockées en texte brut (non compressé) —
+     * gzdecode() échoue (retourne false), on doit retomber sur le contenu brut. */
+    public function testGetCompteRenduFallsBackToRawTextWhenNotGzipped(): void
+    {
+        $entity = new BatchExecutionJournal();
+        $plain = '<p>Ancien rapport non compressé</p>';
+
+        $ref = new \ReflectionProperty($entity, 'compteRendu');
+        $ref->setValue($entity, $plain);
+
+        $this->assertSame($plain, $entity->getCompteRendu());
     }
 
     public function testNomProjetMappingIsLength128(): void

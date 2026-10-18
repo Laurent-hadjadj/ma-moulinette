@@ -98,7 +98,7 @@ class CustomAuthenticatorTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertTrue($payload['x-api-custom-401']);
         $this->assertSame(401, $payload['code']);
     }
@@ -163,6 +163,7 @@ class CustomAuthenticatorTest extends TestCase
 
         $response = $this->authenticator->onAuthenticationSuccess(Request::create('/'), $token, 'main');
 
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/accueil', $response->getTargetUrl());
     }
 
@@ -173,6 +174,7 @@ class CustomAuthenticatorTest extends TestCase
 
         $response = $this->authenticator->onAuthenticationSuccess(Request::create('/'), $token, 'main');
 
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/accueil', $response->getTargetUrl());
     }
 

@@ -25,7 +25,7 @@ class NoSonarCaseTest extends TestCase
 
     private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $rule = 'java:S1309';
-    private static $component = 'fr.ma-moulinette:mo-moulinette:
+    private static string $component = 'fr.ma-moulinette:mo-moulinette:
     ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
     private static int $line = 118;
     private static string $modeCollecte = 'TRAITEMENT MANUEL';

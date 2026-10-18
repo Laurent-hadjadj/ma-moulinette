@@ -36,12 +36,12 @@ class RoleManagerService
     /**
      * [Description for normalize]
      *
-     * @param array<int|string, mixed> $roles
-     * @param array<int|string, mixed> $currentRoles
+     * @param array<int, string> $roles
+     * @param array<int, string> $currentRoles
      * @param Utilisateur $targetUser
      * @param Utilisateur $editor
      *
-     * @return array<int|string, mixed>
+     * @return array<int, string>
      *
      * Created at: 23/04/2026 11:12:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

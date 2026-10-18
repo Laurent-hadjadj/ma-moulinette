@@ -25,7 +25,7 @@ use App\Exception\SonarApiException;
 class SonarMetricsFetcherService
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
+    private static string $sonarUrl = "sonar.url";
 
     public function __construct(
         private ClientService $client,

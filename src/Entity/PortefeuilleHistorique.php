@@ -224,12 +224,12 @@ class PortefeuilleHistorique
         return $this;
     }
 
-    public function getDetail()
+    public function getDetail(): string
     {
         return $this->detail;
     }
 
-    public function setDetail($detail): static
+    public function setDetail(string $detail): static
     {
         $this->detail = $detail;
         return $this;

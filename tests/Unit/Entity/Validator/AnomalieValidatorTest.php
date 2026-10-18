@@ -155,9 +155,11 @@ class AnomalieValidatorTest extends KernelTestCase
 
   public function testCountAttribut(): void
   {
+    // MODIF 2026-10-06 : 27 -> 35 (+8 colonnes scope_main/scope_test, global
+    // et par catégorie bug/vulnerability/code_smell).
     $entity = $this->getEntity();
     $reflectionClass = new \ReflectionClass($entity);
     $nbAttributs = count($reflectionClass->getProperties());
-    $this->assertEquals($nbAttributs, 27);
+    $this->assertEquals($nbAttributs, 35);
   }
 }

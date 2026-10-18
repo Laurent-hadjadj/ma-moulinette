@@ -57,6 +57,7 @@ class BatchCollecteMesureControllerTest extends TestCase
 
         // metricsKey : stub souple (appelé par tout test qui passe la 1re Sonar OK)
         $this->buildMap->method('metricsKey')->willReturn('bugs,coverage,ncloc');
+        $this->buildMap->method('optionalMetricsKey')->willReturn('maintainability_issue_severity,reliability_issue_severity,security_issue_severity');
         // metricsRebuild : stub par défaut qu'on peut surcharger par test
         $this->buildMap->method('metricsRebuild')->willReturn(['rebuilt' => true]);
 
@@ -111,14 +112,16 @@ class BatchCollecteMesureControllerTest extends TestCase
 
     public function testBatchCollecteMesureReturnsErrorWhenInsertFails(): void
     {
-        // 1er call Sonar OK, 2ème call Sonar OK avec measures → passe au delete+insert
-        $this->client->expects($this->exactly(2))
+        // 1er call Sonar OK, 2ème call Sonar OK avec measures, 3ème call (métriques
+        // optionnelles) en 404 → non bloquant → passe au delete+insert
+        $this->client->expects($this->exactly(3))
             ->method('httpSonarQube')
             ->willReturnOnConsecutiveCalls(
                 ['code' => 200, 'json' => ['projectName' => 'App']],
                 ['code' => 200, 'json' => ['component' => ['measures' => [
                     ['metric' => 'bugs', 'value' => '2'],
-                ]]]]
+                ]]]],
+                ['code' => 404, 'erreur' => 'metric keys not found']
             );
 
         $this->repo->method('deleteMesuresMavenKey')->willReturn(['code' => 200]);
@@ -133,7 +136,7 @@ class BatchCollecteMesureControllerTest extends TestCase
 
     public function testBatchCollecteMesureHappyPathReturnsDataAndHistorique(): void
     {
-        $this->client->expects($this->exactly(2))
+        $this->client->expects($this->exactly(3))
             ->method('httpSonarQube')
             ->willReturnOnConsecutiveCalls(
                 ['code' => 200, 'json' => ['projectName' => 'MyApp']],
@@ -141,6 +144,10 @@ class BatchCollecteMesureControllerTest extends TestCase
                     ['metric' => 'bugs', 'value' => '2'],
                     ['metric' => 'coverage', 'value' => '87'],
                     ['metric' => 'ncloc'],                       // valeur manquante → 0
+                ]]]],
+                // 3ème call (métriques optionnelles) OK : serveur qui les connaît déjà.
+                ['code' => 200, 'json' => ['component' => ['measures' => [
+                    ['metric' => 'maintainability_issue_severity', 'value' => '25'],
                 ]]]]
             );
 
@@ -171,6 +178,8 @@ class BatchCollecteMesureControllerTest extends TestCase
         $this->assertSame('2', $capturedMetrics['bugs']);
         $this->assertSame('87', $capturedMetrics['coverage']);
         $this->assertSame(0, $capturedMetrics['ncloc']); // fallback ?? 0
+        // Métrique optionnelle (appel séparé, 3ème call) bien fusionnée dans les mesures.
+        $this->assertSame('25', $capturedMetrics['maintainability_issue_severity']);
 
         // Map persistée : merge rebuilt + metadata
         $this->assertSame(self::MAVEN_KEY, $capturedInsert['maven_key']);
@@ -187,11 +196,12 @@ class BatchCollecteMesureControllerTest extends TestCase
 
     public function testBatchCollecteMesureFallsBackToInconnuWhenProjectNameMissing(): void
     {
-        $this->client->expects($this->exactly(2))
+        $this->client->expects($this->exactly(3))
             ->method('httpSonarQube')
             ->willReturnOnConsecutiveCalls(
                 ['code' => 200, 'json' => []], // pas de projectName
-                ['code' => 200, 'json' => ['component' => ['measures' => []]]]
+                ['code' => 200, 'json' => ['component' => ['measures' => []]]],
+                ['code' => 404, 'erreur' => 'metric keys not found']
             );
 
         $this->repo->method('deleteMesuresMavenKey')->willReturn(['code' => 200]);

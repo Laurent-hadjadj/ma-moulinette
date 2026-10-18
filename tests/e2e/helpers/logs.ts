@@ -1,9 +1,21 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
 // __dirname : tests/e2e/helpers -> tests/e2e -> tests -> projectRoot
 const projectRoot = resolve(__dirname, '..', '..', '..');
 const logsDir = resolve(projectRoot, 'var', 'log');
+
+// Nom du conteneur php-fpm Docker e2e — défini seulement quand on cible la
+// stack Docker (docker/e2e/docker-compose.e2e.yml). var/ y est un volume
+// Docker isole (e2e-var), jamais le filesystem Windows : écrire via
+// writeFileSync comme pour le flux natif serait invisible du conteneur, qui
+// lit son propre var/log/ via scandir(). même convention que E2E_DB_PORT.
+const E2E_PHP_CONTAINER = process.env.E2E_PHP_CONTAINER || '';
+
+function dockerExec(args: string[]): void {
+  execFileSync('docker', ['exec', E2E_PHP_CONTAINER, ...args], { stdio: ['ignore', 'inherit', 'inherit'] });
+}
 
 /**
  * Fichiers de logs synthétiques pour le spec 19 (Admin Logs).
@@ -39,6 +51,12 @@ export const E2E_LOG_FIXTURES: Record<string, string> = {
 };
 
 export function seedAdminLogFiles(): void {
+  if (E2E_PHP_CONTAINER) {
+    for (const [name, content] of Object.entries(E2E_LOG_FIXTURES)) {
+      dockerExec(['sh', '-c', `printf '%b' ${JSON.stringify(content)} > /var/www/var/log/${name}`]);
+    }
+    return;
+  }
   mkdirSync(logsDir, { recursive: true });
   for (const [name, content] of Object.entries(E2E_LOG_FIXTURES)) {
     writeFileSync(resolve(logsDir, name), content, 'utf-8');
@@ -46,6 +64,12 @@ export function seedAdminLogFiles(): void {
 }
 
 export function cleanupAdminLogFiles(): void {
+  if (E2E_PHP_CONTAINER) {
+    for (const name of Object.keys(E2E_LOG_FIXTURES)) {
+      dockerExec(['sh', '-c', `rm -f /var/www/var/log/${name}`]);
+    }
+    return;
+  }
   for (const name of Object.keys(E2E_LOG_FIXTURES)) {
     const path = resolve(logsDir, name);
     if (existsSync(path)) {

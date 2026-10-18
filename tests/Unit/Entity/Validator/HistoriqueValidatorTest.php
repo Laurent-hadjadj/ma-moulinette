@@ -31,6 +31,7 @@ class HistoriqueValidatorTest extends KernelTestCase
             ->setMavenKey('fr.ma-moulinette:ma-moulinette')
             ->setVersion('1.2.0-RELEASE')
             ->setDateVersion('2024-07-12 16:34:46')
+            ->setSonarqubeServerVersion('10.4.1')
             ->setNomProjet('ma-moulinette')
             ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
             ->setInitial(false)
@@ -62,6 +63,7 @@ class HistoriqueValidatorTest extends KernelTestCase
         $this->assertHasErrors($this->getEntity()->setDateVersion(''), 1);
         $this->assertHasErrors($this->getEntity()->setNomProjet(''), 1);
         $this->assertHasErrors($this->getEntity()->setAnalyseKey(''), 1);
+        $this->assertHasErrors($this->getEntity()->setSonarqubeServerVersion(''), 1);
         // modeCollecte / utilisateurCollecte sont nullable et n'ont pas NotBlank.
         $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
         $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
@@ -74,6 +76,7 @@ class HistoriqueValidatorTest extends KernelTestCase
         $this->assertHasErrors($this->getEntity()->setDateVersion(str_repeat('a', 129)), 1);
         $this->assertHasErrors($this->getEntity()->setNomProjet(str_repeat('a', 129)), 1);
         $this->assertHasErrors($this->getEntity()->setAnalyseKey(str_repeat('a', 65)), 1);
+        $this->assertHasErrors($this->getEntity()->setSonarqubeServerVersion(str_repeat('a', 33)), 1);
         $this->assertHasErrors($this->getEntity()->setModeCollecte(str_repeat('a', 33)), 1);
         $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(str_repeat('a', 321)), 1);
     }
@@ -326,8 +329,19 @@ class HistoriqueValidatorTest extends KernelTestCase
          * coverageRating + duplicatedLinesRating oubliées de l’entité, présentes
          * dans DDL et HistoriqueRepository).
          * MODIF 2026-05-17 : 138 → 153 (+15 colonnes
-         * cc_*, quality_*, impact_*, owasp_top10, sans_top25, cwe). */
+         * cc_*, quality_*, impact_*, owasp_top10, sans_top25, cwe).
+         * MODIF 2026-09-29 : 163 → 173 (+10 colonnes ncloc/weight brutes,
+         * global + par module, en plus de l'indicateur/note RCI déjà présents).
+         * MODIF 2026-10-06 : 173 → 181 (+8 colonnes de répartition par portée
+         * SonarQube MAIN/TEST, globale et par catégorie).
+         * MODIF 2026-10-08 : 181 → 182 (+1 colonne sonarqube_server_version).
+         * MODIF 2026-10-08 : 182 → 184 (+2 colonnes eco_anomalies/eco_dette_minute,
+         * Empreinte Écologique, plugins SonarQube Creedengo).
+         * MODIF 2026-10-09 : 184 → 197 (+13 colonnes : eco_rating global +
+         * détail par langage java/javascript/php/python, 3 colonnes chacun).
+         * MODIF 2026-10-11 : 197 → 200 (+3 colonnes maintainability/reliability/
+         * security_issue_severity, métriques optionnelles pas encore LTS). */
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(153, count($reflectionClass->getProperties()));
+        $this->assertEquals(200, count($reflectionClass->getProperties()));
     }
 }

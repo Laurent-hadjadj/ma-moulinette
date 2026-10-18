@@ -65,14 +65,32 @@ class Historique
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Date de la version du projet']
+        options: ['comment' => 'Date de la dernière analyse SonarQube']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: 'La date de la version ne doit pas dépasser 128 caractères.'
+        maxMessage: 'La date de la dernière analyse ne doit pas dépasser 128 caractères.'
     )]
     private string $dateVersion;
+
+    // -------------------------
+    // Version du serveur SonarQube
+    // -------------------------
+    /* MODIF 2026-10-08 : nommée 'sonarqube_server_version', pas 'version_sonar' */
+    #[ORM\Column(
+        name: 'sonarqube_server_version',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Version du serveur SonarQube']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: 'La version du serveur SonarQube ne doit pas dépasser 32 caractères.'
+    )]
+    private string $sonarqubeServerVersion;
 
     // -------------------------
     // Informations sur le projet
@@ -779,6 +797,40 @@ class Historique
     #[Assert\PositiveOrZero]
     private ?int $infoViolations = null;
 
+    /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN = code source,
+     * TEST = code de test), globale et par catégorie d'anomalie. */
+    #[ORM\Column(name: 'scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre total de problèmes sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $scopeMain = null;
+
+    #[ORM\Column(name: 'scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre total de problèmes sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $scopeTest = null;
+
+    #[ORM\Column(name: 'bug_scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de bugs sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $bugScopeMain = null;
+
+    #[ORM\Column(name: 'bug_scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de bugs sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $bugScopeTest = null;
+
+    #[ORM\Column(name: 'vulnerability_scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de vulnérabilités sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityScopeMain = null;
+
+    #[ORM\Column(name: 'vulnerability_scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de vulnérabilités sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityScopeTest = null;
+
+    #[ORM\Column(name: 'code_smell_scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de mauvaises pratiques sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $codeSmellScopeMain = null;
+
+    #[ORM\Column(name: 'code_smell_scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de mauvaises pratiques sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $codeSmellScopeTest = null;
+
     #[ORM\Column(
         name: 'software_quality_blocker_issues',
         type: Types::INTEGER,
@@ -1236,6 +1288,37 @@ class Historique
     #[Assert\PositiveOrZero]
     private ?float $securityHotspotsReviewed = null;
 
+    /* MODIF 2026-10-11 : métriques "optionnelles" apparues entre SonarQube 26.3.0
+     * et 26.9.0, pas encore documentées/LTS par SonarSource — valeur brute,
+     * pas de note A-E. Collectées via un appel séparé non bloquant (cf.
+     * BatchCollecteMesureController), donc toujours nullable. */
+    #[ORM\Column(
+        name: 'maintainability_issue_severity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Pire sévérité des problèmes de maintenabilité (métrique optionnelle, pas encore LTS).']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $maintainabilityIssueSeverity = null;
+
+    #[ORM\Column(
+        name: 'reliability_issue_severity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Pire sévérité des problèmes de fiabilité (métrique optionnelle, pas encore LTS).']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $reliabilityIssueSeverity = null;
+
+    #[ORM\Column(
+        name: 'security_issue_severity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Pire sévérité des problèmes de sécurité (métrique optionnelle, pas encore LTS).']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $securityIssueSeverity = null;
+
     #[ORM\Column(
         name: 'menace_potentielle_to_review_high',
         type: Types::INTEGER,
@@ -1410,6 +1493,124 @@ class Historique
     private ?int $cwe = null;
 
     // -------------------------
+    // RCI (Risk Criticality Index)
+    // -------------------------
+    #[ORM\Column(name: 'rci_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI global (Risk Criticality Index)'])]
+    private ?float $rciIndicator = null;
+
+    #[ORM\Column(name: 'rci_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciRating = null;
+
+    #[ORM\Column(name: 'rci_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code pris en compte pour le RCI global'])]
+    private ?int $rciNcloc = null;
+
+    #[ORM\Column(name: 'rci_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies pour le RCI global'])]
+    private ?int $rciWeight = null;
+
+    #[ORM\Column(name: 'rci_frontend_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI du module frontend'])]
+    private ?float $rciFrontendIndicator = null;
+
+    #[ORM\Column(name: 'rci_frontend_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_frontend_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciFrontendRating = null;
+
+    #[ORM\Column(name: 'rci_frontend_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code du module frontend'])]
+    private ?int $rciFrontendNcloc = null;
+
+    #[ORM\Column(name: 'rci_frontend_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies du module frontend'])]
+    private ?int $rciFrontendWeight = null;
+
+    #[ORM\Column(name: 'rci_backend_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI du module backend'])]
+    private ?float $rciBackendIndicator = null;
+
+    #[ORM\Column(name: 'rci_backend_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_backend_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciBackendRating = null;
+
+    #[ORM\Column(name: 'rci_backend_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code du module backend'])]
+    private ?int $rciBackendNcloc = null;
+
+    #[ORM\Column(name: 'rci_backend_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies du module backend'])]
+    private ?int $rciBackendWeight = null;
+
+    #[ORM\Column(name: 'rci_autre_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI du module autre'])]
+    private ?float $rciAutreIndicator = null;
+
+    #[ORM\Column(name: 'rci_autre_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_autre_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciAutreRating = null;
+
+    #[ORM\Column(name: 'rci_autre_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code du module autre'])]
+    private ?int $rciAutreNcloc = null;
+
+    #[ORM\Column(name: 'rci_autre_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies du module autre'])]
+    private ?int $rciAutreWeight = null;
+
+    #[ORM\Column(name: 'rci_inconnu_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI des fichiers non classés'])]
+    private ?float $rciInconnuIndicator = null;
+
+    #[ORM\Column(name: 'rci_inconnu_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_inconnu_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciInconnuRating = null;
+
+    #[ORM\Column(name: 'rci_inconnu_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code des fichiers non classés'])]
+    private ?int $rciInconnuNcloc = null;
+
+    #[ORM\Column(name: 'rci_inconnu_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies des fichiers non classés'])]
+    private ?int $rciInconnuWeight = null;
+
+    #[ORM\Column(name: 'eco_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Empreinte Écologique : nombre d'anomalies (OPEN) détectées par les règles SonarQube Creedengo"])]
+    private ?int $ecoAnomalies = null;
+
+    #[ORM\Column(name: 'eco_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Empreinte Écologique : dette estimée en minutes (effortTotal SonarQube)'])]
+    private ?int $ecoDetteMinute = null;
+
+    #[ORM\Column(name: 'eco_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Empreinte Écologique : note A-E dérivée du ratio eco_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $ecoRating = null;
+
+    #[ORM\Column(name: 'eco_java_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Empreinte Écologique : nombre d'anomalies (OPEN) pour le langage Java"])]
+    private ?int $ecoJavaAnomalies = null;
+
+    #[ORM\Column(name: 'eco_java_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Empreinte Écologique : dette estimée en minutes pour le langage Java'])]
+    private ?int $ecoJavaDetteMinute = null;
+
+    #[ORM\Column(name: 'eco_java_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Empreinte Écologique : note A-E pour le langage Java'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $ecoJavaRating = null;
+
+    #[ORM\Column(name: 'eco_javascript_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Empreinte Écologique : nombre d'anomalies (OPEN) pour le langage JavaScript"])]
+    private ?int $ecoJavascriptAnomalies = null;
+
+    #[ORM\Column(name: 'eco_javascript_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Empreinte Écologique : dette estimée en minutes pour le langage JavaScript'])]
+    private ?int $ecoJavascriptDetteMinute = null;
+
+    #[ORM\Column(name: 'eco_javascript_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Empreinte Écologique : note A-E pour le langage JavaScript'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $ecoJavascriptRating = null;
+
+    #[ORM\Column(name: 'eco_php_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Empreinte Écologique : nombre d'anomalies (OPEN) pour le langage PHP"])]
+    private ?int $ecoPhpAnomalies = null;
+
+    #[ORM\Column(name: 'eco_php_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Empreinte Écologique : dette estimée en minutes pour le langage PHP'])]
+    private ?int $ecoPhpDetteMinute = null;
+
+    #[ORM\Column(name: 'eco_php_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Empreinte Écologique : note A-E pour le langage PHP'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $ecoPhpRating = null;
+
+    #[ORM\Column(name: 'eco_python_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Empreinte Écologique : nombre d'anomalies (OPEN) pour le langage Python"])]
+    private ?int $ecoPythonAnomalies = null;
+
+    #[ORM\Column(name: 'eco_python_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Empreinte Écologique : dette estimée en minutes pour le langage Python'])]
+    private ?int $ecoPythonDetteMinute = null;
+
+    #[ORM\Column(name: 'eco_python_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Empreinte Écologique : note A-E pour le langage Python'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $ecoPythonRating = null;
+
+    // -------------------------
     // Initialisation du projet
     // -------------------------
     #[ORM\Column(
@@ -1497,6 +1698,76 @@ class Historique
     public function setSansTop25(?int $v): static { $this->sansTop25 = $v; return $this; }
     public function getCwe(): ?int { return $this->cwe; }
     public function setCwe(?int $v): static { $this->cwe = $v; return $this; }
+    public function getRciIndicator(): ?float { return $this->rciIndicator; }
+    public function setRciIndicator(?float $v): static { $this->rciIndicator = $v; return $this; }
+    public function getRciRating(): ?string { return $this->rciRating; }
+    public function setRciRating(?string $v): static { $this->rciRating = $v; return $this; }
+    public function getRciNcloc(): ?int { return $this->rciNcloc; }
+    public function setRciNcloc(?int $v): static { $this->rciNcloc = $v; return $this; }
+    public function getRciWeight(): ?int { return $this->rciWeight; }
+    public function setRciWeight(?int $v): static { $this->rciWeight = $v; return $this; }
+    public function getRciFrontendIndicator(): ?float { return $this->rciFrontendIndicator; }
+    public function setRciFrontendIndicator(?float $v): static { $this->rciFrontendIndicator = $v; return $this; }
+    public function getRciFrontendRating(): ?string { return $this->rciFrontendRating; }
+    public function setRciFrontendRating(?string $v): static { $this->rciFrontendRating = $v; return $this; }
+    public function getRciFrontendNcloc(): ?int { return $this->rciFrontendNcloc; }
+    public function setRciFrontendNcloc(?int $v): static { $this->rciFrontendNcloc = $v; return $this; }
+    public function getRciFrontendWeight(): ?int { return $this->rciFrontendWeight; }
+    public function setRciFrontendWeight(?int $v): static { $this->rciFrontendWeight = $v; return $this; }
+    public function getRciBackendIndicator(): ?float { return $this->rciBackendIndicator; }
+    public function setRciBackendIndicator(?float $v): static { $this->rciBackendIndicator = $v; return $this; }
+    public function getRciBackendRating(): ?string { return $this->rciBackendRating; }
+    public function setRciBackendRating(?string $v): static { $this->rciBackendRating = $v; return $this; }
+    public function getRciBackendNcloc(): ?int { return $this->rciBackendNcloc; }
+    public function setRciBackendNcloc(?int $v): static { $this->rciBackendNcloc = $v; return $this; }
+    public function getRciBackendWeight(): ?int { return $this->rciBackendWeight; }
+    public function setRciBackendWeight(?int $v): static { $this->rciBackendWeight = $v; return $this; }
+    public function getRciAutreIndicator(): ?float { return $this->rciAutreIndicator; }
+    public function setRciAutreIndicator(?float $v): static { $this->rciAutreIndicator = $v; return $this; }
+    public function getRciAutreRating(): ?string { return $this->rciAutreRating; }
+    public function setRciAutreRating(?string $v): static { $this->rciAutreRating = $v; return $this; }
+    public function getRciAutreNcloc(): ?int { return $this->rciAutreNcloc; }
+    public function setRciAutreNcloc(?int $v): static { $this->rciAutreNcloc = $v; return $this; }
+    public function getRciAutreWeight(): ?int { return $this->rciAutreWeight; }
+    public function setRciAutreWeight(?int $v): static { $this->rciAutreWeight = $v; return $this; }
+    public function getRciInconnuIndicator(): ?float { return $this->rciInconnuIndicator; }
+    public function setRciInconnuIndicator(?float $v): static { $this->rciInconnuIndicator = $v; return $this; }
+    public function getRciInconnuRating(): ?string { return $this->rciInconnuRating; }
+    public function setRciInconnuRating(?string $v): static { $this->rciInconnuRating = $v; return $this; }
+    public function getRciInconnuNcloc(): ?int { return $this->rciInconnuNcloc; }
+    public function setRciInconnuNcloc(?int $v): static { $this->rciInconnuNcloc = $v; return $this; }
+    public function getRciInconnuWeight(): ?int { return $this->rciInconnuWeight; }
+    public function setRciInconnuWeight(?int $v): static { $this->rciInconnuWeight = $v; return $this; }
+    public function getEcoAnomalies(): ?int { return $this->ecoAnomalies; }
+    public function setEcoAnomalies(?int $v): static { $this->ecoAnomalies = $v; return $this; }
+    public function getEcoDetteMinute(): ?int { return $this->ecoDetteMinute; }
+    public function setEcoDetteMinute(?int $v): static { $this->ecoDetteMinute = $v; return $this; }
+    public function getEcoRating(): ?string { return $this->ecoRating; }
+    public function setEcoRating(?string $v): static { $this->ecoRating = $v; return $this; }
+    public function getEcoJavaAnomalies(): ?int { return $this->ecoJavaAnomalies; }
+    public function setEcoJavaAnomalies(?int $v): static { $this->ecoJavaAnomalies = $v; return $this; }
+    public function getEcoJavaDetteMinute(): ?int { return $this->ecoJavaDetteMinute; }
+    public function setEcoJavaDetteMinute(?int $v): static { $this->ecoJavaDetteMinute = $v; return $this; }
+    public function getEcoJavaRating(): ?string { return $this->ecoJavaRating; }
+    public function setEcoJavaRating(?string $v): static { $this->ecoJavaRating = $v; return $this; }
+    public function getEcoJavascriptAnomalies(): ?int { return $this->ecoJavascriptAnomalies; }
+    public function setEcoJavascriptAnomalies(?int $v): static { $this->ecoJavascriptAnomalies = $v; return $this; }
+    public function getEcoJavascriptDetteMinute(): ?int { return $this->ecoJavascriptDetteMinute; }
+    public function setEcoJavascriptDetteMinute(?int $v): static { $this->ecoJavascriptDetteMinute = $v; return $this; }
+    public function getEcoJavascriptRating(): ?string { return $this->ecoJavascriptRating; }
+    public function setEcoJavascriptRating(?string $v): static { $this->ecoJavascriptRating = $v; return $this; }
+    public function getEcoPhpAnomalies(): ?int { return $this->ecoPhpAnomalies; }
+    public function setEcoPhpAnomalies(?int $v): static { $this->ecoPhpAnomalies = $v; return $this; }
+    public function getEcoPhpDetteMinute(): ?int { return $this->ecoPhpDetteMinute; }
+    public function setEcoPhpDetteMinute(?int $v): static { $this->ecoPhpDetteMinute = $v; return $this; }
+    public function getEcoPhpRating(): ?string { return $this->ecoPhpRating; }
+    public function setEcoPhpRating(?string $v): static { $this->ecoPhpRating = $v; return $this; }
+    public function getEcoPythonAnomalies(): ?int { return $this->ecoPythonAnomalies; }
+    public function setEcoPythonAnomalies(?int $v): static { $this->ecoPythonAnomalies = $v; return $this; }
+    public function getEcoPythonDetteMinute(): ?int { return $this->ecoPythonDetteMinute; }
+    public function setEcoPythonDetteMinute(?int $v): static { $this->ecoPythonDetteMinute = $v; return $this; }
+    public function getEcoPythonRating(): ?string { return $this->ecoPythonRating; }
+    public function setEcoPythonRating(?string $v): static { $this->ecoPythonRating = $v; return $this; }
 
     public function __construct()
     {
@@ -1612,6 +1883,38 @@ class Historique
     public function getDateVersion(): ?string
     {
         return $this->dateVersion;
+    }
+
+    /**
+     * [Description for getSonarqubeServerVersion]
+     *
+     * @return string
+     *
+     * Created at: 08/10/2026 17:43:40 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getSonarqubeServerVersion(): string
+    {
+        return $this->sonarqubeServerVersion;
+    }
+
+    /**
+     * [Description for setSonarqubeServerVersion]
+     *
+     * @param string $sonarqubeServerVersion
+     *
+     * @return static
+     *
+     * Created at: 08/10/2026 17:45:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setSonarqubeServerVersion(string $sonarqubeServerVersion): static
+    {
+        $this->sonarqubeServerVersion = $sonarqubeServerVersion;
+
+        return $this;
     }
 
     /**
@@ -2408,6 +2711,23 @@ class Historique
         return $this;
     }
 
+    public function getScopeMain(): ?int { return $this->scopeMain; }
+    public function setScopeMain(?int $v): static { $this->scopeMain = $v; return $this; }
+    public function getScopeTest(): ?int { return $this->scopeTest; }
+    public function setScopeTest(?int $v): static { $this->scopeTest = $v; return $this; }
+    public function getBugScopeMain(): ?int { return $this->bugScopeMain; }
+    public function setBugScopeMain(?int $v): static { $this->bugScopeMain = $v; return $this; }
+    public function getBugScopeTest(): ?int { return $this->bugScopeTest; }
+    public function setBugScopeTest(?int $v): static { $this->bugScopeTest = $v; return $this; }
+    public function getVulnerabilityScopeMain(): ?int { return $this->vulnerabilityScopeMain; }
+    public function setVulnerabilityScopeMain(?int $v): static { $this->vulnerabilityScopeMain = $v; return $this; }
+    public function getVulnerabilityScopeTest(): ?int { return $this->vulnerabilityScopeTest; }
+    public function setVulnerabilityScopeTest(?int $v): static { $this->vulnerabilityScopeTest = $v; return $this; }
+    public function getCodeSmellScopeMain(): ?int { return $this->codeSmellScopeMain; }
+    public function setCodeSmellScopeMain(?int $v): static { $this->codeSmellScopeMain = $v; return $this; }
+    public function getCodeSmellScopeTest(): ?int { return $this->codeSmellScopeTest; }
+    public function setCodeSmellScopeTest(?int $v): static { $this->codeSmellScopeTest = $v; return $this; }
+
     public function getSoftwareQualityBlockerIssues(): ?int
     {
         return $this->softwareQualityBlockerIssues;
@@ -2938,6 +3258,39 @@ class Historique
     public function setSecurityHotspotsReviewed(?float $securityHotspotsReviewed): self
     {
         $this->securityHotspotsReviewed = $securityHotspotsReviewed;
+        return $this;
+    }
+
+    public function getMaintainabilityIssueSeverity(): ?int
+    {
+        return $this->maintainabilityIssueSeverity;
+    }
+
+    public function setMaintainabilityIssueSeverity(?int $maintainabilityIssueSeverity): self
+    {
+        $this->maintainabilityIssueSeverity = $maintainabilityIssueSeverity;
+        return $this;
+    }
+
+    public function getReliabilityIssueSeverity(): ?int
+    {
+        return $this->reliabilityIssueSeverity;
+    }
+
+    public function setReliabilityIssueSeverity(?int $reliabilityIssueSeverity): self
+    {
+        $this->reliabilityIssueSeverity = $reliabilityIssueSeverity;
+        return $this;
+    }
+
+    public function getSecurityIssueSeverity(): ?int
+    {
+        return $this->securityIssueSeverity;
+    }
+
+    public function setSecurityIssueSeverity(?int $securityIssueSeverity): self
+    {
+        $this->securityIssueSeverity = $securityIssueSeverity;
         return $this;
     }
 

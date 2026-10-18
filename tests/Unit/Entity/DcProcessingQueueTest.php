@@ -47,6 +47,7 @@ class DcProcessingQueueTest extends TestCase
     {
         $q = new DcProcessingQueue();
         $data = gzencode('test-payload');
+        self::assertNotFalse($data);
         $result = $q->setPayloadGz($data);
         $this->assertSame($q, $result);
         $this->assertSame($data, $q->getPayloadGz());

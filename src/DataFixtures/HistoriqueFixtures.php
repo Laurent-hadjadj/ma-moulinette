@@ -46,6 +46,7 @@ class HistoriqueFixtures extends Fixture
             ->setDateVersion('2024-07-12 16:34:46')
             ->setNomProjet(self::PROJECT_NAME)
             ->setAnalyseKey('AZCa01abcdefghijKLmnop')
+            ->setSonarqubeServerVersion('10.4.1')
             ->setInitial(true)
             ->setDateEnregistrement($now);
         $manager->persist($reference);
@@ -56,6 +57,7 @@ class HistoriqueFixtures extends Fixture
             ->setDateVersion('2024-09-15 10:00:00')
             ->setNomProjet(self::PROJECT_NAME)
             ->setAnalyseKey('AZCb02abcdefghijKLmnop')
+            ->setSonarqubeServerVersion('10.4.1')
             ->setInitial(false)
             ->setDateEnregistrement($now);
         $manager->persist($intermediate);

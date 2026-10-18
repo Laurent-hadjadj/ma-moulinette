@@ -20,6 +20,7 @@ use App\Entity\AnomalieDetails;
 use App\Repository\AnomalieDetailsRepository;
 use App\Service\ClientService;
 use App\Service\ExtractName;
+use App\Service\GetSonarVersionService;
 use App\Service\UrlBuilderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -38,6 +39,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
     /** @var ClientService&MockObject */                 private MockObject $client;
     /** @var ExtractName&MockObject */                   private MockObject $extractName;
     /** @var UrlBuilderService&MockObject */             private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */        private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */               private MockObject $logger;
     /** @var AnomalieDetailsRepository&MockObject */     private MockObject $repo;
     /** @var ParameterBagInterface&MockObject */         private MockObject $parameterBag;
@@ -50,6 +52,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         $this->client = $this->createMock(ClientService::class);
         $this->extractName = $this->createMock(ExtractName::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repo = $this->createMock(AnomalieDetailsRepository::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
@@ -60,6 +63,8 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
             ->willReturn($this->repo);
 
         $this->urlBuilder->method('build')->willReturn('https://sonar/api/issues/search?...');
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
+        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED']);
         $this->parameterBag->method('get')->willReturn('https://sonar.example.com');
         $this->extractName->method('extractNameFromMavenKey')->willReturn('app');
 
@@ -68,7 +73,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteAnomalieDetailController(
-            $this->em, $this->client, $this->extractName, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->extractName, $this->urlBuilder, $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }

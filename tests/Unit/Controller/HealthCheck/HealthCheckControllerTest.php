@@ -87,7 +87,7 @@ class HealthCheckControllerTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['codeRetour' => 'OK', 'listMessage' => []],
-            json_decode($response->getContent(), true)
+            json_decode((string) $response->getContent(), true)
         );
     }
 
@@ -107,7 +107,7 @@ class HealthCheckControllerTest extends TestCase
         $this->assertSame(503, $response->getStatusCode());
         $this->assertSame(
             ['codeRetour' => 'KO', 'listMessage' => $errors],
-            json_decode($response->getContent(), true)
+            json_decode((string) $response->getContent(), true)
         );
     }
 
@@ -128,7 +128,7 @@ class HealthCheckControllerTest extends TestCase
         $response = $this->controller->status($this->buildRequest(self::TEST_IP_DNS));
 
         $this->assertSame(429, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertSame('KO', $payload['codeRetour']);
         $this->assertContains(
             'nombre de tentatives dépassé, veuillez réessayer plus tard.',

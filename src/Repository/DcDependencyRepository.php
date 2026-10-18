@@ -78,7 +78,7 @@ class DcDependencyRepository extends ServiceEntityRepository
      * @param array<int, string>|null $allowedMavenKeys
      * @param array<int, int>|null    $allowedScanIds
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
      *
      * Created at: 08/05/2026 18:30:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -185,7 +185,7 @@ class DcDependencyRepository extends ServiceEntityRepository
      * @param array<int, string>|null $allowedMavenKeys
      * @param array<int, int>|null    $allowedScanIds
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string, truncated?: bool}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string, truncated?: bool}|array{code: int, erreur: string}
      */
     public function topMutualisableDependencies(
         int $minProjects = 2,

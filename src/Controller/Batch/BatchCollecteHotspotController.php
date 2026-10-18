@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Hotspots, InformationProjet};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteInformationProjetController]
@@ -39,6 +39,7 @@ class BatchCollecteHotspotController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -123,10 +124,13 @@ class BatchCollecteHotspotController extends AbstractController
         $dateVersion = new \DateTimeImmutable($select['info']['date'], new \DateTimeZone(self::$europeParis));
 
         /** Sécurisation de l'URL */
+        /* MODIF 2026-10-16 : projectKey supprimé (pas juste déprécié) sur
+         * /api/hotspots/search depuis SonarQube 2026.10, remplacé par project
+         * (renommage effectif depuis la 10.2) — voir GetSonarVersionService::hotspotProjectParam(). */
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/hotspots/search',
-            [ 'projectKey' => $maven_key, 'ps' => 500, 'p' => 1 ]
+            [ $this->sonarVersion->hotspotProjectParam() => $maven_key, 'ps' => 500, 'p' => 1 ]
         );
 
         $this->logger->debug("[Batch Hotspot] 🛠️ Appel API SonarQube", ['url' => $url]);

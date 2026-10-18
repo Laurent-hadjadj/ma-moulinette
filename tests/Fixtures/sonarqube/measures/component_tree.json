@@ -1,0 +1,61 @@
+{
+    "paging": {
+        "pageIndex": 1,
+        "pageSize": 500,
+        "total": 4
+    },
+    "components": [
+        {
+            "key": "tetris:TetrisGame:src/js/snake.js",
+            "path": "src/js/snake.js",
+            "qualifier": "FIL",
+            "measures": [
+                { "metric": "ncloc", "value": "320" },
+                { "metric": "blocker_violations", "value": "0" },
+                { "metric": "critical_violations", "value": "4" },
+                { "metric": "major_violations", "value": "6" },
+                { "metric": "minor_violations", "value": "10" },
+                { "metric": "info_violations", "value": "0" }
+            ]
+        },
+        {
+            "key": "tetris:TetrisGame:src/controller/GameController.php",
+            "path": "src/controller/GameController.php",
+            "qualifier": "FIL",
+            "measures": [
+                { "metric": "ncloc", "value": "410" },
+                { "metric": "blocker_violations", "value": "1" },
+                { "metric": "critical_violations", "value": "9" },
+                { "metric": "major_violations", "value": "8" },
+                { "metric": "minor_violations", "value": "20" },
+                { "metric": "info_violations", "value": "0" }
+            ]
+        },
+        {
+            "key": "tetris:TetrisGame:batch/CleanupJob.php",
+            "path": "batch/CleanupJob.php",
+            "qualifier": "FIL",
+            "measures": [
+                { "metric": "ncloc", "value": "150" },
+                { "metric": "blocker_violations", "value": "0" },
+                { "metric": "critical_violations", "value": "2" },
+                { "metric": "major_violations", "value": "3" },
+                { "metric": "minor_violations", "value": "9" },
+                { "metric": "info_violations", "value": "0" }
+            ]
+        },
+        {
+            "key": "tetris:TetrisGame:README.md",
+            "path": "README.md",
+            "qualifier": "FIL",
+            "measures": [
+                { "metric": "ncloc", "value": "320" },
+                { "metric": "blocker_violations", "value": "0" },
+                { "metric": "critical_violations", "value": "0" },
+                { "metric": "major_violations", "value": "0" },
+                { "metric": "minor_violations", "value": "0" },
+                { "metric": "info_violations", "value": "0" }
+            ]
+        }
+    ]
+}

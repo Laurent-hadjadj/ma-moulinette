@@ -610,7 +610,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
     {
         // JSON_FORCE_OBJECT assure que $body vide => "{}" et non "[]",
         // sinon json_decode renverrait un array et property_exists lèverait un TypeError.
-        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
+        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -618,7 +618,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
      */
     private function decode(JsonResponse $response): array
     {
-        return json_decode($response->getContent(), true);
+        return json_decode((string) $response->getContent(), true);
     }
 
     private function assertJsonStatus(JsonResponse $response, int $code, ?string $type = null): void

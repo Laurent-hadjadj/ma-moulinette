@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.1.0 - 23/07/2026                  ##
+##           V3.7.0 - 13/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -24,6 +24,12 @@
 --- 2026-06-09 : Ajout des commentaires pour user_agent_event et user_agent_analysis (intégration schéma ma_moulinette).
 --- 2026-06-28 : Ajout des commentaires manquant sur les tables
 --- 2026-07-23 : Renommage actuator_info_value en actuator_info_cle
+--- 2026-09-28 : Ajout des commentaires pour les mesures RCI sur la table Historique. Ajout des commentaires pour la table RCI.
+--- 2026-10-06 : ajout commentaires pour les attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
+--- 2026-10-08 : Ajout du commentaire pour la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
+-- 2026-10-08 : Ajout des commentaires pour les attributs de la table eco_conception.
+--- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
+--- 2026-10-13 : Ajout des commentaires pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -132,6 +138,14 @@ COMMENT ON COLUMN ma_moulinette.anomalie.minor IS 'Problèmes mineurs';
 COMMENT ON COLUMN ma_moulinette.anomalie.bug IS 'Nombre total de bugs';
 COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability IS 'Nombre total de vulnérabilités';
 COMMENT ON COLUMN ma_moulinette.anomalie.code_smell IS 'Nombre total de mauvaises pratiques';
+COMMENT ON COLUMN ma_moulinette.anomalie.scope_main IS 'Nombre total de problèmes sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.scope_test IS 'Nombre total de problèmes sur le code de test (scope TEST)';
+COMMENT ON COLUMN ma_moulinette.anomalie.bug_scope_main IS 'Nombre de bugs sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.bug_scope_test IS 'Nombre de bugs sur le code de test (scope TEST)';
+COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability_scope_main IS 'Nombre de vulnérabilités sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability_scope_test IS 'Nombre de vulnérabilités sur le code de test (scope TEST)';
+COMMENT ON COLUMN ma_moulinette.anomalie.code_smell_scope_main IS 'Nombre de mauvaises pratiques sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.code_smell_scope_test IS 'Nombre de mauvaises pratiques sur le code de test (scope TEST)';
 COMMENT ON COLUMN ma_moulinette.anomalie.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.anomalie.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie.date_enregistrement IS 'Date d’enregistrement de l’anomalie';
@@ -304,6 +318,7 @@ COMMENT ON COLUMN ma_moulinette.historique.maven_key IS '[CORE] Clé unique du p
 (fr.monapplication:ma-moulinette).';
 COMMENT ON COLUMN ma_moulinette.historique.version IS '[CORE] Version du projet lors de l''analyse. Permet de suivre l''évolution du projet dans le temps.';
 COMMENT ON COLUMN ma_moulinette.historique.date_version IS '[CORE] Date de l''analyse du projet';
+COMMENT ON COLUMN ma_moulinette.historique.sonarqube_server_version IS '[MA-MOULINETTE] Version du serveur SonarQube ayant produit cette ligne.';
 COMMENT ON COLUMN ma_moulinette.historique.project_name IS '[CORE] Nom du projet i.e. extrait de la maven_key.';
 COMMENT ON COLUMN ma_moulinette.historique.analyse_key IS '[CORE] Identifiant unique d’une analyse SonarQube. Permet de tracer un scan précis.';
 COMMENT ON COLUMN ma_moulinette.historique.version_release IS '[MA-MOULINETTE] Nombre de version de type RELEASE.';
@@ -373,6 +388,14 @@ COMMENT ON COLUMN ma_moulinette.historique.critical_violations IS '[CORE] Nombre
 COMMENT ON COLUMN ma_moulinette.historique.major_violations IS '[CORE] Nombre d’issues de sévérité majeure détectées. Elles impactent la qualité du code et sa maintenabilité sans être bloquantes. Leur traitement permet d’améliorer la robustesse globale du projet.';
 COMMENT ON COLUMN ma_moulinette.historique.minor_violations IS '[CORE] Nombre d’issues de sévérité mineure présentes dans le code. Ces problèmes ont un impact limité et concernent souvent des améliorations de style ou de bonnes pratiques. Leur correction reste recommandée pour maintenir un code propre.';
 COMMENT ON COLUMN ma_moulinette.historique.info_violations IS '[CORE] Nombre d’issues informatives détectées. Elles n’impactent pas directement la qualité ou le fonctionnement du code. Elles servent principalement à signaler des optimisations ou des bonnes pratiques à suivre.';
+COMMENT ON COLUMN ma_moulinette.historique.scope_main IS '[MA-MOULINETTE] Nombre total de problèmes sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.scope_test IS '[MA-MOULINETTE] Nombre total de problèmes sur le code de test (scope TEST). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_scope_main IS '[MA-MOULINETTE] Nombre de bugs sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_scope_test IS '[MA-MOULINETTE] Nombre de bugs sur le code de test (scope TEST). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_scope_main IS '[MA-MOULINETTE] Nombre de vulnérabilités sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_scope_test IS '[MA-MOULINETTE] Nombre de vulnérabilités sur le code de test (scope TEST). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_scope_main IS '[MA-MOULINETTE] Nombre de mauvaises pratiques sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_scope_test IS '[MA-MOULINETTE] Nombre de mauvaises pratiques sur le code de test (scope TEST). Null si non calculé.';
 COMMENT ON COLUMN ma_moulinette.historique.software_quality_blocker_issues IS '[2024] Nombre d’issues de sévérité bloquante selon le modèle de qualité logiciel récent. Ces problèmes représentent des risques critiques pouvant empêcher le fonctionnement correct ou la mise en production. Ils doivent être corrigés immédiatement.';
 COMMENT ON COLUMN ma_moulinette.historique.software_quality_high_issues IS '[2024] Nombre d’issues de sévérité élevée détectées dans le code. Elles peuvent avoir un impact important sur la qualité, la fiabilité ou la sécurité. Leur correction est fortement prioritaire.';
 COMMENT ON COLUMN ma_moulinette.historique.software_quality_medium_issues IS '[2024] Nombre d’issues de sévérité moyenne identifiées. Ces problèmes ont un impact modéré sur la qualité du code ou sa maintenabilité. Ils doivent être traités pour améliorer progressivement la qualité globale.';
@@ -421,6 +444,9 @@ COMMENT ON COLUMN ma_moulinette.historique.software_quality_security_remediation
 COMMENT ON COLUMN ma_moulinette.historique.security_hotspots IS '[CORE] Nombre de Security Hotspots identifiés, c’est-à-dire des zones de code sensibles nécessitant une revue manuelle. Ces éléments ne sont pas forcément des vulnérabilités mais peuvent le devenir selon le contexte. Ils doivent être analysés par un développeur ou un expert sécurité.';
 COMMENT ON COLUMN ma_moulinette.historique.security_review_rating IS '[CORE] Note de revue des Security Hotspots, allant de A à E. Elle reflète la qualité et le niveau de complétude des analyses effectuées sur les zones sensibles. Une bonne note indique un processus de revue sécurité maîtrisé.';
 COMMENT ON COLUMN ma_moulinette.historique.security_hotspots_reviewed IS '[CORE] Pourcentage de Security Hotspots ayant été examinés et validés. Indique le niveau de couverture des revues de sécurité manuelles. Un taux élevé signifie que les zones sensibles ont été correctement analysées.';
+COMMENT ON COLUMN ma_moulinette.historique.maintainability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de maintenabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.historique.reliability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de fiabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.historique.security_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de sécurité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
 COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_high IS '[CORE] Nombre de menaces potentielles de sécurité de niveau élevé à vérifier.';
 COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_medium IS '[CORE] Nombre de menaces potentielles moyennes à vérifier.';
 COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_low IS '[CORE] Nombre de menaces potentielles faibles à vérifier.';
@@ -450,6 +476,41 @@ COMMENT ON COLUMN ma_moulinette.historique.owasp_top10 IS '[COMPLIANCE] Issues t
 COMMENT ON COLUMN ma_moulinette.historique.sans_top25 IS '[COMPLIANCE] Issues taggées SANS/CWE Top 25. Null si collecte clean code non réalisée.';
 COMMENT ON COLUMN ma_moulinette.historique.cwe IS '[COMPLIANCE] Total occurrences CWE (approximation). Null si collecte clean code non réalisée.';
 COMMENT ON COLUMN ma_moulinette.historique.logger_breakdown IS '[MA-MOULINETTE] Breakdown loggers par level × framework au moment de la version. Format JSONB : {info: {SLF4J: N, "Commons Logging": M, "—": K}, warn: {...}, error: {...}, debug: {...}}. Null si plugin track-logger-method désactivé ou non collecté.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_indicator IS '[MA-MOULINETTE] RCI (Risk Criticality Index) global. 100 - (poids pondéré des anomalies / ncloc) * 100, borné à 0. Taxonomie de sévérité sélectionnée selon sonar.version (8/9 ou Clean Code 2024+). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_indicator. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code pris en compte pour le RCI global. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies (BLOCKER=10, CRITICAL=5, MAJOR=3, MINOR=1, INFO=0) pour le RCI global. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_indicator IS '[MA-MOULINETTE] RCI du module frontend (classification par mots-clés module.frontend). Marge d''erreur : classification approximative, voir doc test-e2e/suivi. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_frontend_indicator. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code du module frontend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies du module frontend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_indicator IS '[MA-MOULINETTE] RCI du module backend (classification par mots-clés module.backend). Marge d''erreur : classification approximative. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_backend_indicator. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code du module backend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies du module backend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_indicator IS '[MA-MOULINETTE] RCI du module autre (classification par mots-clés module.autre). Marge d''erreur : classification approximative. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_autre_indicator. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code du module autre. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies du module autre. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_indicator IS '[MA-MOULINETTE] RCI des fichiers non classés (ni frontend, ni backend, ni autre). Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_inconnu_indicator. Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code des fichiers non classés. Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies des fichiers non classés. Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) détectées par les règles SonarQube Creedengo (creedengo-java/javascript/php/python). Null si le plugin CREEDENGO_ENABLED est désactivé ou non collecté.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes (effortTotal SonarQube) pour ces mêmes anomalies. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E dérivée du ratio eco_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_java_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage Java. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_java_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_java_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_javascript_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage JavaScript. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_javascript_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_javascript_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_php_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage PHP. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_php_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_php_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_python_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage Python. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_python_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage Python. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_python_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage Python. Null dans les mêmes conditions.';
 COMMENT ON COLUMN ma_moulinette.historique.initial IS '[MA-MOULINETTE] Indique si c’est la version de référence. Permet de suivre l’évolution du projet à partir d’un point de départ.';
 COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS '[MA-MOULINETTE] Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS '[MA-MOULINETTE] Auteur de la collecte de données.';
@@ -702,6 +763,10 @@ COMMENT ON COLUMN ma_moulinette.mesures.security_hotspots IS '[CORE] Nombre de S
 COMMENT ON COLUMN ma_moulinette.mesures.security_review_rating IS '[CORE] Note de revue des Security Hotspots, allant de A à E. Elle reflète la qualité et le niveau de complétude des analyses effectuées sur les zones sensibles. Une bonne note indique un processus de revue sécurité maîtrisé.';
 COMMENT ON COLUMN ma_moulinette.mesures.security_hotspots_reviewed IS '[CORE] Pourcentage de Security Hotspots ayant été examinés et validés. Indique le niveau de couverture des revues de sécurité manuelles. Un taux élevé signifie que les zones sensibles ont été correctement analysées.';
 
+COMMENT ON COLUMN ma_moulinette.mesures.maintainability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de maintenabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.mesures.reliability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de fiabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.mesures.security_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de sécurité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+
 COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS '[MA-MOULINETTE] Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.mesures.utilisateur_collecte IS '[MA-MOULINETTE] Auteur de la collecte de données.';
 COMMENT ON COLUMN ma_moulinette.mesures.date_enregistrement IS '[MA-MOULINETTE] date de l’événement.';
@@ -821,6 +886,63 @@ COMMENT ON COLUMN ma_moulinette.properties.profil_sonar IS 'Identifiant du profi
 COMMENT ON COLUMN ma_moulinette.properties.date_creation IS 'Date de création de la propriété';
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_projet IS 'Date de la dernière modification du projet';
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_profil IS 'Date de la dernière modification du profil';
+
+-- ============================================
+-- TABLE rci
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.rci IS 'RCI (Risk Criticality Index, plugin sonar-rci porté en PHP) : mesure globale et détail par module (frontend/backend/autre/inconnu) — snapshot courant, une ligne par maven_key.';
+COMMENT ON COLUMN ma_moulinette.rci.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.rci.maven_key IS 'Clé unique du projet SonarQube.';
+COMMENT ON COLUMN ma_moulinette.rci.ncloc IS 'Ncloc global de l''application.';
+COMMENT ON COLUMN ma_moulinette.rci.weight IS 'Poids global pondéré des anomalies de l''application (blocker×10, critical×5, major×3, minor×1, info×0).';
+COMMENT ON COLUMN ma_moulinette.rci.indicator IS 'RCI global de l''application : 100 - (weight / ncloc) * 100, borné à 0. Null si vide.';
+COMMENT ON COLUMN ma_moulinette.rci.rating IS 'Note A-E dérivée de indicator. Null si vide.';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_ncloc IS 'Ncloc du module frontend (classification par mots-clés module.frontend).';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_weight IS 'Poids pondéré des anomalies du module frontend (blocker×10, critical×5, major×3, minor×1, info×0).';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_indicator IS 'RCI du module frontend : 100 - (frontend_weight / frontend_ncloc) * 100, borné à 0. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_rating IS 'Note A-E dérivée de frontend_indicator. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.backend_ncloc IS 'Ncloc du module backend (classification par mots-clés module.backend).';
+COMMENT ON COLUMN ma_moulinette.rci.backend_weight IS 'Poids pondéré des anomalies du module backend.';
+COMMENT ON COLUMN ma_moulinette.rci.backend_indicator IS 'RCI du module backend. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.backend_rating IS 'Note A-E dérivée de backend_indicator. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.autre_ncloc IS 'Ncloc du module autre (classification par mots-clés module.autre).';
+COMMENT ON COLUMN ma_moulinette.rci.autre_weight IS 'Poids pondéré des anomalies du module autre.';
+COMMENT ON COLUMN ma_moulinette.rci.autre_indicator IS 'RCI du module autre. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.autre_rating IS 'Note A-E dérivée de autre_indicator. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_ncloc IS 'Ncloc des fichiers non classés (ni frontend, ni backend, ni autre).';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_weight IS 'Poids pondéré des anomalies des fichiers non classés.';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_indicator IS 'RCI des fichiers non classés. Null si aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_rating IS 'Note A-E dérivée de inconnu_indicator. Null si aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.rci.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.rci.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.rci.date_enregistrement IS 'Date d''enregistrement de la ligne.';
+
+-- ============================================
+-- TABLE eco_conception
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.eco_conception IS 'Empreinte Écologique (plugins SonarQube Creedengo creedengo-java/javascript/php/python, activable via CREEDENGO_ENABLED) — snapshot courant, une ligne par maven_key.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.maven_key IS 'Clé unique du projet SonarQube.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_anomalies IS 'Nombre d''anomalies éco-conception (OPEN), tous langages Creedengo confondus. Null si le plugin est désactivé ou jamais collecté.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_dette_minute IS 'Dette estimée en minutes (effortTotal SonarQube), tous langages confondus. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_rating IS 'Note A-E dérivée du ratio eco_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_java_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-java. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_java_dette_minute IS 'Dette estimée en minutes pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_java_rating IS 'Note A-E pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_javascript_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-javascript. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_javascript_dette_minute IS 'Dette estimée en minutes pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_javascript_rating IS 'Note A-E pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_php_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-php. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_php_dette_minute IS 'Dette estimée en minutes pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_php_rating IS 'Note A-E pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-python. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_dette_minute IS 'Dette estimée en minutes pour le langage Python. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_rating IS 'Note A-E pour le langage Python. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.date_enregistrement IS 'Date d''enregistrement de la ligne.';
 
 -- ============================================
 -- TABLE repartition_temp
@@ -1016,6 +1138,43 @@ COMMENT ON COLUMN ma_moulinette.dc_scan.is_latest_overall
   IS 'TRUE si ce scan est la dernière version (toute) pour (project_group, project_artifact). Maintenu par DcLatestVersionUpdater. Vue dev.';
 COMMENT ON COLUMN ma_moulinette.dc_scan.is_latest_release
   IS 'TRUE si ce scan est la dernière version release stable (sans -SNAPSHOT/-RC*/-ALPHA*/-BETA*/-M*) pour (project_group, project_artifact). Maintenu par DcLatestVersionUpdater. Vue prod.';
+
+-- ===============================================
+-- Table zap_rule
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.zap_rule IS 'Référentiel global des règles ZAP (alertes DAST) - 1 row par pluginid unique.';
+COMMENT ON COLUMN ma_moulinette.zap_rule.pluginid IS 'Cle naturelle (identifiant de règle ZAP).';
+
+-- ===============================================
+-- Table zap_finding
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.zap_finding IS 'Jointure scan x règle. Snapshot risque/confiance ZAP au moment du scan.';
+COMMENT ON COLUMN ma_moulinette.zap_finding.riskcode_at_scan IS 'Snapshot - 0=Informational 1=Low 2=Medium 3=High.';
+COMMENT ON COLUMN ma_moulinette.zap_finding.tags IS 'Tags bruts de l''alerte (OWASP_2017_AXX, OWASP_2021_AXX, WSTG-*, CWE-*...).';
+
+-- ===============================================
+-- Table zap_processing_queue
+-- ===============================================
+COMMENT ON TABLE ma_moulinette.zap_processing_queue IS 'Queue d''ingestion des rapports ZAP (DAST) postes par la CI.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.ulid IS 'Identifiant public renvoyé au client (ULID Crockford base32).';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.payload_gz IS 'JSON ZAP compresse (gzip niveau 6) - TOAST gere par PG.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.payload_sha256 IS 'sha256 du JSON décompressé - cle d''idempotence.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.maven_key IS 'Identification projet fournie par la CI (en-tête X-Maven-Key) - absente du payload ZAP lui-même.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.status IS 'queued | processing | done | failed';
+
+-- ===============================================
+-- Table zap_scan
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.zap_scan IS '1 scan = 1 rapport ZAP pour (maven_key, project_version, target_url, generated_at). Compteurs pre-calcules par niveau de risque.';
+COMMENT ON COLUMN ma_moulinette.zap_scan.queue_id IS 'Lien vers la row source dans zap_processing_queue (audit/retraitement).';
+COMMENT ON COLUMN ma_moulinette.zap_scan.target_url IS 'URL cible scannée (site[0].@name du rapport, ou en-tête X-Target-Url).';
+
+-- ===============================================
+-- Table owasp_dast
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.owasp_dast IS 'Agrégation OWASP Top 10 (2017/2021) issue d''un scan DAST ZAP, complément de la table owasp (SAST SonarQube). 1 ligne par (scan, référentiel), historisée nativement par scan (contrairement a owasp qui écrase a chaque collecte).';
+COMMENT ON COLUMN ma_moulinette.owasp_dast.referential_owasp IS '2017 ou 2021 - une ligne par référentiel réellement observé dans les tags du rapport.';
+COMMENT ON COLUMN ma_moulinette.owasp_dast.a1 IS 'Nombre de règles distinctes taguées dans la catégorie A1 (pas le nombre d''instances).';
 
 -- ============================================
 -- VIEW vw_batch_profiling_stats

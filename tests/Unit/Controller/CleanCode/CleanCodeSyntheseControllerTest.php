@@ -183,7 +183,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>no-team</html>', $response->getContent());
+        $this->assertSame('<html>no-team</html>', (string) $response->getContent());
     }
 
     // ─── 2. Pas de projets dans le portefeuille → flash 406 ──────────────────
@@ -206,7 +206,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>no-proj</html>', $response->getContent());
+        $this->assertSame('<html>no-proj</html>', (string) $response->getContent());
     }
 
     // ─── 3. Pas de données clean code dans l'historique → flash 503 ──────────
@@ -231,7 +231,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>no-data</html>', $response->getContent());
+        $this->assertSame('<html>no-data</html>', (string) $response->getContent());
     }
 
     // ─── 4. Happy path : render avec projets calculés ────────────────────────
@@ -260,7 +260,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>ok</html>', $response->getContent());
+        $this->assertSame('<html>ok</html>', (string) $response->getContent());
         $this->assertCount(1, $capturedCtx['projets']);
         $this->assertSame('Mon App', $capturedCtx['projets'][0]['project_name']);
         $this->assertSame('A', $capturedCtx['projets'][0]['note_mnt']);
@@ -312,6 +312,6 @@ class CleanCodeSyntheseControllerTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
-        $this->assertStringStartsWith('%PDF-', $response->getContent());
+        $this->assertStringStartsWith('%PDF-', (string) $response->getContent());
     }
 }

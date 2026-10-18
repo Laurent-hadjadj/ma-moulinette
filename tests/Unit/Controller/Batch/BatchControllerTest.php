@@ -117,7 +117,7 @@ class BatchControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->traitementInformation($this->jsonRequest(['traitement_id' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -127,7 +127,7 @@ class BatchControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->traitementInformation($this->jsonRequest('not-json'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -137,7 +137,7 @@ class BatchControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->traitementInformation($this->jsonRequest(['other' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -150,7 +150,7 @@ class BatchControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db fail']);
 
         $response = $this->controller->traitementInformation($this->jsonRequest(['traitement_id' => 'abc']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('db fail', $data['trace']);
@@ -168,7 +168,7 @@ class BatchControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'no job']);
 
         $response = $this->controller->traitementInformation($this->jsonRequest(['traitement_id' => 'abc']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -202,7 +202,7 @@ class BatchControllerTest extends TestCase
         ]);
 
         $response = $this->controller->traitementInformation($this->jsonRequest(['traitement_id' => 'abc']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(3, $data['map']['nombre_ok']);
@@ -218,7 +218,7 @@ class BatchControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -228,7 +228,7 @@ class BatchControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1])); // missing nom_projet
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -241,7 +241,7 @@ class BatchControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'boom']);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('boom', $data['trace']);
@@ -255,7 +255,7 @@ class BatchControllerTest extends TestCase
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(204, $data['code']);
     }
@@ -265,6 +265,7 @@ class BatchControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $stream = fopen('php://temp', 'r+');
+        self::assertNotFalse($stream);
         // stream is empty
         rewind($stream);
 
@@ -273,7 +274,7 @@ class BatchControllerTest extends TestCase
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(204, $data['code']);
     }
@@ -284,8 +285,10 @@ class BatchControllerTest extends TestCase
 
         $html = '<div>Hello world</div>';
         $gzip = gzencode($html);
+        self::assertNotFalse($gzip);
 
         $stream = fopen('php://temp', 'r+');
+        self::assertNotFalse($stream);
         fwrite($stream, $gzip);
         rewind($stream);
 
@@ -294,7 +297,7 @@ class BatchControllerTest extends TestCase
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame($html, $data['html']);
@@ -307,6 +310,7 @@ class BatchControllerTest extends TestCase
         $html = '<div>plain content</div>';
 
         $stream = fopen('php://temp', 'r+');
+        self::assertNotFalse($stream);
         fwrite($stream, $html);
         rewind($stream);
 
@@ -315,7 +319,7 @@ class BatchControllerTest extends TestCase
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame($html, $data['html']);
@@ -338,7 +342,7 @@ class BatchControllerTest extends TestCase
 
         $response = $this->controller->traitementSuivi();
 
-        $this->assertSame('<html>no-role</html>', $response->getContent());
+        $this->assertSame('<html>no-role</html>', (string) $response->getContent());
     }
 
     public function testTraitementSuiviFlashesErrorWhenRepoFails(): void
@@ -502,7 +506,7 @@ class BatchControllerTest extends TestCase
 
         $response = $this->controller->rapportExecutionPdf('token-abc');
 
-        $this->assertSame('%PDF-1.4-fake', $response->getContent());
+        $this->assertSame('%PDF-1.4-fake', (string) $response->getContent());
         $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
         $this->assertStringStartsWith('inline;', $response->headers->get('Content-Disposition'));
     }
@@ -535,7 +539,7 @@ class BatchControllerTest extends TestCase
      */
     private function jsonRequest(array|string $body): Request
     {
-        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT);
+        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
         return new Request([], [], [], [], [], [], $content);
     }
 }

@@ -14,6 +14,7 @@
 namespace App\Controller\DependencyCheck;
 
 use App\Entity\DcProcessingQueue;
+use App\Exception\UnexpectedExecutionPathException;
 use App\Repository\DcProcessingQueueRepository;
 use App\Service\DependencyCheck\{PayloadDecodeException, PayloadDecoder};
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -120,9 +121,14 @@ class ApiDependencyCheckUploadController extends AbstractController
         $archetypeVersion = $this->trimHeader($request->headers->get('X-Archetype-Version'), 64);
 
         // ------- 3. Insertion en queue --------------------------------------
+        $payloadGz = gzencode($decoded->jsonString, 6);
+        if ($payloadGz === false) {
+            throw new UnexpectedExecutionPathException('Échec de la compression gzip du payload.');
+        }
+
         $entry = (new DcProcessingQueue())
             ->setUlid((new Ulid())->toBase32())
-            ->setPayloadGz(gzencode($decoded->jsonString, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256($decoded->sha256)
             ->setPayloadSize($decoded->decodedSize)
             ->setContentType($decoded->contentType)

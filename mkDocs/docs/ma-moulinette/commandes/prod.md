@@ -1,6 +1,9 @@
 # 🏭 Commandes Prod
 
-Les 8 commandes de `src/Command/Prod/`. 5 d'entre elles tournent automatiquement via le cron `cron-ma-moulinette` (Supercronic) — voir [`docker/etc/cron/ma-moulinette`](../developpement/gitlab-ci.md).
+Les 13 commandes de `src/Command/Prod/`. 10 d'entre elles tournent automatiquement via le cron `cron-ma-moulinette` (Supercronic) — voir [`docker/etc/cron/ma-moulinette`](../developpement/gitlab-ci.md).
+
+!!! note "✅ Logger dédié `cron` (2026-10-15)"
+    11 des 13 commandes de ce dossier journalisent désormais sur un channel Monolog dédié `cron` (`#[Autowire(service: 'monolog.logger.cron')]` posé sur le `LoggerInterface $logger` du constructeur) plutôt que sur le logger applicatif générique — fichier `var/log/cron.log` en prod (`cron-dev.log` en dev), exclu du canal `app.log`, consultable aussi depuis la page back-office **Journal des logs** (filtre « Cron »). Les 2 exceptions restent sur le logger générique : `app:sonar:compare-metrics` (pas de `LoggerInterface` du tout, outil de diagnostic) et `app:dependency-check:reprocess` (outil de reprise manuelle, jamais planifié).
 
 ## ⏱️ `app:dependency-check:process`
 
@@ -25,6 +28,46 @@ Réclame aussi les lignes `processing` orphelines (worker mort) plus vieilles qu
 !!! note "✅ Correction"
     La commande retournait toujours `Command::SUCCESS`, même si des rapports individuels étaient passés en `failed` définitif après 3 tentatives.
     Elle retourne désormais `Command::FAILURE` dès qu'au moins un rapport a échoué définitivement sur l'exécution — sans effet sur la planification cron (Supercronic ne fait rien de spécial sur un code non nul, il relance à la minute suivante quoi qu'il arrive), seule la visibilité du log change (`docker logs cron-ma-moulinette`).
+
+## 🕷️ `app:zap:process`
+
+**Objectif** : worker qui traite par lots la file d'ingestion des rapports ZAP (DAST) (table `zap_processing_queue`) — même pattern exact que `app:dependency-check:process` ci-dessus (réclame les lignes en attente, décompresse/parse le JSON, délègue l'ingestion complète vers la table `owasp_dast`).
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--batch` / `-b` | int | `5` | Nombre de rapports traités par batch |
+| `--max-batches` / `-m` | int | `1` | Nombre de batches consécutifs avant de sortir |
+| `--watch` / `-w` | int | — | **Dev uniquement** : boucle infinie, pause de N secondes (min. 5s) entre chaque tick |
+
+```bash
+php bin/console app:zap:process --batch=10
+```
+
+**Impact** : 🟡 Modification (INSERT/UPDATE scans, règles, findings et `owasp_dast`, mise à jour du statut de la queue).
+
+**Invocation** : cron, **toutes les minutes** — `--batch=5 --no-interaction --env=prod`.
+
+!!! note "✅ Commande existante mais absente du cron jusqu'au 2026-10-15"
+    La commande (phase 1 du chantier ZAP) existait sans être planifiée : les rapports uploadés via `POST /api/secure/zap/upload` restaient en `queued` indéfiniment, faute de worker automatique. Ajoutée à `docker/etc/cron/ma-moulinette` le 2026-10-15, en pair exact avec `app:dependency-check:process`.
+
+## 🧹 `app:zap:purge`
+
+**Objectif** : purge les lignes terminées (`done` ou `failed`) de la file ZAP (DAST) plus anciennes que N jours. Même logique que `app:dependency-check:purge` ci-dessous — ne touche jamais les lignes `queued` ni `processing`.
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--days` / `-d` | int | `30` | Rétention en jours |
+| `--dry-run` | flag | — | Affiche uniquement le décompte, sans suppression |
+
+```bash
+php bin/console app:zap:purge --days=7 --dry-run
+```
+
+**Impact** : 🔴 Destructive (`DELETE` réel), avec dry-run.
+
+**Invocation** : manuelle uniquement pour l'instant — pas encore ajoutée au cron (contrairement à son équivalent `app:dependency-check:purge`), à planifier une fois le volume de rapports ZAP réellement observé en prod.
+
+Affiche systématiquement un décompte par statut (`queued`/`processing`/`done`/`failed`) après exécution, comme `app:dependency-check:purge`.
 
 ## 🧹 `app:dependency-check:purge`
 
@@ -129,10 +172,65 @@ php bin/console app:batch-profiling:purge --days=30 --dry-run
 
 **Impact** : 🔴 Destructive, avec dry-run.
 
-**Invocation** : manuelle uniquement — absente du cron `cron-ma-moulinette` actuel.
+**Invocation** : cron, **quotidien à 4h00** — `--days=90 --no-interaction --env=prod` (ajoutée au cron le 2026-10-15 ; prévue depuis sa création le 2026-07-20 mais jamais planifiée jusque-là).
 
 !!! note "✅ Fonction SQL désormais appelée"
     La fonction PostgreSQL `purge_batch_profiling()` existait en base sans jamais être appelée par le code applicatif (voir [Profiling](../back-office/profiling.md)). Cette commande, ajoutée le 2026-07-20, est la première à l'exploiter.
+
+## 🧹 `app:user-role-log:purge`
+
+**Objectif** : purge le journal des modifications de rôle (`user_role_log`) plus ancien que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 1). La suppression manuelle ligne à ligne reste disponible depuis `/admin/journal-roles` (`ROLE_INTERNAL`).
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--days` / `-d` | int | `365` (réglable via `USER_ROLE_LOG_RETENTION_DAYS`) | Rétention en jours |
+| `--dry-run` | flag | — | Affiche le décompte sans supprimer |
+
+```bash
+php bin/console app:user-role-log:purge --days=180 --dry-run
+```
+
+**Impact** : 🔴 Destructive, avec dry-run.
+
+**Invocation** : cron, **quotidien à 4h15** — `--days=365 --no-interaction --env=prod`.
+
+## 🧹 `app:activity:purge`
+
+**Objectif** : purge l'activité de collecte SonarQube (`activity` et `activity_historique`) plus ancienne que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 2). Les deux tables sont purgées sur le même seuil ; l'opération est idempotente (relancer la commande termine le travail restant en cas d'échec partiel).
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--days` / `-d` | int | `365` (réglable via `ACTIVITY_RETENTION_DAYS`) | Rétention en jours |
+| `--dry-run` | flag | — | Affiche le décompte sans supprimer |
+
+```bash
+php bin/console app:activity:purge --days=180 --dry-run
+```
+
+**Impact** : 🔴 Destructive, avec dry-run.
+
+**Invocation** : cron, **quotidien à 4h30** — `--days=365 --no-interaction --env=prod`.
+
+Affiche systématiquement un décompte détaillé par table (`activity` / `activity_historique`) après exécution.
+
+## 🧹 `app:user-agent:purge`
+
+**Objectif** : purge les événements et analyses User-Agent (`user_agent_event` et `user_agent_analysis`, donnée purement statistique de la page Statistiques) plus anciens que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 3). Les deux tables sont purgées sur le même seuil ; l'opération est idempotente.
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--days` / `-d` | int | `180` (réglable via `USER_AGENT_RETENTION_DAYS`) | Rétention en jours |
+| `--dry-run` | flag | — | Affiche le décompte sans supprimer |
+
+```bash
+php bin/console app:user-agent:purge --days=90 --dry-run
+```
+
+**Impact** : 🔴 Destructive, avec dry-run.
+
+**Invocation** : cron, **quotidien à 4h45** — `--days=180 --no-interaction --env=prod`.
+
+Affiche systématiquement un décompte détaillé par table (`user_agent_event` / `user_agent_analysis`) après exécution.
 
 ## ♻️ `app:dependency-check:reprocess`
 

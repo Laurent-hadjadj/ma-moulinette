@@ -68,6 +68,8 @@ class DcProcessingQueue
      * Payload JSON DependencyCheck compresse (gzencode niveau 6).
      * Type non type pour eviter TypeError a l'hydratation : Doctrine retourne
      * une `resource` pour les BLOB en lecture, pas une string typee.
+     *
+     * @var resource|string
      */
     #[ORM\Column(
         name: 'payload_gz',

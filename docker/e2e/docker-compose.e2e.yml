@@ -1,0 +1,178 @@
+# Stack Docker dédiée aux tests E2E Playwright — distincte de
+# docker/docker-compose.yml (stack de prod : Traefik, root_volume externe,
+# cron avec vrais tokens). Ici : postgres + php-fpm + nginx, jetables,
+# ENTIÈREMENT autonome : aucune image ne bind-monte de code depuis l'hôte
+# Windows (php-e2e.dockerfile et nginx-e2e.dockerfile COPIENT src/vendor/public
+# à la construction — voir ces fichiers pour le pourquoi). Seuls les fichiers
+# de config texte (migrations SQL, nginx.conf, php-e2e.ini, init-schema.sh)
+# restent montés en lecture seule : zero risque "vendor Windows != Linux",
+# zero coût de performance (ce sont des petits fichiers texte, pas du code
+# execute en boucle).
+#
+# Usage :
+#   docker compose -f docker/e2e/docker-compose.e2e.yml up -d --build
+#   .\bin\e2e\reset-e2e-data.ps1 -Port 5434            (reset rapide entre runs)
+#   $env:E2E_BASE_URL='http://localhost:8080'; $env:E2E_DB_PORT='5434'
+#   cd tests/e2e && npm test
+#   docker compose -f docker/e2e/docker-compose.e2e.yml down -v   (arrêt + purge)
+#
+# Reset COMPLET (1ere fois / DB dans un état incertain) : PAS `rebuild-database.ps1`
+# (incompatible — essaie LC_COLLATE='French_France.1252', locale Windows absente
+# du conteneur Linux, cf. init-schema.sh). Reconstruire le conteneur postgres :
+#   docker compose -f docker/e2e/docker-compose.e2e.yml down -v
+#   docker compose -f docker/e2e/docker-compose.e2e.yml up -d
+# (init-schema.sh se rejoue automatiquement sur le volume postgres vide)
+#
+# IMPORTANT : toute modif de src/templates/config/etc. nécessite un rebuild
+# (docker compose up -d --build php-fpm-e2e) pour être prise en compte — ce
+# n'est plus du live-reload comme avec le bind-mount. Normal pour une image
+# pensée comme autonome ; c'est le même modèle qu'un vrai déploiement.
+#
+# Le role "postgres" (superuser) et la base de bootstrap sont ceux de
+# l'image officielle ; "db_user" et "ma_moulinette_test" sont crées par
+# init-schema.sh en rejouant les vrais fichiers migrations/POSTGRESQL/,
+# comme bin/e2e/rebuild-database.ps1 le fait deja cote natif Windows.
+services:
+  postgres-e2e:
+    image: postgres:18-bookworm
+    container_name: postgres-ma-moulinette-e2e
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+      - DB_USER_PASSWORD=db_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - ../../migrations/POSTGRESQL:/migrations:ro
+      - ./init-schema.sh:/docker-entrypoint-initdb.d/10-init-schema.sh:ro
+    networks:
+      - e2e-net
+
+  php-fpm-e2e:
+    build:
+      context: ../..
+      dockerfile: docker/e2e/php-e2e.dockerfile
+      args:
+        - php_version=8.5-fpm-bookworm
+    container_name: php-fpm-ma-moulinette-e2e
+    environment:
+      - APP_ENV=test
+      # APP_DEBUG=1 est OBLIGATOIRE ici, pas juste une question de confort :
+      # le service dynamique d'AssetMapper (toutes les URLs /assets/*.js|css
+      # avec hash) est conditionne par kernel.debug, pas par l'environnement.
+      # En debug=0, TOUS les assets renvoient 404 (page Symfony custom, pas
+      # une erreur nginx) -> page vide, aucun JS ne charge. Mesure en
+      # pratique APRES avoir bake vendor/src dans l'image (plus de
+      # bind-mount Windows) : debug=true ne coûte plus que ~0.05-0.2s/requête
+      # (contre 20-40s avant ce fix) — le coût mesure plus tot venait du
+      # bind-mount, pas de debug=true lui-meme. Alternative plus propre mais
+      # non implémentée : `asset-map:compile` au build pour servir des
+      # fichiers statiques reels (compatible debug=false) — pas nécessaire
+      # vu que la perf est deja bonne avec debug=true.
+      - APP_DEBUG=1
+      # mock_file (défaut .env.test) n'a pas de verrouillage de fichier entre
+      # read()/write() — cause probable d'un flake CSRF intermittent observe
+      # en e2e (requêtes HTTP réelles concurrentes sur plusieurs workers
+      # php-fpm, contrairement a WebTestCase qui reste mono-process). Natif
+      # = meme mécanisme que dev/prod, avec verrouillage.
+      - APP_TEST_SESSION_STORAGE=session.storage.factory.native
+      # Surcharge .env.test.local (qui vise localhost) pour le reseau Docker.
+      - DATABASE_URL=postgresql://db_user:db_password@postgres-e2e:5432/ma_moulinette_test?serverVersion=18&charset=utf8
+      - DATABASE_SCHEMA=ma_moulinette_test
+      - TRACK_LOGGER_METHOD=false
+      - CREEDENGO_ENABLED=false
+      - ACTUATOR_CIPHER_KEY=ZaMR9NBLPvcMhq/L8kBQC72QkrVImo2GkGM/bY8rmzE=
+      - ACTUATOR_SECRET_KEY=base64:test-actuator-secret-not-for-prod
+      - DC_INGEST_TOKEN=test-dc-ingest-token-32chars-aaaa
+      - ZAP_INGEST_TOKEN=test-zap-ingest-token-32chars-aaa
+      # Pas de .env.test.local dans l'image (cf. commentaire plus haut) : toutes
+      # les variables normalement définies par ce fichier gitignore sont
+      # redéfinies ici avec des valeurs volontairement factices, committables.
+      - SECRET=test-secret-not-for-prod
+      - CIPHERS=DEFAULT:!DH
+      - VERIFY_HOST=0
+      - VERIFY_PEER=0
+      - PROXY=
+      - SONAR_URL=http://sonarqube-indisponible.invalid
+      - SONAR_TOKEN=test-sonar-token
+      - SONAR_USER=
+      - SONAR_PASSWORD=
+      - SONAR_VERSION=8
+      - SONAR_ACTIVITY_TOKEN=
+      - SONAR_ACTIVITY_USER=
+      - SONAR_ACTIVITY_PASSWORD=
+      - SONAR_ORGANIZATION=
+      - SONAR_PROFILES=
+      - MAILER_DSN=null://null
+      - TRUSTED_PROXIES=127.0.0.1,::1
+      - NOMBRE_FAVORI=20
+      - USER_AGENT_BATCH_MANUEL=25
+      - USER_AGENT_BATCH_AUTOMATIQUE=500
+      - TRUST_HOST1=localhost
+      - TRUST_HOST2=127.0.0.1
+      - MAJ_PROJET=1
+      - MAJ_PROFIL=1
+      - SALT=test-salt-not-for-prod
+      - AUDIT=/var/audit
+      - PATH_AUDIT=/var/audit
+      - ENVIRONNEMENT=TEST
+      - MODULE_FRONTEND=presentation,webapp,front,angular,templates,styles,css,js,ts,vue,react,svelte,scss,less,html,xhtml
+      - MODULE_BACKEND=metier,back,controller,api,service,common,dao,dto,sql,liquibase,changelog,middleoffice,rest,soap,entite,entity,repository,interface,converter,serviceweb,serviceweb-client
+      - MODULE_AUTRE=batch,rdd,etl,pipeline,processing
+      - MARQUE_ENTREPRISE_SHORT=E2E
+      - MARQUE_ENTREPRISE_LONG=Ma-Moulinette E2E
+      - LOGO_ENTREPRISE=logo-entreprise.png
+      - RGAA=partiellement
+      - CGU_EDITEUR=Ma Moulinette E2E
+      - CGU_ADRESSE=
+      - CGU_SIRET=false
+      - CGU_SIREN=false
+      - CGU_NUMERO_SIRET=
+      - CGU_NUMERO_SIREN=
+      - CGU_DIRECTEUR_PUBLICATION=
+      - CGU_SOURCE_URL=https://github.com/Laurent-hadjadj/ma-moulinette
+      - CGU_SOURCE_SCM=github
+      - CGU_HEBERGEMENT=
+      - CGU_URL_SITE=http://localhost
+      - APP_CLIENT_TOKEN=test-app-client-token
+      - API_CLIENT_TOKEN=test-api-client-token
+      - APP_ALLOWED_ORIGINS=localhost,127.0.0.1
+      - RAPPORT_PDF_WATERMARK_MODE=confidential
+      - MAMOUL_CLI_CIPHERS=DEFAULT:!DH
+      - MAMOUL_CLI_PROXY_URL=
+      - MAMOUL_CLI_PROXY_USER_PWD=
+      - MAMOUL_CLI_NO_PROXY=localhost,127.0.0.1
+    volumes:
+      # var/ (cache/log, en écriture) sur un volume Docker natif — seul état
+      # mutable du conteneur, tout le reste est fige dans l'image.
+      - e2e-var:/var/www/var
+      - ./php-e2e.ini:/usr/local/etc/php/conf.d/99-e2e.ini:ro
+    # Le volume Docker natif ci-dessus est créé root:root ; les workers
+    # php-fpm tournent en www-data (pool www.conf) et ne peuvent pas y
+    # créer var/cache/test sans ce chown préalable (sinon "Unable to
+    # create the cache directory" dès la 1ère requête HTTP réelle, alors
+    # que `docker exec ... php bin/console` fonctionne car exécuté en root).
+    entrypoint: ["sh", "-c", "mkdir -p /var/www/var/cache /var/www/var/log /var/www/var/sessions /var/www/var/share && chown -R www-data:www-data /var/www/var && exec docker-php-entrypoint php-fpm"]
+    depends_on:
+      - postgres-e2e
+    networks:
+      - e2e-net
+
+  nginx-e2e:
+    build:
+      context: ../..
+      dockerfile: docker/e2e/nginx-e2e.dockerfile
+    container_name: nginx-ma-moulinette-e2e
+    ports:
+      - "8080:80"
+    depends_on:
+      - php-fpm-e2e
+    networks:
+      - e2e-net
+
+networks:
+  e2e-net:
+    name: ma-moulinette-e2e-net
+
+volumes:
+  e2e-var:
+    name: ma-moulinette-e2e-var

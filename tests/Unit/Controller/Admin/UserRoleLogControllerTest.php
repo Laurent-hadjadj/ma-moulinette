@@ -128,7 +128,7 @@ class UserRoleLogControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>journal</html>', $response->getContent());
+        $this->assertSame('<html>journal</html>', (string) $response->getContent());
     }
 
     /* ================================================================
@@ -142,7 +142,7 @@ class UserRoleLogControllerTest extends TestCase
 
         $response = $this->controller->list(new Request());
 
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertSame(200, $data['code']);
         $this->assertSame(1, $data['count']);
         $this->assertSame(['ROLE_UTILISATEUR'], $data['lignes'][0]['oldRoles']);
@@ -167,7 +167,7 @@ class UserRoleLogControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'boom']);
 
         $response = $this->controller->list(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('critical', $data['type']);
@@ -182,7 +182,7 @@ class UserRoleLogControllerTest extends TestCase
         $response = $this->controller->archive(new Request());
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertSame(400, $data['code']);
     }
 
@@ -198,7 +198,7 @@ class UserRoleLogControllerTest extends TestCase
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
         $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type') ?? '');
         $this->assertStringContainsString('.csv', $response->headers->get('Content-Disposition') ?? '');
-        $this->assertStringContainsString('emma.durand@ma-moulinette.fr', $response->getContent());
+        $this->assertStringContainsString('emma.durand@ma-moulinette.fr', (string) $response->getContent());
     }
 
     /* ================================================================
@@ -210,7 +210,7 @@ class UserRoleLogControllerTest extends TestCase
         $this->csrfManager->method('isTokenValid')->willReturn(false);
 
         $response = $this->controller->delete(new Request([], ['ids' => ['1'], '_token' => 'bad']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -220,7 +220,7 @@ class UserRoleLogControllerTest extends TestCase
         $this->csrfManager->method('isTokenValid')->willReturn(true);
 
         $response = $this->controller->delete(new Request([], ['_token' => 'ok']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -234,7 +234,7 @@ class UserRoleLogControllerTest extends TestCase
             ->willReturn(['code' => 200, 'supprime' => 2, 'erreur' => '']);
 
         $response = $this->controller->delete(new Request([], ['ids' => ['1', '2'], '_token' => 'ok']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(2, $data['supprime']);
@@ -247,7 +247,7 @@ class UserRoleLogControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'boom']);
 
         $response = $this->controller->delete(new Request([], ['ids' => ['1'], '_token' => 'ok']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('critical', $data['type']);
@@ -260,7 +260,7 @@ class UserRoleLogControllerTest extends TestCase
     public function testPdfReturns400WhenNoSelection(): void
     {
         $response = $this->controller->pdf(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -280,6 +280,6 @@ class UserRoleLogControllerTest extends TestCase
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
         $this->assertStringContainsString('application/pdf', $response->headers->get('Content-Type') ?? '');
-        $this->assertSame('%PDF-1.4 binary content', $response->getContent());
+        $this->assertSame('%PDF-1.4 binary content', (string) $response->getContent());
     }
 }

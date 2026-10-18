@@ -45,13 +45,11 @@
   * @author     Laurent HADJADJ <laurent_h@me.com>
   */
   /* MODIF 2026-09-13 : la quasi-totalité des
-   * sélecteurs ci-dessous ciblait les anciens IDs (sans préfixe js-),
-   * retirés lors du renommage des IDs du 2026-05-18. clean_screen() ne
-   * nettoyait donc quasiment plus rien à l'écran : chaque $('#...')
-   * matchait un ensemble jQuery vide, sans erreur JS (no-op silencieux).
-   * Réalignement complet sur les IDs réels (templates/projet/*.html.twig)
-   * et les data-attributes posés par peinture.js (remplissage /
-   * afficheHotspotDetails). */
+   * Les sélecteurs ciblaient les anciens IDs (sans préfixe js-), retirés lors du renommage des IDs du 2026-05-18.
+   * clean_screen() ne nettoyait donc quasiment plus rien à l'écran : chaque $('#...') matchait un ensemble jQuery
+   * vide, sans erreur JS (no-op silencieux).
+   * Réalignement complet sur les IDs réels (templates/projet/*.html.twig) et les data-attributes posés par peinture.js
+   * (remplissage / afficheHotspotDetails). */
   export const clean_screen = function(type) {
   /** Bloc information générale */
   $('#js-nom-projet').text('');
@@ -133,20 +131,40 @@
   $('#js-duplicated-lines-density').text('').removeAttr('data-duplicated-lines-density');
   $('#js-tests').text('').removeAttr('data-tests');
   $('#js-violations').text('').removeAttr('data-violations');
-  $('#js-dette').text('').removeAttr('data-dette-minute');
+  /* MODIF 2026-10-06 : data-scope-main/test (répartition MAIN/TEST globale) +
+   * data-scope-mesures-json (JSON brut du graphique de la modale Scope) posés
+   * sur ce même élément par peinture.js, à nettoyer comme data-dette-minute. */
+  $('#js-dette').text('').removeAttr('data-dette-minute data-scope-main data-scope-test data-scope-mesures-json');
   $('#js-dette-reliability').text('');
   $('#js-dette-vulnerability').text('');
   $('#js-dette-code-smell').text('');
 
-  $('#js-nombre-bug-total').text('').removeAttr('data-nombre-bug');
+  /* MODIF 2026-10-06 : data-bug/vulnerability/code-smell-scope-main/test
+   * (répartition MAIN/TEST par catégorie) posés sur ces mêmes éléments. */
+  $('#js-nombre-bug-total').text('').removeAttr('data-nombre-bug data-bug-scope-main data-bug-scope-test');
   $('#js-nombre-bug-real').text('');
   $('#js-separator-bug').text('');
-  $('#js-nombre-vulnerability').text('').removeAttr('data-nombre-vulnerability');
+  $('#js-nombre-vulnerability').text('').removeAttr('data-nombre-vulnerability data-vulnerability-scope-main data-vulnerability-scope-test');
   $('#js-nombre-mauvaise-pratique').text('')
     .removeClass('couleur-rouge')
-    .removeAttr('data-nombre-code-smell');
+    .removeAttr('data-nombre-code-smell data-code-smell-scope-main data-code-smell-scope-test');
   $('#js-separator-code-smell').text('');
   $('#js-nombre-mauvaise-pratique-real').text('');
+
+  /* MODIF 2026-10-08 : résumé Scope Main/Test (page Projet) + tableau détaillé
+   * de la modale (#modal-affiche-scope). */
+  $('#js-scope-main-percent').text('');
+  $('#js-scope-separator').text('');
+  $('#js-scope-test-percent').text('');
+  ['global', 'bug', 'vulnerability', 'code-smell'].forEach((suffixe) => {
+    $(`#js-scope-${suffixe}-main`).text('--');
+    $(`#js-scope-${suffixe}-test`).text('--');
+    $(`#js-scope-${suffixe}-test-percent`).text('--');
+  });
+
+  /* MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo). */
+  $('#js-eco-anomalies').text('');
+  $('#js-eco-rating').html('');
 
   $('#js-nombre-frontend').text('').removeAttr('data-nombre-frontend');
   $('#js-nombre-frontend-percent').text('');
@@ -168,8 +186,16 @@
   $('#js-note-sqale').text('');
   $('#js-note-menace-potentielle').text('');
 
-  /** Phase L.7 — 6 indicateurs supplémentaires */
-  $('#js-alert-status').text('');
+  /** 6 indicateurs supplémentaires */
+  /* MODIF 2026-09-29 : id renommé js-alert-status -> js-qg-alert-status
+   * (ajout de la ligne RCI à côté de Quality Gate dans _bloc_projet.html.twig). */
+  $('#js-qg-alert-status').text('');
+  $('#js-rci-alert-status').text('').removeAttr('data-rci-mesures-json data-rci-maven-key');
+  ['global', 'frontend', 'backend', 'autre', 'inconnu'].forEach((suffixe) => {
+    $(`#js-rci-${suffixe}-indicator`).text('--');
+    $(`#js-rci-${suffixe}-dette`).text('--');
+    $(`#js-rci-${suffixe}-rating`).text('--');
+  });
   $('#js-note-coverage').text('');
   $('#js-note-duplication').text('');
   $('#js-comment-lines').text('');

@@ -72,8 +72,16 @@ if (!isset($options['url']) || !isset($options['token'])) {
     die("❌ Utilisation : php run_ma-moulinette_collecte_cli.php --url=\"http?s://ma.moulinette.fr\" --token=\"XXXXX\" [--flush=2] [--keep-days=7] [--max-log-size=10] [--dry-run] [--debug] [--help]\n");
 }
 
-$MA_MOULINETTE_URL = rtrim($options['url'], '/');
-$TOKEN = trim($options['token']);
+$urlOption = $options['url'];
+if (!is_string($urlOption) || $urlOption === '') {
+    die("❌ --url doit être une valeur unique non vide.\n");
+}
+$tokenOption = $options['token'];
+if (!is_string($tokenOption) || trim($tokenOption) === '') {
+    die("❌ --token doit être une valeur unique non vide.\n");
+}
+$MA_MOULINETTE_URL = rtrim($urlOption, '/');
+$TOKEN = trim($tokenOption);
 $FLUSH = isset($options['flush']) ? (int)$options['flush'] : 0;
 $DRY_RUN = isset($options['dry-run']);
 $KEEP_DAYS = isset($options['keep-days']) ? (int)$options['keep-days'] : 7;
@@ -84,20 +92,26 @@ $DEBUG = isset($options['debug']);
 // === CONFIG SSL / TLS et PROXY ===
 // (surchargeable via variables d'environnement)
 // -----------------------------------------------------
-$VERIFY_PEER = (bool) ($_ENV['MAMOUL_CLI_VERIFY_PEER'] ?: false);
-$VERIFY_HOST = (int) ($_ENV['MAMOUL_CLI_VERIFY_HOST'] ?: 0);
-$CIPHERS = $_ENV['MAMOUL_CLI_CIPHERS'] ?: "DEFAULT:!DH";
+$VERIFY_PEER = (bool) ($_ENV['MAMOUL_CLI_VERIFY_PEER'] ?? false);
+// CURLOPT_SSL_VERIFYHOST n'accepte que 0 (désactivé) ou 2 (activé) — 1 est obsolète/invalide.
+$VERIFY_HOST = ((int) ($_ENV['MAMOUL_CLI_VERIFY_HOST'] ?? 0)) === 0 ? 0 : 2;
+$ciphersEnv = $_ENV['MAMOUL_CLI_CIPHERS'] ?? null;
+$CIPHERS = is_string($ciphersEnv) && $ciphersEnv !== '' ? $ciphersEnv : "DEFAULT:!DH";
 
 // 🌐 Configuration PROXY (surchargeable via env)
-$USE_PROXY = (bool) ($_ENV['MAMOUL_CLI_USE_PROXY'] ?: false);
-$PROXY_URL = $_ENV['MAMOUL_CLI_PROXY_URL'] === false
-    ? "http://proxy.ma-moulinette.fr:8080"
-    : (string) $_ENV['MAMOUL_CLI_PROXY_URL'];
-$PROXY_USER_PWD = $_ENV['MAMOUL_CLI_PROXY_USER_PWD'] ?: "";
+$USE_PROXY = (bool) ($_ENV['MAMOUL_CLI_USE_PROXY'] ?? false);
+$proxyUrlEnv = $_ENV['MAMOUL_CLI_PROXY_URL'] ?? null;
+$PROXY_URL = is_string($proxyUrlEnv) && $proxyUrlEnv !== ''
+    ? $proxyUrlEnv
+    : "http://proxy.ma-moulinette.fr:8080";
+$proxyUserPwdEnv = $_ENV['MAMOUL_CLI_PROXY_USER_PWD'] ?? null;
+$PROXY_USER_PWD = is_string($proxyUserPwdEnv) ? $proxyUserPwdEnv : "";
 
 // 🚫 Liste des domaines à ignorer pour le proxy
-$noProxyEnv = $_ENV['MAMOUL_CLI_NO_PROXY'];
-$NO_PROXY = $noProxyEnv === false
+// MODIF 2026-10-18 : $_ENV['...'] sur une clé absente renvoie null (avec warning), jamais false —
+// la comparaison === false ne déclenchait donc jamais le fallback localhost/127.0.0.1.
+$noProxyEnv = $_ENV['MAMOUL_CLI_NO_PROXY'] ?? null;
+$NO_PROXY = !is_string($noProxyEnv) || $noProxyEnv === ''
     ? ["localhost", "127.0.0.1"]
     : array_values(array_filter(array_map('trim', explode(',', $noProxyEnv))));
 
@@ -167,8 +181,10 @@ function rotateLogs(string $logDir, string $logFile, int $maxSize = 10485760, in
         file_put_contents($logFile, "🔁 Log tronqué le " . date('Y-m-d H:i:s') . "\n");
     }
 
-    foreach (glob("$logDir/*.bak") as $bak) {
-        if (filemtime($bak) < time() - ($maxAgeDays * 86400)) {
+    $bakFiles = glob("$logDir/*.bak");
+    foreach ($bakFiles === false ? [] : $bakFiles as $bak) {
+        $mtime = filemtime($bak);
+        if ($mtime !== false && $mtime < time() - ($maxAgeDays * 86400)) {
             unlink($bak);
         }
     }
@@ -209,17 +225,21 @@ if (!empty($NO_PROXY)) { logMessage(" 🚫 Pas de proxy pour : " . implode(", ",
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function callApi($endpoint, $params = [], $method = 'GET', $timeout = 600) {
+function callApi(string $endpoint, array $params = [], string $method = 'GET', int $timeout = 600): array {
     global $MA_MOULINETTE_URL, $VERIFY_HOST, $VERIFY_PEER, $CIPHERS;
     global $USE_PROXY, $PROXY_URL, $PROXY_USER_PWD, $NO_PROXY, $DEBUG;
 
     $url = $MA_MOULINETTE_URL . $endpoint;
+    if ($url === '') {
+        logMessage('❌ URL cURL vide (MA_MOULINETTE_URL + endpoint).', 'ERROR');
+        return ['code' => 500, 'message' => 'URL cURL vide'];
+    }
     $ch = curl_init();
     $headers = ['Accept: application/json'];
 
      // Pour POST on envoie du JSON (le back fait json_decode($request->getContent()))
     if ($method === 'POST') {
-        $payload = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $payload = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         $headers[] = 'Content-Type: application/json';
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -247,7 +267,12 @@ function callApi($endpoint, $params = [], $method = 'GET', $timeout = 600) {
     }
 
     // Ignorer le proxy pour certains domaines
-    if (!empty($NO_PROXY)) { curl_setopt($ch, CURLOPT_NOPROXY, implode(",", $NO_PROXY)); }
+    if (!empty($NO_PROXY)) {
+        $noProxyStr = implode(",", $NO_PROXY);
+        if ($noProxyStr !== '') {
+            curl_setopt($ch, CURLOPT_NOPROXY, $noProxyStr);
+        }
+    }
 
     $response = curl_exec($ch);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -260,7 +285,7 @@ function callApi($endpoint, $params = [], $method = 'GET', $timeout = 600) {
 
     curl_close($ch);
 
-    $json = json_decode($response, true);
+    $json = json_decode((string) $response, true);
 
     if ($DEBUG) {
         logMessage("🛠️ API CALL: URL=$url | CODE=$status | RESPONSE=" . ($response ?: '(vide)'), 'DEBUG');

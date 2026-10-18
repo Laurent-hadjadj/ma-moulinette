@@ -52,12 +52,14 @@ class PdfExportServiceTest extends TestCase
         $this->params = $this->createMock(ParameterBagInterface::class);
 
         // Le service lit `kernel.project_dir` pour localiser le logo — on pointe sur le vrai projet.
-        $this->projectDir = realpath(__DIR__ . '/../../..');
+        $projectDir = realpath(__DIR__ . '/../../..');
+        self::assertNotFalse($projectDir);
+        $this->projectDir = $projectDir;
         $this->params->method('get')->willReturnMap([
             ['kernel.project_dir', $this->projectDir],
         ]);
 
-        $this->service = new PdfExportService($this->twig, $this->params);
+        $this->service = new PdfExportService($this->twig, $this->params, $this->projectDir);
     }
 
     public function testGenerateRapportPdfReturnsValidPdfBinary(): void
@@ -364,7 +366,7 @@ class PdfExportServiceTest extends TestCase
             ['rapport.pdf.watermark.mode', $watermarkMode],
         ]);
 
-        return new PdfExportService($twig, $params);
+        return new PdfExportService($twig, $params, $this->projectDir);
     }
 
     public function testGenerateDcPdfReturnsValidPdfBinaryWithoutFindings(): void

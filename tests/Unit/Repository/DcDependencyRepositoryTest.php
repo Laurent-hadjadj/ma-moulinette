@@ -103,6 +103,7 @@ class DcDependencyRepositoryTest extends TestCase
 
         $result = $repo->topVulnerableDependencies(20);
 
+        assert(array_key_exists('liste', $result));
         $this->assertSame(200, $result['code']);
         $this->assertSame('', $result['erreur']);
         $this->assertCount(2, $result['liste']);
@@ -119,6 +120,7 @@ class DcDependencyRepositoryTest extends TestCase
 
         $result = $repo->topVulnerableDependencies(50);
 
+        assert(array_key_exists('liste', $result));
         $this->assertSame(200, $result['code']);
         $this->assertSame([], $result['liste']);
     }
@@ -183,6 +185,7 @@ class DcDependencyRepositoryTest extends TestCase
 
         $result = $repo->topMutualisableDependencies();
 
+        assert(array_key_exists('liste', $result));
         $this->assertSame(200, $result['code']);
         $this->assertSame('', $result['erreur']);
         $this->assertCount(2, $result['liste']);
@@ -221,6 +224,7 @@ class DcDependencyRepositoryTest extends TestCase
         ]);
 
         $result = $repo->topMutualisableDependencies();
+        assert(array_key_exists('liste', $result));
         $flags = array_column($result['liste'], 'is_via_archetype', 'product');
         $this->assertTrue($flags['a-1arch']);
         $this->assertFalse($flags['b-2arch']);
@@ -243,6 +247,7 @@ class DcDependencyRepositoryTest extends TestCase
 
         $result = $repo->topMutualisableDependencies();
 
+        assert(array_key_exists('liste', $result));
         $this->assertSame(200, $result['code']);
         $this->assertSame([], $result['liste']);
     }
@@ -288,6 +293,7 @@ class DcDependencyRepositoryTest extends TestCase
 
         $result = $repo->topMutualisableDependencies(2, 2);
 
+        assert(array_key_exists('liste', $result) && array_key_exists('truncated', $result));
         $this->assertTrue($result['truncated']);
         $this->assertCount(2, $result['liste']); // tronqué à hardLimit, pas hardLimit+1
         $this->assertSame(['a', 'b'], array_column($result['liste'], 'product'));
@@ -302,6 +308,7 @@ class DcDependencyRepositoryTest extends TestCase
 
         $result = $repo->topMutualisableDependencies(2, 2);
 
+        assert(array_key_exists('liste', $result) && array_key_exists('truncated', $result));
         $this->assertFalse($result['truncated']);
         $this->assertCount(2, $result['liste']);
     }

@@ -14,7 +14,12 @@
 
 [CmdletBinding()]
 param(
-    [int] $MaxBatches = 3
+    [int] $MaxBatches = 3,
+    # Port Postgres cible — 5432 (natif) par défaut. La stack Docker e2e
+    # (docker/e2e/docker-compose.e2e.yml) expose son postgres sur 5434 :
+    # passer -DbPort 5434 quand on cible Docker (même convention que
+    # E2E_DB_PORT cote tests/e2e/helpers/db.ts).
+    [int] $DbPort = 5432
 )
 
 $ErrorActionPreference = "Stop"
@@ -25,12 +30,19 @@ $projectRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
 $prevErrorAction = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 $env:APP_ENV = "test"
+# DATABASE_URL de .env.test.local vise localhost:5432 (natif) ; une variable
+# d'environnement reelle prime sur le fichier .env (comportement Symfony
+# standard) — on la surcharge seulement si on vise un port different.
+if ($DbPort -ne 5432) {
+    $env:DATABASE_URL = "postgresql://db_user:db_password@localhost:$DbPort/ma_moulinette_test?serverVersion=18&charset=utf8"
+}
 try {
     & php "$projectRoot\bin\console" app:dependency-check:process --env=test --max-batches=$MaxBatches
     $exit = $LASTEXITCODE
 } finally {
     $ErrorActionPreference = $prevErrorAction
     Remove-Item Env:\APP_ENV -ErrorAction SilentlyContinue
+    Remove-Item Env:\DATABASE_URL -ErrorAction SilentlyContinue
 }
 
 if ($exit -ne 0) {

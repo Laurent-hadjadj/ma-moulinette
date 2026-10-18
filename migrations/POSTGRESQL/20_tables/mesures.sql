@@ -2,13 +2,14 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.3.0 - 30/03/2026                  ##
+##           V2.4.0 - 11/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
 --- 2026-03-29 : Ajout des attributs SonarQube 10 et 2024, alignement des noms sur la version CORE (8 & 9).
 --- 2026-03-30 : Ajout de coverage_rating et duplicated_lines_rating. Suppression des attributs de code_smells, bug et vulnerability (blocker, critical, major, minor, info) qui ne sont pas utilisés dans les traitements.
+--- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -118,6 +119,12 @@ CREATE TABLE ma_moulinette.mesures
   security_hotspots INT,
   security_review_rating VARCHAR(4),
   security_hotspots_reviewed DOUBLE PRECISION,
+
+  -- MODIF 2026-10-11 : métriques "optionnelles" apparues entre SonarQube 26.3.0
+  -- et 26.9.0, pas encore documentées/LTS — valeur brute, pas de note A-E.
+  maintainability_issue_severity INT,
+  reliability_issue_severity INT,
+  security_issue_severity INT,
 
   mode_collecte VARCHAR(32),
   utilisateur_collecte VARCHAR(320),

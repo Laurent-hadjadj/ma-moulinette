@@ -14,6 +14,7 @@
 namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Dompdf\{Dompdf, Options};
 use setasign\Fpdi\Fpdi;
 use Twig\Environment;
@@ -29,8 +30,6 @@ class PdfExportService
     private static string $confidentiel = 'Document confidentiel';
     private static string $public = 'Document public';
     private static string $logo = '/assets/images/marque-mm-400x128.png';
-    // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
-    private static string $projectDir     = 'kernel.project_dir';
     private static string $dateFormat     = 'd/m/Y';
     private static string $footerDateText = 'Généré le ';
     private static string $footerPageFmt  = 'Page %d / %d';
@@ -38,8 +37,17 @@ class PdfExportService
     public function __construct(
         private Environment $twig,
         private ParameterBagInterface $params,
+        #[Autowire('%kernel.project_dir%')]
+        private string $projectDir,
 )
     {
+    }
+
+    private function logoBase64(): string
+    {
+        $content = file_get_contents($this->projectDir . self::$logo);
+
+        return base64_encode($content === false ? '' : $content);
     }
 
     /**
@@ -90,7 +98,7 @@ class PdfExportService
         // --- Génération du HTML ---
         $html = $this->twig->render('/rapport/rapport-zurb-foundation.html.twig', [
             'batch' => $batchData,
-            'logoBase64' => base64_encode(file_get_contents($this->params->get(self::$projectDir).self::$logo)),
+            'logoBase64' => $this->logoBase64(),
             'document_type' => $document_type ?? self::$confidentiel,
         ]);
 
@@ -227,7 +235,7 @@ class PdfExportService
 
         $html = $this->twig->render($template, [
             'rapport'       => $rapport,
-            'logoBase64'    => base64_encode(file_get_contents($this->params->get(self::$projectDir) . self::$logo)),
+            'logoBase64'    => $this->logoBase64(),
             'document_type' => $documentType,
         ]);
 
@@ -359,6 +367,7 @@ class PdfExportService
                 for ($p = 1; $p <= $pageCount; $p++) {
                     $tplId = $merger->importPage($p);
                     $size  = $merger->getTemplateSize($tplId);
+                    assert(is_array($size));
                     $merger->AddPage($size['orientation'], [$size['width'], $size['height']]);
                     if ($watermarkEnabled && $merger->PageNo() > 1) {
                         $merger->DrawSuiviWatermark($latinWatermark);
@@ -396,7 +405,7 @@ class PdfExportService
 
         $html = $this->twig->render('/rapport/rapport-owasp.html.twig', [
             'rapport' => $data,
-            'logoBase64' => base64_encode(file_get_contents($this->params->get(self::$projectDir).self::$logo)),
+            'logoBase64' => $this->logoBase64(),
             'document_type' => $document_type ?? self::$confidentiel,
         ]);
 
@@ -523,7 +532,7 @@ class PdfExportService
 
         $html = $this->twig->render($template, [
             'data'       => $data,
-            'logoBase64' => base64_encode(file_get_contents($this->params->get(self::$projectDir) . self::$logo)),
+            'logoBase64' => $this->logoBase64(),
         ]);
 
         $dompdf->loadHtml($html);
@@ -691,6 +700,7 @@ class PdfExportService
                 for ($p = 1; $p <= $pageCount; $p++) {
                     $tplId = $merger->importPage($p);
                     $size  = $merger->getTemplateSize($tplId);
+                    assert(is_array($size));
                     $merger->AddPage($size['orientation'], [$size['width'], $size['height']]);
                     if ($watermarkEnabled && $merger->PageNo() > 1) {
                         $merger->DrawDcWatermark($latinWatermark);
@@ -728,9 +738,7 @@ class PdfExportService
             'projets'          => $data['projets'] ?? [],
             'scope_label'      => $data['scope_label'] ?? '',
             'date_generation'  => (new \DateTimeImmutable())->format(self::$dateFormat),
-            'logoBase64'       => base64_encode(
-                file_get_contents($this->params->get(self::$projectDir) . self::$logo)
-            ),
+            'logoBase64'       => $this->logoBase64(),
         ]);
 
         $options = new Options();
@@ -794,9 +802,7 @@ class PdfExportService
             'lignes'          => $lignes,
             'filtre_label'    => $filtreLabel,
             'date_generation' => (new \DateTimeImmutable())->format('d/m/Y H:i'),
-            'logoBase64'      => base64_encode(
-                file_get_contents($this->params->get(self::$projectDir) . self::$logo)
-            ),
+            'logoBase64'      => $this->logoBase64(),
         ]);
 
         $options = new Options();
@@ -831,6 +837,129 @@ class PdfExportService
             $pageText = sprintf(self::$footerPageFmt, $pageNumber, $pageCount);
             $textWidthRight = $fontMetrics->getTextWidth($pageText, $font, $fontSize);
             $canvas->text($pageWidth - 30 - $textWidthRight, $y, $pageText, $font, $fontSize, $colorText);
+        });
+
+        return $dompdf->output();
+    }
+
+    /**
+     * [Description for generateActivityPdf]
+     * Génère le rapport PDF de l'activité SonarQube (collecte locale, table
+     * `activity`) : synthèse, histogramme hebdomadaire, top projets et
+     * journées de pic. Même squelette que generateUserRoleLogPdf (pas de
+     * fusion multi-orientation, un seul template).
+     *
+     * @param array<string, mixed> $data
+     * @param string|null $document_type
+     *
+     * @return string
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function generateActivityPdf(array $data, ?string $document_type = null): string
+    {
+        $documentType = $document_type ?? self::$confidentiel;
+
+        $html = $this->twig->render('rapport/rapport-activity.html.twig', [
+            'rapport'    => $data,
+            'logoBase64' => $this->logoBase64(),
+        ]);
+
+        $options = new Options();
+        $options->set('defaultFont', self::$police);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $canvas     = $dompdf->getCanvas();
+        $pageWidth  = $canvas->get_width();
+        $pageHeight = $canvas->get_height();
+        $fontSize   = 9;
+        $font       = $dompdf->getFontMetrics()->getFont(self::$police);
+        $colorLine  = [0/255, 68/255, 91/255];
+        $colorText  = [0/255, 68/255, 91/255];
+        $y = $pageHeight - 30;
+
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics)
+            use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
+            $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
+
+            $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
+            $canvas->text(40, $y, $dateText, $font, $fontSize, $colorText);
+
+            $textWidth = $fontMetrics->getTextWidth($documentType, $font, $fontSize);
+            $canvas->text(($pageWidth - $textWidth) / 2, $y, $documentType, $font, $fontSize, $colorText);
+
+            $pageText = sprintf(self::$footerPageFmt, $pageNumber, $pageCount);
+            $textWidthRight = $fontMetrics->getTextWidth($pageText, $font, $fontSize);
+            $canvas->text($pageWidth - 40 - $textWidthRight, $y, $pageText, $font, $fontSize, $colorText);
+        });
+
+        return $dompdf->output();
+    }
+
+    /**
+     * [Description for generateZapPdf]
+     * Génère le rapport PDF du scan ZAP (DAST) d'un projet : synthèse par
+     * risque, catégories OWASP 2017/2021 (histogramme), évolution du risque
+     * (historique) et liste détaillée des alertes du dernier scan.
+     *
+     * @param array<string, mixed> $data
+     * @param string|null $document_type
+     *
+     * @return string
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function generateZapPdf(array $data, ?string $document_type = null): string
+    {
+        $documentType = $document_type ?? self::$confidentiel;
+
+        $html = $this->twig->render('rapport/rapport-zap.html.twig', [
+            'rapport'    => $data,
+            'logoBase64' => $this->logoBase64(),
+        ]);
+
+        $options = new Options();
+        $options->set('defaultFont', self::$police);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $canvas     = $dompdf->getCanvas();
+        $pageWidth  = $canvas->get_width();
+        $pageHeight = $canvas->get_height();
+        $fontSize   = 9;
+        $font       = $dompdf->getFontMetrics()->getFont(self::$police);
+        $colorLine  = [0/255, 68/255, 91/255];
+        $colorText  = [0/255, 68/255, 91/255];
+        $y = $pageHeight - 30;
+
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics)
+            use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
+            $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
+
+            $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
+            $canvas->text(40, $y, $dateText, $font, $fontSize, $colorText);
+
+            $textWidth = $fontMetrics->getTextWidth($documentType, $font, $fontSize);
+            $canvas->text(($pageWidth - $textWidth) / 2, $y, $documentType, $font, $fontSize, $colorText);
+
+            $pageText = sprintf(self::$footerPageFmt, $pageNumber, $pageCount);
+            $textWidthRight = $fontMetrics->getTextWidth($pageText, $font, $fontSize);
+            $canvas->text($pageWidth - 40 - $textWidthRight, $y, $pageText, $font, $fontSize, $colorText);
         });
 
         return $dompdf->output();

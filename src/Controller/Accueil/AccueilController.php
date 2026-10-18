@@ -653,8 +653,8 @@ class AccueilController extends AbstractController
         $dateModificationProjet = $properties['date_modification_projet'];
         $dateModificationProfil = $properties['date_modification_profil'];
 
-        $dateModProjet = (gettype($dateModificationProjet) == 'object') ? $dateModificationProjet : new \DateTime($dateModificationProjet);
-        $dateModProfil = (gettype($dateModificationProfil) == 'object') ? $dateModificationProfil : new \DateTime($dateModificationProfil);
+        $dateModProjet = ($dateModificationProjet instanceof \DateTimeInterface) ? $dateModificationProjet : new \DateTime($dateModificationProjet);
+        $dateModProfil = ($dateModificationProfil instanceof \DateTimeInterface) ? $dateModificationProfil : new \DateTime($dateModificationProfil);
 
         $dateVerificationProjet = false;
         $dateVerificationProfil = false;
@@ -779,8 +779,10 @@ class AccueilController extends AbstractController
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
-        $favoriProjet = json_decode($this->getListeFavoriProjet()->getContent());
-        $favoriVersion = json_decode($this->getListeFavoriVersion()->getContent());
+        $favoriProjetContent = $this->getListeFavoriProjet()->getContent();
+        $favoriVersionContent = $this->getListeFavoriVersion()->getContent();
+        $favoriProjet = json_decode($favoriProjetContent === false ? '' : $favoriProjetContent);
+        $favoriVersion = json_decode($favoriVersionContent === false ? '' : $favoriVersionContent);
 
         /** On a choisi la liste des projets favori
          *  sinon la liste des versions

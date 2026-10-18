@@ -107,7 +107,8 @@ class BatchExecutionJournal
     public function setCompteRendu(string $html): void
     {
         // 9 = niveau de compression le plus haut (0–9)
-        $this->compteRendu = gzencode($html, 9);
+        $compressed = gzencode($html, 9);
+        $this->compteRendu = $compressed === false ? $html : $compressed;
     }
 
     /**
@@ -120,14 +121,20 @@ class BatchExecutionJournal
 
     public function getCompteRendu(): string
     {
-        if ($this->compteRendu === null) {
+        $compteRendu = $this->compteRendu;
+        if ($compteRendu === null) {
             return '';
         }
 
         // Le champ peut être un flux (resource)
-        $binary = is_resource($this->compteRendu)
-            ? stream_get_contents($this->compteRendu)
-            : $this->compteRendu;
+        if (is_resource($compteRendu)) {
+            $binary = stream_get_contents($compteRendu);
+            if ($binary === false) {
+                return '';
+            }
+        } else {
+            $binary = is_string($compteRendu) ? $compteRendu : '';
+        }
 
         // On tente de décoder si c’est du gzencode()
         $html = @gzdecode($binary);

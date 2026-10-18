@@ -164,6 +164,7 @@ erDiagram
 | `repartition` | Répartition des indicateurs par module (frontend/backend/autre), résultat final versionné |
 | `repartition_temp` | Tampon de collecte détaillée — table `UNLOGGED`, vidée automatiquement au redémarrage (voir [🧊 Tables simples vs `UNLOGGED`](#-tables-logged-vs-tables-unlogged)) |
 | `clean_code` | Indicateurs Clean Code (nouveau modèle SonarQube) |
+| `rci` | Détail par module (frontend/backend/autre/inconnu) du RCI (Risk Criticality Index, plugin `sonar-rci`) — snapshot courant, une ligne par projet. |
 
 ### 📈 Activité SonarQube
 

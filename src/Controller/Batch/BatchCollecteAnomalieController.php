@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Anomalie;
-use App\Service\{ExtractName, DateTools, ClientService, UrlBuilderService};
+use App\Service\{ExtractName, DateTools, ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteAnomalieController]
@@ -27,9 +27,6 @@ class BatchCollecteAnomalieController extends AbstractController
     /** Définition des constantes */
     private static string $sonarUrl = "sonar.url";
     private static string $europeParis = "Europe/Paris";
-    private static string $statuses = "OPEN,REOPENED";
-    //'private static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
-    //'private static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
     private static string $beginRegEx = '/\b(?:';
     private static string $endRegEx = ')\b/i';
 
@@ -46,6 +43,7 @@ class BatchCollecteAnomalieController extends AbstractController
         private ExtractName $serviceExtractName,
         private DateTools $serviceDateTools,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -215,14 +213,28 @@ class BatchCollecteAnomalieController extends AbstractController
         $app = $this->serviceExtractName->extractNameFromMavenKey($maven_key);
 
         /* Tableau des paramètres pour les requêtes HTTP */
+        /* MODIF 2026-10-06 : ajout du facet 'scopes' (MAIN/TEST) sur les 3 appels
+         * par catégorie — réutilise les appels déjà existants (aucun appel HTTP
+         * supplémentaire). 'statuses'/'issueStatuses' aligné sur $issueStatus (comme
+         * 'general') pour que les comptages scopes par catégorie correspondent au même
+         * périmètre d'issues que le reste de la collecte. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2
+         * (deprecatedKey, même sémantique). statuses renommée issueStatuses depuis la
+         * 10.4 (pas un simple renommage, cf. GetSonarVersionService::issueStatusParam()
+         * et mkDocs/docs/ma-moulinette/application/projet.md pour la règle complète).
+         * On résout les deux une seule fois via la version réelle du serveur (mise en
+         * cache 5 min côté GetSonarVersionService). */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParamsList = [
-            'general' => [ 'componentKeys' => $maven_key, 'facets' => 'directories,types,severities',
-                'p' => 1, 'ps' => 1, 'statuses' => self::$statuses ],
-            'BUG' => [ 'componentKeys' => $maven_key, 'types' => 'BUG', 'p' => 1, 'ps' => 1 ],
-            'VULNERABILITY' => [ 'componentKeys' => $maven_key, 'types' => 'VULNERABILITY',
-                'p' => 1, 'ps' => 1 ],
-            'CODE_SMELL' => [ 'componentKeys' => $maven_key, 'types' => 'CODE_SMELL',
-                'p' => 1, 'ps' => 1 ]
+            'general' => [ $componentKeyParam => $maven_key, 'facets' => 'directories,types,severities',
+                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'] ],
+            'BUG' => [ $componentKeyParam => $maven_key, 'types' => 'BUG', 'p' => 1, 'ps' => 1,
+                $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ],
+            'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'types' => 'VULNERABILITY',
+                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ],
+            'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'types' => 'CODE_SMELL',
+                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ]
         ];
 
         /**
@@ -241,6 +253,10 @@ class BatchCollecteAnomalieController extends AbstractController
             }
 
         // Appels BUG, VULNERABILITY, CODE_SMELL
+        /* MODIF 2026-10-06 : répartition scopes (MAIN/TEST) par catégorie, lue
+         * depuis le facet 'scopes' déjà demandé ci-dessus sur ces mêmes appels. */
+        $scopeMainByType = ['BUG' => 0, 'VULNERABILITY' => 0, 'CODE_SMELL' => 0];
+        $scopeTestByType = ['BUG' => 0, 'VULNERABILITY' => 0, 'CODE_SMELL' => 0];
         foreach (['BUG', 'VULNERABILITY', 'CODE_SMELL'] as $type) {
             $results[$type] = $this->makeRequest($queryParamsList[$type]);
             if (isset($results[$type]['code'])) {
@@ -251,7 +267,22 @@ class BatchCollecteAnomalieController extends AbstractController
                     'type' => $type
                 ];
             }
+
+            foreach ($results[$type]['facets'] ?? [] as $facet) {
+                if (($facet['property'] ?? '') !== 'scopes') {
+                    continue;
+                }
+                foreach ($facet['values'] as $scope) {
+                    if ($scope['val'] === 'MAIN') {
+                        $scopeMainByType[$type] = $scope['count'];
+                    } elseif ($scope['val'] === 'TEST') {
+                        $scopeTestByType[$type] = $scope['count'];
+                    }
+                }
+            }
         }
+        $scopeMainTotal = array_sum($scopeMainByType);
+        $scopeTestTotal = array_sum($scopeTestByType);
 
         if ($results['general']['paging']['total'] != 0) {
 
@@ -337,6 +368,14 @@ class BatchCollecteAnomalieController extends AbstractController
             'bug' => $types['BUG'] ?? 0,
             'vulnerability' => $types['VULNERABILITY'] ?? 0,
             'code_smell' => $types['CODE_SMELL'] ?? 0,
+            'scope_main' => $scopeMainTotal,
+            'scope_test' => $scopeTestTotal,
+            'bug_scope_main' => $scopeMainByType['BUG'],
+            'bug_scope_test' => $scopeTestByType['BUG'],
+            'vulnerability_scope_main' => $scopeMainByType['VULNERABILITY'],
+            'vulnerability_scope_test' => $scopeTestByType['VULNERABILITY'],
+            'code_smell_scope_main' => $scopeMainByType['CODE_SMELL'],
+            'code_smell_scope_test' => $scopeTestByType['CODE_SMELL'],
             'mode_collecte' => $mode_collecte,
             'utilisateur_collecte' => $utilisateur_collecte,
             'date_enregistrement' => $date
@@ -358,15 +397,31 @@ class BatchCollecteAnomalieController extends AbstractController
                     'nombre_bug' => $types['BUG'] ?? 0,
                     'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
                     'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
-                    'frontend' => $analyse['frontend'] ?? 0,
-                    'backend' => $analyse['backend'] ?? 0,
-                    'autre' => $analyse['autre'] ?? 0,
-                    'inconnu' => $analyse['inconnu'] ?? 0,
+                    /* MODIF 2026-10-06 : correction d'une régression réelle — ces clés
+                     * étaient en bare 'frontend'/'backend'/'autre'/'inconnu', qui ne
+                     * correspondent à aucune colonne de la whitelist de
+                     * HistoriqueRepository (seule 'repartition_frontend' etc. existe).
+                     * CollecteController::collecte() fusionnant ce tableau tel quel,
+                     * ces 4 colonnes restaient toujours NULL pour toute collecte
+                     * batch/cron, alors que le flux interactif (enregistrement.js)
+                     * les renomme déjà correctement avant l'envoi au serveur. */
+                    'repartition_frontend' => $analyse['frontend'] ?? 0,
+                    'repartition_backend' => $analyse['backend'] ?? 0,
+                    'repartition_autre' => $analyse['autre'] ?? 0,
+                    'repartition_inconnu' => $analyse['inconnu'] ?? 0,
                     'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
                     'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
                     'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
                     'nombre_anomalie_majeur' => $severities['MAJOR'] ?? 0,
-                    'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0
+                    'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0,
+                    'scope_main' => $scopeMainTotal,
+                    'scope_test' => $scopeTestTotal,
+                    'bug_scope_main' => $scopeMainByType['BUG'],
+                    'bug_scope_test' => $scopeTestByType['BUG'],
+                    'vulnerability_scope_main' => $scopeMainByType['VULNERABILITY'],
+                    'vulnerability_scope_test' => $scopeTestByType['VULNERABILITY'],
+                    'code_smell_scope_main' => $scopeMainByType['CODE_SMELL'],
+                    'code_smell_scope_test' => $scopeTestByType['CODE_SMELL']
                 ];
 
         $this->logger->info('[Batch Anomalie] ℹ️ Collecte des anomalies réussie', [

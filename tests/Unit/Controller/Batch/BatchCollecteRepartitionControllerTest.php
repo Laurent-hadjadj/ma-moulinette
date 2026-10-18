@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\BatchCollecteRepartitionController;
 use App\Entity\{Repartition, RepartitionTemp};
 use App\Repository\{RepartitionRepository, RepartitionTempRepository};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, GetSonarVersionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -50,6 +50,9 @@ class BatchCollecteRepartitionControllerTest extends TestCase
     /** @var UrlBuilderService&MockObject */
     private MockObject $urlBuilder;
 
+    /** @var GetSonarVersionService&MockObject */
+    private MockObject $sonarVersion;
+
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
 
@@ -65,6 +68,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         $this->tempRepo = $this->createMock(RepartitionTempRepository::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
 
@@ -74,6 +78,8 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         ]);
 
         $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
+        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED']);
 
         // Paramètres standards (sonar.url + mots-clés modules) — utilisés par getParameter
         $this->parameterBag->method('get')->willReturnMap([
@@ -97,6 +103,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
             $this->em,
             $this->client,
             $this->urlBuilder,
+            $this->sonarVersion,
             $this->logger
         );
         $this->controller->setContainer($container);
@@ -111,6 +118,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
             ->willReturn([
                 'code' => 200,
                 'json' => ['facets' => [[
+                    'property' => 'severities',
                     'values' => [
                         ['val' => 'INFO',     'count' => 1],
                         ['val' => 'MINOR',    'count' => 2],
@@ -127,6 +135,43 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         $this->assertSame('BUG', $result['category']);
         $this->assertSame(15, $result['total']);
         $this->assertSame(1, $result['info']);
+        $this->assertSame(5, $result['blocker']);
+    }
+
+    /**
+     * MODIF 2026-09-28 : batchCollecteInformation() demande désormais
+     * 'severities,scopes' (préparation d'un futur détail main/test), et
+     * renvoie toutes les facettes plutôt que la première. La sélection de
+     * 'severities' doit fonctionner quelle que soit sa position, et le
+     * facet 'scopes' (non exploité pour l'instant) ne doit rien casser.
+     */
+    public function testCollecteRepartitionModuleSelectsSeveritiesFacetByNameRegardlessOfOrder(): void
+    {
+        $this->client->expects($this->once())
+            ->method('httpSonarQube')
+            ->willReturn([
+                'code' => 200,
+                'json' => ['facets' => [
+                    [
+                        'property' => 'scopes',
+                        'values' => [
+                            ['val' => 'MAIN', 'count' => 12],
+                            ['val' => 'TEST', 'count' => 3],
+                        ],
+                    ],
+                    [
+                        'property' => 'severities',
+                        'values' => [
+                            ['val' => 'BLOCKER', 'count' => 5],
+                        ],
+                    ],
+                ]],
+            ]);
+
+        $result = $this->controller->collecteRepartitionModule(self::MAVEN_KEY, 'BUG');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame(5, $result['total']);
         $this->assertSame(5, $result['blocker']);
     }
 

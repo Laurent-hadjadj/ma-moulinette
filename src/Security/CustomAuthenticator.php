@@ -65,15 +65,15 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
     {
         // Soit on saisie une adresse mail, soit un UPN (ex: prenom.nom)
 
-        $login = strtolower(trim($request->request->get('login', '')));
-        $passwordRaw = $request->request->get('password', '');
+        $login = strtolower(trim($request->request->getString('login', '')));
+        $passwordRaw = $request->request->getString('password', '');
 
         $passwordNormalized = \Normalizer::normalize($passwordRaw, \Normalizer::FORM_C);
 
         // Normalisation du login
         if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
             $courriel = $login;
-            $samAccountName = strstr($login, '@', true);
+            $samAccountName = explode('@', $login, 2)[0];
         } else {
             $samAccountName = $login;
             // Domaine de repli injecté via configuration (LDAP_UPN_SUFFIX) : plus de
@@ -150,10 +150,10 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
             );
             $result = $query->execute();
 
-            if (empty($result) || count($result) === 0) {
+            if (count($result) === 0) {
                 $this->logger->warning('[LDAP] 👻 Utilisateur LDAP introuvable.', [
                     'user' => $userDn,
-                    'query' => $result ?? 'Aucune données remontées.',
+                    'query' => $result,
                 ]);
                 throw new CustomUserMessageAuthenticationException('Identifiant ou mot de passe incorrect.');
             }
@@ -357,7 +357,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
     {
         return new SelfValidatingPassport(
             new UserBadge($courriel, fn() => $user),
-            [new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token'))]
+            [new CsrfTokenBadge('authenticate', $request->request->getString('_csrf_token'))]
         );
     }
 }

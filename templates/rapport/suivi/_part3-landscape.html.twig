@@ -95,6 +95,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
                     {label: 'Sécurité (legacy / S10)', cols: ['security', 's10_security'], dual: true},
                     {label: 'Maintenabilité (legacy / S10)', cols: ['maintainability', 's10_maintainability'], dual: true},
                     {label: 'Review Hotspots', cols: ['note_hotspot'], dual: false},
+                    {label: 'RCI', cols: ['rci_rating'], dual: false},
                     {label: 'Commentaires', cols: ['note_comment'], dual: false},
                     {label: 'Complexité cyclomatique', cols: ['note_complexity'], dual: false},
                     {label: 'Complexité cognitive', cols: ['note_cognitive'], dual: false},
@@ -106,31 +107,19 @@ par langage. Le format paysage accueille confortablement jusqu'a
                 <td class="valeur">
                     {% if r.dual %}
                     {% if s[r.cols[0]] %}
-                    <span class="note note-
-                                        {{s[r.cols[0]]|lower}}
-                                        ">
-                        {{s[r.cols[0]]}}
-                    </span>
+                    <span class="note note-{{s[r.cols[0]]|lower}}">{{s[r.cols[0]]}}</span>
                     {% else %}
                     <span class="nodata">–</span>
                     {% endif %}
                     /
                     {% if s[r.cols[1]] %}
-                    <span class="note note-
-                                    {{s[r.cols[1]]|lower}}
-                                    ">
-                        {{s[r.cols[1]]}}
-                    </span>
+                    <span class="note note-{{s[r.cols[1]]|lower}}">{{s[r.cols[1]]}}</span>
                     {% else %}
                     <span class="nodata">–</span>
                     {% endif %}
                     {% else %}
                     {% if s[r.cols[0]] %}
-                    <span class="note note-
-                                {{s[r.cols[0]]|lower}}
-                                ">
-                        {{s[r.cols[0]]}}
-                    </span>
+                    <span class="note note-{{s[r.cols[0]]|lower}}">{{s[r.cols[0]]}}</span>
                     {% else %}
                     <span class="nodata">–</span>
                     {% endif %}
@@ -140,6 +129,23 @@ par langage. Le format paysage accueille confortablement jusqu'a
                 <td class="col-tendance">{{ helpers.trend(firstS[r.cols[0]], lastS[r.cols[0]], 'note') }}</td>
             </tr>
             {% endfor %}
+            {# MODIF 2026-10-08 : part respective de MAIN et TEST parmi les
+            anomalies — pourcentages, pas une note A-E. Les deux % sont affichés côte à côte (comme sur la page Projet). Pas de tendance : ce n'est pas un jugement qualité #}
+            <tr>
+                <td class="libelle">Scope Main/Test</td>
+                {% for s in rapport.suivi %}
+                {% set scopeTotal = (s['scope_main'] ?? 0) + (s['scope_test'] ?? 0) %}
+                <td class="valeur">
+                    {% if scopeTotal > 0 %}
+                    {{(s['scope_main'] / scopeTotal * 100)|number_format(1, ',', ' ')}}&nbsp;% /
+                    {{(s['scope_test'] / scopeTotal * 100)|number_format(1, ',', ' ')}}&nbsp;%
+                    {% else %}
+                    <span class="nodata">–</span>
+                    {% endif %}
+                </td>
+                {% endfor %}
+                <td class="col-tendance"><span class="nodata">–</span></td>
+            </tr>
         </tbody>
     </table>
 
@@ -158,11 +164,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
                 <td class="valeur">
                     {{ s['bug'] is null ? '–' : s['bug']|format_number(locale='fr') }}
                     {% if s['reliability'] %}
-                    <span class="note note-
-                    {{s['reliability']|lower}}
-                    ">
-                        {{s['reliability']}}
-                    </span>
+                    <span class="note note-{{s['reliability']|lower}}">{{s['reliability']}}</span>
                     {% endif %}
                 </td>
                 {% endfor %}
@@ -173,11 +175,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
                 <td class="valeur">
                     {{ s['faille'] is null ? '–' : s['faille']|format_number(locale='fr') }}
                     {% if s['security'] %}
-                    <span class="note note-
-            {{s['security']|lower}}
-            ">
-                        {{s['security']}}
-                    </span>
+                    <span class="note note-{{s['security']|lower}}">{{s['security']}}</span>
                     {% endif %}
                 </td>
                 {% endfor %}
@@ -192,11 +190,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
                     –
                     {% endif %}
                     {% if s['note_hotspot'] %}
-                    <span class="note note-
-            {{s['note_hotspot']|lower}}
-            ">
-                        {{s['note_hotspot']}}
-                    </span>
+                    <span class="note note-{{s['note_hotspot']|lower}}">{{s['note_hotspot']}}</span>
                     {% endif %}
                 </td>
                 {% endfor %}
@@ -207,11 +201,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
                 <td class="valeur">
                     {{ s['mauvaise_pratique'] is null ? '–' : s['mauvaise_pratique']|format_number(locale='fr') }}
                     {% if s['maintainability'] %}
-                    <span class="note note-
-            {{s['maintainability']|lower}}
-            ">
-                        {{s['maintainability']}}
-                    </span>
+                    <span class="note note-{{s['maintainability']|lower}}">{{s['maintainability']}}</span>
                     {% endif %}
                 </td>
                 {% endfor %}
@@ -259,11 +249,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
                     {% if s['alert_status'] %}
                     {% set qg = s['alert_status']|upper %}
                     {% set cls = qg == 'OK' ? 'ok' : (qg == 'WARN' ? 'warn' : 'error') %}
-                    <span class="qg-
-                    {{cls}}
-                    ">
-                        {{qg}}
-                    </span>
+                    <span class="qg-{{cls}}">{{qg}}</span>
                     {% else %}
                     <span class="nodata">–</span>
                     {% endif %}
@@ -422,6 +408,50 @@ par langage. Le format paysage accueille confortablement jusqu'a
                     {% if s['note_cognitive'] %}<span
                         class="note note-{{s['note_cognitive']|lower}}">{{s['note_cognitive']}}</span>{% else %}<span
                         class="nodata">–</span>{% endif %}</td>{% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+    {# ========== RCI (Risk Criticality Index) ========== #}
+    <h2 style="page-break-before: always;">RCI (Risk Criticality Index)</h2>
+    <table class="versions-table">
+        {{ helpers.thead_versions(rapport.suivi, true) }}
+        <tbody>
+            <tr>
+                <td class="libelle">Date</td>{% for s in rapport.suivi %}<td class="valeur">
+                    {{ s['date']|date('d/m/Y', 'Europe/Paris') }}</td>{% endfor %}
+                <td class="col-tendance"><span class="trend trend-flat">→</span></td>
+            </tr>
+            <tr>
+                <td class="libelle">Note</td>
+                {% for s in rapport.suivi %}
+                <td class="valeur">
+                    {% if s['rci_rating'] %}
+                    <span class="note note-{{s['rci_rating']|lower}}">{{s['rci_rating']}}</span>
+                    {% else %}
+                    <span class="nodata">–</span>
+                    {% endif %}
+                </td>
+                {% endfor %}
+                <td class="col-tendance">{{ helpers.trend(firstS['rci_rating'], lastS['rci_rating'], 'note') }}</td>
+            </tr>
+            <tr>
+                <td class="libelle">Indice global</td>{% for s in rapport.suivi %}<td class="valeur">
+                    {% if s['rci_indicator'] is not null %}{{s['rci_indicator']|number_format(1, ',', ' ')}}
+                    %{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}
+                <td class="col-tendance"><span class="nodata">–</span></td>
+            </tr>
+            <tr>
+                <td class="libelle">Indice ncloc</td>{% for s in rapport.suivi %}<td class="valeur">
+                    {% if s['rci_ncloc'] is not null %}{{s['rci_ncloc']|format_number(locale='fr')}}{% else %}<span
+                        class="nodata">–</span>{% endif %}</td>{% endfor %}
+                <td class="col-tendance"><span class="nodata">–</span></td>
+            </tr>
+            <tr>
+                <td class="libelle">Indice de dette</td>{% for s in rapport.suivi %}<td class="valeur">
+                    {% if s['rci_weight'] is not null %}{{s['rci_weight']|format_number(locale='fr')}}{% else %}<span
+                        class="nodata">–</span>{% endif %}</td>{% endfor %}
+                <td class="col-tendance"><span class="nodata">–</span></td>
             </tr>
         </tbody>
     </table>

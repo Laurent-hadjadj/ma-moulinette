@@ -151,7 +151,7 @@ class RepartitionControllerTest extends TestCase
             ->willReturn('<html>no-token</html>');
 
         $response = $this->controller->repartition(new Request());
-        $this->assertSame('<html>no-token</html>', $response->getContent());
+        $this->assertSame('<html>no-token</html>', (string) $response->getContent());
     }
 
     public function testRepartitionFlashes403WhenNoCollecteRole(): void

@@ -25,6 +25,9 @@ nav:
         - Travailler à plusieurs: ma-moulinette/developpement/tuto-git.md
         - Automatisation des tâches: ma-moulinette/developpement/gitlab-ci.md
         - Tests End-to-End: ma-moulinette/developpement/test-e2e.md
+        - "Exploration : OWASP API Security": ma-moulinette/developpement/exploration-owasp-api-security.md
+    - Conformité:
+        - RGPD: ma-moulinette/conformite/rgpd.md
     - Commandes:
         - Vue d'ensemble: ma-moulinette/commandes/index.md
         - Commandes Prod: ma-moulinette/commandes/prod.md
@@ -52,6 +55,7 @@ nav:
           - Profil-details: ma-moulinette/application/profil-details.md
           - Projet: ma-moulinette/application/projet.md
           - OWASP: ma-moulinette/application/owasp.md
+          - ZAP (DAST): ma-moulinette/application/zap.md
           - Suivi: ma-moulinette/application/suivi.md
           - COSUI: ma-moulinette/application/cosui.md
           - Répartition détaillée: ma-moulinette/application/repartition_details.md

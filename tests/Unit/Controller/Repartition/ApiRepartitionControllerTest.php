@@ -79,7 +79,7 @@ class ApiRepartitionControllerTest extends TestCase
     public function testCollecteReturns400OnMissingFields(): void
     {
         $response = $this->controller->apiRepartitionCollecte($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -91,7 +91,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionCollecte($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -106,7 +106,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionCollecte($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -121,7 +121,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionCollecte($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(42, $data['total']);
@@ -133,7 +133,7 @@ class ApiRepartitionControllerTest extends TestCase
     public function testAnalyseReturns400OnMissingFields(): void
     {
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -145,7 +145,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -161,7 +161,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(404, $data['code']);
     }
@@ -176,7 +176,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'CHECK', 'severity' => 'ANY', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(202, $data['code']);
         $this->assertSame('CHECK', $data['category']);
@@ -193,7 +193,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -210,7 +210,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(10, $data['frontend']);
@@ -227,7 +227,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
             'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('boom', $data['trace']);
@@ -238,7 +238,7 @@ class ApiRepartitionControllerTest extends TestCase
     public function testHistoriqueReturns400WhenMavenKeyMissing(): void
     {
         $response = $this->controller->apiRepartitionHistorique($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -248,7 +248,7 @@ class ApiRepartitionControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->apiRepartitionHistorique($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -261,7 +261,7 @@ class ApiRepartitionControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db']);
 
         $response = $this->controller->apiRepartitionHistorique($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -274,7 +274,7 @@ class ApiRepartitionControllerTest extends TestCase
         ]);
 
         $response = $this->controller->apiRepartitionHistorique($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(404, $data['code']);
     }
@@ -292,7 +292,7 @@ class ApiRepartitionControllerTest extends TestCase
         ]);
 
         $response = $this->controller->apiRepartitionHistorique($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(201, $data['code']);
         $this->assertSame('Historique', $data['mode']);
@@ -304,7 +304,7 @@ class ApiRepartitionControllerTest extends TestCase
     public function testMajReturns400OnMissingFields(): void
     {
         $response = $this->controller->apiRepartitionAnalyseMaj($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -316,7 +316,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyseMaj($this->jsonRequest([
             'maven_key' => 'k', 'setup' => 123, 'calcul' => ['BUG', 'BLOCKER', 1, 2, 3, 4],
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -331,7 +331,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyseMaj($this->jsonRequest([
             'maven_key' => 'k', 'setup' => 123, 'calcul' => ['BUG'],
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -346,7 +346,7 @@ class ApiRepartitionControllerTest extends TestCase
         $response = $this->controller->apiRepartitionAnalyseMaj($this->jsonRequest([
             'maven_key' => 'k', 'setup' => 123, 'calcul' => ['BUG'],
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame('ok', $data['message']);
@@ -364,7 +364,7 @@ class ApiRepartitionControllerTest extends TestCase
         } elseif ($body === []) {
             $content = '{}';
         } else {
-            $content = json_encode($body);
+            $content = json_encode($body, JSON_THROW_ON_ERROR);
         }
         return new Request([], [], [], [], [], [], $content);
     }

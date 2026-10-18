@@ -92,9 +92,9 @@ class UserRoleLog
         options: ['comment' => "Date de création du log"])]
     private \DateTimeImmutable $createdAt;
 /**
- * @param array<int|string, mixed> $oldRoles
- * @param array<int|string, mixed> $newRoles
- * @param array<int|string, mixed> $alerts
+ * @param array<int, string> $oldRoles
+ * @param array<int, string> $newRoles
+ * @param array<int, string> $alerts
  */
 
     public function __construct(string $userEmail, string $editorEmail, array $oldRoles, array $newRoles, bool $oldActive, bool $newActive, array $alerts)

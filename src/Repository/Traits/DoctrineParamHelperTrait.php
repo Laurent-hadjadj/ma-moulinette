@@ -13,7 +13,6 @@
 
 namespace App\Repository\Traits;
 
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Symfony\Component\Uid\Ulid;
 use Doctrine\DBAL\Statement;
@@ -45,7 +44,7 @@ trait DoctrineParamHelperTrait
     /**
      * Lie une valeur générique nullable, en déduisant automatiquement le type PDO.
      */
-    protected function bindNullableValue(Statement $stmt, string $param, mixed $value, ParameterType|ArrayParameterType $defaultType = ParameterType::STRING): void
+    protected function bindNullableValue(Statement $stmt, string $param, mixed $value, ParameterType $defaultType = ParameterType::STRING): void
     {
         if ($value === null) {
             $stmt->bindValue($param, null, ParameterType::NULL);

@@ -40,7 +40,7 @@ class DcScanRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array{code: int, erreur: string}
+     * @return array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -68,7 +68,6 @@ class DcScanRepository extends ServiceEntityRepository
      * @param string $artifact
      * @param string $version
      * @param \DateTimeImmutable $scanDate
-     * @param mixed
      *
      * @return DcScan|null
      *
@@ -267,7 +266,7 @@ class DcScanRepository extends ServiceEntityRepository
      * la même version). Les compteurs viennent directement de dc_scan, pas
      * d'aggrégation lourde.
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      */
     public function listHistoryForProject(string $group, string $artifact): array
     {
@@ -563,7 +562,7 @@ class DcScanRepository extends ServiceEntityRepository
      * @param array<int, string>|null   $allowedMavenKeys
      * @param bool                      $permissive       (cf. doc)
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 14/05/2026 10:30:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -679,7 +678,7 @@ class DcScanRepository extends ServiceEntityRepository
      *
      * @param array<int, string>|null $allowedMavenKeys
      *
-     * @return array{code: int, liste?: array<int, array{id: int, maven_key: string, project_group: string, project_artifact: string, project_version: string, scan_date: \DateTimeImmutable, dep_count_total: int, dep_count_vulnerable: int, cve_count_total: int, cve_count_critical: int, cve_count_high: int, cve_count_medium: int, cve_count_low: int, parent_label: string|null, parent_version: string|null, archetype_version: string|null}>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array{id: int, maven_key: string, project_group: string, project_artifact: string, project_version: string, scan_date: \DateTimeImmutable, dep_count_total: int, dep_count_vulnerable: int, cve_count_total: int, cve_count_critical: int, cve_count_high: int, cve_count_medium: int, cve_count_low: int, parent_label: string|null, parent_version: string|null, archetype_version: string|null}>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 08/05/2026 18:40:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -764,7 +763,7 @@ class DcScanRepository extends ServiceEntityRepository
      *
      * @param array<int, string>|null $allowedMavenKeys
      *
-     * @return array{code: int, liste?: array<int, array{day: string, critical: int, high: int, medium: int, low: int}>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array{day: string, critical: int, high: int, medium: int, low: int}>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      */
     public function aggregateSeverityByDay(int $days = 30, ?array $allowedMavenKeys = null): array
     {

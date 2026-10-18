@@ -29,7 +29,7 @@ class UrlBuilderService
     /**
      * [Description for build]
      *
-     * @param string $baseUrl
+     * @param mixed $baseUrl Issu d'un paramètre de configuration (getParameter()), type non garanti à la source.
      * @param string $path
      * @param array<int|string, mixed> $queryParams
      *
@@ -39,8 +39,12 @@ class UrlBuilderService
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function build(string $baseUrl, string $path, array $queryParams = []): string
+    public function build(mixed $baseUrl, string $path, array $queryParams = []): string
     {
+        if (!is_string($baseUrl)) {
+            throw new \InvalidArgumentException('UrlBuilderService::build() : baseUrl doit être une chaîne.');
+        }
+
         // Construction propre de l'URL
         $url = rtrim($baseUrl, '/') . '/' . ltrim($path, '/');
 

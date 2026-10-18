@@ -42,7 +42,7 @@ class LoggerDetailRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array{code: int, erreur: string}
+     * @return array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -67,7 +67,7 @@ class LoggerDetailRepository extends ServiceEntityRepository
      * chaque collecte pour rejouer un état frais (cf BatchCollecteLoggerController).
      *
      * @param array<int|string, mixed> $map
-     * @return array{code: int, erreur: string}
+     * @return array{code: 200, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 15/05/2026 09:12:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -95,21 +95,8 @@ class LoggerDetailRepository extends ServiceEntityRepository
      * INSERT batch : 1 requête SQL pour N rows (perf >> N requêtes individuelles).
      * Si $rows est vide, retourne sans rien faire (code 200).
      *
-     * @param array<int, array{
-     *   maven_key: string,
-     *   project_version?: ?string,
-     *   level: string,
-     *   framework?: ?string,
-     *   file_path: string,
-     *   file_name: string,
-     *   class_name?: ?string,
-     *   line_number?: ?int,
-     *   sonar_issue_key?: ?string,
-     *   mode_collecte?: ?string,
-     *   utilisateur_collecte?: ?string,
-     *   date_enregistrement: \DateTimeImmutable
-     * }> $rows
-     * @return array{code: int, erreur: string, nombre?: int}
+     * @param array<int, array<string, mixed>> $rows
+     * @return array{code: 200, erreur: string, nombre: int}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 15/05/2026 09:12:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -168,7 +155,7 @@ class LoggerDetailRepository extends ServiceEntityRepository
      *
      * @param string $mavenKey
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 15/05/2026 09:13:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -198,7 +185,7 @@ class LoggerDetailRepository extends ServiceEntityRepository
      *
      * @param string $mavenKey
      *
-     * @return array{code: int, liste?: array<int, array{level: string, nb: int}>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 15/05/2026 09:13:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -230,7 +217,7 @@ class LoggerDetailRepository extends ServiceEntityRepository
      *
      * @param string $mavenKey
      *
-     * @return array{code: int, liste?: array<int, array{level: string, framework: ?string, nb: int}>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 15/05/2026 09:14:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -260,7 +247,7 @@ class LoggerDetailRepository extends ServiceEntityRepository
      *
      * @param string $mavenKey
      *
-     * @return array{code: int, liste?: array<int, array{framework: ?string, nb: int}>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 15/05/2026 09:15:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

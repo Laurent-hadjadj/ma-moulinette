@@ -77,7 +77,7 @@ class ApiProjetControllerTest extends TestCase
         $this->security->method('getUser')->willReturn($this->makeUser('u@x', []));
 
         $response = $this->controller->favori($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -87,7 +87,7 @@ class ApiProjetControllerTest extends TestCase
         $this->security->method('getUser')->willReturn($this->makeUser('u@x', []));
 
         $response = $this->controller->favori($this->jsonRequest(['other' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -100,7 +100,7 @@ class ApiProjetControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db fail']);
 
         $response = $this->controller->favori($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -113,7 +113,7 @@ class ApiProjetControllerTest extends TestCase
         ]);
 
         $response = $this->controller->favori($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertTrue($data['statut']);
@@ -126,7 +126,7 @@ class ApiProjetControllerTest extends TestCase
         $this->security->method('getUser')->willReturn($this->makeUser('u@x', []));
 
         $response = $this->controller->favoriCheck($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -138,7 +138,7 @@ class ApiProjetControllerTest extends TestCase
         $this->security->method('getUser')->willReturn($user);
 
         $response = $this->controller->favoriCheck($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -150,7 +150,7 @@ class ApiProjetControllerTest extends TestCase
         $this->security->method('getUser')->willReturn($user);
 
         $response = $this->controller->favoriCheck($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertTrue($data['favori']);
@@ -163,7 +163,7 @@ class ApiProjetControllerTest extends TestCase
         $this->security->method('getUser')->willReturn($user);
 
         $response = $this->controller->favoriCheck($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertFalse($data['favori']);
@@ -176,7 +176,7 @@ class ApiProjetControllerTest extends TestCase
         $this->security->method('getUser')->willReturn($this->makeUser('u@x', []));
 
         $response = $this->controller->liste_projet(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(404, $data['code']);
     }
@@ -189,7 +189,7 @@ class ApiProjetControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db']);
 
         $response = $this->controller->liste_projet(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -202,7 +202,7 @@ class ApiProjetControllerTest extends TestCase
         ]);
 
         $response = $this->controller->liste_projet(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(406, $data['code']);
     }
@@ -216,7 +216,7 @@ class ApiProjetControllerTest extends TestCase
         ]);
 
         $response = $this->controller->liste_projet(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(2, $data['projet']);
@@ -234,7 +234,7 @@ class ApiProjetControllerTest extends TestCase
         } elseif ($body === []) {
             $content = '{}';
         } else {
-            $content = json_encode($body);
+            $content = json_encode($body, JSON_THROW_ON_ERROR);
         }
         return new Request([], [], [], [], [], [], $content);
     }

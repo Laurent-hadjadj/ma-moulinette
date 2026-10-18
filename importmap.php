@@ -100,6 +100,10 @@ return [
         'path' => './assets/js/mon-application/dependency-check/index-dependency-check-mutualisables.js',
         'entrypoint' => true,
     ],
+    'zap' => [
+        'path' => './assets/js/mon-application/zap/index-zap.js',
+        'entrypoint' => true,
+    ],
     'clean-code' => [
         'path' => './assets/js/mon-application/clean-code/index-clean-code.js',
         'entrypoint' => true,

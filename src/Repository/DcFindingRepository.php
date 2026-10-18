@@ -33,7 +33,7 @@ class DcFindingRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array{code: int, erreur: string}
+     * @return array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -63,7 +63,7 @@ class DcFindingRepository extends ServiceEntityRepository
      *
      * @param int $scanId
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 08/05/2026 18:32:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace App\Command\Maintenance;
 
 use App\Repository\DcScanRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -50,14 +51,14 @@ class DcAuditSnapshotCommand extends Command
 
     public function __construct(
         private readonly DcScanRepository $scanRepository,
+        private readonly EntityManagerInterface $em,
     ) {
         parent::__construct();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $em = $this->scanRepository->getEntityManager();
-        $conn = $em->getConnection();
+        $conn = $this->em->getConnection();
 
         // ---- Section A : liste des scans -----------------------------------
         $output->writeln('');

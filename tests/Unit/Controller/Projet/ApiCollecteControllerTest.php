@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Projet;
 
-use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController,BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, BatchCollecteCleanCodeController};
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController,BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController};
 use App\Controller\Projet\ApiCollecteController;
 use App\Entity\Utilisateur;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
@@ -48,6 +48,8 @@ class ApiCollecteControllerTest extends TestCase
     /** @var BatchCollecteActuatorController&MockObject */           private MockObject $batchActuator;
     /** @var BatchCollecteLoggerController&MockObject */             private MockObject $batchLogger;
     /** @var BatchCollecteCleanCodeController&MockObject */          private MockObject $batchCleanCode;
+    /** @var BatchCollecteRciController&MockObject */                private MockObject $batchRci;
+    /** @var BatchCollecteEmpreinteEcologiqueController&MockObject */ private MockObject $batchEmpreinteEcologique;
 
     /** @var Security&MockObject */                                  private MockObject $security;
     /** @var LoggerInterface&MockObject */                           private MockObject $logger;
@@ -74,6 +76,8 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchCleanCode = $this->createMock(BatchCollecteCleanCodeController::class);
         $this->batchCleanCode->method('BatchCollecteCleanCode')
             ->willReturn(['code' => 200, 'skipped' => true]);
+        $this->batchRci = $this->createMock(BatchCollecteRciController::class);
+        $this->batchEmpreinteEcologique = $this->createMock(BatchCollecteEmpreinteEcologiqueController::class);
 
         $this->security = $this->createMock(Security::class);
         $user = $this->createMock(Utilisateur::class);
@@ -120,6 +124,8 @@ class ApiCollecteControllerTest extends TestCase
             $this->batchActuator,
             $this->batchLogger,
             $this->batchCleanCode,
+            $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->security,
             $this->logger,
         );
@@ -191,6 +197,7 @@ class ApiCollecteControllerTest extends TestCase
             'todo'            => ['apiCollecteTodo'],
             'actuator'        => ['apiCollecteActuator'],
             'logger'          => ['apiCollecteLogger'],
+            'rci'             => ['apiCollecteRci'],
         ];
     }
 
@@ -421,6 +428,25 @@ class ApiCollecteControllerTest extends TestCase
         $this->assertSame(200, $payload['code']);
     }
 
+    public function testApiCollecteRciReturnsHistoriqueRatingsOnSuccess(): void
+    {
+        $this->batchRci->expects($this->once())
+            ->method('buildRciMeasures')
+            ->with(self::MAVEN_KEY, 'COLLECTE', self::USER_EMAIL)
+            ->willReturn(['code' => 200, 'historique' => [
+                'rating' => 'B', 'frontend_rating' => 'C', 'backend_rating' => 'A',
+                'autre_rating' => null, 'inconnu_rating' => 'A',
+            ]]);
+
+        $payload = $this->decode($this->controller->apiCollecteRci(
+            $this->jsonRequest(['maven_key' => self::MAVEN_KEY])
+        ));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame('B', $payload['message']['rating']);
+        $this->assertSame('C', $payload['message']['frontend_rating']);
+    }
+
     // ═════════════ Error propagation from batch ════════════════════════════
 
     public function testApiCollecteInformationPropagatesBatchErrorAsAlert(): void
@@ -572,6 +598,19 @@ class ApiCollecteControllerTest extends TestCase
         $this->assertSame(500, $payload['code']);
     }
 
+    public function testApiCollecteRciPropagatesBatchError(): void
+    {
+        $this->batchRci->method('buildRciMeasures')
+            ->willReturn(['code' => 500, 'message' => 'rci fail', 'erreur' => 'e']);
+
+        $payload = $this->decode($this->controller->apiCollecteRci(
+            $this->jsonRequest(['maven_key' => self::MAVEN_KEY])
+        ));
+
+        $this->assertSame(500, $payload['code']);
+        $this->assertSame('error', $payload['type']);
+    }
+
     // ═════════════ helpers ═════════════════════════════════════════════════
 
     /**
@@ -579,7 +618,7 @@ class ApiCollecteControllerTest extends TestCase
      */
     private function jsonRequest(array $body): Request
     {
-        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
+        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -587,7 +626,7 @@ class ApiCollecteControllerTest extends TestCase
      */
     private function decode(JsonResponse $response): array
     {
-        return json_decode($response->getContent(), true);
+        return json_decode((string) $response->getContent(), true);
     }
 
     private function assertJsonStatus(JsonResponse $response, int $code, ?string $type = null): void

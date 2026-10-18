@@ -31,7 +31,7 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     private string $internalHeaderValue;
     private LoggerInterface $logger;
 /**
- * @param array<int|string, mixed> $allowedOrigins
+ * @param array<int, string> $allowedOrigins
  */
 
     public function __construct(
@@ -87,10 +87,15 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
         /* Exclusion des routes /api/secure/dependency-check/.
          * ces endpoints sont appelés par la CI GitLab (machine-to-machine)
          * et non par le front Symfony. Ils sont proteges par un subscriber dédié
-         * qui valide un token bearer plutôt
-         * que la combinaison Origin + X-Internal-Front.
+         * qui valide un token bearer plutôt que la combinaison Origin + X-Internal-Front.
          */
         if (str_starts_with($request->getPathInfo(), '/api/secure/dependency-check/')) {
+            return;
+        }
+
+        /* MODIF 2026-10-13 : même exclusion pour /api/secure/zap/ (CI,
+         * machine-to-machine, protégé par ZapIngestTokenSubscriber). */
+        if (str_starts_with($request->getPathInfo(), '/api/secure/zap/')) {
             return;
         }
 
@@ -136,10 +141,10 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      * [Description for isAllowedOrigin]
      *
      * Vérifie que le host extrait de l'URL (Origin ou Referer) appartient
-     * a la liste des origines autorisées.
+     * à la liste des origines autorisées.
      *
      * Why: l'ancienne version retombait sur $request->getHost() quand l'URL
-     * etait vide, ce qui validait la requête via le host du serveur lui-meme
+     * était vide, ce qui validait la requête via le host du serveur lui-même
      * (toujours dans allowedOrigins) et neutralisait le contrôle Origin/Referer.
      *
      * @param string $url
@@ -152,6 +157,7 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      */
     private function isAllowedOrigin(string $url): bool
     {
+
         if ($url === '') {
             return false;
         }

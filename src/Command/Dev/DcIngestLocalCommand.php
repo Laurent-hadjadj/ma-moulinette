@@ -20,6 +20,7 @@ namespace App\Command\Dev;
 use App\Entity\DcProcessingQueue;
 use App\Exception\DependencyCheck\DcInvalidJsonException;
 use App\Exception\DependencyCheck\DcInvalidStructureException;
+use App\Exception\UnexpectedExecutionPathException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -170,9 +171,14 @@ class DcIngestLocalCommand extends Command
                 $parentVersion    = self::trimMeta($meta['parent_version']    ?? null, 64);
                 $archetypeVersion = self::trimMeta($meta['archetype_version'] ?? null, 64);
 
+                $payloadGz = gzencode($jsonString, 6);
+                if ($payloadGz === false) {
+                    throw new UnexpectedExecutionPathException('Échec de la compression gzip du payload.');
+                }
+
                 $entry = (new DcProcessingQueue())
                     ->setUlid((new Ulid())->toBase32())
-                    ->setPayloadGz(gzencode($jsonString, 6))
+                    ->setPayloadGz($payloadGz)
                     ->setPayloadSha256(hash('sha256', $jsonString))
                     ->setPayloadSize(strlen($jsonString))
                     ->setContentType(DcProcessingQueue::CONTENT_JSON)

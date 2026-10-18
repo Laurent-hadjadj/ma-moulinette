@@ -28,6 +28,7 @@
   .todo-svg,
   .logger-svg,
   .details-svg,
+  .scope-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
 }
@@ -44,6 +45,7 @@
   .todo-svg,
   .logger-svg,
   .details-svg,
+  .scope-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
 }
@@ -60,6 +62,7 @@
   .todo-svg,
   .logger-svg,
   .details-svg,
+  .scope-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
 }
@@ -76,6 +79,7 @@
   .todo-svg,
   .logger-svg,
   .details-svg,
+  .scope-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
 }
@@ -107,6 +111,7 @@
   .stat-note { font-size: 1.2rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.6rem; }
   .todo-svg,
+  .scope-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 28px; }
@@ -123,6 +128,7 @@
   .stat-note { font-size: 1.4rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
   .todo-svg,
+  .scope-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
@@ -139,6 +145,7 @@
   .stat-note { font-size: 1.5rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
   .todo-svg,
+  .scope-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
@@ -156,6 +163,7 @@
   .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
   .todo-svg,
   .logger-svg,
+  .scope-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
   .separate-ligne { margin-bottom: 1rem; }
@@ -171,6 +179,7 @@
   .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
   .todo-svg,
   .logger-svg,
+  .scope-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
   .separate-ligne { margin-bottom: 1rem; }
@@ -209,6 +218,7 @@ textarea[readonly] {
 .container-logger,
 .container-projet,
 .container-quality,
+.container-scope,
 .container-owasp,
 .container-repartition-module,
 .container-cosui,
@@ -296,11 +306,13 @@ textarea[readonly] {
 .information-svg,
 .todo-svg,
 .logger-svg,
+.scope-svg,
 .favori-liste-svg { cursor: none; }
 
 /* Images SVG dynamiques Bleu */
 .todo-svg,
 .logger-svg,
+.scope-svg,
 .details-svg,
 .projet-graphique-svg {
     width: 100%;
@@ -324,6 +336,7 @@ textarea[readonly] {
 /* centrage des titre */
 .padding-right-3 { padding-right : 3rem; }
 .padding-right-27 { padding-right : 2.7rem; }
+.padding-right-34 { padding-right : 3.4rem; }
 .padding-right-42 { padding-right : 4.2rem; }
 
 /* Image SVG favori-list Mauve */
@@ -407,7 +420,9 @@ textarea[readonly] {
 #bouton-fermer-logger-graphique,
 #bouton-fermer-information-complexity,
 #bouton-ouvrir-actuator-config,
-#bouton-fermer-actuator {
+#bouton-fermer-actuator,
+#bouton-fermer-mesures-rci,
+#bouton-fermer-scope {
   min-width: 9rem;
   font-size: 0.95rem;
   border-radius: 0.375rem;
@@ -434,14 +449,16 @@ textarea[readonly] {
 #bouton-fermer-dette-technique:hover,
 #bouton-fermer-menace-potentielle:hover,
 #bouton-fermer-liste-severity:hover,
-#bouton-fermer-liste-projet:hover
+#bouton-fermer-liste-projet:hover,
 #bouton-fermer-liste-nosonar:hover,
 #bouton-ouvrir-clean-code:hover,
 #bouton-fermer-logger-detail:hover,
 #bouton-fermer-logger-graphique:hover,
 #bouton-fermer-information-complexity:hover,
 #bouton-ouvrir-actuator-config:hover,
-#bouton-fermer-actuator:hover { background-color: #006182; }
+#bouton-fermer-actuator:hover,
+#bouton-fermer-mesures-rci:hover,
+#bouton-fermer-scope:hover { background-color: #006182; }
 
 /* select2 custom
  *  placeholder
@@ -693,6 +710,34 @@ textarea[readonly] {
   width: 70%;
   max-width: 600px;
   margin: 20px auto;
+}
+
+/* MODIF 2026-09-29 : graphique RCI (modale _modal_mesures_rci.html.twig).
+  Hauteur fixe + position: relative, requis par Chart.js pour dimensionner
+  correctement le canvas (sinon héritage de "canvas { height: auto !important }".
+ */
+.chart-container-rci {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  margin-top: 1rem;
+}
+
+#rci-bar-chart {
+  height: 300px !important;
+}
+
+/* MODIF 2026-10-08 : graphique Scopes (modale _modal_repartition_scope.html.twig),
+  même contrainte de dimensionnement que le graphique RCI ci-dessus. */
+.chart-container-scope {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  margin-top: 1rem;
+}
+
+#scope-bar-chart {
+  height: 300px !important;
 }
 
 canvas {

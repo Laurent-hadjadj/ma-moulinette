@@ -303,28 +303,6 @@ class GenerateCodeStatsCommand extends Command
     }
 
     /**
-     * [Description for sqlRow]
-     *
-     * @param array<string, int>|null $row
-     *
-     * @return array{fichier: int, code: int, comment: int, vide: int, total: int}
-     *
-     * Created at: 22/07/2026 11:16:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function sqlRow(?array $row): array
-    {
-        return [
-            'fichier' => (int)($row['nFiles']  ?? 0),
-            'code'    => (int)($row['code']    ?? 0),
-            'comment' => (int)($row['comment'] ?? 0),
-            'vide'    => (int)($row['blank']   ?? 0),
-            'total'   => 0,
-        ];
-    }
-
-    /**
      * [Description for countTests]
      *
      * @param SymfonyStyle $io

@@ -31,8 +31,12 @@ class DateTimeTzImmutableMicroType extends DateTimeTzImmutableType
             return $value;
         }
 
+        if (!is_string($value)) {
+            return parent::convertToPHPValue($value, $platform);
+        }
+
         // Tronque ".956633" entre les secondes et le fuseau horaire
-        $value = (string) preg_replace('/(\d{2}:\d{2}:\d{2})\.\d+/', '$1', $value);
+        $value = preg_replace('/(\d{2}:\d{2}:\d{2})\.\d+/', '$1', $value) ?? $value;
 
         return parent::convertToPHPValue($value, $platform);
     }

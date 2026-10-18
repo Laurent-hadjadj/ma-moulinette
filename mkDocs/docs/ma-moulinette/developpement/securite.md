@@ -21,6 +21,35 @@ trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x
 
 `TRUST_HOST1`/`TRUST_HOST2` sont définis par environnement dans `.env.local` (jamais dans `.env` versionné).
 
+## 🛡️ En-têtes de sécurité HTTP
+
+Un scan ZAP actif complet (attack strength High, threshold Low, toutes règles) lancé le 16/10/2026 sur
+l'environnement de développement local a confirmé l'absence de tout en-tête de sécurité HTTP applicatif
+(aucune alerte High par ailleurs — voir la note en fin de section). `App\EventSubscriber\SecurityHeadersSubscriber`
+(écoute `kernel.response`) corrige ce point :
+
+| En-tête | Valeur | Pourquoi |
+| --- | --- | --- |
+| `Content-Security-Policy` | `default-src 'self'; script-src 'self'` (`'unsafe-inline'` ajouté **uniquement en dev**) `; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'` | `script-src` strict en prod : aucun `<script>` inline exécutable dans `templates/` (uniquement des data-islands `type="application/json"` lues par le JS bundlé). Relâché en dev car la Web Debug Toolbar Symfony injecte du JS inline sans nonce — elle est déjà absente en prod. `style-src` reste `'unsafe-inline'` partout : 91 attributs `style="..."` inline répartis sur 24 fichiers Twig, refactor hors scope. `img-src` autorise `data:` (CSS applicatif et EasyAdmin). `frame-ancestors 'none'` + `X-Frame-Options: DENY` : double protection anti-clickjacking, aucun `<iframe>` dans l'appli donc aucun coût |
+| `X-Frame-Options` | `DENY` | Filet pour les navigateurs qui ignorent `frame-ancestors` |
+| `X-Content-Type-Options` | `nosniff` | Directive universellement sûre |
+| `X-Powered-By` | retiré (`header_remove()`) | Émis par PHP lui-même (`expose_php`) avant que Symfony construise sa `Response` : pas présent dans `$response->headers`, donc pas retirable via `headers->remove()`. `bin/php-conf/php-855.ini` (`expose_php = Off`) documente la même intention côté configuration serveur pour un hébergeur qui partirait de ce fichier en prod |
+
+!!! note "SRI (Sub Resource Integrity) non implémenté — volontairement"
+    Le scan a aussi signalé l'absence d'attributs `integrity`/`crossorigin` sur les balises `<script>`/`<link>`.
+    Le SRI protège contre l'altération d'une ressource chargée depuis un **tiers** (CDN, hébergeur externe) :
+    Ma-Moulinette ne charge aucune ressource tierce (pas de CDN, pas de Google Fonts, tout est bundlé en
+    même origine via asset-mapper/importmap), donc cette protection n'a pas d'objet ici.
+
+!!! note "Résultat complet du scan ZAP du 16/10/2026"
+    Aucune alerte High. Trois catégories relevées (`X-Debug-Token`, commentaires « suspicious » contenant
+    `<!-- START of Symfony Web Debug Toolbar -->`, cookie de session `sf_redirect`) sont des artefacts de la
+    **Web Debug Toolbar en mode dev**, déjà absente en production (blocs `when@prod:` de
+    `config/packages/framework.yaml`) — pas des correctifs de code. L'alerte « Timestamp Disclosure » (un
+    nombre à 10 chiffres coïncidant avec une plage de timestamp Unix plausible) a été triée et confirmée
+    comme faux positif : les chaînes exactes rapportées n'apparaissent dans aucune réponse HTTP réelle
+    (`/sitemap.xml` et `/vendor/autoload_runtime.php`, les deux 404 — aucune route de ce nom dans l'appli).
+
 ## 🧩 Rôles et hiérarchie
 
 `config/packages/security.yaml` définit la hiérarchie de rôles suivante :

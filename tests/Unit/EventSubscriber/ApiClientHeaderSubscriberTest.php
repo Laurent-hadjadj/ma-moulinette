@@ -229,7 +229,7 @@ class ApiClientHeaderSubscriberTest extends TestCase
         $response = $event->getResponse();
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(JsonResponse::HTTP_FORBIDDEN, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertSame(403, $payload['code']);
     }
 }

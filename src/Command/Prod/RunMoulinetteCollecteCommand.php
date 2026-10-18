@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * MODIF 2026-05-21 : conversion du script CLI
@@ -48,6 +49,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class RunMoulinetteCollecteCommand extends Command
 {
     public function __construct(
+        /* MODIF 2026-10-15 : log dédié aux commandes de la crontab Docker
+         * (cf. config/packages/monolog.yaml, channel "cron"). */
+        #[Autowire(service: 'monolog.logger.cron')]
         private readonly LoggerInterface $logger,
         private readonly int $mamoulCliVerifyPeer,
         private readonly int $mamoulCliVerifyHost,
@@ -191,7 +195,7 @@ class RunMoulinetteCollecteCommand extends Command
     /**
      * [Description for buildSslConfig]
      *
-     * @return array{verify_peer: int, verify_host: int, ciphers: string}
+     * @return array{verify_peer: int, verify_host: int, ciphers: non-empty-string}
      *
      * Created at: 24/05/2026 09:50:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -221,6 +225,9 @@ class RunMoulinetteCollecteCommand extends Command
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    /**
+     * @return array{use_proxy: bool, proxy_url: non-empty-string, proxy_userpwd: string, no_proxy: array<int, string>}
+     */
     private function buildProxyConfig(): array
     {
         $noProxyEnv = $this->mamoulCliNoProxy;
@@ -241,8 +248,8 @@ class RunMoulinetteCollecteCommand extends Command
      * Protected pour permettre le mock dans les tests.
      *
      * @param string $baseUrl
-     * @param array<string, mixed> $sslConfig
-     * @param array<string, mixed> $proxyConfig
+     * @param array{verify_peer: int, verify_host: int, ciphers: non-empty-string} $sslConfig
+     * @param array{use_proxy: bool, proxy_url: non-empty-string, proxy_userpwd: string, no_proxy: array<int, string>} $proxyConfig
      * @param array<string, mixed> $params
      * @return array<string, mixed>
      * @param string $endpoint
@@ -269,13 +276,16 @@ class RunMoulinetteCollecteCommand extends Command
         int $timeout = 600
     ): array {
         $url     = $baseUrl . $endpoint;
+        if ($url === '') {
+            throw new \InvalidArgumentException('URL cURL vide (baseUrl + endpoint).');
+        }
         $ch      = curl_init();
         $headers = ['Accept: application/json'];
 
         if ($method === 'POST') {
             $payload = json_encode($params, JSON_UNESCAPED_UNICODE);
             $headers[] = 'Content-Type: application/json';
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload === false ? '' : $payload);
             curl_setopt($ch, CURLOPT_POST, true);
         } elseif ($method === 'GET' && !empty($params)) {
             $url .= '?' . http_build_query($params);
@@ -284,8 +294,8 @@ class RunMoulinetteCollecteCommand extends Command
         curl_setopt_array($ch, [
             CURLOPT_URL            => $url,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYHOST => $sslConfig['verify_host'],
-            CURLOPT_SSL_VERIFYPEER => $sslConfig['verify_peer'],
+            CURLOPT_SSL_VERIFYHOST => $sslConfig['verify_host'] === 0 ? 0 : 2,
+            CURLOPT_SSL_VERIFYPEER => (bool) $sslConfig['verify_peer'],
             CURLOPT_SSL_CIPHER_LIST=> $sslConfig['ciphers'],
             CURLOPT_PROTOCOLS      => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_CONNECTTIMEOUT => 15,
@@ -293,11 +303,12 @@ class RunMoulinetteCollecteCommand extends Command
             CURLOPT_HTTPHEADER     => $headers,
         ]);
 
-        if ($proxyConfig['use_proxy'] && $proxyConfig['proxy_url'] !== '') {
+        if ($proxyConfig['use_proxy']) {
             curl_setopt($ch, CURLOPT_PROXY, $proxyConfig['proxy_url']);
             curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-            if ($proxyConfig['proxy_userpwd'] !== '') {
-                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxyConfig['proxy_userpwd']);
+            $proxyUserPwd = $proxyConfig['proxy_userpwd'];
+            if ($proxyUserPwd !== '') {
+                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxyUserPwd);
             }
         }
 
@@ -331,8 +342,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @param string $url
      * @param string $token
-     * @param array<string, mixed> $sslConfig
-     * @param array<string, mixed> $proxyConfig
+     * @param array{verify_peer: int, verify_host: int, ciphers: non-empty-string} $sslConfig
+     * @param array{use_proxy: bool, proxy_url: non-empty-string, proxy_userpwd: string, no_proxy: array<int, string>} $proxyConfig
      * @param bool $debug
      * @param SymfonyStyle $io
      *
@@ -365,8 +376,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @param string $url
      * @param string $token
-     * @param array<string, mixed> $sslConfig
-     * @param array<string, mixed> $proxyConfig
+     * @param array{verify_peer: int, verify_host: int, ciphers: non-empty-string} $sslConfig
+     * @param array{use_proxy: bool, proxy_url: non-empty-string, proxy_userpwd: string, no_proxy: array<int, string>} $proxyConfig
      * @param array<string, mixed> $traitement
      * @param bool $dryRun
      * @param bool $debug

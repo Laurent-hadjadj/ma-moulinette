@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.7.0 - 15/05/2026                  ##
+##           V2.11.0 - 11/10/2026                 ##
 ##                                                ##
 ####################################################*/
 
@@ -16,6 +16,11 @@
 --- 2026-03-30 : Ajout des attributs duplicated_lines_rating.
 --- 2026-04-26 : Ajustement de la taille de analyse_key
 -- 2026-05-15 : breakdown level × framework (cf logger_details)
+--- 2026-10-06 : Ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
+--- 2026-10-08 : Ajout de la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
+--- 2026-10-08 : Ajout des attributs eco_anomalies, eco_dette_minute (Empreinte Écologique, plugins SonarQube Creedengo).
+--- 2026-10-08 : Ajout de eco_rating et du détail par langage java/javascript/php/python (Empreinte Écologique).
+--- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -27,6 +32,8 @@ CREATE TABLE ma_moulinette.historique
     maven_key VARCHAR(255) NOT NULL,
     version VARCHAR(32) NOT NULL,
     date_version VARCHAR(128) NOT NULL,
+    /* MODIF 2026-10-08 : version du serveur SonarQube ayant produit cette ligne. */
+    sonarqube_server_version VARCHAR(32) NOT NULL DEFAULT 'inconnu',
 
     analyse_key VARCHAR(64) NOT NULL,
     project_name VARCHAR(128) NOT NULL,
@@ -113,6 +120,16 @@ CREATE TABLE ma_moulinette.historique
     minor_violations INT,
     info_violations INT,
 
+    /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST), globale et par catégorie */
+    scope_main INT,
+    scope_test INT,
+    bug_scope_main INT,
+    bug_scope_test INT,
+    vulnerability_scope_main INT,
+    vulnerability_scope_test INT,
+    code_smell_scope_main INT,
+    code_smell_scope_test INT,
+
     software_quality_blocker_issues INT,
     software_quality_high_issues INT,
     software_quality_medium_issues INT,
@@ -172,6 +189,12 @@ CREATE TABLE ma_moulinette.historique
     security_review_rating VARCHAR(4),
     security_hotspots_reviewed DOUBLE PRECISION,
 
+    -- MODIF 2026-10-11 : métriques "optionnelles" apparues entre SonarQube 26.3.0
+    -- et 26.9.0, pas encore documentées/LTS — valeur brute, pas de note A-E.
+    maintainability_issue_severity INT,
+    reliability_issue_severity INT,
+    security_issue_severity INT,
+
     menace_potentielle_to_review_high INT,
     menace_potentielle_to_review_medium INT,
     menace_potentielle_to_review_low INT,
@@ -204,6 +227,44 @@ CREATE TABLE ma_moulinette.historique
     owasp_top10 INT,
     sans_top25 INT,
     cwe INT,
+
+    /* MODIF 2026-09-25 : RCI (Risk Criticality Index, plugin sonar-rci porté en PHP) */
+    rci_ncloc INT,
+    rci_weight INT,
+    rci_indicator DOUBLE PRECISION,
+    rci_rating VARCHAR(4),
+    rci_frontend_indicator DOUBLE PRECISION,
+    rci_frontend_rating VARCHAR(4),
+    rci_frontend_ncloc INT,
+    rci_frontend_weight INT,
+    rci_backend_indicator DOUBLE PRECISION,
+    rci_backend_rating VARCHAR(4),
+    rci_backend_ncloc INT,
+    rci_backend_weight INT,
+    rci_autre_indicator DOUBLE PRECISION,
+    rci_autre_rating VARCHAR(4),
+    rci_autre_ncloc INT,
+    rci_autre_weight INT,
+    rci_inconnu_indicator DOUBLE PRECISION,
+    rci_inconnu_rating VARCHAR(4),
+    rci_inconnu_ncloc INT,
+    rci_inconnu_weight INT,
+
+    eco_anomalies INT,
+    eco_dette_minute INT,
+    eco_rating VARCHAR(4),
+    eco_java_anomalies INT,
+    eco_java_dette_minute INT,
+    eco_java_rating VARCHAR(4),
+    eco_javascript_anomalies INT,
+    eco_javascript_dette_minute INT,
+    eco_javascript_rating VARCHAR(4),
+    eco_php_anomalies INT,
+    eco_php_dette_minute INT,
+    eco_php_rating VARCHAR(4),
+    eco_python_anomalies INT,
+    eco_python_dette_minute INT,
+    eco_python_rating VARCHAR(4),
 
     initial BOOLEAN NOT NULL,
 

@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\AnomalieDetails;
-use App\Service\{ExtractName, ClientService, UrlBuilderService};
+use App\Service\{ExtractName, ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteAnomalieDetailController]
@@ -41,6 +41,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         private ClientService $client,
         private ExtractName $serviceExtractName,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -147,10 +148,16 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         ]);
 
         /* Tableau des paramètres pour les requêtes HTTP */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (valeur alignée sur
+         * OPEN,CONFIRMED,REOPENED / OPEN,CONFIRMED,ACCEPTED — pas seulement OPEN, cf.
+         * GetSonarVersionService::issueStatusParam() et projet.md pour la règle). */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParamsList = [
-            'BUG' => [ 'componentKeys' => $maven_key, 'facets' => 'severities', 'types' => 'BUG', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
-            'VULNERABILITY' => [ 'componentKeys' => $maven_key, 'facets' => 'severities', 'types' => 'VULNERABILITY', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
-            'CODE_SMELL' => [ 'componentKeys' => $maven_key, 'facets' => 'severities', 'types' => 'CODE_SMELL', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ]
+            'BUG' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'BUG', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ],
+            'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'VULNERABILITY', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ],
+            'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'CODE_SMELL', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ]
         ];
 
         /* On appelle les API en passant les querryParams à la fonction générique */

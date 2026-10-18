@@ -646,6 +646,145 @@ export const remplissage = async function(maven_key) {
     $actuatorTableau.append('<tr><td colspan="2" class="text-center">Aucune donnée.</td></tr>');
   }
 
+    /**
+   * On récupère les mesures RCI :
+   * ncloc, weight, indicator, rating + les mesures pour frontend, backend, autre et inconnu.
+   */
+  const optionsMesuresRci = {
+    url: `${serveur()}/api/secure/peinture/projet/rci`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(optionsMesuresRci);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures RCI.');
+        if (t.code === http_404){
+            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+            enableButtonAnalyse();
+        } else {
+            log(' - ❌ [Peinture] Affichage des informations sur les mesures RCI en échec.');
+        }
+        return;
+      }
+
+      const colorByRating = {
+        'A': 'note-vert1',
+        'B': 'note-vert2',
+        'C': 'note-jaune',
+        'D': 'note-orange',
+        'E': 'note-rouge'
+      };
+      const rciClass = colorByRating[t.alert_status] ?? '';
+      $('#js-rci-alert-status').html(`<span class="stat-note stat-note-width ${rciClass}">${displayValue(t.alert_status)}</span>`);
+
+      const rci_mesures = document.getElementById('js-rci-alert-status');
+      rci_mesures.dataset.rciMavenKey = maven_key;
+      rci_mesures.dataset.rciMesuresJson = JSON.stringify(t.rci_mesures_json || []);
+
+      /**
+       * Tableau détaillé de la modale (#modal-affiche-mesures-rci) : RCI, taux
+       * de dette (100 - RCI) et note, pour le global et chaque module.
+       */
+      const rciMesures = t.rci_mesures_json ?? {};
+      const remplitColonneRci = (suffixe, prefixe) => {
+        const indicator = rciMesures[`${prefixe}indicator`];
+        const dette = (indicator === null || indicator === undefined) ? null : 100 - indicator;
+        const rating = rciMesures[`${prefixe}rating`];
+
+        $(`#js-rci-${suffixe}-indicator`).text(displayPercent(indicator));
+        $(`#js-rci-${suffixe}-dette`).text(displayPercent(dette));
+        $(`#js-rci-${suffixe}-rating`).html(
+          `<span class="stat-note ${colorByRating[rating] ?? ''}">${displayValue(rating)}</span>`
+        );
+      };
+      remplitColonneRci('global', '');
+      remplitColonneRci('frontend', 'frontend_');
+      remplitColonneRci('backend', 'backend_');
+      remplitColonneRci('autre', 'autre_');
+      remplitColonneRci('inconnu', 'inconnu_');
+
+      log(' - 🎨 [Peinture] Affichage des informations sur les mesures RCI.');
+  } catch(error) {
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures RCI (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures RCI.');
+      log(' - 🔴 [Peinture] Affichage des informations sur les Mesures RCI en échec.');
+      return;
+  }
+
+  /**
+   * On récupère l'Empreinte Écologique (plugins SonarQube Creedengo,
+   * activable via CREEDENGO_ENABLED) : null si désactivé ou jamais
+   * collectée, affiché "-" via displayNumber() (convention standard).
+   */
+  const optionsEcoConception = {
+    url: `${serveur()}/api/secure/peinture/projet/eco-conception`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(optionsEcoConception);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération de l\'Empreinte Écologique.');
+        if (t.code === http_404){
+            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+            enableButtonAnalyse();
+        } else {
+            log(' - ❌ [Peinture] Affichage de l\'Empreinte Écologique en échec.');
+        }
+        return;
+      }
+
+      $('#js-eco-anomalies').html(displayNumber(t.eco_anomalies));
+      const colorByRatingEco = {
+        'A': 'note-vert1',
+        'B': 'note-vert2',
+        'C': 'note-jaune',
+        'D': 'note-orange',
+        'E': 'note-rouge'
+      };
+      if (t.eco_rating) {
+        $('#js-eco-rating').html(`<span class="stat-note stat-note-width ${colorByRatingEco[t.eco_rating] ?? ''}">${displayValue(t.eco_rating)}</span>`);
+      } else {
+        $('#js-eco-rating').html('');
+      }
+
+      log(` - 🎨 [Peinture] Affichage de l'Empreinte Écologique.`);
+  } catch(error) {
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "Une erreur inattendue s'est produite lors l'affichage de l'Empreinte Écologique (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Empreinte Écologique.');
+      log(` - 🔴 [Peinture] Affichage de l'Empreinte Écologique en échec.`);
+      return;
+  }
+
   /**
    * On récupère les mesures :
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
@@ -674,7 +813,7 @@ export const remplissage = async function(maven_key) {
             log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
             enableButtonAnalyse();
         } else {
-            log(' - ❌ [Peinture] Affichage des informations sur les mesures en échec.');
+            log(` - ❌ [Peinture] Affichage des informations sur les mesures en échec.`);
         }
         return;
       }
@@ -685,8 +824,8 @@ export const remplissage = async function(maven_key) {
      * a poser un dataset DOM par valeur. */
     window.peintureData = t;
 
-        /** On affiche les langages supportés */
-    const jsonObject=t.ncloc_language_distribution;
+    /** On affiche les langages supportés */
+    const jsonObject = t.ncloc_language_distribution;
     let i=0;
     let total=0;
 
@@ -785,7 +924,8 @@ export const remplissage = async function(maven_key) {
       'ERROR': 'note-rouge'
     };
     const qgClass = colorByQualityGate[t.alert_status] ?? '';
-    $('#js-alert-status').html(`<span class="stat-note stat-note-qg ${qgClass}">${displayValue(t.alert_status)}</span>`);
+    $('#js-qg-alert-status').html(`<span class="stat-note stat-note-qg ${qgClass}">${displayValue(t.alert_status)}</span>`);
+
 
     /** Documentation */
     $('#js-comment-lines').html(displayNumber(t.comment_lines));
@@ -873,9 +1013,65 @@ export const remplissage = async function(maven_key) {
       $('#js-dette-vulnerability').html(t.detteVulnerability);
       $('#js-dette-code-smell').html(t.detteCodeSmell);
 
+      /* MODIF 2026-10-11 : pose un data-attribute, ou le SUPPRIME si value est
+       * null/undefined (frontend/backend/autre/inconnu + scope désormais
+       * nullables, cf. ApiPeintureController). Un dataset JS ne peut pas
+       * stocker `null` : `element.dataset.x = null` le convertit en la chaîne
+       * littérale "null", qu'enregistrement.js relirait tel quel et enverrait
+       * au backend — cassant l'INSERT sur une colonne INT. Supprimer
+       * l'attribut fait lire `undefined` par enregistrement.js, omis du JSON
+       * envoyé, donc traité comme absent côté backend (`?? null`). */
+      const setDataOrOmit = (element, key, value) => {
+        if (value === null || value === undefined) {
+          delete element.dataset[key];
+        } else {
+          element.dataset[key] = value;
+        }
+      };
+
       /** Historique */
       const t13 = document.getElementById('js-dette');
       t13.dataset.detteMinute=t.detteMinute;
+      /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
+       * relue par enregistrement.js — même pattern que detteMinute ci-dessus. */
+      setDataOrOmit(t13, 'scopeMain', t.scope_main);
+      setDataOrOmit(t13, 'scopeTest', t.scope_test);
+
+      /* MODIF 2026-10-08 : résumé "Scope Main/Test" affiché sur la page Projet —
+       * part respective du code source (MAIN) et du code de test (TEST) parmi
+       * les anomalies. Les deux pourcentages sont affichés côte à côte pour
+       * éviter qu'un "0 %" isolé ne soit lu comme une erreur plutôt qu'une
+       * vraie absence d'anomalie côté test. */
+      const scopeTotal = Number(t.scope_main) + Number(t.scope_test);
+      const scopeMainPercent = scopeTotal > 0 ? (Number(t.scope_main) / scopeTotal) * cent : null;
+      const scopeTestPercent = scopeTotal > 0 ? (Number(t.scope_test) / scopeTotal) * cent : null;
+      $('#js-scope-main-percent').html(displayPercent(scopeMainPercent));
+      $('#js-scope-separator').html('/');
+      $('#js-scope-test-percent').html(displayPercent(scopeTestPercent));
+
+      /* MODIF 2026-10-08 : tableau détaillé de la modale (#modal-affiche-scope) —
+       * nombre d'anomalies MAIN/TEST et part du scope TEST, global et par
+       * catégorie. Même pattern que remplitColonneRci (lignes ~701 plus haut). */
+      const remplitColonneScope = (suffixe, main, test) => {
+        const total = Number(main) + Number(test);
+        const testPercent = total > 0 ? (Number(test) / total) * cent : null;
+        $(`#js-scope-${suffixe}-main`).text(displayNumber(main));
+        $(`#js-scope-${suffixe}-test`).text(displayNumber(test));
+        $(`#js-scope-${suffixe}-test-percent`).text(displayPercent(testPercent));
+      };
+      remplitColonneScope('global', t.scope_main, t.scope_test);
+      remplitColonneScope('bug', t.bug_scope_main, t.bug_scope_test);
+      remplitColonneScope('vulnerability', t.vulnerability_scope_main, t.vulnerability_scope_test);
+      remplitColonneScope('code-smell', t.code_smell_scope_main, t.code_smell_scope_test);
+
+      /* MODIF 2026-10-08 : JSON brut relu par index-projet.js pour construire
+       * le graphique de la modale (même pattern que dataset.rciMesuresJson). */
+      t13.dataset.scopeMesuresJson = JSON.stringify({
+        global_main: t.scope_main, global_test: t.scope_test,
+        bug_main: t.bug_scope_main, bug_test: t.bug_scope_test,
+        vulnerability_main: t.vulnerability_scope_main, vulnerability_test: t.vulnerability_scope_test,
+        code_smell_main: t.code_smell_scope_main, code_smell_test: t.code_smell_scope_test,
+      });
 
       /* Nombre d'anomalie */
       $('#js-nombre-bug-total').html(displayNumber(t.bug_total));
@@ -895,10 +1091,19 @@ export const remplissage = async function(maven_key) {
       t14.dataset.nombreBug = (t.bug_total);
       t15.dataset.nombreVulnerability = (t.vulnerability);
       t16.dataset.nombreCodeSmell = (t.code_smell_total);
+      /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) par catégorie. */
+      setDataOrOmit(t14, 'bugScopeMain', t.bug_scope_main);
+      setDataOrOmit(t14, 'bugScopeTest', t.bug_scope_test);
+      setDataOrOmit(t15, 'vulnerabilityScopeMain', t.vulnerability_scope_main);
+      setDataOrOmit(t15, 'vulnerabilityScopeTest', t.vulnerability_scope_test);
+      setDataOrOmit(t16, 'codeSmellScopeMain', t.code_smell_scope_main);
+      setDataOrOmit(t16, 'codeSmellScopeTest', t.code_smell_scope_test);
 
       /* Répartition modules */
-      const totalModule = Number(t.frontend + t.backend + t.autre + t.inconnu);
-
+      /* MODIF 2026-10-11 : frontend/backend/autre/inconnu peuvent désormais être
+       * null (aucune collecte d'anomalies pour ce projet) — à distinguer de
+       * "collecté, zéro anomalie par module". Les 4 champs viennent de la même
+       * ligne en base, donc soit tous numériques, soit tous null ensemble. */
       const categories = [
         { key: 'frontend', elCount: '#js-nombre-frontend', elPercent: '#js-nombre-frontend-percent', dataAttr: 'nombreFrontend' },
         { key: 'backend',  elCount: '#js-nombre-backend', elPercent: '#js-nombre-backend-percent',  dataAttr: 'nombreBackend'  },
@@ -906,7 +1111,11 @@ export const remplissage = async function(maven_key) {
         { key: 'inconnu',  elCount: '#js-nombre-inconnu', elPercent: '#js-nombre-inconnu-percent',  dataAttr: 'nombreInconnu'  },
       ];
 
-      const fmtDecimal  = new Intl.NumberFormat('fr-FR', { style: 'decimal' });
+      const modulesCollected = categories.every(({ key }) => t[key] !== null && t[key] !== undefined);
+      const totalModule = modulesCollected
+        ? Number(t.frontend) + Number(t.backend) + Number(t.autre) + Number(t.inconnu)
+        : 0;
+
       const fmtPercent  = new Intl.NumberFormat('fr-FR', { style: 'percent' });
       const htmlPad1    = '<span style="color:#fff;">0</span>';
       const htmlPad2    = '<span style="color:#fff;">00</span>';
@@ -923,11 +1132,18 @@ export const remplissage = async function(maven_key) {
       }
 
       categories.forEach(({ key, elCount, elPercent, dataAttr }) => {
+        if (!modulesCollected) {
+          $(elCount).html(displayNumber(null));
+          $(elPercent).html(displayPercent(null));
+          setDataOrOmit($(elCount)[0], dataAttr, null);
+          return;
+        }
+
         const value  = Number(t[key]);
         const ratio  = totalModule > 0 ? value / totalModule : 0;
         const pad    = totalModule > 0 ? percentPadding(ratio) : '';
 
-        $(elCount).html(fmtDecimal.format(value));
+        $(elCount).html(displayNumber(value));
         $(elPercent).html(pad + fmtPercent.format(ratio));
 
         // Historique via data-attribute
@@ -939,10 +1155,10 @@ export const remplissage = async function(maven_key) {
       const t18 = document.getElementById('js-nombre-backend');
       const t19 = document.getElementById('js-nombre-autre');
       const t19a = document.getElementById('js-nombre-inconnu');
-      t17.dataset.nombreFrontend = t.frontend;
-      t18.dataset.nombreBackend = t.backend;
-      t19.dataset.nombreAutre = t.autre;
-      t19a.dataset.nombreInconnu = t.inconnu;
+      setDataOrOmit(t17, 'nombreFrontend', t.frontend);
+      setDataOrOmit(t18, 'nombreBackend', t.backend);
+      setDataOrOmit(t19, 'nombreAutre', t.autre);
+      setDataOrOmit(t19a, 'nombreInconnu', t.inconnu);
 
       /* Répartition des violations par sévérité */
       $('#js-nombre-violation-bloquant').html(displayNumber(t.blocker));

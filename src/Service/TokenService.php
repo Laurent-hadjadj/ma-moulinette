@@ -42,7 +42,8 @@ class TokenService
      */
     public function generateToken(array $data): string
     {
-        $tokenData = base64_encode(json_encode($data));
+        $encoded = json_encode($data);
+        $tokenData = base64_encode($encoded === false ? '' : $encoded);
         $csrfToken = $this->csrfTokenManager->getToken('intention')->getValue();
         return $csrfToken . '.' . $tokenData;
     }

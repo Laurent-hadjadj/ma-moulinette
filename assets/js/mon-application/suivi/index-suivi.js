@@ -240,6 +240,78 @@ if (langueLabelsEl && langueDatasetsEl && langueCanvas) {
   }
 }
 
+/* MODIF 2026-10-08 : graphique en lignes pleines RCI (%) + Scope Main/Test (%).
+ * Un seul JSON (labels + datasets Chart.js prêts à l'emploi, couleurs incluses),
+ * préparé côté serveur par SuiviController::buildRciScopeChartData — même
+ * principe que le bloc langues, adapté en line chart (axe Y 0-100%
+ * fixe, pas de stacked). */
+const rciScopeDataEl = document.getElementById('graphique-rci-scope-data');
+const rciScopeCanvas = document.getElementById('graphique-rci-scope');
+
+if (rciScopeDataEl && rciScopeCanvas) {
+  try {
+    const rciScopeChart = JSON.parse(rciScopeDataEl.dataset.chart);
+
+    if (Array.isArray(rciScopeChart.datasets) && rciScopeChart.datasets.length > 0) {
+      const rciScopeLabels = rciScopeChart.labels.map(date => new Date(date));
+      const rciScopeDatasets = rciScopeChart.datasets.map(ds => ({
+        label: ds.label,
+        data: ds.data,
+        borderColor: ds.borderColor,
+        backgroundColor: ds.backgroundColor,
+        fill: true,
+        tension: 0.2,
+        borderWidth: 2,
+        pointRadius: 4
+      }));
+
+      const ctx = rciScopeCanvas.getContext('2d');
+      const previous = Chart.getChart('graphique-rci-scope');
+      if (previous !== undefined) {
+        previous.destroy();
+      }
+      // eslint-disable-next-line no-new
+      new Chart(ctx, {
+        type: 'line',
+        data: { labels: rciScopeLabels, datasets: rciScopeDatasets },
+        options: {
+          responsive: true,
+          aspectRatio: 3,
+          maintainAspectRatio: true,
+          scales: {
+            x: {
+              type: 'timeseries',
+              time: { unit: 'day', unitStepSize: 1, tooltipFormat: 'll', displayFormats: { 'day': 'dd/MM/yyyy' } },
+              ticks: {
+                callback: function(value) {
+                  return format(new Date(value), 'dd LLL yyyy', { locale: fr });
+                }
+              }
+            },
+            y: {
+              display: true,
+              beginAtZero: true,
+              max: cent,
+              title: { display: true, text: '%', color: '#00445b' },
+              ticks: { color: '#00445b' }
+            }
+          },
+          plugins: {
+            legend: { position: 'bottom' },
+            datalabels: { display: false },
+            tooltip: {
+              enabled: true,
+              callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y} %` }
+            }
+          }
+        }
+      });
+    }
+  } catch (e) {
+    sessionStorage.setItem('ma_moulinette_info', 'graphique-rci-scope parse error: ' + e.message);
+  }
+}
+
 /**
  * Drapeau de validité des donnees chargées pour la modale "ajouter une analyse".
  * Mis a true uniquement si getVersion a abouti (code 200 + data).

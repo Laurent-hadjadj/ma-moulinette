@@ -18,7 +18,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Repartition, RepartitionTemp};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteNoSonarController]
@@ -46,6 +46,7 @@ class BatchCollecteRepartitionController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -159,7 +160,7 @@ class BatchCollecteRepartitionController extends AbstractController
      * $index = 1 à 20 max ==> 10000 anomalies
      * $category = BUG,VULNERABILITY,CODE_SMELL
      * $severity = INFO,MINOR,MAJOR,CRITICAL,BLOCKER
-     * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED
+     * http://{url}/api/issues/search?components={key}&statuses=OPEN,CONFIRMED,REOPENED
      * &s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p=
      *
      * @param string $maven_key
@@ -178,13 +179,16 @@ class BatchCollecteRepartitionController extends AbstractController
     {
 
          /** Sécurisation de l'URL */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
-                'componentKeys' => $maven_key,
-                'statuses' => 'OPEN,CONFIRMED,REOPENED',
+                $this->sonarVersion->componentKeyParam() => $maven_key,
+                $issueStatus['param'] => $issueStatus['value'],
                 's' => 'STATUS',
                 'asc' => 'no',
                 'types' => $category,
@@ -231,15 +235,18 @@ class BatchCollecteRepartitionController extends AbstractController
     private function batchCollecteInformation(string $maven_key, string $category): array
     {
         /** Sécurisation de l'URL */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
-                'componentKeys' => $maven_key,
-                'statuses' => 'OPEN,CONFIRMED,REOPENED',
+                $this->sonarVersion->componentKeyParam() => $maven_key,
+                $issueStatus['param'] => $issueStatus['value'],
                 'types' => $category,
-                'facets' => 'severities',
+                'facets' => 'severities,scopes',
                 'p' => 1,
                 'ps' => 1
             ]
@@ -260,10 +267,36 @@ class BatchCollecteRepartitionController extends AbstractController
         }
 
         $this->logger->info('[Batch Répartition] ℹ️ Résultat reçu dans batchCollecteInformation', [
-            'facets' => $result['json']['facets'][0] ?? []
+            'facets' => $result['json']['facets'] ?? []
         ]);
 
-        return $result['json']['facets'][0];
+        return $result['json']['facets'] ?? [];
+    }
+
+    /**
+     * [Description for extractFacetValues]
+     * Extrait le tableau 'values' de la facette dont la propriété correspond,
+     * depuis un tableau de facettes API SonarQube (plusieurs facettes
+     * peuvent être demandées ensemble, ex. 'severities,scopes' — on ne peut
+     * plus supposer que 'severities' est toujours en première position).
+     *
+     * @param array<int|string, mixed> $facets
+     * @param string $property
+     *
+     * @return array<int, array<string, mixed>>
+     *
+     * Created at: 28/09/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function extractFacetValues(array $facets, string $property): array
+    {
+        foreach ($facets as $facet) {
+            if (($facet['property'] ?? '') === $property) {
+                return $facet['values'] ?? [];
+            }
+        }
+        return [];
     }
 
     /**
@@ -305,14 +338,18 @@ class BatchCollecteRepartitionController extends AbstractController
         }
         /** On traite les données */
         $info = $minor = $major = $critical = $blocker = 0;
-        if (isset($result['values'])){
+        // MODIF 2026-09-28 : batchCollecteInformation() renvoie désormais toutes
+        // les facettes demandées (severities,scopes) — on sélectionne 'severities'
+        // par son nom plutôt que de supposer qu'elle est en première position.
+        $severityValues = $this->extractFacetValues($result, 'severities');
+        if (!empty($severityValues)){
             $this->logger->debug('[Batch Répartition Module] 🛠️ Informations disponibles dans les facets : ', [
                     'maven_key' => $maven_key,
                     'category' => $category,
                     'response' => $result
             ]);
 
-            foreach($result['values'] as $value){
+            foreach($severityValues as $value){
                 if ($value['val'] === 'INFO') {
                     $info = $value['count'] ?? 0;
                 }
@@ -367,14 +404,15 @@ class BatchCollecteRepartitionController extends AbstractController
      * @param array<int|string, mixed> $groupData
      * @param array<int|string, mixed> $fields
      */
-    private function flattenGroupData(array $groupData, array $fields, array &$map){
+    private function flattenGroupData(array $groupData, array $fields, array &$map): void
+    {
         // Fonction d'aplatissement qui, pour une category donné, affecte chaque valeur aux clés correspondantes
         // Chaque category doit contenir 5 sous-tableaux de 4 valeurs = 20 valeurs
         if (count($groupData) === 5) {
             foreach ($groupData as $severityIndex => $values) {
                 foreach ($values as $valueIndex => $value) {
                     // Calcul de l'index dans le tableau des champs
-                    $fieldIndex = $severityIndex * 4 + $valueIndex;
+                    $fieldIndex = (int) $severityIndex * 4 + (int) $valueIndex;
                     // Affectation
                     $map[$fields[$fieldIndex]] = $value;
                 }

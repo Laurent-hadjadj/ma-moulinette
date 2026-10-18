@@ -1,6 +1,6 @@
 -- ############################################################################
 -- ## MASTER INSTALL Ma-Moulinette
--- ## V2.0.1 - 24/04/2026
+-- ## V2.2.0 - 08/10/2026
 -- ##
 -- ## USAGE : psql -U postgres -v ON_ERROR_STOP=1 -f 99_master_install.sql
 -- ##         (depuis le repertoire migrations/POSTGRESQL/)
@@ -59,6 +59,7 @@
 \ir 20_tables/dc_finding.sql
 \ir 20_tables/dc_processing_queue.sql
 \ir 20_tables/dc_scan.sql
+\ir 20_tables/eco_conception.sql
 \ir 20_tables/groupe_fonctionnel.sql
 \ir 20_tables/groupe_utilisateur.sql
 \ir 20_tables/historique.sql
@@ -73,12 +74,14 @@
 \ir 20_tables/mesures.sql
 \ir 20_tables/no_sonar.sql
 \ir 20_tables/owasp.sql
+\ir 20_tables/owasp_dast.sql
 \ir 20_tables/owasp_top10.sql
 \ir 20_tables/portefeuille.sql
 \ir 20_tables/portefeuille_historique.sql
 \ir 20_tables/profiles.sql
 \ir 20_tables/profiles_historique.sql
 \ir 20_tables/properties.sql
+\ir 20_tables/rci.sql
 \ir 20_tables/repartition.sql
 \ir 20_tables/repartition_temp.sql
 \ir 20_tables/todo.sql
@@ -87,6 +90,10 @@
 \ir 20_tables/user_agent_event.sql
 \ir 20_tables/user_role_log.sql
 \ir 20_tables/utilisateur.sql
+\ir 20_tables/zap_finding.sql
+\ir 20_tables/zap_processing_queue.sql
+\ir 20_tables/zap_rule.sql
+\ir 20_tables/zap_scan.sql
 
 \echo ===== 7. Views =====
 \ir 30_views/01_vw_batch_profiling_weekly.sql

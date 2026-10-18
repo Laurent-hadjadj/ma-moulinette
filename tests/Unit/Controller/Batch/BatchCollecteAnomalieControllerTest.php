@@ -21,6 +21,7 @@ use App\Repository\AnomalieRepository;
 use App\Service\ClientService;
 use App\Service\DateTools;
 use App\Service\ExtractName;
+use App\Service\GetSonarVersionService;
 use App\Service\UrlBuilderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -40,6 +41,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     /** @var ExtractName&MockObject */             private MockObject $extractName;
     /** @var DateTools&MockObject */               private MockObject $dateTools;
     /** @var UrlBuilderService&MockObject */       private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */  private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */         private MockObject $logger;
     /** @var AnomalieRepository&MockObject */      private MockObject $repo;
     /** @var ParameterBagInterface&MockObject */   private MockObject $parameterBag;
@@ -53,6 +55,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $this->extractName = $this->createMock(ExtractName::class);
         $this->dateTools = $this->createMock(DateTools::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repo = $this->createMock(AnomalieRepository::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
@@ -63,6 +66,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             ->willReturn($this->repo);
 
         $this->urlBuilder->method('build')->willReturn('https://sonar/api/...');
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
+        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED']);
         $this->extractName->method('extractNameFromMavenKey')->willReturn('app');
         $this->dateTools->method('minutesTo')->willReturnCallback(fn ($min) => (string) $min . 'min');
 
@@ -78,7 +83,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteAnomalieController(
-            $this->em, $this->client, $this->extractName, $this->dateTools, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->extractName, $this->dateTools, $this->urlBuilder,
+            $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }
@@ -246,6 +252,100 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         // historique renvoyé
         $this->assertSame(10, $result['historique']['violations']);
+        /* MODIF 2026-10-06 : régression corrigée — ces clés étaient en bare
+         * 'frontend'/'backend'/'autre'/'inconnu' (aucune colonne de ce nom
+         * dans historique, silencieusement ignorées par CollecteController) ;
+         * seule 'repartition_frontend' etc. existe réellement. */
+        $this->assertSame(2, $result['historique']['repartition_frontend']);
+        $this->assertSame(6, $result['historique']['repartition_backend']);
+        $this->assertSame(1, $result['historique']['repartition_autre']);
+        $this->assertSame(1, $result['historique']['repartition_inconnu']);
+        $this->assertArrayNotHasKey('frontend', $result['historique']);
+    }
+
+    /**
+     * MODIF 2026-10-06 : répartition par scope (MAIN/TEST), globale et par
+     * catégorie — facet 'scopes' ajouté aux 3 appels par catégorie déjà
+     * existants (aucun appel HTTP supplémentaire).
+     */
+    public function testScopeFacetsAreAggregatedGloballyAndPerCategory(): void
+    {
+        $generalPayload = [
+            'code' => 200,
+            'json' => [
+                'paging' => ['total' => 10],
+                'total' => 10, 'effortTotal' => 120,
+                'facets' => [
+                    ['property' => 'severities', 'values' => []],
+                    ['property' => 'types', 'values' => []],
+                    ['property' => 'directories', 'values' => []],
+                ],
+            ],
+        ];
+
+        $this->client->expects($this->exactly(4))
+            ->method('httpSonarQube')
+            ->willReturnOnConsecutiveCalls(
+                $generalPayload,
+                [
+                    'code' => 200,
+                    'json' => [
+                        'paging' => ['total' => 3], 'total' => 3, 'effortTotal' => 30,
+                        'facets' => [[
+                            'property' => 'scopes',
+                            'values' => [['val' => 'MAIN', 'count' => 2], ['val' => 'TEST', 'count' => 1]],
+                        ]],
+                    ],
+                ],
+                [
+                    'code' => 200,
+                    'json' => [
+                        'paging' => ['total' => 2], 'total' => 2, 'effortTotal' => 20,
+                        'facets' => [[
+                            'property' => 'scopes',
+                            'values' => [['val' => 'MAIN', 'count' => 2], ['val' => 'TEST', 'count' => 0]],
+                        ]],
+                    ],
+                ],
+                [
+                    'code' => 200,
+                    'json' => [
+                        'paging' => ['total' => 5], 'total' => 5, 'effortTotal' => 70,
+                        'facets' => [[
+                            'property' => 'scopes',
+                            'values' => [['val' => 'MAIN', 'count' => 3], ['val' => 'TEST', 'count' => 2]],
+                        ]],
+                    ],
+                ],
+            );
+
+        $this->repo->method('deleteAnomalieMavenKey')->willReturn(['code' => 200]);
+
+        $capturedMap = [];
+        $this->repo->expects($this->once())
+            ->method('insertAnomalie')
+            ->with($this->callback(function (array $map) use (&$capturedMap) {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteAnomalie(self::MAVEN_KEY, 'auto', 'u');
+
+        $this->assertSame(200, $result['code']);
+        // Par catégorie : BUG=2/1, VULNERABILITY=2/0, CODE_SMELL=3/2
+        $this->assertSame(2, $capturedMap['bug_scope_main']);
+        $this->assertSame(1, $capturedMap['bug_scope_test']);
+        $this->assertSame(2, $capturedMap['vulnerability_scope_main']);
+        $this->assertSame(0, $capturedMap['vulnerability_scope_test']);
+        $this->assertSame(3, $capturedMap['code_smell_scope_main']);
+        $this->assertSame(2, $capturedMap['code_smell_scope_test']);
+        // Globaux = somme des 3 catégories
+        $this->assertSame(7, $capturedMap['scope_main']);
+        $this->assertSame(3, $capturedMap['scope_test']);
+        // Même répartition dans le $historique renvoyé à CollecteController
+        $this->assertSame(7, $result['historique']['scope_main']);
+        $this->assertSame(3, $result['historique']['scope_test']);
     }
 
     public function testOrphanIssuesWithoutDirectoryAreReassignedToInconnu(): void

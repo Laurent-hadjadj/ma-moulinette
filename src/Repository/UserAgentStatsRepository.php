@@ -13,6 +13,7 @@
 
 namespace App\Repository;
 
+use App\Entity\UserAgentAnalysis;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,6 +21,8 @@ use Doctrine\Persistence\ManagerRegistry;
  * Repository dédié aux statistiques User-Agent.
  *
  * ⚠️ Lecture seule
+ *
+ * @extends ServiceEntityRepository<UserAgentAnalysis>
  */
 class UserAgentStatsRepository extends ServiceEntityRepository
 {

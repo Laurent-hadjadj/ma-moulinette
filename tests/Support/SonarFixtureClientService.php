@@ -34,6 +34,7 @@ class SonarFixtureClientService extends ClientService
         '#/api/components/search_projects\b#' => 'components/search_projects.json',
         '#/api/components/app\b#'             => 'components/app.json',
         '#/api/measures/component\b#'         => 'measures/component.json',
+        '#/api/measures/component_tree\b#'    => 'measures/component_tree.json',
         '#/api/qualityprofiles/search\b#'     => 'qualityprofiles/search.json',
         '#/api/server/version\b#'             => 'server/version.json',
     ];
@@ -100,6 +101,9 @@ class SonarFixtureClientService extends ClientService
             }
 
             $raw = file_get_contents($fixturePath);
+            if ($raw === false) {
+                throw new \RuntimeException("Lecture impossible de la fixture : $fixturePath");
+            }
             // Les fixtures générées via PowerShell 5.1 `Set-Content -Encoding UTF8`
             // portent un BOM UTF-8 (EF BB BF) qui casse json_decode.
             if (str_starts_with($raw, "\xEF\xBB\xBF")) {

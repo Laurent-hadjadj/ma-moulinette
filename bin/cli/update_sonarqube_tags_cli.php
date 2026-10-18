@@ -39,7 +39,11 @@ if (!isset($options['url'])) {
     die("❌ Utilisation : php update_sonarqube_tags_cli.php --url=\"https://sonar.exemple.com\" --token=\"XXXXX\" [--login=USER --password=PASS] [--dry-run]\n");
 }
 
-$SONAR_URL = rtrim($options['url'], '/');
+$urlOption = $options['url'];
+if (!is_string($urlOption) || $urlOption === '') {
+    die("❌ --url doit être une valeur unique non vide.\n");
+}
+$SONAR_URL = rtrim($urlOption, '/');
 $DRY_RUN = isset($options['dry-run']);
 $DEBUG = isset($options['debug']);
 
@@ -48,9 +52,9 @@ $TOKEN = $options['token'] ?? null;
 $LOGIN = $options['login'] ?? null;
 $PASSWORD = $options['password'] ?? null;
 
-if ($TOKEN) {
+if (is_string($TOKEN) && $TOKEN !== '') {
     $AUTH = $TOKEN . ":";  // token
-} elseif ($LOGIN && $PASSWORD) {
+} elseif (is_string($LOGIN) && $LOGIN !== '' && is_string($PASSWORD) && $PASSWORD !== '') {
     $AUTH = $LOGIN . ":" . $PASSWORD;  // login/password
 } else {
     die("❌ Erreur : il faut soit --token, soit --login et --password\n");
@@ -60,16 +64,22 @@ if ($TOKEN) {
 // === CONFIG SSL / TLS ===
 // (surchargeable via variables d'environnement)
 // -----------------------------------------------------
-$VERIFY_PEER = (int) ($_ENV['SONAR_CLI_VERIFY_PEER'] ?: 0);
-$VERIFY_HOST = (int) ($_ENV['SONAR_CLI_VERIFY_HOST'] ?: 0);
-$CIPHERS = $_ENV['SONAR_CLI_CIPHERS'] ?: "DEFAULT:!DH";
+$VERIFY_PEER = (int) ($_ENV['SONAR_CLI_VERIFY_PEER'] ?? 0);
+// CURLOPT_SSL_VERIFYHOST n'accepte que 0 (désactivé) ou 2 (activé) — 1 est obsolète/invalide.
+$VERIFY_HOST = ((int) ($_ENV['SONAR_CLI_VERIFY_HOST'] ?? 0)) === 0 ? 0 : 2;
+$ciphersEnv = $_ENV['SONAR_CLI_CIPHERS'] ?? null;
+$CIPHERS = is_string($ciphersEnv) && $ciphersEnv !== '' ? $ciphersEnv : "DEFAULT:!DH";
 
 // 🌐 Configuration PROXY (surchargeable via env)
-$USE_PROXY = (int) ($_ENV['SONAR_CLI_USE_PROXY'] ?: 0);
-$PROXY_URL = $_ENV['SONAR_CLI_PROXY_URL'] ?: "";
-$PROXY_USERPWD = $_ENV['SONAR_CLI_PROXY_USERPWD'] ?: "";
-$noProxyEnv = $_ENV['SONAR_CLI_NO_PROXY'];
-$NO_PROXY = $noProxyEnv === false
+$USE_PROXY = (int) ($_ENV['SONAR_CLI_USE_PROXY'] ?? 0);
+$proxyUrlEnv = $_ENV['SONAR_CLI_PROXY_URL'] ?? null;
+$PROXY_URL = is_string($proxyUrlEnv) ? $proxyUrlEnv : "";
+$proxyUserPwdEnv = $_ENV['SONAR_CLI_PROXY_USERPWD'] ?? null;
+$PROXY_USERPWD = is_string($proxyUserPwdEnv) ? $proxyUserPwdEnv : "";
+// MODIF 2026-10-18 : $_ENV['...'] sur une clé absente renvoie null (avec warning), jamais false —
+// la comparaison === false ne déclenchait donc jamais le fallback localhost/127.0.0.1.
+$noProxyEnv = $_ENV['SONAR_CLI_NO_PROXY'] ?? null;
+$NO_PROXY = !is_string($noProxyEnv) || $noProxyEnv === ''
     ? ["localhost", "127.0.0.1"]
     : array_values(array_filter(array_map('trim', explode(',', $noProxyEnv))));
 
@@ -126,11 +136,17 @@ function logMessage(string $message, string $level = 'INFO'): void {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function callApi($endpoint, $params = [], $method = 'GET') {
+function callApi(string $endpoint, array $params = [], string $method = 'GET'): mixed {
     global $DEBUG, $SONAR_URL, $AUTH, $VERIFY_HOST, $VERIFY_PEER, $CIPHERS;
     global $USE_PROXY, $PROXY_URL, $PROXY_USERPWD, $NO_PROXY;
 
     $url = $SONAR_URL . $endpoint;
+    if ($url === '') {
+        die("❌ URL cURL vide (SONAR_URL + endpoint).\n");
+    }
+    if ($AUTH === '') {
+        die("❌ Identifiants cURL vides.\n");
+    }
     $ch = curl_init();
 
     if ($method === 'GET' && !empty($params)) {
@@ -143,7 +159,7 @@ function callApi($endpoint, $params = [], $method = 'GET') {
         CURLOPT_USERPWD => $AUTH,
         CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
         CURLOPT_SSL_VERIFYHOST => $VERIFY_HOST,
-        CURLOPT_SSL_VERIFYPEER => $VERIFY_PEER,
+        CURLOPT_SSL_VERIFYPEER => (bool) $VERIFY_PEER,
         CURLOPT_SSL_CIPHER_LIST => $CIPHERS,
         CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
         CURLOPT_CONNECTTIMEOUT => 15,
@@ -166,7 +182,10 @@ function callApi($endpoint, $params = [], $method = 'GET') {
 
     // Ignorer le proxy pour certains domaines
     if (!empty($NO_PROXY)) {
-        curl_setopt($ch, CURLOPT_NOPROXY, implode(",", $NO_PROXY));
+        $noProxyStr = implode(",", $NO_PROXY);
+        if ($noProxyStr !== '') {
+            curl_setopt($ch, CURLOPT_NOPROXY, $noProxyStr);
+        }
     }
 
     $response = curl_exec($ch);
@@ -182,7 +201,7 @@ function callApi($endpoint, $params = [], $method = 'GET') {
         logMessage("URL finale : $url", 'DEBUG');
         logMessage("Méthode : $method", 'DEBUG');
         logMessage("Statut HTTP : $status", 'DEBUG');
-        logMessage("Corps de la réponse : ".substr($response, 0, 40), 'DEBUG');
+        logMessage("Corps de la réponse : ".substr((string) $response, 0, 40), 'DEBUG');
         logMessage("Résultat de l'appel API : " . ($status >= 200 && $status < 300 ? "Succès" : "Erreur"), 'DEBUG');
         logMessage("Détails : " . ($status >= 200 && $status < 300 ? "Données traitées" : "Code d'erreur $status"), 'DEBUG');
     }
@@ -205,7 +224,7 @@ function callApi($endpoint, $params = [], $method = 'GET') {
 
     curl_close($ch);
 
-    $json = json_decode($response, true);
+    $json = json_decode((string) $response, true);
     return $json ? $json : $response;
 }
 
@@ -342,7 +361,7 @@ if (!empty($NO_PROXY)) {
 if ($DEBUG) {
     logMessage ("url : $SONAR_URL", 'DEBUG');
     logMessage("auth : $AUTH", 'DEBUG');
-    $a = ($VERIFY_HOST == 1) ? 'true' : 'false';
+    $a = ($VERIFY_HOST === 2) ? 'true' : 'false';
     logMessage("verify_host : $a", 'DEBUG');
     $b = ($VERIFY_PEER == 1) ? 'true' : 'false';
     logMessage("verify_peer : $b", 'DEBUG');

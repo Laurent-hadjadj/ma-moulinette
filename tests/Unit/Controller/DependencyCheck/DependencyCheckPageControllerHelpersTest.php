@@ -81,7 +81,7 @@ class DependencyCheckPageControllerHelpersTest extends TestCase
             $this->createMock(LoggerInterface::class),
             $this->dcAnalytics,
             $this->createMock(MesProjets::class),
-            $this->createMock(UserAgentTrackingFacade::class),
+            $this->tracking,
         );
     }
 

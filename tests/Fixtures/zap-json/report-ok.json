@@ -1,0 +1,91 @@
+{
+  "@programName": "ZAP",
+  "@version": "2.17.0",
+  "@generated": "Tue, 13 Oct 2026 12:00:00",
+  "site": [
+    {
+      "@name": "http://exemple-projet.local/",
+      "@host": "exemple-projet.local",
+      "@port": "80",
+      "@ssl": "false",
+      "alerts": [
+        {
+          "pluginid": "10038",
+          "alertRef": "10038-1",
+          "alert": "Content Security Policy (CSP) Header Not Set",
+          "name": "Content Security Policy (CSP) Header Not Set",
+          "riskcode": "2",
+          "confidence": "3",
+          "riskdesc": "Medium (High)",
+          "desc": "Content Security Policy (CSP) is an added layer of security.",
+          "instances": [
+            { "uri": "http://exemple-projet.local/", "method": "GET", "evidence": "" }
+          ],
+          "count": "1",
+          "solution": "Ensure that your web server sets the Content-Security-Policy header.",
+          "otherinfo": "",
+          "reference": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP",
+          "cweid": "693",
+          "wascid": "15",
+          "sourceid": "1",
+          "tags": [
+            { "tag": "OWASP_2021_A05", "link": "https://owasp.org/Top10/2021/A05_2021-Security_Misconfiguration/" },
+            { "tag": "OWASP_2017_A06", "link": "https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html" },
+            { "tag": "CWE-693", "link": "https://cwe.mitre.org/data/definitions/693.html" }
+          ]
+        },
+        {
+          "pluginid": "10063",
+          "alertRef": "10063-1",
+          "alert": "Server Leaks Information via X-Powered-By HTTP Response Header Field(s)",
+          "name": "Server Leaks Information via X-Powered-By HTTP Response Header Field(s)",
+          "riskcode": "1",
+          "confidence": "2",
+          "riskdesc": "Low (Medium)",
+          "desc": "The web server/application is leaking information via one or more X-Powered-By HTTP response headers.",
+          "instances": [
+            { "uri": "http://exemple-projet.local/", "method": "GET", "evidence": "PHP/8.5.11" },
+            { "uri": "http://exemple-projet.local/login", "method": "GET", "evidence": "PHP/8.5.11" }
+          ],
+          "count": "2",
+          "solution": "Ensure that your web server, application server, load balancer, etc. is configured to suppress X-Powered-By headers.",
+          "otherinfo": "",
+          "reference": "",
+          "cweid": "497",
+          "wascid": "13",
+          "sourceid": "1",
+          "tags": [
+            { "tag": "OWASP_2021_A01", "link": "https://owasp.org/Top10/2021/A01_2021-Broken_Access_Control/" },
+            { "tag": "OWASP_2017_A03", "link": "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure.html" },
+            { "tag": "CWE-497", "link": "https://cwe.mitre.org/data/definitions/497.html" }
+          ]
+        },
+        {
+          "pluginid": "40018",
+          "alertRef": "40018-1",
+          "alert": "SQL Injection",
+          "name": "SQL Injection",
+          "riskcode": "3",
+          "confidence": "1",
+          "riskdesc": "High (Low)",
+          "desc": "SQL injection may be possible.",
+          "instances": [
+            { "uri": "http://exemple-projet.local/login/cas", "method": "GET", "param": "ticket", "evidence": "" }
+          ],
+          "count": "1",
+          "solution": "Do not trust client side input, even if there is client side validation in place.",
+          "otherinfo": "",
+          "reference": "",
+          "cweid": "89",
+          "wascid": "19",
+          "sourceid": "1",
+          "tags": [
+            { "tag": "OWASP_2021_A03", "link": "https://owasp.org/Top10/2021/A03_2021-Injection/" },
+            { "tag": "OWASP_2017_A01", "link": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection.html" },
+            { "tag": "CWE-89", "link": "https://cwe.mitre.org/data/definitions/89.html" }
+          ]
+        }
+      ]
+    }
+  ]
+}

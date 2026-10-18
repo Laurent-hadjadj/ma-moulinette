@@ -13,6 +13,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Exception\UnexpectedExecutionPathException;
 use App\Repository\UserRoleLogRepository;
 use App\Service\PdfExportService;
 use App\Service\UserAgent\UserAgentTrackingFacade;
@@ -258,6 +259,9 @@ class UserRoleLogController extends AbstractController
         ]);
 
         $stream = fopen('php://temp', 'r+');
+        if ($stream === false) {
+            throw new UnexpectedExecutionPathException('Impossible d\'ouvrir le flux temporaire pour l\'export CSV.');
+        }
         fputcsv($stream, ['Date', 'Compte modifié', 'Éditeur', 'Rôles avant', 'Rôles après', 'Actif avant', 'Actif après', 'Alertes'], ';', '"', '\\');
         foreach ($lignes as $ligne) {
             fputcsv($stream, [

@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail, Historique};
+use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail, Historique, Rci, EcoConception};
 use App\Service\IsValideMavenKey;
 
 /**
@@ -217,6 +217,213 @@ class ApiPeintureController extends AbstractController
                 'version' => $version['info']['version'] ?? 'N.C',
                 'date' => $version['info']['date'] ?? '1971-07-04 00:00:00',
                 'analyse_key' => $version['info']['analyse_key'] ?? 'N.C'
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * [Description for peintureProjetRci]
+     * Récupère les mesures RCi de la table.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 29/09/2026 20:48:28 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/peinture/projet/rci', name: 'peinture_projet_rci', methods: ['POST'])]
+    public function peintureProjetRci(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/rci");
+
+        /** On instancie l'entityRepository */
+        $rciRepos = $this->em->getRepository(Rci::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
+        if ($isValide['code'] === 404) {
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => self::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** Toutes les mesures RCI (globales, frontend, backend, autre et inconnu) */
+        $map = ['maven_key' => $maven_key];
+        $mesures_RCI = $rciRepos->selectMesuresRci($map);
+
+        if ($mesures_RCI['code'] != 200) {
+            $this->logger->error('[Collecte-Peinture] ❌ Échec de la requête selectMesuresRci.', [
+                'code' => $mesures_RCI['code'],
+                'erreur' => $mesures_RCI['erreur'] ?? self::$noData,
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => $mesures_RCI['code'],
+                'type' => 'error',
+                'message' => "La récupération des mesures RCI du projet a échouée  (Erreur {$mesures_RCI['code']}).",
+                'trace' => $mesures_RCI['erreur'] ?? self::$noData
+            ], Response::HTTP_OK);
+        }
+
+        /* MODIF 2026-09-29 : selectMesuresRci() utilise fetchAssociative() —
+         * 'liste' vaut soit la ligne (array), soit false si le projet n'a
+         * jamais eu de collecte RCI. Lecture via '??' (silencieuse si la clé
+         * est absente) puis normalisation en [] pour éviter tout accès à un
+         * offset sur un booléen. */
+        $mesuresRciListe = $mesures_RCI['liste'] ?? false;
+        $l = is_array($mesuresRciListe) ? $mesuresRciListe : [];
+        $rci_mesures_json = [
+            'ncloc' => $l['ncloc'] ?? null, 'weight' => $l['weight'] ?? null,
+            'indicator' => $l['indicator'] ?? null, 'rating' => $l['rating'] ?? null,
+            'frontend_ncloc' => $l['frontend_ncloc'] ?? null,  'frontend_weight' => $l['frontend_weight'] ?? null,
+            'frontend_indicator' => $l['frontend_indicator'] ?? null, 'frontend_rating' => $l['frontend_rating'] ?? null,
+            'backend_ncloc' => $l['backend_ncloc'] ?? null, 'backend_weight' => $l['backend_weight'] ?? null,
+            'backend_indicator' => $l['backend_indicator'] ?? null, 'backend_rating' => $l['backend_rating'] ?? null,
+            'autre_ncloc' => $l['autre_ncloc'] ?? null, 'autre_weight' => $l['autre_weight'] ?? null,
+            'autre_indicator' => $l['autre_indicator'] ?? null, 'autre_rating' => $l['autre_rating'] ?? null,
+            'inconnu_ncloc' => $l['inconnu_ncloc'] ?? null, 'inconnu_weight' => $l['inconnu_weight'] ?? null,
+            'inconnu_indicator' => $l['inconnu_indicator'] ?? null, 'inconnu_rating' => $l['inconnu_rating'] ?? null
+        ];
+
+        return new JsonResponse(
+            [
+                'code' => 200,
+                'alert_status' => $l['rating'] ?? '--',
+                'rci_mesures_json' => $rci_mesures_json
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * [Description for peintureProjetEcoConception]
+     * Récupère l'Empreinte Écologique (plugins SonarQube Creedengo) de la table.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/peinture/projet/eco-conception', name: 'peinture_projet_eco_conception', methods: ['POST'])]
+    public function peintureProjetEcoConception(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/eco-conception");
+
+        /** On instancie l'entityRepository */
+        $ecoConceptionRepos = $this->em->getRepository(EcoConception::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
+        if ($isValide['code'] === 404) {
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => self::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** Empreinte Écologique (null si plugin CREEDENGO_ENABLED désactivé ou jamais collectée) */
+        $map = ['maven_key' => $maven_key];
+        $ecoConception = $ecoConceptionRepos->selectEcoConception($map);
+
+        if ($ecoConception['code'] != 200) {
+            $this->logger->error('[Collecte-Peinture] ❌ Échec de la requête selectEcoConception.', [
+                'code' => $ecoConception['code'],
+                'erreur' => $ecoConception['erreur'] ?? self::$noData,
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => $ecoConception['code'],
+                'type' => 'error',
+                'message' => "La récupération de l'Empreinte Écologique du projet a échouée (Erreur {$ecoConception['code']}).",
+                'trace' => $ecoConception['erreur'] ?? self::$noData
+            ], Response::HTTP_OK);
+        }
+
+        /* selectEcoConception() utilise fetchAssociative() — 'liste' vaut soit
+         * la ligne (array), soit false si le projet n'a jamais eu de collecte
+         * Empreinte Écologique. Même pattern que peintureProjetRci. */
+        $ecoConceptionListe = $ecoConception['liste'] ?? false;
+        $l = is_array($ecoConceptionListe) ? $ecoConceptionListe : [];
+
+        return new JsonResponse(
+            [
+                'code' => 200,
+                'eco_anomalies' => $l['eco_anomalies'] ?? null,
+                'eco_dette_minute' => $l['eco_dette_minute'] ?? null,
+                'eco_rating' => $l['eco_rating'] ?? null,
+                'eco_java_anomalies' => $l['eco_java_anomalies'] ?? null,
+                'eco_java_dette_minute' => $l['eco_java_dette_minute'] ?? null,
+                'eco_java_rating' => $l['eco_java_rating'] ?? null,
+                'eco_javascript_anomalies' => $l['eco_javascript_anomalies'] ?? null,
+                'eco_javascript_dette_minute' => $l['eco_javascript_dette_minute'] ?? null,
+                'eco_javascript_rating' => $l['eco_javascript_rating'] ?? null,
+                'eco_php_anomalies' => $l['eco_php_anomalies'] ?? null,
+                'eco_php_dette_minute' => $l['eco_php_dette_minute'] ?? null,
+                'eco_php_rating' => $l['eco_php_rating'] ?? null,
+                'eco_python_anomalies' => $l['eco_python_anomalies'] ?? null,
+                'eco_python_dette_minute' => $l['eco_python_dette_minute'] ?? null,
+                'eco_python_rating' => $l['eco_python_rating'] ?? null,
             ],
             Response::HTTP_OK
         );
@@ -643,11 +850,27 @@ class ApiPeintureController extends AbstractController
         $severityInfo = $anomalie['liste'][0]['info'];
         $severityMinor = $anomalie['liste'][0]['minor'];
 
+        /* MODIF 2026-10-11 : ?? 0 -> ?? null (frontend/backend/autre/inconnu + scope) —
+         * une mesure jamais collectée (aucune ligne anomalie pour ce projet) doit
+         * déclencher l'affichage "-" côté UI, pas laisser croire à "zéro anomalie
+         * mesurée". Colonnes NOT NULL en base, seule la ligne elle-même peut être
+         * absente (pas de collecte d'anomalies pour ce projet). */
         /** Module */
-        $frontend = $anomalie['liste'][0]['frontend'] ?? 0;
-        $backend = $anomalie['liste'][0]['backend'] ?? 0;
-        $autre = $anomalie['liste'][0]['autre'] ?? 0;
-        $inconnu = $anomalie['liste'][0]['inconnu'] ?? 0;
+        $frontend = $anomalie['liste'][0]['frontend'] ?? null;
+        $backend = $anomalie['liste'][0]['backend'] ?? null;
+        $autre = $anomalie['liste'][0]['autre'] ?? null;
+        $inconnu = $anomalie['liste'][0]['inconnu'] ?? null;
+
+        /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
+         * globale et par catégorie. */
+        $scopeMain = $anomalie['liste'][0]['scope_main'] ?? null;
+        $scopeTest = $anomalie['liste'][0]['scope_test'] ?? null;
+        $bugScopeMain = $anomalie['liste'][0]['bug_scope_main'] ?? null;
+        $bugScopeTest = $anomalie['liste'][0]['bug_scope_test'] ?? null;
+        $vulnerabilityScopeMain = $anomalie['liste'][0]['vulnerability_scope_main'] ?? null;
+        $vulnerabilityScopeTest = $anomalie['liste'][0]['vulnerability_scope_test'] ?? null;
+        $codeSmellScopeMain = $anomalie['liste'][0]['code_smell_scope_main'] ?? null;
+        $codeSmellScopeTest = $anomalie['liste'][0]['code_smell_scope_test'] ?? null;
 
         return new JsonResponse([
             'code' => 200,
@@ -671,6 +894,14 @@ class ApiPeintureController extends AbstractController
             'backend' => $backend,
             'autre' => $autre,
             'inconnu' => $inconnu,
+            'scope_main' => $scopeMain,
+            'scope_test' => $scopeTest,
+            'bug_scope_main' => $bugScopeMain,
+            'bug_scope_test' => $bugScopeTest,
+            'vulnerability_scope_main' => $vulnerabilityScopeMain,
+            'vulnerability_scope_test' => $vulnerabilityScopeTest,
+            'code_smell_scope_main' => $codeSmellScopeMain,
+            'code_smell_scope_test' => $codeSmellScopeTest,
         ], Response::HTTP_OK);
     }
 
@@ -735,7 +966,7 @@ class ApiPeintureController extends AbstractController
                 $this->logger->error('[Collecte-Peinture] ❌ Échec lecture logger_details.', [
                     'maven_key' => $maven_key,
                     'code'      => $r['code'],
-                    'erreur'    => $r['erreur']    ?? self::$noData,
+                    'erreur'    => $r['erreur'],
                 ]);
             }
         }
@@ -846,10 +1077,10 @@ class ApiPeintureController extends AbstractController
 
         // Le total des code smell n'est pas remonté par Sonar, on le calcule à partir de la répartition par sévérité.
         $codeSmellTotal = (int) ($row['code_smell_blocker'] ?? 0)
-                + (int) ($row['code_smell_critical'] ?? 0)
-                + (int) ($row['code_smell_major'] ?? 0)
-                + (int) ($row['code_smell_minor'] ?? 0)
-                + (int) ($row['code_smell_info'] ?? 0);
+            + (int) ($row['code_smell_critical'] ?? 0)
+            + (int) ($row['code_smell_major'] ?? 0)
+            + (int) ($row['code_smell_minor'] ?? 0)
+            + (int) ($row['code_smell_info'] ?? 0);
         // on considère que les code smell de sévérité "info" ne sont pas des vrais code smell (pas de dette technique associée)
         $codeSmellRealTotal = (int) ($codeSmellTotal - (int) ($row['code_smell_info'] ?? 0));
 
@@ -1610,7 +1841,7 @@ class ApiPeintureController extends AbstractController
         // Tentative 2 : format texte "lang<SEP>value<SEP>..."
         // Séparateurs entre paires : ; ou ,
         // Séparateurs clef/valeur : = ou :
-        $pairs = preg_split('/[;,]/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        $pairs = preg_split('/[;,]/', $raw, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         $result = [];
         foreach ($pairs as $pair) {
             if (preg_match('/^\s*([^=:]+)\s*[=:]\s*(\d+)\s*$/', $pair, $m)) {

@@ -97,6 +97,12 @@ class UserAgentAnalysisRepositoryTest extends TestCase
     /**
      * @return array<string, mixed>
      */
+    /**
+     * @return array{event_type: string, url: string, session_id: string|null, user_id: int|string|null,
+     *     visitor_id: string, device_type: string|null, os_name: string|null, os_version: string|null,
+     *     browser_name: string|null, browser_version: string|null, is_bot: bool, detector_version: string,
+     *     created_at: \DateTimeImmutable}
+     */
     private function buildAnalysisMap(bool $isBot = false): array
     {
         return [

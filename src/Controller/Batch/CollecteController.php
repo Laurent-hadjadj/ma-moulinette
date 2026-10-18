@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Historique;
+use App\Service\GetSonarVersionService;
 
 /** Class API Batch */
 use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController, BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController};
@@ -59,7 +60,10 @@ class CollecteController extends AbstractController
         private BatchCollecteNoSonarController $batchCollecteNoSonar,
         private BatchCollecteTodoController $batchCollecteTodo,
         private BatchCollecteActuatorController $batchCollecteActuator,
-        private BatchCollecteLoggerController $batchCollecteLogger
+        private BatchCollecteLoggerController $batchCollecteLogger,
+        private BatchCollecteRciController $batchCollecteRci,
+        private BatchCollecteEmpreinteEcologiqueController $batchCollecteEmpreinteEcologique,
+        private GetSonarVersionService $getSonarVersionService
     ) {
     }
 
@@ -170,6 +174,8 @@ class CollecteController extends AbstractController
         /** On nettoie les variables du POST */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $mode_collecte = htmlspecialchars($mode_collecte, ENT_QUOTES, 'UTF-8');
+        $getVersionSonar = $this->getSonarVersionService->getSonarQubeVersion();
+        $sonarqube_server_version = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
 
         /** On démarre la mesure du traitement */
         $debutTraitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
@@ -181,6 +187,7 @@ class CollecteController extends AbstractController
                 <div class="callout alert-callout-border secondary">
                     <ul>
                         <li><span>Portefeuille : </span>'. $portefeuille . '</li>
+                        <li><span>Serveur SonarQube : </span>' . $sonarqube_server_version . '</li>
                         <li><span>Projet : </span>' . $maven_key . '</li>
                         <li><span>Mode : </span>' . $mode_collecte .'</li>
                         <li><span>Date : </span>' . $debutTraitement->format(self::$dateFormat) .'</li>
@@ -223,7 +230,7 @@ class CollecteController extends AbstractController
             $mergeHistorique = array_merge($mergeHistorique, $informationProjet['historique']);
         }
 
-        /** Le projet existe déjà, il est à jour, on arrête la collecte ou pn met à jour les informations. */
+        /** Le projet existe déjà, il est à jour, on arrête la collecte ou on met à jour les informations. */
         if ($informationProjet['code'] === 100){
             $this->logger->info('[Batch] ℹ️ Mise à jour pour le projet inutile.');
             /** Pas de mise à jour local = historique = SonarQube */
@@ -943,11 +950,66 @@ class CollecteController extends AbstractController
         /** Consolidation des données */
         $mergeHistorique = array_merge($mergeHistorique, [
             'maven_key' => $maven_key,
+            'sonarqube_server_version' => $sonarqube_server_version,
             'initial' => false,
             'mode_collecte' => $mode_collecte,
             'utilisateur_collecte' => $utilisateur_collecte,
             'date_enregistrement' => $date_historique]
         );
+
+        /* MODIF 2026-09-25 : RCI global + par module (frontend/backend/autre/inconnu).
+         * MODIF 2026-09-28 : BatchCollecteRciController::buildRciMeasures()
+         * calcule ET persiste (delete puis insert) dans la table rci — plus
+         * besoin d'appeler RciRepository ici, seul le report des indicateurs
+         * dans historique reste à faire.
+         * Échec non bloquant : les colonnes rci_* restent null plutôt que de
+         * faire échouer toute la collecte pour un indicateur secondaire. */
+        $rciMeasures = $this->batchCollecteRci->buildRciMeasures($maven_key, $mode_collecte, $utilisateur_collecte);
+        if (($rciMeasures['code'] ?? null) === 200) {
+            $item = $rciMeasures['historique'];
+            $mergeHistorique = array_merge($mergeHistorique, [
+                'rci_indicator' => $item['indicator'],
+                'rci_rating' => $item['rating'],
+                'rci_ncloc' => $item['ncloc'],
+                'rci_weight' => $item['weight'],
+                'rci_frontend_indicator' => $item['frontend_indicator'],
+                'rci_frontend_rating' => $item['frontend_rating'],
+                'rci_frontend_ncloc' => $item['frontend_ncloc'],
+                'rci_frontend_weight' => $item['frontend_weight'],
+                'rci_backend_indicator' => $item['backend_indicator'],
+                'rci_backend_rating' => $item['backend_rating'],
+                'rci_backend_ncloc' => $item['backend_ncloc'],
+                'rci_backend_weight' => $item['backend_weight'],
+                'rci_autre_indicator' => $item['autre_indicator'],
+                'rci_autre_rating' => $item['autre_rating'],
+                'rci_autre_ncloc' => $item['autre_ncloc'],
+                'rci_autre_weight' => $item['autre_weight'],
+                'rci_inconnu_indicator' => $item['inconnu_indicator'],
+                'rci_inconnu_rating' => $item['inconnu_rating'],
+                'rci_inconnu_ncloc' => $item['inconnu_ncloc'],
+                'rci_inconnu_weight' => $item['inconnu_weight'],
+            ]);
+        } else {
+            $this->logger->warning('[Batch] ⚠️ Échec du calcul RCI, colonnes rci_* laissées à null.', [
+                'maven_key' => $maven_key,
+                'erreur' => $rciMeasures['erreur'] ?? self::$noError,
+            ]);
+        }
+
+        /* MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo).
+         * BatchCollecteEmpreinteEcologique() calcule ET persiste (delete puis
+         * insert) dans la table eco_conception.
+         * code 404 = CREEDENGO_ENABLED=false, non bloquant : colonnes eco_*
+         * laissées à null comme un échec générique. */
+        $empreinteEcologique = $this->batchCollecteEmpreinteEcologique->BatchCollecteEmpreinteEcologique($maven_key, $mode_collecte, $utilisateur_collecte);
+        if (($empreinteEcologique['code'] ?? null) === 200) {
+            $mergeHistorique = array_merge($mergeHistorique, $empreinteEcologique['historique']);
+        } else {
+            $this->logger->info('[Batch] ℹ️ Empreinte Écologique non calculée, colonnes eco_* laissées à null.', [
+                'maven_key' => $maven_key,
+                'erreur' => $empreinteEcologique['erreur'] ?? self::$noError,
+            ]);
+        }
 
         $this->logger->info('[Batch] ℹ️ Mise à jour de la table Collecte.');
 

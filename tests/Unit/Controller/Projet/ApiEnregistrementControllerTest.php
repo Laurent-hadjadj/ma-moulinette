@@ -16,8 +16,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiEnregistrementController;
-use App\Entity\Utilisateur;
-use App\Repository\HistoriqueRepository;
+use App\Entity\{CleanCode, Historique, Utilisateur};
+use App\Repository\{CleanCodeRepository, HistoriqueRepository};
+use App\Service\GetSonarVersionService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -37,7 +38,9 @@ class ApiEnregistrementControllerTest extends TestCase
     /** @var TokenInterface&MockObject */                  private MockObject $token;
     /** @var LoggerInterface&MockObject */                 private MockObject $logger;
     /** @var HistoriqueRepository&MockObject */            private MockObject $historiqueRepo;
+    /** @var CleanCodeRepository&MockObject */              private MockObject $cleanCodeRepo;
     /** @var AuthorizationCheckerInterface&MockObject */   private MockObject $authChecker;
+    /** @var GetSonarVersionService&MockObject */          private MockObject $getSonarVersionService;
 
     private ApiEnregistrementController $controller;
 
@@ -49,9 +52,30 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
+        $this->cleanCodeRepo = $this->createMock(CleanCodeRepository::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
+        // MODIF 2026-10-08 : pas de stub par défaut ici — un mock non configuré
+        // renvoie déjà null (-> 'inconnu' côté contrôleur), et un défaut posé en
+        // setUp() primerait sur le willReturn() spécifique d'un test (cf.
+        // conventions/php.md « PHPUnit : doubles »).
+        $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
 
-        $this->em->method('getRepository')->willReturn($this->historiqueRepo);
+        // MODIF 2026-09-28 : routage par classe (CleanCode avait auparavant le
+        // mock HistoriqueRepository en retour pour toute classe, ce qui masquait
+        // silencieusement le contenu réel de $cc via le __call magique de
+        // Doctrine\ORM\EntityRepository — cf. session RCI).
+        // Pas de stub par défaut sur selectCleanCode ici : un mock non configuré
+        // renvoie déjà null (-> $cc = []), et un défaut posé ici primerait sur
+        // le willReturn() spécifique d'un test (les stubs PHPUnit sont évalués
+        // dans l'ordre d'enregistrement).
+        // MODIF 2026-10-06 : RCI suit désormais le même flux que
+        // anomalie/nosonar/mesures : valeurs envoyées dans le payload par
+        // enregistrement.js (lues depuis le DOM), simple mapping $data->rci_*
+        // côté contrôleur. Plus de dépendance à RciRepository ici.
+        $this->em->method('getRepository')->willReturnMap([
+            [Historique::class, $this->historiqueRepo],
+            [CleanCode::class, $this->cleanCodeRepo],
+        ]);
 
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
@@ -67,7 +91,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $defaultUser->setCourriel('default@test');
         $this->token->method('getUser')->willReturn($defaultUser);
 
-        $this->controller = new ApiEnregistrementController($this->em, $this->logger);
+        $this->controller = new ApiEnregistrementController($this->em, $this->logger, $this->getSonarVersionService);
         $this->controller->setContainer($container);
     }
 
@@ -76,7 +100,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->enregistrement($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -86,7 +110,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->enregistrement($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -101,7 +125,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db fail']);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('db fail', $data['trace']);
@@ -117,7 +141,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willReturn(['code' => 23505, 'erreur' => 'duplicate key']);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(23505, $data['code']);
         $this->assertSame('duplicate key', $data['erreur']);
@@ -127,15 +151,50 @@ class ApiEnregistrementControllerTest extends TestCase
     {
         $this->authChecker->method('isGranted')->willReturn(true);
         $this->token->method('getUser')->willReturn($this->makeUser());
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn('10.4.1');
 
+        $capturedMap = [];
         $this->historiqueRepo->expects($this->once())
             ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
+        // MODIF 2026-10-08 : marqueur version du serveur SonarQube, pas d'UI associée.
+        $this->assertSame('10.4.1', $capturedMap['sonarqube_server_version']);
+    }
+
+    /**
+     * MODIF 2026-10-08 : GetSonarVersionService::getSonarQubeVersion() renvoie
+     * un tableau d'erreur (pas une chaîne) en cas d'échec HTTP — le marqueur
+     * doit retomber sur 'inconnu' plutôt que de propager le tableau brut.
+     */
+    public function testEnregistrementFallsBackToInconnuWhenSonarVersionLookupFails(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn([
+            'code' => 503, 'erreur' => 'Service indisponible',
+        ]);
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
+
+        $this->assertSame('inconnu', $capturedMap['sonarqube_server_version']);
     }
 
     public function testEnregistrementReturns500OnException(): void
@@ -147,7 +206,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willThrowException(new \RuntimeException('boom'));
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('boom', $data['trace']);
@@ -206,7 +265,7 @@ class ApiEnregistrementControllerTest extends TestCase
         } elseif ($body === []) {
             $content = '{}';
         } else {
-            $content = json_encode($body);
+            $content = json_encode($body, JSON_THROW_ON_ERROR);
         }
         return new Request([], [], [], [], [], [], $content);
     }
@@ -238,9 +297,186 @@ class ApiEnregistrementControllerTest extends TestCase
         $payload['actuator_info'] = $expectedActuatorInfo;
 
         $response = $this->controller->enregistrement($this->jsonRequest($payload));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
+    }
+
+    /**
+     * MODIF 2026-10-06 : RCI suit le même flux que les autres indicateurs
+     * (anomalie, nosonar, mesures...) — enregistrement.js lit les
+     * valeurs depuis le DOM (posées par peinture.js) et les envoie dans le
+     * payload ; le contrôleur se contente de les reporter dans $map, sans
+     * requête à la table rci (contrairement au pattern clean_code, propre à
+     * la page CoSUI).
+     */
+    public function testEnregistrementMergesRciGlobalAndModuleIndicatorsFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $payload = $this->buildPayload();
+        $payload['rci_indicator'] = 40.6;
+        $payload['rci_rating'] = 'E';
+        $payload['rci_ncloc'] = 28188;
+        $payload['rci_weight'] = 16732;
+        $payload['rci_frontend_indicator'] = 77.55;
+        $payload['rci_frontend_rating'] = 'D';
+        $payload['rci_frontend_ncloc'] = 16590;
+        $payload['rci_frontend_weight'] = 3725;
+        $payload['rci_backend_indicator'] = 0.0;
+        $payload['rci_backend_rating'] = 'E';
+        $payload['rci_backend_ncloc'] = 11330;
+        $payload['rci_backend_weight'] = 12995;
+        $payload['rci_autre_indicator'] = null;
+        $payload['rci_autre_rating'] = null;
+        $payload['rci_autre_ncloc'] = 0;
+        $payload['rci_autre_weight'] = 0;
+        $payload['rci_inconnu_indicator'] = 95.52;
+        $payload['rci_inconnu_rating'] = 'A';
+        $payload['rci_inconnu_ncloc'] = 268;
+        $payload['rci_inconnu_weight'] = 12;
+
+        $this->controller->enregistrement($this->jsonRequest($payload));
+
+        $this->assertSame(40.6, $capturedMap['rci_indicator']);
+        $this->assertSame('E', $capturedMap['rci_rating']);
+        $this->assertSame(28188, $capturedMap['rci_ncloc']);
+        $this->assertSame(16732, $capturedMap['rci_weight']);
+        $this->assertSame(77.55, $capturedMap['rci_frontend_indicator']);
+        $this->assertSame('D', $capturedMap['rci_frontend_rating']);
+        $this->assertSame(16590, $capturedMap['rci_frontend_ncloc']);
+        $this->assertSame(3725, $capturedMap['rci_frontend_weight']);
+        $this->assertSame('E', $capturedMap['rci_backend_rating']);
+        $this->assertNull($capturedMap['rci_autre_indicator']);
+        $this->assertSame(0, $capturedMap['rci_autre_ncloc']);
+        $this->assertSame('A', $capturedMap['rci_inconnu_rating']);
+        $this->assertSame(12, $capturedMap['rci_inconnu_weight']);
+    }
+
+    /**
+     * MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST), globale
+     * et par catégorie — même flux DOM -> payload que RCI et les autres
+     * indicateurs.
+     */
+    public function testEnregistrementMergesScopeMainTestIndicatorsFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $payload = $this->buildPayload();
+        $payload['scope_main'] = 1500;
+        $payload['scope_test'] = 456;
+        $payload['bug_scope_main'] = 300;
+        $payload['bug_scope_test'] = 50;
+        $payload['vulnerability_scope_main'] = 600;
+        $payload['vulnerability_scope_test'] = 5;
+        $payload['code_smell_scope_main'] = 600;
+        $payload['code_smell_scope_test'] = 401;
+
+        $this->controller->enregistrement($this->jsonRequest($payload));
+
+        $this->assertSame(1500, $capturedMap['scope_main']);
+        $this->assertSame(456, $capturedMap['scope_test']);
+        $this->assertSame(300, $capturedMap['bug_scope_main']);
+        $this->assertSame(50, $capturedMap['bug_scope_test']);
+        $this->assertSame(600, $capturedMap['vulnerability_scope_main']);
+        $this->assertSame(5, $capturedMap['vulnerability_scope_test']);
+        $this->assertSame(600, $capturedMap['code_smell_scope_main']);
+        $this->assertSame(401, $capturedMap['code_smell_scope_test']);
+    }
+
+    public function testEnregistrementLeavesScopeColumnsNullWhenAbsentFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        // buildPayload() ne porte aucune clé scope_* (projet jamais collecté côté scopes).
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
+
+        $this->assertNull($capturedMap['scope_main']);
+        $this->assertNull($capturedMap['bug_scope_main']);
+    }
+
+    public function testEnregistrementLeavesRepartitionColumnsNullWhenAbsentFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        // MODIF 2026-10-11 : repartition_frontend/backend/autre/inconnu absents
+        // du payload (projet jamais collecté côté anomalies) -> null, pas 0.
+        $payload = $this->buildPayload();
+        unset(
+            $payload['repartition_frontend'],
+            $payload['repartition_backend'],
+            $payload['repartition_autre'],
+            $payload['repartition_inconnu']
+        );
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->enregistrement($this->jsonRequest($payload));
+
+        $this->assertNull($capturedMap['repartition_frontend']);
+        $this->assertNull($capturedMap['repartition_backend']);
+        $this->assertNull($capturedMap['repartition_autre']);
+        $this->assertNull($capturedMap['repartition_inconnu']);
+    }
+
+    public function testEnregistrementLeavesRciColumnsNullWhenAbsentFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        // buildPayload() ne porte aucune clé rci_* (projet jamais collecté côté RCI).
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
+
+        $this->assertNull($capturedMap['rci_indicator']);
+        $this->assertNull($capturedMap['rci_rating']);
+        $this->assertNull($capturedMap['rci_frontend_indicator']);
     }
 
     public function testEnregistrementSendsEmptyActuatorInfoWhenAbsent(): void
@@ -254,7 +490,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -273,29 +509,70 @@ class ApiEnregistrementControllerTest extends TestCase
     {
         // Payload aligné sur les clés SonarQube (= colonnes DB historique).
         return [
-            'maven_key' => 'k', 'analyse_key' => 'a', 'version' => '1.0', 'date_version' => '2026-04-10',
-            'project_name' => 'App', 'version_release' => 1, 'version_snapshot' => 0, 'version_autre' => 0,
-            'suppress_warning' => 0, 'no_sonar' => 0, 'todo' => 0,
-            'logger_info' => 0, 'logger_warn' => 0, 'logger_error' => 0, 'logger_debug' => 0,
-            'lines' => 1000, 'ncloc' => 800,
-            'files' => 5, 'classes' => 10, 'functions' => 20,
-            'coverage' => 80, 'duplicated_lines_density' => 1, 'sqale_debt_ratio' => 2,
-            'tests' => 10, 'violations' => 5, 'sqale_index' => 100,
-            'bugs' => 1, 'vulnerabilities' => 0, 'code_smells' => 3,
-            'bug_blocker' => 0, 'bug_critical' => 1, 'bug_major' => 0, 'bug_minor' => 0, 'bug_info' => 0,
-            'vulnerability_blocker' => 0, 'vulnerability_critical' => 0, 'vulnerability_major' => 0,
-            'vulnerability_minor' => 0, 'vulnerability_info' => 0,
-            'code_smell_blocker' => 0, 'code_smell_critical' => 0, 'code_smell_major' => 0,
-            'code_smell_minor' => 0, 'code_smell_info' => 3,
-            'repartition_frontend' => 1, 'repartition_backend' => 2,
-            'repartition_autre' => 0, 'repartition_inconnu' => 0,
-            'blocker_violations' => 0, 'critical_violations' => 1,
-            'major_violations' => 0, 'minor_violations' => 0, 'info_violations' => 0,
-            'reliability_rating' => 2.0, 'security_rating' => 1.0, 'sqale_rating' => 1.0,
-            'security_review_rating' => 1.0, 'menace_potentielle_totale' => 0,
-            'menace_potentielle_to_review_high' => 0, 'menace_potentielle_to_review_medium' => 0,
-            'menace_potentielle_to_review_low' => 0, 'menace_potentielle_reviewed_high' => 0,
-            'menace_potentielle_reviewed_medium' => 0, 'menace_potentielle_reviewed_low' => 0,
+            'maven_key' => 'k',
+            'analyse_key' => 'a',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
+            'project_name' => 'App',
+            'version_release' => 1,
+            'version_snapshot' => 0,
+            'version_autre' => 0,
+            'suppress_warning' => 0,
+            'no_sonar' => 0,
+            'todo' => 0,
+            'logger_info' => 0,
+            'logger_warn' => 0,
+            'logger_error' => 0,
+            'logger_debug' => 0,
+            'lines' => 1000,
+            'ncloc' => 800,
+            'files' => 5,
+            'classes' => 10,
+            'functions' => 20,
+            'coverage' => 80,
+            'duplicated_lines_density' => 1,
+            'sqale_debt_ratio' => 2,
+            'tests' => 10,
+            'violations' => 5,
+            'sqale_index' => 100,
+            'bugs' => 1,
+            'vulnerabilities' => 0,
+            'code_smells' => 3,
+            'bug_blocker' => 0,
+            'bug_critical' => 1,
+            'bug_major' => 0,
+            'bug_minor' => 0,
+            'bug_info' => 0,
+            'vulnerability_blocker' => 0,
+            'vulnerability_critical' => 0,
+            'vulnerability_major' => 0,
+            'vulnerability_minor' => 0,
+            'vulnerability_info' => 0,
+            'code_smell_blocker' => 0,
+            'code_smell_critical' => 0,
+            'code_smell_major' => 0,
+            'code_smell_minor' => 0,
+            'code_smell_info' => 3,
+            'repartition_frontend' => 1,
+            'repartition_backend' => 2,
+            'repartition_autre' => 0,
+            'repartition_inconnu' => 0,
+            'blocker_violations' => 0,
+            'critical_violations' => 1,
+            'major_violations' => 0,
+            'minor_violations' => 0,
+            'info_violations' => 0,
+            'reliability_rating' => 2.0,
+            'security_rating' => 1.0,
+            'sqale_rating' => 1.0,
+            'security_review_rating' => 1.0,
+            'menace_potentielle_totale' => 0,
+            'menace_potentielle_to_review_high' => 0,
+            'menace_potentielle_to_review_medium' => 0,
+            'menace_potentielle_to_review_low' => 0,
+            'menace_potentielle_reviewed_high' => 0,
+            'menace_potentielle_reviewed_medium' => 0,
+            'menace_potentielle_reviewed_low' => 0,
         ];
     }
 }

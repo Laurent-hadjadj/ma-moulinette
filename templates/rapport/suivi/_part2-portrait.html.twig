@@ -73,11 +73,7 @@ Tient en 1 a 2 pages portrait selon le nombre d'alertes. #}
                     –
                     {% endif %}
                     {% if k.note %}
-                    <span class="note note-
-                                        {{ k.note|lower }}
-                                        ">
-                        {{ k.note }}
-                    </span>
+                    <span class="note note-{{ k.note|lower }}">{{ k.note }}</span>
                     {% endif %}
                 </div>
                 <div class="kpi-meta">

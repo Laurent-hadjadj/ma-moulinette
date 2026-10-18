@@ -160,7 +160,8 @@ class ApiSuiviController extends AbstractController
         }
 
         /** On construit l'URL */
-        $tempoUrl = rtrim($this->getParameter(self::$sonarUrl), '/');
+        $sonarUrl = $this->getParameter(self::$sonarUrl);
+        $tempoUrl = rtrim(is_string($sonarUrl) ? $sonarUrl : '', '/');
 
         /** Appelle le client HTTP (limité à 100 analyses/page — suffisant pour
          *  la modale Ajouter ; les gros projets utiliseront SonarAnalysisFetcher
@@ -275,7 +276,8 @@ class ApiSuiviController extends AbstractController
         // 28-06-2024 20:48:20 → 2024-06-28T20:48:20+0200
         $date_convert = new \Datetime($data->date);
         $date_format = $date_convert->format('Y-m-d\TH:i:sO');
-        $url = rtrim($this->getParameter(self::$sonarUrl), '/');
+        $sonarUrl = $this->getParameter(self::$sonarUrl);
+        $url = rtrim(is_string($sonarUrl) ? $sonarUrl : '', '/');
 
         /** Catalogue version-aware des métriques (Core SonarQube 8/9 + LTA 10
          *  + LTA 24/26 selon la version configurée). Source unique partagée

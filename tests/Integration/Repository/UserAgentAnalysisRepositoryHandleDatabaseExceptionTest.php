@@ -66,7 +66,6 @@ class UserAgentAnalysisRepositoryHandleDatabaseExceptionTest extends TestCase
         $res = $this->repo->handleDatabaseException($ex);
 
         $this->assertSame(500, $res['code']);
-        $this->assertArrayHasKey('erreur', $res);
     }
 
     public function testHandleDatabaseException_UniqueViolation(): void

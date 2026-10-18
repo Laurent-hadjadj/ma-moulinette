@@ -26,6 +26,7 @@ use App\Service\UserAgent\UserAgentTrackingFacade;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\{AdminDashboard, AdminRoute};
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, UserMenu, Dashboard};
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Menu\MenuItemInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 
@@ -66,7 +67,8 @@ class DashboardController extends AbstractDashboardController
     #[Route('/api/secure/health', name: 'sonar_health', methods: ['POST'])]
     public function sonarHealth(): Response
     {
-        $url = rtrim($this->getParameter(self::$sonarUrl), '/') . "/api/system/health";
+        $sonarUrl = $this->getParameter(self::$sonarUrl);
+        $url = rtrim(is_string($sonarUrl) ? $sonarUrl : '', '/') . "/api/system/health";
 
         /** On appel le client http */
         $result = $this->client->httpSonarQube($url);
@@ -89,7 +91,8 @@ class DashboardController extends AbstractDashboardController
     #[Route('/api/secure/system/info', name: 'information_system', methods: ['POST'])]
     public function informationSystem(): Response
     {
-        $url = rtrim($this->getParameter(self::$sonarUrl), '/') . "/api/system/info";
+        $sonarUrl = $this->getParameter(self::$sonarUrl);
+        $url = rtrim(is_string($sonarUrl) ? $sonarUrl : '', '/') . "/api/system/info";
 
         /** On appel le client http */
         $result = $this->client->httpSonarQube($url);
@@ -135,7 +138,7 @@ class DashboardController extends AbstractDashboardController
     /**
      * [Description for configureMenuItems]
      *
-     * @return iterable<MenuItem>
+     * @return iterable<MenuItemInterface>
      *
      * Created at: 02/01/2023, 18:34:47 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>

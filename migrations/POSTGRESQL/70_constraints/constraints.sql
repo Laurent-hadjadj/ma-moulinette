@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.2.0 - 09/07/2026                  ##
+##           V2.3.0 - 13/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -11,6 +11,9 @@
 --- 2026-05-08 : Ajout des contraintes pour les tables dc_cve, dc_dependency, dc_finding, dc_processing_queue, dc_scan
 --- 2026-05-11 : Corrections contraintes dc_dependency et dc_processing_queue
 --- 2026-07-19 : Ajout de la contraintes d'unicité sur la table profil_historique.
+--- 2026-10-13 : Ajout des contraintes pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
+--- 2026-10-15 : Correction clé d'unicité zap_rule (alert_ref au lieu de pluginid).
+
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -199,3 +202,42 @@ ALTER TABLE ma_moulinette.dc_scan
   ADD CONSTRAINT fk_dc_scan_queue FOREIGN KEY (queue_id)
     REFERENCES ma_moulinette.dc_processing_queue(id)
     ON DELETE SET NULL;
+
+-- zap_rule
+-- MODIF 2026-10-15 : clé d'unicité réelle = alert_ref, pas pluginid (un
+-- pluginid peut regrouper plusieurs alertes distinctes, voir zap_rule.sql).
+ALTER TABLE ma_moulinette.zap_rule
+  ADD CONSTRAINT uq_zap_rule_alert_ref UNIQUE (alert_ref);
+
+-- zap_finding
+-- Pas de doublon : meme règle ne peut apparaitre qu'une fois par scan.
+-- FK : si on supprime un scan, on supprime ses findings (CASCADE).
+-- Les règles sont conservées (garde-fou : RESTRICT, référentiel partagé).
+ALTER TABLE ma_moulinette.zap_finding
+  ADD CONSTRAINT uq_zap_finding_scan_rule UNIQUE (scan_id, rule_id),
+  ADD CONSTRAINT fk_zap_finding_scan FOREIGN KEY (scan_id)
+    REFERENCES ma_moulinette.zap_scan(id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk_zap_finding_rule FOREIGN KEY (rule_id)
+    REFERENCES ma_moulinette.zap_rule(id) ON DELETE RESTRICT;
+
+-- zap_processing_queue : Idempotence native : meme payload poste 2x = conflit gère par l'app
+ALTER TABLE ma_moulinette.zap_processing_queue
+  ADD CONSTRAINT uq_zap_payload_sha256 UNIQUE (payload_sha256);
+
+-- zap_scan :
+-- 1 scan unique par (projet, version, cible, date de génération) - eviter doublons
+-- FK optionnelle vers la queue. ON DELETE SET NULL : si on purge la queue,
+-- on garde le scan en BDD metier.
+ALTER TABLE ma_moulinette.zap_scan
+  ADD CONSTRAINT uq_zap_scan_project_target_date UNIQUE (maven_key, project_version, target_url, generated_at),
+  ADD CONSTRAINT fk_zap_scan_queue FOREIGN KEY (queue_id)
+    REFERENCES ma_moulinette.zap_processing_queue(id)
+    ON DELETE SET NULL;
+
+-- owasp_dast :
+-- 1 ligne par (scan, référentiel) - pas de doublon 2017/2021 pour le même scan.
+-- FK : si on supprime un scan, on supprime son agrégation OWASP (CASCADE).
+ALTER TABLE ma_moulinette.owasp_dast
+  ADD CONSTRAINT uq_owasp_dast_scan_referential UNIQUE (scan_id, referential_owasp),
+  ADD CONSTRAINT fk_owasp_dast_scan FOREIGN KEY (scan_id)
+    REFERENCES ma_moulinette.zap_scan(id) ON DELETE CASCADE;

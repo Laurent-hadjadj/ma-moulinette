@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Repository\Traits;
 
 use App\Repository\Traits\DoctrineParamHelperTrait;
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Statement;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -34,6 +33,23 @@ use Symfony\Component\Uid\Ulid;
  *   - bindUlidAsString : Ulid → string RFC4122, string → string, null → NULL
  *   - bindNullableValue : null → ParameterType::NULL, sinon defaultType
  */
+/**
+ * Expose les méthodes protected du trait pour les tests.
+ */
+interface DoctrineParamHelperExposed
+{
+    public function callBindNullableBool(Statement $stmt, string $param, ?bool $value): void;
+
+    public function callBindUlidAsString(Statement $stmt, string $param, Ulid|string|null $value): void;
+
+    public function callBindNullableValue(
+        Statement $stmt,
+        string $param,
+        mixed $value,
+        ParameterType $defaultType = ParameterType::STRING
+    ): void;
+}
+
 #[AllowMockObjectsWithoutExpectations]
 class DoctrineParamHelperTraitTest extends TestCase
 {
@@ -41,9 +57,9 @@ class DoctrineParamHelperTraitTest extends TestCase
      * Helper qui expose les méthodes protected du trait.
      * Classe anonyme évite de polluer le namespace avec un dummy.
      */
-    private function makeHelper(): object
+    private function makeHelper(): DoctrineParamHelperExposed
     {
-        return new class {
+        return new class implements DoctrineParamHelperExposed {
             use DoctrineParamHelperTrait;
 
             public function callBindNullableBool(Statement $stmt, string $param, ?bool $value): void
@@ -60,7 +76,7 @@ class DoctrineParamHelperTraitTest extends TestCase
                 Statement $stmt,
                 string $param,
                 mixed $value,
-                ParameterType|ArrayParameterType $defaultType = ParameterType::STRING
+                ParameterType $defaultType = ParameterType::STRING
             ): void {
                 $this->bindNullableValue($stmt, $param, $value, $defaultType);
             }
@@ -168,11 +184,10 @@ class DoctrineParamHelperTraitTest extends TestCase
         $this->makeHelper()->callBindNullableValue($stmt, ':v', 42, ParameterType::INTEGER);
     }
 
-    /* NB : la signature du trait accepte `ParameterType|ArrayParameterType`
-     * mais `Statement::bindValue` n'accepte PAS `ArrayParameterType` (TypeError
-     * runtime). Cette branche est de facto inutilisable. Vérifié 2026-05-15 :
-     * `bindNullableValue` n'est appelée NULLE PART en prod (dead code).
-     * À simplifier (retrait de `ArrayParameterType` de la signature) ou supprimer
-     * la méthode entièrement lors d'un futur nettoyage. Pas testé ici pour ne
-     * pas figer un comportement buggé. */
+    /* MODIF 2026-10-18 : le wrapper `callBindNullableValue` acceptait
+     * `ParameterType|ArrayParameterType`, alors que le trait n'a jamais accepté
+     * que `ParameterType` — bug du wrapper de test, pas du trait. Corrigé pour
+     * matcher la vraie signature. `bindNullableValue` reste inutilisée en prod
+     * (dead code, vérifié par grep), mais sa signature réelle est désormais
+     * correctement testée. */
 }

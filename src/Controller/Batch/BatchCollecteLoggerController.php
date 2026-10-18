@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{InformationProjet, Logger, LoggerDetail};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteLoggerController]
@@ -39,6 +39,7 @@ class BatchCollecteLoggerController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -214,15 +215,21 @@ class BatchCollecteLoggerController extends AbstractController
                     'track-error-method',
                     'track-debug-method'
                 ];
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (valeur alignée sur
+         * OPEN,CONFIRMED,REOPENED / OPEN,CONFIRMED,ACCEPTED, pas seulement OPEN, cf.
+         * GetSonarVersionService::issueStatusParam() et projet.md pour la règle). */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParams = [
-            $method[0] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[0], 'ps' => 500],
-            $method[1] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[1], 'ps' => 500],
-            $method[2] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[2], 'ps' => 500],
-            $method[3] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[3], 'ps' => 500]
+            $method[0] => [ $componentKeyParam => $maven_key,
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[0], 'ps' => 500],
+            $method[1] => [ $componentKeyParam => $maven_key,
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[1], 'ps' => 500],
+            $method[2] => [ $componentKeyParam => $maven_key,
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[2], 'ps' => 500],
+            $method[3] => [ $componentKeyParam => $maven_key,
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[3], 'ps' => 500]
         ];
 
         /** Appels API et vérification des retours */
@@ -342,7 +349,7 @@ class BatchCollecteLoggerController extends AbstractController
             } else {
                 $this->logger->info("[Batch Logger] ℹ️ logger_details peuples", [
                     'maven_key' => $maven_key,
-                    'nb_rows'   => $insertDetails['nombre'] ?? count($detailRows),
+                    'nb_rows'   => $insertDetails['nombre'],
                 ]);
             }
         }
@@ -367,7 +374,7 @@ class BatchCollecteLoggerController extends AbstractController
         /* MODIF 2026-05-20 : $detailsRepos toujours défini (getRepository non-null). */
         $breakdownResult = $detailsRepos->countByMavenKeyGroupedByLevelAndFramework($maven_key);
         if ($breakdownResult['code'] === 200) {
-            foreach ($breakdownResult['liste'] ?? [] as $row) {
+            foreach ($breakdownResult['liste'] as $row) {
                 $level     = (string) $row['level'];
                 $framework = $row['framework'] !== null ? (string) $row['framework'] : '—';
                 $nb        = (int) $row['nb'];

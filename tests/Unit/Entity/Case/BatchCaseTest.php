@@ -55,8 +55,8 @@ class BatchCaseTest extends TestCase
 
     public function testSettingAndGettingId(): void
     {
-        $this->batch->setId(true);
-        $this->assertEquals(true, $this->batch->getId());
+        $this->batch->setId(42);
+        $this->assertSame(42, $this->batch->getId());
     }
 
     public function testSettingAndGettingAutomatique(): void

@@ -22,6 +22,9 @@ parameters:
     # le subscriber renvoie 503 et l'endpoint est désactive (sécurité par défaut).
     dc.ingest.token: '%env(DC_INGEST_TOKEN)%'
 
+    # MODIF 2026-10-13 : token bearer pour /api/secure/zap/* (même principe que DC_INGEST_TOKEN).
+    zap.ingest.token: '%env(ZAP_INGEST_TOKEN)%'
+
     # Configuration SonarQube
     sonar.url: '%env(SONAR_URL)%'
     sonar.version: '%env(SONAR_VERSION)%'
@@ -54,6 +57,14 @@ parameters:
     env(MAMOUL_CLI_PROXY_USER_PWD): 'utilisateur:motdepasse'
     env(MAMOUL_CLI_NO_PROXY): 'localhost,127.0.0.1'
 
+    # MODIF 2026-10-18 : purge RGPD (mkDocs/docs/ma-moulinette/conformite/rgpd.md,
+    # section 13, actions 1-3) — durées de rétention réglables sans redéploiement,
+    # valeurs par défaut dans l'ordre de grandeur des recommandations CNIL (6 à 12
+    # mois pour une journalisation ; plus court pour une donnée purement statistique).
+    env(USER_ROLE_LOG_RETENTION_DAYS): '365'
+    env(ACTIVITY_RETENTION_DAYS): '365'
+    env(USER_AGENT_RETENTION_DAYS): '180'
+
     # Domaine de repli utilisé pour reconstruire l'adresse à partir d'un identifiant
     # court (« prenom.nom ») lors de l'authentification. Valeur de démonstration :
     # à surcharger via LDAP_UPN_SUFFIX en .env.local sur une instance réelle.
@@ -65,8 +76,13 @@ parameters:
     nombre.favori: '%env(NOMBRE_FAVORI)%'
     # Configuration diverse
     track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
+    creedengo.enabled: '%env(CREEDENGO_ENABLED)%'
     path.audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
+
+    # Nombre de traitement USER_AGENT
+    user.agent.batch.manuel: '%env(USER_AGENT_BATCH_MANUEL)%'
+    user.agent.batch.automatique: '%env(USER_AGENT_BATCH_AUTOMATIQUE)%'
 
     # MODIF 2026-05-06
     # Mode du filigrane sur les rapports PDF :
@@ -129,6 +145,12 @@ services:
             $internalHeaderName: 'X-Internal-Front'
             $internalHeaderValue: 'front-app'
 
+    # MODIF 2026-10-17 : en-têtes de sécurité HTTP (CSP, anti-clickjacking, X-Content-Type-Options,
+    # retrait X-Powered-By), écart confirmé par un scan ZAP actif complet.
+    App\EventSubscriber\SecurityHeadersSubscriber:
+        arguments:
+            $debug: '%kernel.debug%'
+
     App\Service\ActuatorCredentialCipher:
         arguments:
             $cipherKey: '%actuator.cipher_key%'
@@ -151,6 +173,11 @@ services:
     App\EventSubscriber\DependencyCheckTokenSubscriber:
         arguments:
             $expectedToken: '%dc.ingest.token%'
+
+    # MODIF 2026-10-13 : auth token bearer pour les endpoints ZAP.
+    App\EventSubscriber\ZapIngestTokenSubscriber:
+        arguments:
+            $expectedToken: '%zap.ingest.token%'
     # Téléchargement des logs
     App\Service\LogArchive\LogArchiveService:
         arguments:
@@ -206,4 +233,17 @@ services:
             $mamoulCliProxyUrl: '%env(MAMOUL_CLI_PROXY_URL)%'
             $mamoulCliProxyUserPwd: '%env(MAMOUL_CLI_PROXY_USER_PWD)%'
             $mamoulCliNoProxy: '%env(MAMOUL_CLI_NO_PROXY)%'
+
+    # MODIF 2026-10-18 : purges RGPD (section 13 du document conformité).
+    App\Command\Prod\UserRoleLogPurgeCommand:
+        arguments:
+            $defaultDays: '%env(int:USER_ROLE_LOG_RETENTION_DAYS)%'
+
+    App\Command\Prod\ActivityPurgeCommand:
+        arguments:
+            $defaultDays: '%env(int:ACTIVITY_RETENTION_DAYS)%'
+
+    App\Command\Prod\UserAgentPurgeCommand:
+        arguments:
+            $defaultDays: '%env(int:USER_AGENT_RETENTION_DAYS)%'
 ...

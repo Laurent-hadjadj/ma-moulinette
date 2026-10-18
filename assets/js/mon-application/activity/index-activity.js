@@ -130,73 +130,69 @@ $('.js-activity-refresh').on('click', () => {
   refreshActivity();
 });
 
-const graphToto = function(type, donnee, source) {
-  let datasets = [];
-  const la = [];
+/**
+ * [Description for graphToto]
+ * MODIF 2026-10-16 : une seule vue (analyses + projets analysés par jour),
+ * plus de source à choisir — les 2 anciens boutons mono-métrique étaient
+ * strictement redondants avec cette vue combinée. Remplissage d'aire
+ * (fill:true), même pattern que les 2 graphiques de la page Statistique
+ * Utilisateur (app-statistique-utilisateur.js, generateChart()).
+ *
+ * @var function
+ */
+const graphToto = function(donnee) {
+  const $emptyMessage = $('.js-chart-empty-message');
+  const $canvas = $('#graphique-langage');
 
-  if (source === 'projet_analyse') {
-    const analyse = [];
-    const projet = [];
-    donnee.forEach(element => {
-      la.push(element.day);
-      analyse.push(element.analyse);
-      projet.push(element.projet);
-    });
-    datasets.push({
-      label: 'Analyse',
-      data: analyse,
-      borderColor: getRandomColor(),
-      backgroundColor: transparentize(getRandomColor(), 0.5),
-      yAxisID: 'y',
-    });
-    datasets.push({
-      label: 'Projet',
-      data: projet,
-      borderColor: getRandomColor(),
-      backgroundColor: transparentize(getRandomColor(), 0.5),
-      yAxisID: 'y',
-    });
-  } else {
-    const da = [];
-    donnee.forEach(element => {
-      la.push(element.day);
-      da.push(element.count);
-    });
-    datasets.push({
-      label: source,
-      data: da,
-      borderColor: getRandomColor(),
-      backgroundColor: transparentize(getRandomColor(), 0.5),
-      yAxisID: 'y',
-    });
+  if (!donnee || donnee.length === 0) {
+    $canvas.hide();
+    $emptyMessage.css('display', 'flex');
+    return;
   }
+  $canvas.show();
+  $emptyMessage.css('display', 'none');
+
+  const la = [];
+  const analyse = [];
+  const projet = [];
+  donnee.forEach(element => {
+    la.push(element.day);
+    analyse.push(element.analyse);
+    projet.push(element.projet);
+  });
 
   // date-fns (moment n'est pas importé) : « 2026-07-15 » → « 15 juil. »
   const formattedLabels = la.map(date => format(new Date(date), 'dd MMM', { locale: fr }));
 
-  function getRandomColor() {
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    return `rgb(${r}, ${g}, ${b})`;
-  }
-
-  function transparentize(color, opacity) {
-    const alpha = opacity === undefined ? 0.5 : 1 - opacity;
-    return color.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`);
-  }
+  const datasets = [
+    {
+      label: 'Analyses',
+      data: analyse,
+      borderColor: 'rgb(0, 68, 91)',
+      backgroundColor: 'rgba(0, 68, 91, 0.25)',
+      fill: true,
+      tension: 0.4,
+      yAxisID: 'y',
+    },
+    {
+      label: 'Projets analysés',
+      data: projet,
+      borderColor: 'rgb(240, 138, 36)',
+      backgroundColor: 'rgba(240, 138, 36, 0.25)',
+      fill: true,
+      tension: 0.4,
+      yAxisID: 'y',
+    },
+  ];
 
   const data = {
     labels: formattedLabels,
     datasets: datasets
   };
 
-  const titre = source === 'projet' ? 'Projets analysés par jour'
-    : source === 'projet_analyse' ? 'Analyses et projets par jour'
-    : 'Analyses par jour';
-
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     interaction: {
       mode: 'index',
       intersect: false,
@@ -205,7 +201,11 @@ const graphToto = function(type, donnee, source) {
     plugins: {
       title: {
         display: true,
-        text: titre
+        text: 'Analyses et projets analysés par jour'
+      },
+      // Trop de points sur une année pour afficher une valeur par point (illisible).
+      datalabels: {
+        display: false
       }
     },
     scales: {
@@ -235,8 +235,16 @@ const graphToto = function(type, donnee, source) {
   }
 }
 
-const dessineGraph = async function(type, source) {
-  const dataRefresh = { source: source };
+/**
+ * [Description for dessineGraph]
+ * Récupère les données (analyses + projets par jour, année courante) et
+ * trace le graphique. Appelé automatiquement au chargement de la page —
+ * plus besoin de clic puisqu'il n'y a plus qu'une seule vue possible.
+ *
+ * @var function
+ */
+const dessineGraph = async function() {
+  const dataRefresh = { source: 'projet_analyse' };
   const optionsRefresh = {
     url: `${serveur()}/api/secure/activity/dessin`,
     type: 'POST',
@@ -261,17 +269,11 @@ const dessineGraph = async function(type, source) {
       return;
     }
 
-    graphToto(type, t.listeDonnee.request, source);
+    graphToto(t.listeDonnee.request);
   } catch (error) {
     sessionStorage.setItem('ma_moulinette_error', `Erreur graphique : ${JSON.stringify(error, null, 2)}`);
     showMessage('critical', 'Une erreur est survenue lors du tracé du graphique (Erreur 500).');
   }
 }
 
-$('.js-show-graph').on('click', (e) => {
-  const target = e.currentTarget.id;
-  const elm = document.getElementById(target);
-  const source = elm.dataset.source;
-  const type = elm.dataset.type;
-  dessineGraph(type, source);
-});
+$(dessineGraph);

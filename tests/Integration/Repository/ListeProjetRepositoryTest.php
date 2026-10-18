@@ -108,11 +108,9 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map = ['clause_where'=>"tag LIKE 'ma-moulinette%' OR tag LIKE '2048%'" ];
-
         // Appel de la méthode
         $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
-        $r = $listeProjetRepository->selectListeProjetByGroupe($map);
+        $r = $listeProjetRepository->selectListeProjetByGroupe(['ma-moulinette', '2048']);
 
         // Assert
         $this->assertEquals(200, $r['code'], self::$erreurCode200);

@@ -28,7 +28,8 @@ class ActivityBatchReportCaseTest extends TestCase
     private static int $taskCount = 12;
     private static int $taskDone = 11;
     private static int $page = 1;
-    private static $lastError = ['Erreur inconnue.'];
+    /** @var array<int, string> */
+    private static array $lastError = ['Erreur inconnue.'];
     private static string $dateEnregistrement = '2024-07-31 12:27:05+02';
 
     private function getEntity(): ActivityBatchReport

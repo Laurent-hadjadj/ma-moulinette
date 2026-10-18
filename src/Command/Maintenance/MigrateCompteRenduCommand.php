@@ -36,6 +36,7 @@ class MigrateCompteRenduCommand extends Command
     private LoggerInterface $logger;
 
     // Adapter le namespace / entity selon le code
+    /** @var class-string<\App\Entity\BatchExecutionJournal> */
     private string $entityClass = \App\Entity\BatchExecutionJournal::class;
     private string $idField = 'id';
 
@@ -131,9 +132,11 @@ HELP
                 $lastId = $id;
 
                 // Accès direct au champ brut
-                $content = $item->getCompteRenduBrut();
+                $rawContent = $item->getCompteRenduBrut();
+                $content = is_resource($rawContent) ? stream_get_contents($rawContent) : $rawContent;
+                $content = is_string($content) ? $content : '';
 
-                if ($content === null || $content === '') {
+                if ($content === '') {
                     $this->logger->debug("ID {$id} -> compte_rendu vide, skip");
                     continue;
                 }

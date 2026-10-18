@@ -252,6 +252,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
             /* MODIF 2026-05-07 : nom_projet renomme en project_name (DDL 2026-03-30). */
             'date_version' => '2024-08-18 15:54:26',
             'project_name' => 'ma-moulinette',
+            'sonarqube_server_version' => '10.4.1',
             'version_release' => 2,
             'version_snapshot' => 0,
             'version_autre' => 1,

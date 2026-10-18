@@ -122,7 +122,12 @@ class BatchCrudControllerTest extends TestCase
     {
         $this->em->expects($this->never())->method('persist');
 
-        $this->controller->persistEntity($this->em, new \stdClass());
+        // Appel via réflexion : la signature réelle attend Batch (générique EasyAdmin
+        // AbstractCrudController<Batch>), on vérifie ici le garde-fou défensif pour
+        // le cas (théoriquement impossible, mais défendu) où EasyAdmin appellerait
+        // le hook avec un type inattendu.
+        (new \ReflectionMethod($this->controller, 'persistEntity'))
+            ->invoke($this->controller, $this->em, new \stdClass());
     }
 
     public function testPersistEntityThrowsOnInsertBatchTraitementFailure(): void
@@ -148,7 +153,8 @@ class BatchCrudControllerTest extends TestCase
     {
         $this->em->expects($this->never())->method('flush');
 
-        $this->controller->updateEntity($this->em, new \stdClass());
+        (new \ReflectionMethod($this->controller, 'updateEntity'))
+            ->invoke($this->controller, $this->em, new \stdClass());
     }
 
     public function testUpdateEntityUsesBindParametersForSelectAndUpdates(): void
@@ -186,7 +192,8 @@ class BatchCrudControllerTest extends TestCase
     {
         $this->em->expects($this->never())->method('remove');
 
-        $this->controller->deleteEntity($this->em, new \stdClass());
+        (new \ReflectionMethod($this->controller, 'deleteEntity'))
+            ->invoke($this->controller, $this->em, new \stdClass());
     }
 
     public function testDeleteEntityRemovesAndFlushesOnHappyPath(): void

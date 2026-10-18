@@ -413,4 +413,179 @@ class ActivityRepository extends ServiceEntityRepository
         }
         return ['code' => 200, 'request' => $request, 'erreur' => ''];
     }
+
+    /**
+     * [Description for listeAnalyseProjetPeriode]
+     * Même agrégation que listeAnalyseProjet() (total analyses + projets
+     * distincts par jour), mais filtrée sur une période glissante plutôt
+     * qu'une année calendaire — utilisée par le rapport PDF Activité.
+     *
+     * @param \DateTimeImmutable $debut
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function listeAnalyseProjetPeriode(\DateTimeImmutable $debut): array
+    {
+        try {
+            $sql = "SELECT DATE(executed_at) AS day,
+                        COUNT(*) AS analyse,
+                        COUNT(DISTINCT project_name) AS projet
+                    FROM ma_moulinette.activity
+                    WHERE executed_at >= :debut
+                    GROUP BY DATE(executed_at) ORDER BY day ASC";
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue('debut', $debut->format(self::$formatDate));
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $request, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for countProjetsDistinctsPeriode]
+     * Nombre de projets distincts réellement analysés sur une période
+     * glissante (pas limité par un éventuel top N) — utilisé par le rapport
+     * PDF Activité pour le KPI "Projets distincts".
+     *
+     * @param \DateTimeImmutable $debut
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countProjetsDistinctsPeriode(\DateTimeImmutable $debut): array
+    {
+        try {
+            $sql = "SELECT COUNT(DISTINCT maven_key) AS total
+                    FROM ma_moulinette.activity
+                    WHERE executed_at >= :debut";
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue('debut', $debut->format(self::$formatDate));
+            $request = $stmt->executeQuery()->fetchAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $request ?: ['total' => 0], 'erreur' => ''];
+    }
+
+    /**
+     * [Description for top10PicsAnalyse]
+     * Classement des N journées ayant eu le plus d'analyses, toutes périodes
+     * confondues (pas de filtre de date) — utilisé par la page Activité pour
+     * le tableau "Top 10 des pics d'analyse".
+     *
+     * @param int $limit
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function top10PicsAnalyse(int $limit = 10): array
+    {
+        try {
+            $sql = "SELECT DATE(executed_at) AS day,
+                        COUNT(*) AS \"analyse\",
+                        COUNT(DISTINCT project_name) AS projet
+                    FROM ma_moulinette.activity
+                    GROUP BY DATE(executed_at)
+                    ORDER BY \"analyse\" DESC
+                    LIMIT :limit";
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue('limit', $limit, \Doctrine\DBAL\ParameterType::INTEGER);
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $request, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for topProjetsPeriode]
+     * Classement des projets par nombre total d'analyses sur une période
+     * glissante — utilisé par le rapport PDF Activité.
+     *
+     * @param \DateTimeImmutable $debut
+     * @param int $limit
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function topProjetsPeriode(\DateTimeImmutable $debut, int $limit = 10): array
+    {
+        try {
+            $sql = "SELECT maven_key, project_name, COUNT(*) AS \"analyse\"
+                    FROM ma_moulinette.activity
+                    WHERE executed_at >= :debut
+                    GROUP BY maven_key, project_name
+                    ORDER BY \"analyse\" DESC
+                    LIMIT :limit";
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue('debut', $debut->format(self::$formatDate));
+            $stmt->bindValue('limit', $limit, \Doctrine\DBAL\ParameterType::INTEGER);
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $request, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for countOlderThan]
+     * Compte les lignes de activity plus anciennes que $days jours
+     * (purge RGPD, voir mkDocs/docs/ma-moulinette/conformite/rgpd.md section 13).
+     *
+     * @param int $days
+     *
+     * @return int
+     *
+     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countOlderThan(int $days): int
+    {
+        return (int) $this->getEntityManager()
+            ->getConnection()
+            ->executeQuery(
+                'SELECT COUNT(*) FROM ma_moulinette.activity
+                 WHERE executed_at < NOW() - (:days || \' days\')::INTERVAL',
+                ['days' => $days]
+            )
+            ->fetchOne();
+    }
+
+    /**
+     * [Description for purge]
+     * Supprime les lignes de activity plus anciennes que $days jours (purge RGPD).
+     *
+     * @param int $days
+     *
+     * @return int nombre de lignes supprimées
+     *
+     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function purge(int $days): int
+    {
+        return (int) $this->getEntityManager()
+            ->getConnection()
+            ->executeStatement(
+                'DELETE FROM ma_moulinette.activity
+                 WHERE executed_at < NOW() - (:days || \' days\')::INTERVAL',
+                ['days' => $days]
+            );
+    }
 }

@@ -93,6 +93,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
         {# Affiche le graphique des courbes des anomalies #}
         {{ include('/suivi/_affiche_graphique_anomalie.html.twig') }}
+
+        {# MODIF 2026-10-08 : graphique en lignes pleines RCI + Scope Main/Test (%). #}
+        {{ include('/suivi/_affiche_graphique_rci_scope.html.twig') }}
+
         {{ include('/suivi/_suivi_mesures.html.twig') }}
         {# Tests & Couverture (cf. project_suivi_redesign.md). #}
         {{ include('/suivi/_suivi_tests_couverture.html.twig') }}

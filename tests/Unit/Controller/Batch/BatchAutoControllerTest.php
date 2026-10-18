@@ -74,7 +74,7 @@ class BatchAutoControllerTest extends TestCase
         $request = $this->jsonRequest('not-json');
 
         $response = $this->controller->traitementListe($request);
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
         $this->assertSame('error', $data['type']);
@@ -85,7 +85,7 @@ class BatchAutoControllerTest extends TestCase
         $request = $this->jsonRequest(['foo' => 'bar']);
 
         $response = $this->controller->traitementListe($request);
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -95,7 +95,7 @@ class BatchAutoControllerTest extends TestCase
         $request = $this->jsonRequest(['token' => 'wrong']);
 
         $response = $this->controller->traitementListe($request);
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
         $this->assertSame(403, $response->getStatusCode());
@@ -108,7 +108,7 @@ class BatchAutoControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db down']);
 
         $response = $this->controller->traitementListe($this->jsonRequest(['token' => self::TOKEN]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('db down', $data['trace']);
@@ -121,7 +121,7 @@ class BatchAutoControllerTest extends TestCase
             ->willReturn(['code' => 200, 'liste' => [['id' => 1, 'nom' => 'T1']]]);
 
         $response = $this->controller->traitementListe($this->jsonRequest(['token' => self::TOKEN]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(1, $data['liste_traitement']);
@@ -132,7 +132,7 @@ class BatchAutoControllerTest extends TestCase
     public function testAutoReturns400WhenJsonIsInvalid(): void
     {
         $response = $this->controller->traitementAuto($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -141,7 +141,7 @@ class BatchAutoControllerTest extends TestCase
     {
         // token only, missing nom_traitement/portefeuille/traitement_id
         $response = $this->controller->traitementAuto($this->jsonRequest(['token' => self::TOKEN]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -154,7 +154,7 @@ class BatchAutoControllerTest extends TestCase
             'portefeuille' => 'P',
             'traitement_id' => '01HK0000000000000000000000',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -176,7 +176,7 @@ class BatchAutoControllerTest extends TestCase
             'portefeuille' => 'P',
             'traitement_id' => '01HK0000000000000000000000',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(404, $data['code']);
         $this->assertSame('warning', $data['type']);
@@ -201,7 +201,7 @@ class BatchAutoControllerTest extends TestCase
             'portefeuille' => 'P',
             'traitement_id' => '01HK0000000000000000000000',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('update fail', $data['erreur']);
@@ -227,7 +227,7 @@ class BatchAutoControllerTest extends TestCase
             'portefeuille' => 'P',
             'traitement_id' => '01HK0000000000000000000000',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertStringContainsString("collecte du projet fr.ma-moulinette:ma-moulinette", $data['message']);
@@ -253,7 +253,7 @@ class BatchAutoControllerTest extends TestCase
             'portefeuille' => 'P',
             'traitement_id' => '01HK0000000000000000000000',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertStringContainsString('succès', $data['message']);
@@ -279,7 +279,7 @@ class BatchAutoControllerTest extends TestCase
             'portefeuille' => 'P',
             'traitement_id' => '01HK0000000000000000000000',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -291,7 +291,7 @@ class BatchAutoControllerTest extends TestCase
      */
     private function jsonRequest(array|string $body): Request
     {
-        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT);
+        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
         return new Request([], [], [], [], [], [], $content);
     }
 }

@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\NoSonar;
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteNoSonarController]
@@ -39,6 +39,7 @@ class BatchCollecteNoSonarController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -69,11 +70,12 @@ class BatchCollecteNoSonarController extends AbstractController
         ]);
 
         /** Sécurisation de l'URL */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
-                'componentKeys' => $maven_key,
+                $this->sonarVersion->componentKeyParam() => $maven_key,
                 /* MODIF 2026-05-06 :
                  * Filtre étendu pour collecter les 6 rules supportées par le switch
                  * en aval (java:S1310 = no_pmd, java:S1315 = check_style,

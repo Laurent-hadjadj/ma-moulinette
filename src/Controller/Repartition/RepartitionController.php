@@ -135,7 +135,7 @@ class RepartitionController extends AbstractController
         $string = str_rot13($token);
         $decoded = base64_decode($string);
         $parts = preg_split("/[|]+/", $decoded);
-        return (count($parts) === 2) ? $parts[1] : null;
+        return ($parts !== false && count($parts) === 2) ? $parts[1] : null;
     }
 
     /**

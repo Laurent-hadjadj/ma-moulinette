@@ -497,7 +497,7 @@ class ProjetCosuiService
         $this->logger->debug("🛠️ [COSUI] Injection des données de référence.");
         foreach ($nn as $key => $value) {
             $render[$key] = $value;
-            if (str_starts_with($key, 'initial_')) {
+            if (str_starts_with((string) $key, 'initial_')) {
                 $render['modal_' . $key] = $value;
             }
         }

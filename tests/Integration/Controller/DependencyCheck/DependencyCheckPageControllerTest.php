@@ -79,8 +79,8 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->client->request('GET', self::DEPENDENCY_CHECK);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Projets scannes', $this->client->getResponse()->getContent());
-        $this->assertStringContainsString('Aucun projet', $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Projets scannes', (string) $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Aucun projet', (string) $this->client->getResponse()->getContent());
     }
 
     public function testIndexListsScannedProjects(): void
@@ -89,7 +89,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', self::DEPENDENCY_CHECK);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('demo', $body, 'Le projet "demo" doit apparaitre');
         $this->assertStringContainsString('1.0', $body, 'La version 1.0 doit apparaitre');
     }
@@ -105,7 +105,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', self::DEPENDENCY_CHECK);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('demo', $body, 'Le projet du perimetre user doit apparaitre');
         $this->assertStringNotContainsString('other-app', $body, 'Le projet hors perimetre ne doit PAS apparaitre');
         $this->assertStringNotContainsString('fr.hors-perimetre', $body, 'Le group hors perimetre ne doit PAS apparaitre');
@@ -126,7 +126,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', self::DEPENDENCY_CHECK);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringNotContainsString('demo', $body, 'Aucun projet ne doit etre liste sans groupe');
         $this->assertStringContainsString(
             'Aucun projet accessible',
@@ -139,8 +139,8 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/dependency-check/dashboard');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Dashboard cross-projets', $this->client->getResponse()->getContent());
-        $this->assertStringContainsString('Aucune donnee', $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Dashboard cross-projets', (string) $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Aucune donnee', (string) $this->client->getResponse()->getContent());
     }
 
     public function testDashboardShowsAggregatedDataWithFixture(): void
@@ -149,7 +149,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/dashboard');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Note : la section "CVE critiques cross-projets" filtre >= 2 projets,
         // donc avec 1 seul scan la CVE n’apparaît pas la. On valide par contre
         // les sections "top deps" et "top CWE" qui n'ont pas de seuil.
@@ -172,7 +172,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/1.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('CVE-2023-46120', $body);
         $this->assertStringContainsString('amqp-client', $body);
         $this->assertStringContainsString('HIGH', $body);
@@ -194,7 +194,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
         );
 
         // Magic bytes PDF : "%PDF-"
-        $body = $response->getContent();
+        $body = (string) $response->getContent();
         $this->assertStringStartsWith('%PDF-', $body, 'Le contenu doit commencer par les magic bytes PDF');
         $this->assertGreaterThan(1000, strlen($body), 'Un PDF valide fait au moins quelques KB');
     }
@@ -216,7 +216,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/9.9.9-INEXISTANT');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('---', $body, 'La page doit afficher --- en l\'absence de scan');
         $this->assertStringContainsString('Aucune CVE détectée', $body);
     }
@@ -349,7 +349,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Historique', $body);
         $this->assertStringContainsString('Aucun scan trouvé pour ce projet', $body);
     }
@@ -360,7 +360,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Scans cumulés', $body);
         $this->assertStringContainsString('Versions distinctes', $body);
         $this->assertStringContainsString('Période couverte', $body);
@@ -376,7 +376,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Versions distinctes >= 2 (le compteur est dans une cell font-size-15)
         $this->assertStringContainsString('1.0', $body);
         $this->assertStringContainsString('2.0', $body);
@@ -392,7 +392,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Au moins 2 scans
         $this->assertStringContainsString('Scans cumulés', $body);
         // Les libellés de section "Delta" sont exposés dans le callout d'aide
@@ -419,7 +419,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/9.9.9-INEXISTANT/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Aucun scan trouvé pour ce projet', $body);
     }
 
@@ -429,7 +429,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/1.0/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Contexte', $body);
         $this->assertStringContainsString('CVE-2023-46120', $body);
         $this->assertStringContainsString('Plan de remédiation', $body);
@@ -446,7 +446,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/1.0/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Au moins une des 2 branches (success "Pas de changement" si findings identiques,
         // ou diff non-vide). On vérifie que la section a été rendue.
         $this->assertStringContainsString('Comparaison vs scan précédent', $body);
@@ -460,7 +460,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/2.0/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Comparaison vs version antérieure', $body);
         $this->assertStringContainsString('1.0', $body, 'La version précédente doit apparaître');
     }
@@ -475,7 +475,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/dependency-check/kpi');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Garde nb_scans == 0 du template : callout "Aucun projet" masque les sections.
         $this->assertStringContainsString('Aucun projet dans votre périmètre', $body);
         // Toggle prod/dev toujours rendu (avant la garde)
@@ -488,7 +488,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/kpi');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Top 5 apps les plus à risque', $body);
         // L'app demo doit apparaître dans le top liste (Top 5 risque ou sain)
         $this->assertStringContainsString('demo', $body);
@@ -500,7 +500,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/kpi?vue=dev');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Toggle dev sélectionné dans le template
         $this->assertStringContainsString('Suivi (dev)', $body);
         // Vue dev + uniquement une release stable -> cohorte vide -> garde "Aucun projet"
@@ -511,7 +511,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/dependency-check/comparer');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Comparer des applications', $body);
         // Branche < 2 apps : message "Sélectionnez au moins 2 applications"
         $this->assertStringContainsString('Sélectionnez au moins 2 applications', $body);
@@ -525,7 +525,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/comparer?apps%5B%5D=fr.ma-moulinette%3Ademo%3A1.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // 1 app seule => raw_app_keys prérempli mais branche "Sélectionnez au moins 2"
         $this->assertStringContainsString('Sélectionnez au moins 2 applications', $body);
         $this->assertStringNotContainsString('Synthèse comparée', $body);
@@ -550,7 +550,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
             '/dependency-check/comparer?apps%5B%5D=fr.ma-moulinette%3Ademo%3A1.0&apps%5B%5D=fr.ma-moulinette%3Abravo%3A1.0'
         );
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Synthèse comparée', $body);
         $this->assertStringContainsString('demo', $body);
         $this->assertStringContainsString('bravo', $body);
@@ -568,7 +568,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
             '/dependency-check/comparer?apps%5B%5D=fr.ma-moulinette%3Ademo%3A1.0&apps%5B%5D=fr.hors-perimetre%3Aprojet-externe%3A2.0'
         );
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringNotContainsString('other-app', $body, 'App hors ACL ne doit pas apparaître');
         $this->assertStringContainsString('Sélectionnez au moins 2 applications', $body);
     }
@@ -577,7 +577,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/dependency-check/mutualisables');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Mutualisations possibles', $body);
     }
 
@@ -587,7 +587,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/mutualisables');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Mutualisations possibles', $body);
         // Une seule app => 0 mutualisable (seuil >= 2 apps), mais la page rend OK
     }
@@ -629,7 +629,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/dashboard?vue=dev');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Toggle dev sélectionné dans le template
         $this->assertStringContainsString('Suivi (dev)', $body);
     }
@@ -657,7 +657,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/dashboard?socle=springboot-socle-config%402.7.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('springboot-socle-config', $body);
     }
 
@@ -667,7 +667,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/dashboard?socle=inexistant%40999.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Le filtre invalide est ignoré : la fixture reste visible
         $this->assertStringContainsString('demo', $body);
     }
@@ -679,7 +679,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/dependency-check/dashboard?groupe=fr-test');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         $this->assertStringContainsString('demo', $body);
     }
 
@@ -690,7 +690,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
         // emma n'a PAS le groupe 'hacker-group' -> filtre ignoré (tentative IDOR)
         $this->client->request('GET', '/dependency-check/dashboard?groupe=hacker-group');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
         // Le périmètre user normal s'applique, demo est visible
         $this->assertStringContainsString('demo', $body);
     }

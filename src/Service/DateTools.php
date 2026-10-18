@@ -32,7 +32,7 @@ class DateTools
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function dateToMinute(string $str)
+    public function dateToMinute(string $str): int
     {
         $jour = $heure = $minute = 0;
         //[2d1h1min]-- >[2] [1h1min]
@@ -42,7 +42,7 @@ class DateTools
             $h = explode('h', $j[0]);
         }
         if (count($j) == 2) {
-            $jour = $j[0];
+            $jour = (int) $j[0];
             $h = explode('h', $j[1]);
         }
 
@@ -52,7 +52,7 @@ class DateTools
             $m = explode('min', $h[0]);
         }
         if (count($h) == 2) {
-            $heure = $h[0];
+            $heure = (int) $h[0];
             $m = explode('min', $h[1]);
         }
 

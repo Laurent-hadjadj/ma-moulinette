@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\CleanCode;
-use App\Service\{ExtractName, ClientService, UrlBuilderService};
+use App\Service\{ExtractName, ClientService, UrlBuilderService, GetSonarVersionService};
 
 /* MODIF 2026-05-17 : collecte des indicateurs
  * SonarQube 10+ via les facettes cleanCodeAttributeCategories,
@@ -33,13 +33,13 @@ class BatchCollecteCleanCodeController extends AbstractController
 {
     private static string $sonarUrl = "sonar.url";
     private static string $europeParis = "Europe/Paris";
-    private static string $statuses = "OPEN,REOPENED";
 
     public function __construct(
         private EntityManagerInterface $em,
         private ClientService $client,
         private ExtractName $serviceExtractName,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {}
 
@@ -127,12 +127,17 @@ class BatchCollecteCleanCodeController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
         $app = $this->serviceExtractName->extractNameFromMavenKey($maven_key);
 
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
+
         /* ── Appel principal : nouvelles facettes SonarQube 10+ ─────── */
         $mainResult = $this->makeRequest([
-            'componentKeys' => $maven_key,
+            $componentKeyParam => $maven_key,
             'facets' => 'cleanCodeAttributeCategories,impactSeverities,impactSoftwareQualities',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
 
         if (isset($mainResult['code'])) {
@@ -155,20 +160,20 @@ class BatchCollecteCleanCodeController extends AbstractController
         $owaspTotal = $sansTotal = $cweTotal = 0;
 
         $owaspResult = $this->makeRequest([
-            'componentKeys' => $maven_key,
+            $componentKeyParam => $maven_key,
             'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($owaspResult['code'])) {
             $owaspTotal = (int) ($owaspResult['paging']['total'] ?? $owaspResult['total'] ?? 0);
         }
 
         $sansResult = $this->makeRequest([
-            'componentKeys' => $maven_key,
+            $componentKeyParam => $maven_key,
             'sansTop25' => 'insecure-interaction,risky-resource,porous-defenses',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($sansResult['code'])) {
             $sansTotal = (int) ($sansResult['paging']['total'] ?? $sansResult['total'] ?? 0);
@@ -176,10 +181,10 @@ class BatchCollecteCleanCodeController extends AbstractController
 
         /* CWE : somme des valeurs de la facette cwe (approximation). */
         $cweResult = $this->makeRequest([
-            'componentKeys' => $maven_key,
+            $componentKeyParam => $maven_key,
             'facets' => 'cwe',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($cweResult['code'])) {
             $cweCounts = $this->extractFacetCounts($cweResult['facets'] ?? [], 'cwe');

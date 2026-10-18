@@ -133,7 +133,7 @@ class PreferenceControllerTest extends TestCase
 
         $request = $this->jsonRequest(['statut' => 'ON', 'category' => 'favori_projet']);
 
-        $payload = json_decode($this->controller->apiPreferenceStatut($request)->getContent(), true);
+        $payload = json_decode((string) $this->controller->apiPreferenceStatut($request)->getContent(), true);
 
         $this->assertSame('favori_projet', $payload['category']);
         // Nouveau statut reflété
@@ -201,7 +201,7 @@ class PreferenceControllerTest extends TestCase
             'version' => '1.1',
         ]));
 
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertSame(200, $payload['code']);
 
         $json = $capturedBinds['preference'];
@@ -223,7 +223,7 @@ class PreferenceControllerTest extends TestCase
         $this->user->expects($this->atLeastOnce())->method('getPreference')->willReturn($prefs);
 
         $request = new Request(['category' => 'suivi_projet']);
-        $payload = json_decode($this->controller->apiPreferenceCategory($request)->getContent(), true);
+        $payload = json_decode((string) $this->controller->apiPreferenceCategory($request)->getContent(), true);
 
         $this->assertSame(200, $payload['code']);
         $this->assertSame(['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b'], $payload['suivi_projet']);
@@ -259,7 +259,7 @@ class PreferenceControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>prefs</html>', $response->getContent());
+        $this->assertSame('<html>prefs</html>', (string) $response->getContent());
         $this->assertSame('Alice', $capturedCtx['prenom']);
         $this->assertSame('Doe', $capturedCtx['nom']);
         $this->assertSame(['ROLE_USER'], $capturedCtx['roles']);
@@ -334,7 +334,7 @@ class PreferenceControllerTest extends TestCase
         $response = $this->controller->apiPreferenceStatut(
             $this->jsonRequest(['statut' => 'ON']) // 'categorie' manquante
         );
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
         $this->assertSame('error', $payload['type']);
@@ -349,7 +349,7 @@ class PreferenceControllerTest extends TestCase
         $response = $this->controller->apiPreferenceStatut(
             $this->jsonRequest(['statut' => true, 'category' => 'favori'])
         );
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
         $this->assertSame('error', $payload['type']);
@@ -365,7 +365,7 @@ class PreferenceControllerTest extends TestCase
         $response = $this->controller->apiPreferenceStatut(
             $this->jsonRequest(['statut' => 'ON', 'category' => 'favori_projet'])
         );
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $payload['code']);
         $this->assertSame('error', $payload['type']);
@@ -376,7 +376,7 @@ class PreferenceControllerTest extends TestCase
         $response = $this->controller->apiPreferenceFavoriDelete(
             $this->jsonRequest([]) // 'mavenKey' manquante
         );
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
     }
@@ -386,7 +386,7 @@ class PreferenceControllerTest extends TestCase
         $response = $this->controller->apiPreferenceVersionDelete(
             $this->jsonRequest(['mavenKey' => 'k']) // 'index' et 'version' manquants
         );
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
     }
@@ -400,7 +400,7 @@ class PreferenceControllerTest extends TestCase
         $response = $this->controller->apiPreferenceVersionDelete($this->jsonRequest([
             'index' => 0, 'mavenKey' => 'fr.ma-moulinette:projet-inconnu', 'version' => '1.0',
         ]));
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(404, $payload['code']);
         $this->assertSame('warning', $payload['type']);
@@ -410,7 +410,7 @@ class PreferenceControllerTest extends TestCase
     {
         $request = new Request(['category' => 'bogus']); // pas dans CATEGORIES_AUTORISEES
         $response = $this->controller->apiPreferenceCategory($request);
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
     }
@@ -418,7 +418,7 @@ class PreferenceControllerTest extends TestCase
     public function testApiPreferenceCategoryReturns400WhenMissing(): void
     {
         $response = $this->controller->apiPreferenceCategory(new Request());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
     }
@@ -430,7 +430,7 @@ class PreferenceControllerTest extends TestCase
      */
     private function jsonRequest(array $body): Request
     {
-        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
+        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR));
     }
 
     /**

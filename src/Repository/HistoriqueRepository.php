@@ -14,6 +14,7 @@
 namespace App\Repository;
 
 use App\Entity\Historique;
+use App\Util\MavenVersionComparator;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -279,6 +280,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
                         alert_status,
+                        rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                         software_quality_reliability_rating AS s10_reliability,
                         software_quality_security_rating AS s10_security,
                         software_quality_maintainability_rating AS s10_maintainability,
@@ -317,6 +319,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
                         alert_status,
+                        rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                         software_quality_reliability_rating AS s10_reliability,
                         software_quality_security_rating AS s10_security,
                         software_quality_maintainability_rating AS s10_maintainability,
@@ -355,9 +358,9 @@ class HistoriqueRepository extends ServiceEntityRepository
 
     /* MODIF 2026-05-06 :
      * Variante de selectUnionHistoriqueProjet pour le rapport PDF Suivi.
-     * Limite aux N dernieres versions (LIMIT :limit, defaut 10 cote appelant)
+     * Limite aux N dernières versions (LIMIT :limit, défaut 10 cote appelant)
      * et trie ASC sur date pour l'affichage. Pas d'UNION avec la version `initial=1` :
-     * elle n'a pas sa place dans un rapport "N dernieres".
+     * elle n'a pas sa place dans un rapport "N dernières".
      *
      * NB : on a essaye un filtre `version_release > 0` pour ne garder que les
      * releases — abandonne car version_release est un compteur cumule, pas un flag
@@ -365,7 +368,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * et c'est l'utilisateur qui choisira ses versions a l'usage. */
     /**
      * [Description for selectHistoriqueProjetForRapport]
-     * Remonte les N dernieres versions du projet pour le rapport PDF.
+     * Remonte les N dernières versions du projet pour le rapport PDF.
      * @param array<int|string, mixed> $map  attend `maven_key` et `limit`
      *
      * @return array<int|string, mixed>
@@ -396,6 +399,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
                         alert_status,
+                        rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                         software_quality_reliability_rating AS s10_reliability,
                         software_quality_security_rating AS s10_security,
                         software_quality_maintainability_rating AS s10_maintainability,
@@ -601,7 +605,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueProjetParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT
@@ -615,6 +619,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     reliability_rating AS reliability, security_rating AS security,
                     security_review_rating AS note_hotspot, sqale_rating AS maintainability,
                     alert_status,
+                    rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                     software_quality_reliability_rating AS s10_reliability,
                     software_quality_security_rating AS s10_security,
                     software_quality_maintainability_rating AS s10_maintainability,
@@ -652,7 +657,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriquesMesureParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT date_version AS date,
@@ -685,7 +690,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueAnomalieParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT date_version AS date,
@@ -717,7 +722,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueDetailsParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT date_version AS date, version,
@@ -801,7 +806,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueAnomalieGraphiqueParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT bugs AS bug,
@@ -855,6 +860,8 @@ class HistoriqueRepository extends ServiceEntityRepository
     private static array $historiqueColumns = [
         // Identité projet / version
         'maven_key', 'analyse_key', 'version', 'date_version', 'project_name',
+        // MODIF 2026-10-08 : Version du serveur SonarQube
+        'sonarqube_server_version',
         // Version typée par parser ma-moulinette
         'version_release', 'version_snapshot', 'version_autre',
         // Répartition langages (parser ma-moulinette)
@@ -897,6 +904,12 @@ class HistoriqueRepository extends ServiceEntityRepository
         // Violations (Core severity breakdown)
         'violations', 'blocker_violations', 'critical_violations',
         'major_violations', 'minor_violations', 'info_violations',
+        // MODIF 2026-10-06 : répartition par portée SonarQube (MAIN = code
+        // source, TEST = code de test), globale et par catégorie d'anomalie.
+        'scope_main', 'scope_test',
+        'bug_scope_main', 'bug_scope_test',
+        'vulnerability_scope_main', 'vulnerability_scope_test',
+        'code_smell_scope_main', 'code_smell_scope_test',
         // Software quality issues (LTA24/26 severity breakdown)
         'software_quality_blocker_issues', 'software_quality_high_issues',
         'software_quality_medium_issues', 'software_quality_low_issues',
@@ -924,6 +937,8 @@ class HistoriqueRepository extends ServiceEntityRepository
         'software_quality_security_remediation_effort',
         // Security review
         'security_hotspots', 'security_review_rating', 'security_hotspots_reviewed',
+        // MODIF 2026-10-11 : métriques "optionnelles", pas encore LTS.
+        'maintainability_issue_severity', 'reliability_issue_severity', 'security_issue_severity',
         // Menace potentielle (custom ma-moulinette)
         'menace_potentielle_to_review_high', 'menace_potentielle_to_review_medium',
         'menace_potentielle_to_review_low',
@@ -937,13 +952,26 @@ class HistoriqueRepository extends ServiceEntityRepository
         'quality_maintainability', 'quality_reliability', 'quality_security',
         'impact_blocker', 'impact_high', 'impact_medium', 'impact_low', 'impact_info',
         'owasp_top10', 'sans_top25', 'cwe',
+        // MODIF 2026-09-25 : RCI (Risk Criticality Index, plugin sonar-rci porté en PHP)
+        // MODIF 2026-09-29 : ncloc/weight bruts (global + par module), en plus de l'indicateur/note
+        'rci_indicator', 'rci_rating', 'rci_ncloc', 'rci_weight',
+        'rci_frontend_indicator', 'rci_frontend_rating', 'rci_frontend_ncloc', 'rci_frontend_weight',
+        'rci_backend_indicator', 'rci_backend_rating', 'rci_backend_ncloc', 'rci_backend_weight',
+        'rci_autre_indicator', 'rci_autre_rating', 'rci_autre_ncloc', 'rci_autre_weight',
+        'rci_inconnu_indicator', 'rci_inconnu_rating', 'rci_inconnu_ncloc', 'rci_inconnu_weight',
+        // MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo, activable via CREEDENGO_ENABLED)
+        'eco_anomalies', 'eco_dette_minute', 'eco_rating',
+        'eco_java_anomalies', 'eco_java_dette_minute', 'eco_java_rating',
+        'eco_javascript_anomalies', 'eco_javascript_dette_minute', 'eco_javascript_rating',
+        'eco_php_anomalies', 'eco_php_dette_minute', 'eco_php_rating',
+        'eco_python_anomalies', 'eco_python_dette_minute', 'eco_python_rating',
         // Méta enregistrement
         'initial', 'mode_collecte', 'utilisateur_collecte', 'date_enregistrement',
     ];
 
     /* MODIF 2026-05-06 : liste des colonnes ratings
      * SonarQube. Convention SonarQube : 1.0=A, 2.0=B, 3.0=C, 4.0=D, 5.0=E. La collecte
-     * recoit parfois la valeur numerique brute ("0"/"1.0"/...), parfois la lettre.
+     * reçoit parfois la valeur numérique brute ("0"/"1.0"/...), parfois la lettre.
      * On normalise au moment de l'INSERT pour avoir toujours A-E ou null en base. */
     /** @var array<int, string> */
     private static array $historiqueRatingColumns = [
@@ -953,6 +981,9 @@ class HistoriqueRepository extends ServiceEntityRepository
         'reliability_rating', 'software_quality_reliability_rating',
         'security_rating', 'software_quality_security_rating',
         'security_review_rating',
+        'rci_rating', 'rci_frontend_rating',
+        'rci_backend_rating', 'rci_autre_rating', 'rci_inconnu_rating',
+        'eco_rating', 'eco_java_rating', 'eco_javascript_rating', 'eco_php_rating', 'eco_python_rating',
     ];
 
     /**
@@ -992,6 +1023,34 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function insertHistoriqueAjoutProjet(array $map, array $json, ?array $loggerBreakdown = null): array
     {
+        /* MODIF 2026-10-08 : upsert par (maven_key, version) —
+         *SAUF pour les versions SNAPSHOT. Le flux batch/cron
+         * protège déjà contre les doublons via l'analyse_key SonarQube
+         * (BatchCollecteInformationProjetController), mais le flux interactif
+         * ("Enregistrer") ne s'appuyait que sur la clé primaire
+         * (maven_key, version, date_version) : une ré-analyse de la même
+         * version RELEASE/RC/BETA/ALPHA créait une nouvelle ligne au lieu de
+         * remplacer l'ancienne, alors qu'une seule doit survivre (la plus
+         * récente). Exception volontaire pour SNAPSHOT : le numéro de version
+         * n'incrémente pas entre deux commits (ex. 1.2.3-SNAPSHOT peut être
+         * analysé 15 fois le même jour en dev agile) — on garde chaque analyse
+         * (comportement inchangé, seule la clé primaire protège contre un
+         * doublon à la date exactement identique). Une version non parsable
+         * (format inattendu) est traitée comme SNAPSHOT par prudence : on ne
+         * supprime jamais de données sur une classification incertaine. */
+        $qualifier = MavenVersionComparator::parse((string) ($map['version'] ?? ''))['qualifier'] ?? 'SNAPSHOT';
+        $estSnapshot = ($qualifier === 'SNAPSHOT');
+        $existing = null;
+        if (!$estSnapshot) {
+            $existing = $this->selectLatestDateVersionForVersion((string) ($map['maven_key'] ?? ''), (string) ($map['version'] ?? ''));
+            if ($existing !== null) {
+                $comparaison = $this->comparerDateVersion($existing, (string) ($map['date_version'] ?? ''));
+                if ($comparaison >= 0) {
+                    return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+                }
+            }
+        }
+
         /** SQL générée à partir du whitelist + champ actuator_info en littéral JSON. */
         $cols = self::$historiqueColumns;
         $colList = implode(', ', $cols) . ', actuator_info, logger_breakdown';
@@ -1002,6 +1061,14 @@ class HistoriqueRepository extends ServiceEntityRepository
         $sql = "INSERT INTO ma_moulinette.historique ($colList) VALUES ($placeholders)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
+            if ($existing !== null) {
+                $deleteStmt = $this->getEntityManager()->getConnection()->prepare(
+                    "DELETE FROM ma_moulinette.historique WHERE maven_key = :maven_key AND version = :version"
+                );
+                $deleteStmt->bindValue('maven_key', $map['maven_key']);
+                $deleteStmt->bindValue('version', $map['version']);
+                $deleteStmt->executeStatement();
+            }
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $ratingColsSet = array_flip(self::$historiqueRatingColumns);
             foreach ($cols as $col) {
@@ -1033,6 +1100,66 @@ class HistoriqueRepository extends ServiceEntityRepository
         }
         /** on prépare la réponse */
         return ['code' => 200, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectLatestDateVersionForVersion]
+     * Retourne la date_version la plus récente déjà enregistrée pour un
+     * couple (maven_key, version), ou null si aucune ligne n'existe.
+     * Utilisé par insertHistoriqueAjoutProjet() pour l'upsert RELEASE/RC
+     * (jamais appelé pour SNAPSHOT).
+     *
+     * @param string $mavenKey
+     * @param string $version
+     *
+     * @return string|null
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function selectLatestDateVersionForVersion(string $mavenKey, string $version): ?string
+    {
+        $sql = "SELECT date_version FROM ma_moulinette.historique WHERE maven_key = :maven_key AND version = :version";
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->bindValue('maven_key', $mavenKey);
+        $stmt->bindValue('version', $version);
+        /** @var array<int, string> $dates */
+        $dates = $stmt->executeQuery()->fetchFirstColumn();
+        if ($dates === []) {
+            return null;
+        }
+        usort($dates, fn (string $a, string $b): int => $this->comparerDateVersion($a, $b));
+
+        return $dates[count($dates) - 1];
+    }
+
+    /**
+     * [Description for comparerDateVersion]
+     * Compare deux chaînes date_version chronologiquement (pas par ordre
+     * lexicographique). Retombe sur strcmp si l'une des deux n'est pas une
+     * date parsable (format exotique) : comportement dégradé mais jamais
+     * d'exception.
+     *
+     * @param string $a
+     * @param string $b
+     *
+     * @return int -1 si $a < $b, 0 si égale, 1 si $a > $b
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function comparerDateVersion(string $a, string $b): int
+    {
+        try {
+            $dateA = new \DateTimeImmutable($a);
+            $dateB = new \DateTimeImmutable($b);
+
+            return $dateA <=> $dateB;
+        } catch (\Throwable) {
+            return strcmp($a, $b) <=> 0;
+        }
     }
 
     /**
@@ -1261,7 +1388,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $sql = "SELECT version, project_name AS name,
                         date_version, analyse_key
                 FROM ma_moulinette.historique
-                WHERE maven_key=:maven_key
+                WHERE maven_key = :maven_key
                 ORDER BY date_version DESC LIMIT 1";
         try {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));

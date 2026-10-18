@@ -19,8 +19,8 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Historique;
-use App\Entity\CleanCode;
+use App\Entity\{Historique, CleanCode};
+use App\Service\GetSonarVersionService;
 
 /**
  * [Description ApiEnregistrementController]
@@ -44,7 +44,8 @@ class ApiEnregistrementController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private GetSonarVersionService $getSonarVersionService
     ) {}
 
     /**
@@ -103,6 +104,10 @@ class ApiEnregistrementController extends AbstractController
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->appUser()->getCourriel();
 
+        /* MODIF 2026-10-08 : Récupération de la version du serveur sonarqube */
+        $getVersionSonar = $this->getSonarVersionService->getSonarQubeVersion();
+        $sonarqube_server_version = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
+
         /* MODIF 2026-05-17 : lecture depuis clean_code pour
          * alimenter les colonnes historique (retro-compatible : null si pas de collecte). */
         $cleanCodeRepos = $this->em->getRepository(CleanCode::class);
@@ -116,14 +121,16 @@ class ApiEnregistrementController extends AbstractController
              * colonne). Même pattern de décodage que logger_breakdown ci-dessous. */
             $json = [];
             if (property_exists($data, 'actuator_info') && is_object($data->actuator_info)) {
-                $json = json_decode(json_encode($data->actuator_info), true);
+                $encoded = json_encode($data->actuator_info);
+                $json = $encoded === false ? [] : json_decode($encoded, true);
             } elseif (property_exists($data, 'actuator_info') && is_array($data->actuator_info)) {
                 $json = $data->actuator_info;
             } else {
-                $this->logger->debug('[Enregistrement] 🔍 actuator_info absent ou null (pas de point d\'accès déclaré, ou collecte non lancée).');
+                $this->logger->debug("[Enregistrement] ⚒️ actuator_info absent ou null (pas de point d'accès déclaré, ou collecte non lancée).");
             }
             $map = [
                 'maven_key' => $data->maven_key,
+                'sonarqube_server_version' => $sonarqube_server_version,
                 'analyse_key' => $data->analyse_key,
                 'version' => $data->version,
                 'date_version' => $data->date_version,
@@ -152,6 +159,16 @@ class ApiEnregistrementController extends AbstractController
                 'bugs' => $data->bugs,
                 'vulnerabilities' => $data->vulnerabilities,
                 'code_smells' => $data->code_smells,
+                /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
+                 * même flux que les autres indicateurs (DOM -> payload, pas de relecture serveur). */
+                'scope_main' => $data->scope_main ?? null,
+                'scope_test' => $data->scope_test ?? null,
+                'bug_scope_main' => $data->bug_scope_main ?? null,
+                'bug_scope_test' => $data->bug_scope_test ?? null,
+                'vulnerability_scope_main' => $data->vulnerability_scope_main ?? null,
+                'vulnerability_scope_test' => $data->vulnerability_scope_test ?? null,
+                'code_smell_scope_main' => $data->code_smell_scope_main ?? null,
+                'code_smell_scope_test' => $data->code_smell_scope_test ?? null,
                 'bug_blocker' => $data->bug_blocker,
                 'bug_critical' => $data->bug_critical,
                 'bug_major' => $data->bug_major,
@@ -167,10 +184,12 @@ class ApiEnregistrementController extends AbstractController
                 'code_smell_major' => $data->code_smell_major,
                 'code_smell_minor' => $data->code_smell_minor,
                 'code_smell_info' => $data->code_smell_info,
-                'repartition_frontend' => $data->repartition_frontend,
-                'repartition_backend' => $data->repartition_backend,
-                'repartition_autre' => $data->repartition_autre,
-                'repartition_inconnu' => $data->repartition_inconnu,
+                /* MODIF 2026-10-11 : ?? null — la ligne anomalie peut ne jamais avoir
+                 * existé (aucune collecte), pas seulement "module inconnu = 0". */
+                'repartition_frontend' => $data->repartition_frontend ?? null,
+                'repartition_backend' => $data->repartition_backend ?? null,
+                'repartition_autre' => $data->repartition_autre ?? null,
+                'repartition_inconnu' => $data->repartition_inconnu ?? null,
                 'blocker_violations' => $data->blocker_violations,
                 'critical_violations' => $data->critical_violations,
                 'major_violations' => $data->major_violations,
@@ -294,6 +313,29 @@ class ApiEnregistrementController extends AbstractController
                 'owasp_top10' => isset($cc['owasp_top10']) ? (int) $cc['owasp_top10'] : null,
                 'sans_top25' => isset($cc['sans_top25']) ? (int) $cc['sans_top25'] : null,
                 'cwe' => isset($cc['cwe']) ? (int) $cc['cwe'] : null,
+                /* MODIF 2026-10-06 : RCI suit le même flux que les autres indicateurs
+                 * (anomalie, nosonar, mesures...) — les valeurs sont chargées dans le DOM par peinture.js,
+                 * puis enregistrement.js les relit et les envoie dans le payload. */
+                'rci_indicator' => $data->rci_indicator ?? null,
+                'rci_rating' => $data->rci_rating ?? null,
+                'rci_ncloc' => $data->rci_ncloc ?? null,
+                'rci_weight' => $data->rci_weight ?? null,
+                'rci_frontend_indicator' => $data->rci_frontend_indicator ?? null,
+                'rci_frontend_rating' => $data->rci_frontend_rating ?? null,
+                'rci_frontend_ncloc' => $data->rci_frontend_ncloc ?? null,
+                'rci_frontend_weight' => $data->rci_frontend_weight ?? null,
+                'rci_backend_indicator' => $data->rci_backend_indicator ?? null,
+                'rci_backend_rating' => $data->rci_backend_rating ?? null,
+                'rci_backend_ncloc' => $data->rci_backend_ncloc ?? null,
+                'rci_backend_weight' => $data->rci_backend_weight ?? null,
+                'rci_autre_indicator' => $data->rci_autre_indicator ?? null,
+                'rci_autre_rating' => $data->rci_autre_rating ?? null,
+                'rci_autre_ncloc' => $data->rci_autre_ncloc ?? null,
+                'rci_autre_weight' => $data->rci_autre_weight ?? null,
+                'rci_inconnu_indicator' => $data->rci_inconnu_indicator ?? null,
+                'rci_inconnu_rating' => $data->rci_inconnu_rating ?? null,
+                'rci_inconnu_ncloc' => $data->rci_inconnu_ncloc ?? null,
+                'rci_inconnu_weight' => $data->rci_inconnu_weight ?? null,
                 'mode_collecte' => 'COLLECTE',
                 'utilisateur_collecte' => $utilisateur_collecte,
                 'date_enregistrement' => $dateEnregistrement
@@ -327,7 +369,8 @@ class ApiEnregistrementController extends AbstractController
              * ou collecte non lancée. */
             $loggerBreakdown = null;
             if (property_exists($data, 'logger_breakdown') && is_object($data->logger_breakdown)) {
-                $loggerBreakdown = json_decode(json_encode($data->logger_breakdown), true);
+                $encodedBreakdown = json_encode($data->logger_breakdown);
+                $loggerBreakdown = $encodedBreakdown === false ? null : json_decode($encodedBreakdown, true);
             } elseif (property_exists($data, 'logger_breakdown') && is_array($data->logger_breakdown)) {
                 $loggerBreakdown = $data->logger_breakdown;
             // MODIF 2026-05-26 : else terminal requis par S126 (logger_breakdown absent ou null = plugin v1.x).

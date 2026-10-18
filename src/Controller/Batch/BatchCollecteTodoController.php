@@ -154,12 +154,10 @@ class BatchCollecteTodoController extends AbstractController
         }
 
         /** Si pas d'issues, on arrête (après avoir nettoyé)
-         * MODIF 2026-05-15 : le retour "pas de todos" doit
-         * exposer la même shape que le retour nominal — sinon
-         * le caller ApiCollecteController::apiCollecteTodo
-         * déclenche "Warning: Undefined array key 'historique'" lorsqu'il
-         * lit `$to.do['historique']`. On retourne donc historique avec tous
-         * les compteurs à 0 (symétrie de contrat). */
+         * MODIF 2026-05-15 : le retour "pas de todos" doit exposer la même shape que le retour nominal — sinon
+         * le caller ApiCollecteController::apiCollecteTodo déclenche "Warning: Undefined array key 'historique'"
+         * lorsqu'il lit `$to.do['historique']`.
+         * On retourne donc historique avec tous les compteurs à 0 (symétrie de contrat). */
         if (empty($result['issues']) || $result['paging']['total'] === 0) {
             $this->logger->info('[Batch Todo] ℹ️ Aucun TODO trouvé pour ce projet.', [
                 'maven_key' => $maven_key

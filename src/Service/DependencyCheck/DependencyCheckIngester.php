@@ -118,7 +118,6 @@ class DependencyCheckIngester
             ]);
             return $existing;
         }
-
         $this->em->beginTransaction();
         try {
             $scan = $this->createScan($queue, $group, $artifact, $version, $scanDate, $parsed, $scanInfo);
@@ -135,7 +134,7 @@ class DependencyCheckIngester
 
                 $vulns = $depRaw['vulnerabilities'] ?? [];
                 if (!is_array($vulns) || $vulns === []) {
-                    continue; // dependance sans CVE : pas de finding
+                    continue; // dépendance sans CVE : pas de finding
                 }
                 $depsVulnerable++;
 

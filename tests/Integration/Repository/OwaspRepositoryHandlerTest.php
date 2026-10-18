@@ -38,12 +38,18 @@ class OwaspRepositoryHandlerTest extends TestCase
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
     private static int $effortTotal = 0;
-    private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** @var array<int, int> */
+    private static array $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** @var array<int, int> */
+    private static array $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** @var array<int, int> */
+    private static array $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** @var array<int, int> */
+    private static array $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** @var array<int, int> */
+    private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** @var array<int, int> */
+    private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     /* MODIF 2026-05-10 : test exception SQL pour la nouvelle
      * méthode selectOwaspVersion (utilisée dans le breadcrumb OWASP). */

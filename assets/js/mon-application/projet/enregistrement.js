@@ -140,6 +140,21 @@ export const enregistrement = async function(maven_key) {
     }
   }
 
+  /* MODIF 2026-10-06 : récupération des mesures RCI (global + par module)
+   * déposées sur le dataset de #js-rci-alert-status — par projetRCI() après
+   * une collecte fraîche, ou par le bloc RCI de peinture.js en lecture
+   * historique. Même pattern que actuatorInfo/loggerBreakdown ci-dessus :
+   * lecture DOM, le payload porte ensuite les valeurs vers le backend. */
+  let rciMesures = {};
+  const jsRciAlertStatus = document.getElementById('js-rci-alert-status');
+  if (jsRciAlertStatus && jsRciAlertStatus.dataset.rciMesuresJson) {
+    try {
+      rciMesures = JSON.parse(jsRciAlertStatus.dataset.rciMesuresJson) || {};
+    } catch (e) {
+      rciMesures = {};
+    }
+  }
+
   /**
    * On récupère les informations du projet :
    * lignes, coverage fonctionnelle, duplication, tests unitaires et
@@ -171,6 +186,10 @@ export const enregistrement = async function(maven_key) {
   /* Dette technique */
   const t12 = document.getElementById('js-dette');
   const dette=t12.dataset.detteMinute;
+  /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
+   * posée par peinture.js sur le même élément que detteMinute ci-dessus. */
+  const scopeMain = t12.dataset.scopeMain;
+  const scopeTest = t12.dataset.scopeTest;
 
   /* Nombre d'anomalie par type */
   const t13 = document.getElementById('js-nombre-bug-total');
@@ -179,6 +198,13 @@ export const enregistrement = async function(maven_key) {
   const nombreBug = t13.dataset.nombreBug;
   const nombreVulnerability = t14.dataset.nombreVulnerability;
   const nombreCodeSmell = t15.dataset.nombreCodeSmell;
+  /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) par catégorie. */
+  const bugScopeMain = t13.dataset.bugScopeMain;
+  const bugScopeTest = t13.dataset.bugScopeTest;
+  const vulnerabilityScopeMain = t14.dataset.vulnerabilityScopeMain;
+  const vulnerabilityScopeTest = t14.dataset.vulnerabilityScopeTest;
+  const codeSmellScopeMain = t15.dataset.codeSmellScopeMain;
+  const codeSmellScopeTest = t15.dataset.codeSmellScopeTest;
 
   /* répartition des anomalies par module */
   const t16 = document.getElementById('js-nombre-frontend');
@@ -281,6 +307,27 @@ export const enregistrement = async function(maven_key) {
     'logger_breakdown': loggerBreakdown,
     // MODIF 2026-07-23  : JSON Actuator (voir lecture dataset ci-dessus)
     'actuator_info': actuatorInfo,
+    // MODIF 2026-10-06 : mesures RCI (voir lecture dataset ci-dessus)
+    'rci_indicator': rciMesures.indicator ?? null,
+    'rci_rating': rciMesures.rating ?? null,
+    'rci_ncloc': rciMesures.ncloc ?? null,
+    'rci_weight': rciMesures.weight ?? null,
+    'rci_frontend_indicator': rciMesures.frontend_indicator ?? null,
+    'rci_frontend_rating': rciMesures.frontend_rating ?? null,
+    'rci_frontend_ncloc': rciMesures.frontend_ncloc ?? null,
+    'rci_frontend_weight': rciMesures.frontend_weight ?? null,
+    'rci_backend_indicator': rciMesures.backend_indicator ?? null,
+    'rci_backend_rating': rciMesures.backend_rating ?? null,
+    'rci_backend_ncloc': rciMesures.backend_ncloc ?? null,
+    'rci_backend_weight': rciMesures.backend_weight ?? null,
+    'rci_autre_indicator': rciMesures.autre_indicator ?? null,
+    'rci_autre_rating': rciMesures.autre_rating ?? null,
+    'rci_autre_ncloc': rciMesures.autre_ncloc ?? null,
+    'rci_autre_weight': rciMesures.autre_weight ?? null,
+    'rci_inconnu_indicator': rciMesures.inconnu_indicator ?? null,
+    'rci_inconnu_rating': rciMesures.inconnu_rating ?? null,
+    'rci_inconnu_ncloc': rciMesures.inconnu_ncloc ?? null,
+    'rci_inconnu_weight': rciMesures.inconnu_weight ?? null,
     'ncloc': nombreLigneDeCode, 'lines': nombreLigne,
     'files': nombreFichier, 'classes': nombreClasse, 'functions': nombreFonction,
     coverage, duplicated_lines_density,
@@ -288,6 +335,11 @@ export const enregistrement = async function(maven_key) {
     'violations': violations, 'sqale_index': dette,
     'bugs': nombreBug, 'vulnerabilities': nombreVulnerability,
     'code_smells': nombreCodeSmell,
+    // MODIF 2026-10-06 : répartition par portée SonarQube (voir lecture dataset ci-dessus)
+    'scope_main': scopeMain, 'scope_test': scopeTest,
+    'bug_scope_main': bugScopeMain, 'bug_scope_test': bugScopeTest,
+    'vulnerability_scope_main': vulnerabilityScopeMain, 'vulnerability_scope_test': vulnerabilityScopeTest,
+    'code_smell_scope_main': codeSmellScopeMain, 'code_smell_scope_test': codeSmellScopeTest,
     'repartition_frontend': frontend, 'repartition_backend': backend,
     'repartition_autre': autre, 'repartition_inconnu': inconnu,
     'blocker_violations': nombreViolationsBloquant,
