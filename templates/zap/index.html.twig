@@ -53,6 +53,17 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     <p>Les rapports ZAP sont postés par la CI sur <code>POST /api/secure/zap/upload</code>.</p>
                 </div>
             {% else %}
+                {# Export PDF — lien direct, le token est déjà décodé côté serveur
+                    (contrairement à la page OWASP, pas besoin de sessionStorage/JS). #}
+                <a id="bouton-ouvrir-rapport-zap-pdf"
+                    href="{{ path('zap_rapport_pdf', {token: app.request.query.get('token')}) }}"
+                    target="_blank"
+                    class="button open-sans focus-dark-light"
+                    title="Exporter le rapport ZAP au format PDF"
+                    aria-label="Export PDF">
+                    <span aria-hidden="true">📄</span> Export PDF
+                </a>
+
                 {# Bandeau KPI — scan du jour + cible + total alertes #}
                 <div class="grid-x grid-margin-x zap-kpi-row margin-bottom-1">
                     <div class="cell small-12 medium-4">
