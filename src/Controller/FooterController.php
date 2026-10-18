@@ -121,6 +121,12 @@ class FooterController extends AbstractController
         $this->tracking->track('FOOTER_DONNEES_PERSO');
         $render = $this->genericRender();
         $render['urlSite'] = $this->getParameter('cgu.url.site');
+        $render['editeur'] = $this->getParameter('cgu.editeur');
+        // Facultatifs : pas de valeur par défaut imposée dans .env.local, la
+        // page affiche un texte générique de repli si absents (RGPD_DPO_CONTACT,
+        // RGPD_BASE_LEGALE), même pattern que LDAP_BIND_DN dans CustomAuthenticator.
+        $render['dpoContact'] = $_ENV['RGPD_DPO_CONTACT'] ?? '';
+        $render['legalBasis'] = $_ENV['RGPD_BASE_LEGALE'] ?? '';
         return $this->render('footer/donnees-personnelles.html.twig', $render);
     }
 }
