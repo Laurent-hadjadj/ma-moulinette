@@ -100,7 +100,7 @@ class OwaspController extends AbstractController
      * @param string $type
      * @param string $message
      * @param string|null $trace
-     * @param array<string, mixed> $render
+     * @param array<int|string, mixed> $render
      *
      * @return Response
      *
@@ -153,7 +153,7 @@ class OwaspController extends AbstractController
 
         $parts = preg_split("/[|]+/", $decoded);
 
-        if (count($parts) !== 2) {
+        if ($parts === false || count($parts) !== 2) {
             $this->logger->warning("[OWASP] ⚠️ Format de token invalide après décodage", ['decoded' => $decoded]);
             return null;
         }

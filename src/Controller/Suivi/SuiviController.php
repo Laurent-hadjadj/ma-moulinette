@@ -172,7 +172,7 @@ class SuiviController extends AbstractController
         }
 
         $parts = preg_split("/[|]+/", $decoded);
-        if (count($parts) !== 2) {
+        if ($parts === false || count($parts) !== 2) {
             $this->logger->warning('[Suivi] ⚠️ Format de token invalide après décodage', ['decoded' => $decoded]);
             return null;
         }

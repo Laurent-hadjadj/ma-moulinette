@@ -15,12 +15,13 @@ namespace App\Controller\Zap;
 
 use App\Controller\Traits\{AppUserAware, ProjetPerimetreGuard};
 use App\Entity\{OwaspDast, ZapFinding, ZapScan};
+use App\Service\PdfExportService;
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\{Request, Response};
+use Symfony\Component\HttpFoundation\{Request, Response, ResponseHeaderBag};
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -61,6 +62,7 @@ class ZapPageController extends AbstractController
     public function __construct(
         ParameterBagInterface $params,
         private EntityManagerInterface $em,
+        private PdfExportService $pdfExportService,
         private LoggerInterface $logger,
         private readonly UserAgentTrackingFacade $tracking,
     ) {
@@ -137,7 +139,7 @@ class ZapPageController extends AbstractController
         }
 
         $parts = preg_split('/[|]+/', $decoded);
-        if (count($parts) !== 2) {
+        if ($parts === false || count($parts) !== 2) {
             $this->logger->warning('[ZAP] ⚠️ Format de token invalide après décodage.');
             return null;
         }
@@ -311,5 +313,140 @@ class ZapPageController extends AbstractController
                 10 => "Falsification de requête côté serveur (SSRF)",
             ],
         ];
+    }
+
+    /**
+     * [Description for extractProjectName]
+     * Même logique que OwaspController::extractProjectName() — dernier
+     * segment après ':' de la clé Maven, fallback = clé entière si absent.
+     *
+     * @param string $mavenKey
+     *
+     * @return string
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private static function extractProjectName(string $mavenKey): string
+    {
+        $parts = explode(':', $mavenKey);
+        return end($parts) ?: $mavenKey;
+    }
+
+    /**
+     * [Description for rapportPdf]
+     * Export PDF du dernier scan ZAP : synthèse par risque, catégories
+     * OWASP 2017/2021, évolution du risque (historique) et liste détaillée
+     * des alertes. Même mécanisme de token/périmètre que index().
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/zap/rapport/pdf', name: 'zap_rapport_pdf', methods: ['GET'])]
+    public function rapportPdf(Request $request): Response
+    {
+        $download = (bool) $request->query->get('download', false);
+
+        $token = $request->query->get('token');
+        if (empty($token)) {
+            throw $this->createNotFoundException('Jeton manquant.');
+        }
+
+        $maven_key = $this->decodeToken($token);
+        if (null === $maven_key) {
+            throw $this->createNotFoundException('Jeton invalide.');
+        }
+
+        $perimetre = $this->verifierPerimetreProjet($maven_key, '[ZAP]');
+        if ($perimetre['code'] !== 200) {
+            throw $this->createNotFoundException($perimetre['message'] ?? 'Projet hors périmètre.');
+        }
+
+        $scanRepository = $this->em->getRepository(ZapScan::class);
+        $scan = $scanRepository->findLatestByMavenKey($maven_key);
+        if ($scan === null) {
+            throw $this->createNotFoundException('Aucun scan ZAP disponible pour ce projet.');
+        }
+
+        $history = $scanRepository->listHistoryByMavenKey($maven_key);
+        $owaspByReferential = $this->em->getRepository(OwaspDast::class)->findBy(['scan' => $scan]);
+        $findings = $this->em->getRepository(ZapFinding::class)->findBy(
+            ['scan' => $scan],
+            ['riskcodeAtScan' => 'DESC']
+        );
+
+        $labels = self::categoryLabels();
+        $categories = [];
+        foreach ($owaspByReferential as $owaspDast) {
+            $referential = $owaspDast->getReferentialOwasp();
+            $rows = [];
+            for ($i = 1; $i <= 10; $i++) {
+                $rows[] = [
+                    'id' => $i,
+                    'label' => $labels[$referential][$i] ?? "A{$i}",
+                    'count' => $owaspDast->getCategoryCount($i),
+                ];
+            }
+            $categories[] = ['referential' => $referential, 'rows' => $rows];
+        }
+
+        $historiqueChronologique = array_reverse($history);
+        $historiqueBars = array_map(static fn(ZapScan $s) => [
+            'label' => $s->getGeneratedAt()->format('d/m'),
+            'total' => $s->getAlertCountTotal(),
+        ], $historiqueChronologique);
+
+        $historiqueTable = array_map(static fn(ZapScan $s) => [
+            'date' => $s->getGeneratedAt()->format('d/m/Y H:i'),
+            'total' => $s->getAlertCountTotal(),
+            'high' => $s->getRiskCountHigh(),
+            'medium' => $s->getRiskCountMedium(),
+            'low' => $s->getRiskCountLow(),
+            'informational' => $s->getRiskCountInformational(),
+        ], $history);
+
+        $findingsData = array_map(static fn(ZapFinding $f) => [
+            'rule_name' => $f->getRule()->getName(),
+            'risk_label' => $f->getRiskLabel(),
+            'instance_count' => $f->getInstanceCount(),
+            'description' => $f->getRule()->getDescription(),
+        ], $findings);
+
+        $rapport = [
+            'maven_key' => $maven_key,
+            'project_name' => self::extractProjectName($maven_key),
+            'target_url' => $scan->getTargetUrl(),
+            'scan_date' => $scan->getGeneratedAt()->format('d/m/Y H:i'),
+            'zap_version' => $scan->getZapVersion(),
+            'risk' => [
+                'high' => $scan->getRiskCountHigh(),
+                'medium' => $scan->getRiskCountMedium(),
+                'low' => $scan->getRiskCountLow(),
+                'informational' => $scan->getRiskCountInformational(),
+            ],
+            'categories' => $categories,
+            'historique_bars' => $historiqueBars,
+            'historique_table' => $historiqueTable,
+            'findings' => $findingsData,
+        ];
+
+        $pdfContent = $this->pdfExportService->generateZapPdf($rapport, 'Document Interne');
+
+        $disposition = $download ? ResponseHeaderBag::DISPOSITION_ATTACHMENT : ResponseHeaderBag::DISPOSITION_INLINE;
+        $filename = sprintf('rapport_zap_%s_%s.pdf',
+            preg_replace('/[^a-z0-9_-]/i', '_', $maven_key),
+            date('Y-m-d_H-i')
+        );
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => $disposition . '; filename=' . $filename,
+        ]);
     }
 }

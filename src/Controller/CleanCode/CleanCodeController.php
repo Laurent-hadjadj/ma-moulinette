@@ -103,7 +103,7 @@ class CleanCodeController extends AbstractController
             return null;
         }
         $parts = preg_split("/[|]+/", $decoded);
-        if (count($parts) !== 2) {
+        if ($parts === false || count($parts) !== 2) {
             return null;
         }
         return $parts[1];
