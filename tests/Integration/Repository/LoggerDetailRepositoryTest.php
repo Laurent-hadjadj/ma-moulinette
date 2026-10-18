@@ -150,6 +150,7 @@ class LoggerDetailRepositoryTest extends KernelTestCase
         $rows = $result['liste'];
         $this->assertCount(2, $rows);
         $bySlf4j = current(array_filter($rows, static fn ($r) => $r['framework'] === 'SLF4J'));
+        $this->assertNotFalse($bySlf4j);
         $this->assertSame(2, $bySlf4j['nb']);
     }
 
@@ -162,7 +163,9 @@ class LoggerDetailRepositoryTest extends KernelTestCase
         $result = $this->repo->deleteLoggerDetailMavenKey(['maven_key' => self::MAVEN_KEY]);
 
         $this->assertSame(['code' => 200, 'erreur' => ''], $result);
-        $this->assertSame([], $this->repo->selectByMavenKey(self::MAVEN_KEY)['liste']);
+        $after = $this->repo->selectByMavenKey(self::MAVEN_KEY);
+        assert(array_key_exists('liste', $after));
+        $this->assertSame([], $after['liste']);
     }
 
     public function testHandleDatabaseExceptionMapsUniqueConstraintViolation(): void

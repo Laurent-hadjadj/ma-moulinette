@@ -95,7 +95,6 @@ class DcScanRepositoryTest extends TestCase
         $this->assertSame(42, $result['liste'][0]['id']);
         $this->assertSame('fr.ma-moulinette:ma-moulinette', $result['liste'][0]['maven_key']);
         $this->assertSame('1.0.0', $result['liste'][0]['project_version']);
-        $this->assertInstanceOf(\DateTimeImmutable::class, $result['liste'][0]['scan_date']);
         $this->assertSame('2026-05-08 12:00:00', $result['liste'][0]['scan_date']->format('Y-m-d H:i:s'));
         $this->assertSame(120, $result['liste'][0]['dep_count_total']);
         $this->assertSame(3, $result['liste'][0]['cve_count_critical']);
@@ -131,9 +130,12 @@ class DcScanRepositoryTest extends TestCase
         ]);
 
         $result = $repo->listLatestPerProject();
-        $this->assertIsInt($result['liste'][0]['id']);
-        $this->assertIsInt($result['liste'][0]['dep_count_total']);
-        $this->assertIsInt($result['liste'][0]['cve_count_critical']);
+        assert(array_key_exists('liste', $result));
+        // PG renvoie des chaines ('1', '0'...) ; assertSame (strict) distingue int de string, donc
+        // vérifie bien le cast (int) cote repository, pas seulement la valeur.
+        $this->assertSame(1, $result['liste'][0]['id']);
+        $this->assertSame(0, $result['liste'][0]['dep_count_total']);
+        $this->assertSame(0, $result['liste'][0]['cve_count_critical']);
     }
 
     public function testListLatestPerProjectReturnsErrorOnDatabaseException(): void

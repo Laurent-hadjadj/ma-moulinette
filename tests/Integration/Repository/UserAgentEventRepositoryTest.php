@@ -169,6 +169,7 @@ class UserAgentEventRepositoryTest extends KernelTestCase
 
         // Vérifie que le statut a bien changé : il ne reste plus qu'1 PENDING
         $afterUpdate = $repo->selectPendingEvents(100);
+        assert(array_key_exists('liste', $afterUpdate));
         $this->assertCount(1, $afterUpdate['liste']);
     }
 
@@ -176,6 +177,7 @@ class UserAgentEventRepositoryTest extends KernelTestCase
     {
         $repo    = $this->getRepository();
         $pending = $repo->selectPendingEvents(1);
+        assert(array_key_exists('liste', $pending));
         $id      = (int) $pending['liste'][0]['id'];
 
         $result = $repo->updateProcessingStatus($id, 'ERROR', null);

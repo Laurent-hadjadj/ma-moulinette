@@ -133,6 +133,7 @@ class DcFindingRepositoryTest extends TestCase
 
         $result = $repo->listForScan(1);
 
+        assert(array_key_exists('liste', $result));
         $this->assertNull($result['liste'][0]['cvss']);
         $this->assertSame([], $result['liste'][0]['cwes']);
     }
@@ -157,6 +158,7 @@ class DcFindingRepositoryTest extends TestCase
         ], expectedScanParam: 7);
 
         $result = $repo->listForScan(7);
+        assert(array_key_exists('liste', $result));
         $this->assertSame(['CWE-79'], $result['liste'][0]['cwes']);
     }
 
