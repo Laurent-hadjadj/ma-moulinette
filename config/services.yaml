@@ -137,6 +137,12 @@ services:
             $internalHeaderName: 'X-Internal-Front'
             $internalHeaderValue: 'front-app'
 
+    # MODIF 2026-10-17 : en-têtes de sécurité HTTP (CSP, anti-clickjacking, X-Content-Type-Options,
+    # retrait X-Powered-By), écart confirmé par un scan ZAP actif complet.
+    App\EventSubscriber\SecurityHeadersSubscriber:
+        arguments:
+            $debug: '%kernel.debug%'
+
     App\Service\ActuatorCredentialCipher:
         arguments:
             $cipherKey: '%actuator.cipher_key%'
