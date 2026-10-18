@@ -4,7 +4,7 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
-## [2.2.0] - non défini
+## [2.2.0] - 18-10-2026
 
 Ajout de nouvelles fonctionnalités à l'application.
 
