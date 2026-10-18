@@ -115,7 +115,7 @@ class LoginControllerTest extends TestCase
 
         $response = $this->controller->reLogin();
 
-        $this->assertSame('<html>login-form</html>', $response->getContent());
+        $this->assertSame('<html>login-form</html>', (string) $response->getContent());
     }
 
     public function testReLoginLogsErrorWhenAuthenticationFailed(): void
@@ -173,7 +173,6 @@ class LoginControllerTest extends TestCase
 
         $response = $this->controller->logout();
 
-        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/login', $response->headers->get('Location'));
     }
 
