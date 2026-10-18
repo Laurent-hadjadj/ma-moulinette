@@ -28,10 +28,11 @@ class LogArchiveService
         string $logDir,
         private LoggerInterface $logger)
     {
-        $this->logDir = realpath($logDir);
-        if (!$this->logDir) {
+        $resolved = realpath($logDir);
+        if ($resolved === false) {
             throw new LogDirectoryNotFoundException($logDir);
         }
+        $this->logDir = $resolved;
     }
 
     /**

@@ -365,7 +365,8 @@ class BatchController extends AbstractController
 
         // 🧼 Nettoyage : conversion UTF-8 forcée
         // (évite les erreurs d'encodage côté Twig ou JSON)
-        $html = mb_convert_encoding($html, 'UTF-8', 'auto');
+        $converted = mb_convert_encoding($html, 'UTF-8', 'auto');
+        $html = $converted === false ? $html : $converted;
 
         // 🧪 Sécurité : validation basique du HTML
         if (!str_contains($html, '<div') && !str_contains($html, '<h1')) {

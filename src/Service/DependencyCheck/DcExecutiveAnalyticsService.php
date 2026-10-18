@@ -550,7 +550,7 @@ final class DcExecutiveAnalyticsService
         foreach ($deps as $d) {
             $family = $this->guessFamily(
                 strtolower((string) ($d['vendor']  ?? '')),
-                strtolower((string) ($d['product'] ?? ''))
+                strtolower((string) $d['product'])
             );
             $jh = $this->computeDepJh($family, (string) $d['sev_max']);
             $par[] = [

@@ -14,7 +14,7 @@
 namespace App\Service;
 
 use Psr\Log\LoggerInterface;
-use App\Exception\{CipherEncryptionFailedException, InvalidCipherKeyException};
+use App\Exception\{ActuatorCipherException, CipherEncryptionFailedException, InvalidCipherKeyException};
 
 /**
  * [Description ActuatorCredentialCipher]
@@ -61,7 +61,11 @@ class ActuatorCredentialCipher
             return null;
         }
 
-        $iv = random_bytes(openssl_cipher_iv_length(self::CIPHER));
+        $ivLength = openssl_cipher_iv_length(self::CIPHER);
+        if ($ivLength < 1) {
+            throw new ActuatorCipherException('Longueur IV invalide pour ' . self::CIPHER);
+        }
+        $iv = random_bytes($ivLength);
         $tag = '';
         $ciphertext = openssl_encrypt($plaintext, self::CIPHER, $this->key, OPENSSL_RAW_DATA, $iv, $tag);
         if ($ciphertext === false) {
