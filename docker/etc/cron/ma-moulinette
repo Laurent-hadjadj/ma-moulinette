@@ -17,6 +17,9 @@
 # MODIF 2026-10-15 : jobs ZAP (DAST, worker queue — même pattern que le worker
 # OWASP DependencyCheck) et purge batch_profiling (prévue depuis sa création,
 # jamais ajoutée a la crontab).
+# MODIF 2026-10-18 : purges RGPD (user_role_log, activity/activity_historique,
+# user_agent_event/user_agent_analysis) — voir
+# mkDocs/docs/ma-moulinette/conformite/rgpd.md section 13, actions 1-3.
 
 
  ── OWASP DependencyCheck ─────────────────────────────────────────────────────
@@ -62,3 +65,20 @@
 # - --days=90 : retention 90 jours (valeur par defaut de la commande,
 #   explicite ici par coherence avec dependency-check:purge ci-dessus)
 0 4 * * * php /var/www/bin/console app:batch-profiling:purge --days=90 --no-interaction --env=prod
+
+ ── RGPD (section 13 de mkDocs/docs/ma-moulinette/conformite/rgpd.md) ──────────
+# Purge quotidienne du journal des modifications de rôle (user_role_log).
+# - --days=365 : retention 12 mois (ordre de grandeur CNIL pour une
+#   journalisation), surchargeable via USER_ROLE_LOG_RETENTION_DAYS.
+15 4 * * * php /var/www/bin/console app:user-role-log:purge --days=365 --no-interaction --env=prod
+
+# Purge quotidienne de l'activité de collecte SonarQube (activity +
+# activity_historique).
+# - --days=365 : même retention que le journal des rôles ci-dessus.
+30 4 * * * php /var/www/bin/console app:activity:purge --days=365 --no-interaction --env=prod
+
+# Purge quotidienne des événements/analyses User-Agent (donnée purement
+# statistique, page Statistiques).
+# - --days=180 : retention plus courte (6 mois), surchargeable via
+#   USER_AGENT_RETENTION_DAYS.
+45 4 * * * php /var/www/bin/console app:user-agent:purge --days=180 --no-interaction --env=prod
