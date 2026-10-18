@@ -1,0 +1,257 @@
+{% set title = 'Rapport ZAP (DAST) — ' ~ rapport.project_name %}
+{#
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
+#}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+      body {
+        font-family: "DejaVu Sans", Arial, sans-serif;
+        font-size: 11px;
+        margin: 20px;
+        color: #00445b;
+      }
+      @page { margin-bottom: 50px; }
+      h1 { font-size: 18px; margin: 0 0 6px 0; }
+      h2 {
+        font-size: 14px;
+        margin: 18px 0 8px 0;
+        padding-bottom: 4px;
+        border-bottom: 2px solid #00445b;
+      }
+      h3 { font-size: 12px; margin: 12px 0 6px 0; }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #00445b;
+        padding-bottom: 10px;
+      }
+      .logo { max-height: 40px; }
+      .header-title { text-align: right; }
+      .header-title h1 { font-size: 16px; margin: 0; }
+      .header-title .subtitle { font-size: 11px; color: #666; }
+
+      .info-grid { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+      .info-grid td { padding: 4px 8px; border: 1px solid #ddd; vertical-align: top; }
+      .info-grid td.label { background: #f0f4f7; font-weight: bold; width: 30%; }
+
+      /* Bandeau risque : 4 badges avec compteur, couleurs reprises de la page web. */
+      .risk-row { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+      .risk-row td {
+        width: 25%;
+        padding: 10px 8px;
+        text-align: center;
+        color: #fff;
+        font-weight: bold;
+      }
+      .risk-row td.high   { background: #f08a24; }
+      .risk-row td.medium { background: #ffd200; color: #333; }
+      .risk-row td.low    { background: #1779ba; }
+      .risk-row td.info   { background: #9aa3ad; }
+      .risk-row .risk-label { font-size: 9px; text-transform: uppercase; display: block; }
+      .risk-row .risk-value { font-size: 20px; display: block; margin-top: 2px; }
+
+      .histogram { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+      .histogram .bar-cell { vertical-align: bottom; text-align: center; height: 130px; padding: 0 2px; border-bottom: 1px solid #00445b; }
+      .histogram .bar { display: block; background: #00445b; margin: 0 auto; width: 65%; min-height: 1px; }
+      .histogram .bar-value { display: block; font-size: 8px; font-weight: bold; margin-bottom: 2px; }
+      .histogram .bar-label { text-align: center; font-size: 9px; font-weight: bold; padding: 3px 0; }
+
+      table.data { width: 100%; border-collapse: collapse; margin-top: 8px; }
+      table.data th, table.data td { padding: 5px 8px; border: 1px solid #ddd; }
+      table.data th { background: #00445b; color: #fff; text-align: left; font-size: 11px; }
+      table.data td.num { text-align: right; font-weight: bold; width: 60px; }
+      table.data tr:nth-child(even) { background: #f9f9f9; }
+
+      .findings-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 10px; table-layout: fixed; }
+      .findings-table th, .findings-table td { padding: 4px 6px; border: 1px solid #ddd; vertical-align: top; word-wrap: break-word; }
+      .findings-table th { background: #e0e0e0; text-align: left; }
+      .findings-table tr:nth-child(even) { background: #f9f9f9; }
+      .findings-table .col-risk { width: 55px; text-align: center; }
+      .findings-table .col-n { width: 20px; text-align: center; }
+      .findings-table .col-instances { width: 45px; text-align: center; }
+      .findings-table .col-rule { width: 150px; }
+
+      .badge-risk { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 8px; font-weight: bold; color: #fff; text-transform: uppercase; }
+      .badge-risk.high   { background: #f08a24; }
+      .badge-risk.medium { background: #ffd200; color: #333; }
+      .badge-risk.low    { background: #1779ba; }
+      .badge-risk.info   { background: #9aa3ad; }
+
+      .page-break-before { page-break-before: always; }
+      .empty { text-align: center; color: #888; padding: 12px; font-style: italic; }
+      .callout-info {
+        background: #eef4f8;
+        border-left: 3px solid #1779ba;
+        padding: 6px 10px;
+        font-size: 9px;
+        color: #444;
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <header class="header">
+      <div><img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo Ma-Moulinette" class="logo"></div>
+      <div class="header-title">
+        <h1>Rapport ZAP (DAST)</h1>
+        <div class="subtitle">Scanner dynamique — complément de l'analyse statique OWASP</div>
+      </div>
+    </header>
+
+    <h2>Information projet</h2>
+    <table class="info-grid">
+      <th><th>
+      <tr><td class="label">Clé Maven</td><td>{{ rapport.maven_key }}</td></tr>
+      <tr><td class="label">Nom du projet</td><td>{{ rapport.project_name }}</td></tr>
+      <tr><td class="label">Cible scannée</td><td>{{ rapport.target_url|default('—') }}</td></tr>
+      <tr><td class="label">Date du dernier scan</td><td>{{ rapport.scan_date|default('—') }}</td></tr>
+      <tr><td class="label">Version ZAP</td><td>{{ rapport.zap_version|default('—') }}</td></tr>
+    </table>
+
+    <h2>Répartition par risque (dernier scan)</h2>
+    <table class="risk-row">
+      <tr>
+        <th><th>
+        <td class="high"><span class="risk-label">High</span><span class="risk-value">{{ rapport.risk.high|default(0) }}</span></td>
+        <td class="medium"><span class="risk-label">Medium</span><span class="risk-value">{{ rapport.risk.medium|default(0) }}</span></td>
+        <td class="low"><span class="risk-label">Low</span><span class="risk-value">{{ rapport.risk.low|default(0) }}</span></td>
+        <td class="info"><span class="risk-label">Informational</span><span class="risk-value">{{ rapport.risk.informational|default(0) }}</span></td>
+      </tr>
+    </table>
+
+    {% for ref in rapport.categories|default([]) %}
+      <h3>Alertes par catégorie — OWASP {{ ref.referential }}</h3>
+      {% set maxVal = 0 %}
+      {% for row in ref.rows %}
+        {% if row.count > maxVal %}{% set maxVal = row.count %}{% endif %}
+      {% endfor %}
+      <table class="histogram">
+          <th><th>
+          <tr>
+          {% for row in ref.rows %}
+            {% set heightPx = (maxVal > 0 and row.count > 0) ? ((row.count / maxVal) * 110)|round : 0 %}
+            <td class="bar-cell">
+              <span class="bar-value">{{ row.count }}</span>
+              <span class="bar" style="height: {{ heightPx }}px;"></span>
+            </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          {% for row in ref.rows %}
+            <td class="bar-label">A{{ row.id }}</td>
+          {% endfor %}
+        </tr>
+      </table>
+    {% else %}
+      <h3>Alertes par catégorie OWASP</h3>
+      <p class="empty">Aucune des alertes de ce scan ne porte de tag OWASP 2017/2021 reconnu.</p>
+    {% endfor %}
+
+    <div class="page-break-before"></div>
+
+    <h2>Évolution du risque (historique des scans)</h2>
+    {% if rapport.historique_bars|default([])|length > 1 %}
+      {% set maxTotal = 0 %}
+      {% for h in rapport.historique_bars %}
+        {% if h.total > maxTotal %}{% set maxTotal = h.total %}{% endif %}
+      {% endfor %}
+      <table class="histogram">
+        <th><th>
+        <tr>
+          {% for h in rapport.historique_bars %}
+            {% set heightPx = (maxTotal > 0) ? ((h.total / maxTotal) * 110)|round : 0 %}
+            <td class="bar-cell">
+              <span class="bar-value">{{ h.total }}</span>
+              <span class="bar" style="height: {{ heightPx }}px;"></span>
+            </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          {% for h in rapport.historique_bars %}
+            <td class="bar-label">{{ h.label }}</td>
+          {% endfor %}
+        </tr>
+      </table>
+      <p class="callout-info">Chaque barre correspond à un scan ingéré (pas un jour calendaire) — total d'alertes, toutes sévérités confondues.</p>
+    {% else %}
+      <p class="empty">Pas assez de scans pour tracer une évolution.</p>
+    {% endif %}
+
+    <h3>Historique détaillé</h3>
+    {% if rapport.historique_table|default([])|length > 0 %}
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th class="num">Total</th>
+            <th class="num">High</th>
+            <th class="num">Medium</th>
+            <th class="num">Low</th>
+            <th class="num">Info</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for h in rapport.historique_table %}
+            <tr>
+              <td>{{ h.date }}</td>
+              <td class="num">{{ h.total }}</td>
+              <td class="num">{{ h.high }}</td>
+              <td class="num">{{ h.medium }}</td>
+              <td class="num">{{ h.low }}</td>
+              <td class="num">{{ h.informational }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Aucun historique disponible.</p>
+    {% endif %}
+
+    <div class="page-break-before"></div>
+
+    <h2>Détail des alertes (dernier scan)</h2>
+    {% if rapport.findings|default([])|length > 0 %}
+      <table class="findings-table">
+        <thead>
+          <tr>
+            <th class="col-n">N°</th>
+            <th class="col-risk">Risque</th>
+            <th class="col-rule">Règle</th>
+            <th class="col-instances">Instances</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in rapport.findings %}
+            <tr>
+              <td class="col-n">{{ loop.index }}</td>
+              <td class="col-risk"><span class="badge-risk {{ f.risk_label }}">{{ f.risk_label }}</span></td>
+              <td>{{ f.rule_name }}</td>
+              <td class="col-instances">{{ f.instance_count }}</td>
+              <td>{{ f.description|default('—')|slice(0, 220) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Aucune alerte sur le dernier scan.</p>
+    {% endif %}
+
+  </body>
+</html>
