@@ -101,8 +101,8 @@ class ApiProfilControllerTest extends TestCase
     {
         $this->security->method('isGranted')->willReturn(false);
 
-        $response = $this->controller->listeQualityProfiles(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityProfiles();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -114,8 +114,8 @@ class ApiProfilControllerTest extends TestCase
             ->method('httpSonarQube')
             ->willReturn(['code' => 503, 'erreur' => 'sonar down']);
 
-        $response = $this->controller->listeQualityProfiles(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityProfiles();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(503, $data['code']);
     }
@@ -128,8 +128,8 @@ class ApiProfilControllerTest extends TestCase
             'json' => ['profiles' => []],
         ]);
 
-        $response = $this->controller->listeQualityProfiles(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityProfiles();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(404, $data['code']);
     }
@@ -145,8 +145,8 @@ class ApiProfilControllerTest extends TestCase
             ->method('deleteProfiles')
             ->willReturn(['code' => 500, 'erreur' => 'delete fail']);
 
-        $response = $this->controller->listeQualityProfiles(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityProfiles();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('delete fail', $data['trace']);
@@ -164,8 +164,8 @@ class ApiProfilControllerTest extends TestCase
         $this->profilesRepo->method('selectProfiles')->willReturn(['code' => 200, 'liste' => $profiles]);
         $this->propertiesRepo->method('updatePropertiesProfiles')->willReturn(['code' => 200]);
 
-        $response = $this->controller->listeQualityProfiles(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityProfiles();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame($profiles, $data['liste_profil']);
@@ -179,8 +179,8 @@ class ApiProfilControllerTest extends TestCase
             ->method('selectProfilesLanguage')
             ->willReturn(['code' => 500, 'erreur' => 'fail']);
 
-        $response = $this->controller->listeQualityLangage(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityLangage();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -194,8 +194,8 @@ class ApiProfilControllerTest extends TestCase
             ->method('selectProfilesRuleCount')
             ->willReturn(['code' => 500, 'erreur' => 'fail', 'data-set' => []]);
 
-        $response = $this->controller->listeQualityLangage(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityLangage();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -217,8 +217,8 @@ class ApiProfilControllerTest extends TestCase
             ],
         ]);
 
-        $response = $this->controller->listeQualityLangage(new Request());
-        $data = json_decode($response->getContent(), true);
+        $response = $this->controller->listeQualityLangage();
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(['java', 'php'], $data['label']);
         $this->assertSame([200, 150], $data['dataset']);
@@ -229,7 +229,7 @@ class ApiProfilControllerTest extends TestCase
     public function testListeQualityOffReturns400OnInvalidJson(): void
     {
         $response = $this->controller->listeQualityOff($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -237,7 +237,7 @@ class ApiProfilControllerTest extends TestCase
     public function testListeQualityOffReturns400WhenLangageMissing(): void
     {
         $response = $this->controller->listeQualityOff($this->jsonRequest(['other' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -254,7 +254,7 @@ class ApiProfilControllerTest extends TestCase
             ->willReturn(['request' => [['total' => 1]]]);
 
         $response = $this->controller->listeQualityOff($this->jsonRequest(['langage' => 'java']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame('Custom Java', $data['listeProfil'][0]['name']);
@@ -265,7 +265,7 @@ class ApiProfilControllerTest extends TestCase
         $this->profilesRepo->method('selectProfiles')->willThrowException(new \RuntimeException('boom'));
 
         $response = $this->controller->listeQualityOff($this->jsonRequest(['langage' => 'php']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('boom', $data['trace']);
@@ -285,7 +285,7 @@ class ApiProfilControllerTest extends TestCase
 
         $response = $this->controller->profilDetails(new Request());
 
-        $this->assertSame('<html>no-token</html>', $response->getContent());
+        $this->assertSame('<html>no-token</html>', (string) $response->getContent());
     }
 
     public function testProfilDetailsFlashesWhenTokenIsInvalidFormat(): void
@@ -304,7 +304,7 @@ class ApiProfilControllerTest extends TestCase
 
         $response = $this->controller->profilDetails(new Request(['token' => $token]));
 
-        $this->assertSame('<html>invalid</html>', $response->getContent());
+        $this->assertSame('<html>invalid</html>', (string) $response->getContent());
     }
 
     public function testProfilDetailsFlashesWhenLanguageUnsupported(): void
@@ -322,7 +322,7 @@ class ApiProfilControllerTest extends TestCase
 
         $response = $this->controller->profilDetails(new Request(['token' => $token]));
 
-        $this->assertSame('<html>unsupported</html>', $response->getContent());
+        $this->assertSame('<html>unsupported</html>', (string) $response->getContent());
     }
 
     public function testProfilDetailsFlashesWhenSonarQubeFails(): void
@@ -342,7 +342,7 @@ class ApiProfilControllerTest extends TestCase
 
         $response = $this->controller->profilDetails(new Request(['token' => $token]));
 
-        $this->assertSame('<html>sonar-fail</html>', $response->getContent());
+        $this->assertSame('<html>sonar-fail</html>', (string) $response->getContent());
     }
 
     public function testProfilDetailsRendersHappyPathWithEvents(): void
@@ -387,7 +387,7 @@ class ApiProfilControllerTest extends TestCase
 
         $response = $this->controller->profilDetails(new Request(['token' => $token]));
 
-        $this->assertSame('<html>ok</html>', $response->getContent());
+        $this->assertSame('<html>ok</html>', (string) $response->getContent());
     }
 
     public function testProfilDetailsCountsClosedWithDeactivatedAction(): void
@@ -430,7 +430,7 @@ class ApiProfilControllerTest extends TestCase
      */
     private function jsonRequest(array|string $body): Request
     {
-        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT);
+        $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR);
         return new Request([], [], [], [], [], [], $content);
     }
 
