@@ -349,7 +349,7 @@ class BatchCollecteLoggerController extends AbstractController
             } else {
                 $this->logger->info("[Batch Logger] ℹ️ logger_details peuples", [
                     'maven_key' => $maven_key,
-                    'nb_rows'   => $insertDetails['nombre'] ?? count($detailRows),
+                    'nb_rows'   => $insertDetails['nombre'],
                 ]);
             }
         }
@@ -374,7 +374,7 @@ class BatchCollecteLoggerController extends AbstractController
         /* MODIF 2026-05-20 : $detailsRepos toujours défini (getRepository non-null). */
         $breakdownResult = $detailsRepos->countByMavenKeyGroupedByLevelAndFramework($maven_key);
         if ($breakdownResult['code'] === 200) {
-            foreach ($breakdownResult['liste'] ?? [] as $row) {
+            foreach ($breakdownResult['liste'] as $row) {
                 $level     = (string) $row['level'];
                 $framework = $row['framework'] !== null ? (string) $row['framework'] : '—';
                 $nb        = (int) $row['nb'];

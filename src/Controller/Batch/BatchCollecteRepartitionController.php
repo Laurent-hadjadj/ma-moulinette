@@ -412,7 +412,7 @@ class BatchCollecteRepartitionController extends AbstractController
             foreach ($groupData as $severityIndex => $values) {
                 foreach ($values as $valueIndex => $value) {
                     // Calcul de l'index dans le tableau des champs
-                    $fieldIndex = $severityIndex * 4 + $valueIndex;
+                    $fieldIndex = (int) $severityIndex * 4 + (int) $valueIndex;
                     // Affectation
                     $map[$fields[$fieldIndex]] = $value;
                 }

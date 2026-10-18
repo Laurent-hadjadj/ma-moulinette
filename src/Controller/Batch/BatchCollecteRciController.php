@@ -75,7 +75,8 @@ class BatchCollecteRciController
         // On sécurise la maven_key
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         // On récupère la version du serveur SonarQube
-        $version = (int) trim((string) $this->params->get(self::$sonarVersion));
+        $sonarVersion = $this->params->get(self::$sonarVersion);
+        $version = (int) trim(is_string($sonarVersion) ? $sonarVersion : '');
 
         /** On appel le service de calcul du nombre d'issues par module */
         $global_measures = $this->buildMeasuresRci->calculateGlobalMeasures($maven_key, $version);

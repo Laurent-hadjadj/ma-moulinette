@@ -474,7 +474,7 @@ class ApiProfilController extends AbstractController
             'badge' => null
         ];
 
-        if (count($explode) !== 3) {
+        if ($explode === false || count($explode) !== 3) {
             $this->logger->warning('[Profil-Détail] ⚠️ Token invalide.', [
                 'token' => $token
             ]);

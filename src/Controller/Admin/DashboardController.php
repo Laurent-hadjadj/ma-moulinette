@@ -67,7 +67,8 @@ class DashboardController extends AbstractDashboardController
     #[Route('/api/secure/health', name: 'sonar_health', methods: ['POST'])]
     public function sonarHealth(): Response
     {
-        $url = rtrim($this->getParameter(self::$sonarUrl), '/') . "/api/system/health";
+        $sonarUrl = $this->getParameter(self::$sonarUrl);
+        $url = rtrim(is_string($sonarUrl) ? $sonarUrl : '', '/') . "/api/system/health";
 
         /** On appel le client http */
         $result = $this->client->httpSonarQube($url);
@@ -90,7 +91,8 @@ class DashboardController extends AbstractDashboardController
     #[Route('/api/secure/system/info', name: 'information_system', methods: ['POST'])]
     public function informationSystem(): Response
     {
-        $url = rtrim($this->getParameter(self::$sonarUrl), '/') . "/api/system/info";
+        $sonarUrl = $this->getParameter(self::$sonarUrl);
+        $url = rtrim(is_string($sonarUrl) ? $sonarUrl : '', '/') . "/api/system/info";
 
         /** On appel le client http */
         $result = $this->client->httpSonarQube($url);

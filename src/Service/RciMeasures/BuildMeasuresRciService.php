@@ -279,7 +279,7 @@ class BuildMeasuresRciService
         try {
             do {
                 $url = $this->urlBuilder->build(
-                    (string) $this->params->get(self::$sonarUrl),
+                    $this->params->get(self::$sonarUrl),
                         '/api/measures/component_tree',
                     [
                         'component' => $maven_key,
@@ -370,7 +370,7 @@ class BuildMeasuresRciService
         $severityMetrics = $this->severityMetrics($version);
         $metric_keys = implode(',', array_merge(['ncloc'], array_values($severityMetrics)));
         $url = $this->urlBuilder->build(
-            (string) $this->params->get(self::$sonarUrl),
+            $this->params->get(self::$sonarUrl),
             '/api/measures/component', [
                 'component' => $maven_key,
                 'metricKeys' => $metric_keys
