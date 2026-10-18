@@ -605,7 +605,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueProjetParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT
@@ -657,7 +657,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriquesMesureParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT date_version AS date,
@@ -690,7 +690,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueAnomalieParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT date_version AS date,
@@ -722,7 +722,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueDetailsParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT date_version AS date, version,
@@ -806,7 +806,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueAnomalieGraphiqueParVersions(array $map): array
     {
         $versions = $map['versions'] ?? [];
-        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $placeholders = array_map(static fn(int|string $i) => ':v' . $i, array_keys($versions));
         $inClause = implode(', ', $placeholders);
 
         $sql = "SELECT bugs AS bug,
