@@ -19,6 +19,7 @@
 namespace App\Command\Prod;
 
 use App\Entity\Activity;
+use App\Exception\UnexpectedExecutionPathException;
 use App\Repository\ActivityRepository;
 use App\Service\{ActivityReportService, ClientService};
 use Doctrine\ORM\EntityManagerInterface;
@@ -267,13 +268,17 @@ class ActivityCollecteCommand extends Command
 
         while ($cursor <= $toTz) {
             // Ajouter N jours calendaires (tient compte du DST grâce au timezone)
-            $winEnd = \DateTimeImmutable::createFromFormat(
+            $parsed = \DateTimeImmutable::createFromFormat(
                 self::DATE_TIME,
                 $cursor->format(self::DATE_TIME),
                 $tz
-            )
-            ->add(new \DateInterval('P' . $windowDays . 'D'))
-            ->modify('-1 second');
+            );
+            if ($parsed === false) {
+                throw new UnexpectedExecutionPathException('Échec du parsing de date dans le calcul des fenêtres.');
+            }
+            $winEnd = $parsed
+                ->add(new \DateInterval('P' . $windowDays . 'D'))
+                ->modify('-1 second');
 
             if ($winEnd > $toTz) {
                 $winEnd = $toTz;
