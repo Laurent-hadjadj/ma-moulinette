@@ -83,7 +83,10 @@ class OwaspCaseTest extends TestCase
     public function testSettingAndGettingReferentialOwasp(): void
     {
         $entity = new Owasp();
-        $entity->setReferentialOwasp('2021');
+        // Appel via réflexion : le test vérifie délibérément la coercition PHP
+        // faible (string numérique -> int), un appel direct violerait le type
+        // statique du paramètre sans refléter un vrai bug.
+        (new \ReflectionMethod($entity, 'setReferentialOwasp'))->invoke($entity, '2021');
         $this->assertEquals('2021', $entity->getReferentialOwasp());
     }
 

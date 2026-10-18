@@ -107,7 +107,8 @@ class UtilisateurCrudControllerTest extends TestCase
     {
         $this->em->expects($this->never())->method('persist');
 
-        $this->controller->persistEntity($this->em, new \stdClass());
+        (new \ReflectionMethod($this->controller, 'persistEntity'))
+            ->invoke($this->controller, $this->em, new \stdClass());
     }
 
     public function testPersistEntitySetsDefaultAvatarAndHashedPassword(): void
@@ -147,7 +148,8 @@ class UtilisateurCrudControllerTest extends TestCase
     {
         $this->em->expects($this->never())->method('flush');
 
-        $this->controller->updateEntity($this->em, new \stdClass());
+        (new \ReflectionMethod($this->controller, 'updateEntity'))
+            ->invoke($this->controller, $this->em, new \stdClass());
     }
 
     public function testUpdateEntityDoesNotLogWhenRolesAndActifUnchanged(): void

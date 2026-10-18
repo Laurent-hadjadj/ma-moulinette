@@ -110,7 +110,8 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
     {
         $this->em->expects($this->never())->method('persist');
 
-        $this->controller->persistEntity($this->em, new \stdClass());
+        (new \ReflectionMethod($this->controller, 'persistEntity'))
+            ->invoke($this->controller, $this->em, new \stdClass());
     }
 
     public function testPersistEntityFlashesDangerWhenGroupeExists(): void
