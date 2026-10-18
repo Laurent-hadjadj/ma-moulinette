@@ -1,10 +1,10 @@
 # ⚙️ Commandes console
 
-Ma-Moulinette embarque **21 commandes console** Symfony (`bin/console app:...`), réparties en 3 catégories selon leur usage :
+Ma-Moulinette embarque **24 commandes console** Symfony (`bin/console app:...`), réparties en 3 catégories selon leur usage :
 
 | Dossier | Nombre | Usage |
 | --- | --- | --- |
-| `src/Command/Prod/` | 10 | Exploitables en production, dont 7 tournent automatiquement via le cron `cron-ma-moulinette` (Supercronic) |
+| `src/Command/Prod/` | 13 | Exploitables en production, dont 10 tournent automatiquement via le cron `cron-ma-moulinette` (Supercronic) |
 | `src/Command/Maintenance/` | 6 | Outils ponctuels (migration, audit, statistiques) — invocation manuelle |
 | `src/Command/Dev/` | 5 | Réservées à l'environnement de développement (seed de données fictives, diagnostic) |
 
@@ -20,6 +20,9 @@ flowchart LR
         C3["app:collecte:run<br/>1h30"]
         C4["app:dependency-check:purge<br/>3h00"]
         C7["app:batch-profiling:purge<br/>4h00"]
+        C8["app:user-role-log:purge<br/>4h15"]
+        C9["app:activity:purge<br/>4h30"]
+        C10["app:user-agent:purge<br/>4h45"]
         C5["app:activity:collecte<br/>22h00"]
     end
 
@@ -47,7 +50,7 @@ Classification d'**impact** utilisée dans les 3 pages de détail :
 | 🔴 Destructive | `DELETE`/`TRUNCATE` réel, avec ou sans `--dry-run` |
 | 🟣 Hybride | Comportement différent selon `--dry-run` (simulation disponible) |
 
-### Prod (10) — [détail](prod.md)
+### Prod (13) — [détail](prod.md)
 
 | Commande | Impact | Invocation |
 | --- | --- | --- |
@@ -57,6 +60,9 @@ Classification d'**impact** utilisée dans les 3 pages de détail :
 | `app:sonar:update-tags` | 🟡 Modification (distant) | Cron — quotidien 0h30 |
 | `app:collecte:run` | 🟣 Hybride | Cron — quotidien 1h30 |
 | `app:batch-profiling:purge` | 🔴 Destructive | Cron — quotidien 4h00 |
+| `app:user-role-log:purge` | 🔴 Destructive | Cron — quotidien 4h15 |
+| `app:activity:purge` | 🔴 Destructive | Cron — quotidien 4h30 |
+| `app:user-agent:purge` | 🔴 Destructive | Cron — quotidien 4h45 |
 | `app:activity:collecte` | 🟣 Hybride | Cron — quotidien 22h00 |
 | `app:zap:purge` | 🔴 Destructive | Manuelle uniquement |
 | `app:dependency-check:reprocess` | 🟣 Hybride (destructive hors dry-run) | Manuelle uniquement |

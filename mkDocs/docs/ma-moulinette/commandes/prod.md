@@ -1,9 +1,9 @@
 # 🏭 Commandes Prod
 
-Les 10 commandes de `src/Command/Prod/`. 7 d'entre elles tournent automatiquement via le cron `cron-ma-moulinette` (Supercronic) — voir [`docker/etc/cron/ma-moulinette`](../developpement/gitlab-ci.md).
+Les 13 commandes de `src/Command/Prod/`. 10 d'entre elles tournent automatiquement via le cron `cron-ma-moulinette` (Supercronic) — voir [`docker/etc/cron/ma-moulinette`](../developpement/gitlab-ci.md).
 
 !!! note "✅ Logger dédié `cron` (2026-10-15)"
-    8 des 10 commandes de ce dossier journalisent désormais sur un channel Monolog dédié `cron` (`#[Autowire(service: 'monolog.logger.cron')]` posé sur le `LoggerInterface $logger` du constructeur) plutôt que sur le logger applicatif générique — fichier `var/log/cron.log` en prod (`cron-dev.log` en dev), exclu du canal `app.log`, consultable aussi depuis la page back-office **Journal des logs** (filtre « Cron »). Les 2 exceptions restent sur le logger générique : `app:sonar:compare-metrics` (pas de `LoggerInterface` du tout, outil de diagnostic) et `app:dependency-check:reprocess` (outil de reprise manuelle, jamais planifié).
+    11 des 13 commandes de ce dossier journalisent désormais sur un channel Monolog dédié `cron` (`#[Autowire(service: 'monolog.logger.cron')]` posé sur le `LoggerInterface $logger` du constructeur) plutôt que sur le logger applicatif générique — fichier `var/log/cron.log` en prod (`cron-dev.log` en dev), exclu du canal `app.log`, consultable aussi depuis la page back-office **Journal des logs** (filtre « Cron »). Les 2 exceptions restent sur le logger générique : `app:sonar:compare-metrics` (pas de `LoggerInterface` du tout, outil de diagnostic) et `app:dependency-check:reprocess` (outil de reprise manuelle, jamais planifié).
 
 ## ⏱️ `app:dependency-check:process`
 
@@ -176,6 +176,61 @@ php bin/console app:batch-profiling:purge --days=30 --dry-run
 
 !!! note "✅ Fonction SQL désormais appelée"
     La fonction PostgreSQL `purge_batch_profiling()` existait en base sans jamais être appelée par le code applicatif (voir [Profiling](../back-office/profiling.md)). Cette commande, ajoutée le 2026-07-20, est la première à l'exploiter.
+
+## 🧹 `app:user-role-log:purge`
+
+**Objectif** : purge le journal des modifications de rôle (`user_role_log`) plus ancien que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 1). La suppression manuelle ligne à ligne reste disponible depuis `/admin/journal-roles` (`ROLE_INTERNAL`).
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--days` / `-d` | int | `365` (réglable via `USER_ROLE_LOG_RETENTION_DAYS`) | Rétention en jours |
+| `--dry-run` | flag | — | Affiche le décompte sans supprimer |
+
+```bash
+php bin/console app:user-role-log:purge --days=180 --dry-run
+```
+
+**Impact** : 🔴 Destructive, avec dry-run.
+
+**Invocation** : cron, **quotidien à 4h15** — `--days=365 --no-interaction --env=prod`.
+
+## 🧹 `app:activity:purge`
+
+**Objectif** : purge l'activité de collecte SonarQube (`activity` et `activity_historique`) plus ancienne que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 2). Les deux tables sont purgées sur le même seuil ; l'opération est idempotente (relancer la commande termine le travail restant en cas d'échec partiel).
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--days` / `-d` | int | `365` (réglable via `ACTIVITY_RETENTION_DAYS`) | Rétention en jours |
+| `--dry-run` | flag | — | Affiche le décompte sans supprimer |
+
+```bash
+php bin/console app:activity:purge --days=180 --dry-run
+```
+
+**Impact** : 🔴 Destructive, avec dry-run.
+
+**Invocation** : cron, **quotidien à 4h30** — `--days=365 --no-interaction --env=prod`.
+
+Affiche systématiquement un décompte détaillé par table (`activity` / `activity_historique`) après exécution.
+
+## 🧹 `app:user-agent:purge`
+
+**Objectif** : purge les événements et analyses User-Agent (`user_agent_event` et `user_agent_analysis`, donnée purement statistique de la page Statistiques) plus anciens que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 3). Les deux tables sont purgées sur le même seuil ; l'opération est idempotente.
+
+| Option | Type | Défaut | Description |
+| --- | --- | --- | --- |
+| `--days` / `-d` | int | `180` (réglable via `USER_AGENT_RETENTION_DAYS`) | Rétention en jours |
+| `--dry-run` | flag | — | Affiche le décompte sans supprimer |
+
+```bash
+php bin/console app:user-agent:purge --days=90 --dry-run
+```
+
+**Impact** : 🔴 Destructive, avec dry-run.
+
+**Invocation** : cron, **quotidien à 4h45** — `--days=180 --no-interaction --env=prod`.
+
+Affiche systématiquement un décompte détaillé par table (`user_agent_event` / `user_agent_analysis`) après exécution.
 
 ## ♻️ `app:dependency-check:reprocess`
 
