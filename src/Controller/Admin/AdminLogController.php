@@ -144,7 +144,7 @@ class AdminLogController extends AbstractController
                 'env'   => $log['env'],
                 'type'  => $log['type'],
                 'size'  => $log['size'],
-                'mtime' => date('Y-m-d H:i:s', $log['mtime']),
+                'mtime' => $log['mtime'] === false ? null : date('Y-m-d H:i:s', $log['mtime']),
             ], $logs);
 
         $this->logger->debug('[Admin-Log] 🛠️ Listing des logs demandé', [
