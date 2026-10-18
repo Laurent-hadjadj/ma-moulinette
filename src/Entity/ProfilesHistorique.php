@@ -116,19 +116,20 @@ class ProfilesHistorique
     #[Assert\NotBlank]
     private string $description;
 
-    #[ORM\Column(
-        name: 'detail',
-        type: Types::BLOB,
-        nullable: false,
-        options: ['comment' => 'Détails supplémentaires ou données binaires associées à l’événement']
-    )]
-    /* MODIF 2026-05-07 : retrait du type `string` sur $detail.
+    /**
+     * MODIF 2026-05-07 : retrait du type `string` sur $detail.
      * La colonne SQL est `bytea` (Types::BLOB) — Doctrine retourne une `resource` a la
      * lecture. Avec un type `string`, l'hydratation jetait une TypeError. Sans type,
      * la propriété accepte `string` (écriture) ou `resource` (lecture).
      *
      * @var resource|string
      */
+    #[ORM\Column(
+        name: 'detail',
+        type: Types::BLOB,
+        nullable: false,
+        options: ['comment' => 'Détails supplémentaires ou données binaires associées à l’événement']
+    )]
     #[Assert\NotNull]
     private $detail;
 
