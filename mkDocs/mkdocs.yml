@@ -26,6 +26,8 @@ nav:
         - Automatisation des tâches: ma-moulinette/developpement/gitlab-ci.md
         - Tests End-to-End: ma-moulinette/developpement/test-e2e.md
         - "Exploration : OWASP API Security": ma-moulinette/developpement/exploration-owasp-api-security.md
+    - Conformité:
+        - RGPD: ma-moulinette/conformite/rgpd.md
     - Commandes:
         - Vue d'ensemble: ma-moulinette/commandes/index.md
         - Commandes Prod: ma-moulinette/commandes/prod.md
