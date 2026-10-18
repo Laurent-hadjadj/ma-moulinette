@@ -281,21 +281,21 @@ class DependencyCheckPageController extends AbstractController
             $this->logger->error('[DC] ❌ Échec de la requête listLatestPerCoupleForView.', [
                 'vue'    => $vue,
                 'code'   => $result['code'],
-                'erreur' => $result['erreur'] ?? '',
+                'erreur' => $result['erreur'],
             ]);
             $this->addFlash('notice', [
                 'type' => 'error',
                 'message' => sprintf(
                     'La récupération des projets a échoué (Erreur %s). %s',
                     $result['code'],
-                    $result['erreur'] ?? ''
+                    $result['erreur']
                 ),
             ]);
             $render['projets'] = [];
             return $this->render(self::$page, $render);
         }
 
-        $render['projets'] = $result['liste'] ?? [];
+        $render['projets'] = $result['liste'];
 
         return $this->render(self::$page, $render);
     }
@@ -469,19 +469,19 @@ class DependencyCheckPageController extends AbstractController
                 $this->logger->error('[DC] ❌ Échec de la requête listForScan.', [
                     'scan_id' => (int) $scan->getId(),
                     'code'    => $result['code'],
-                    'erreur'  => $result['erreur'] ?? '',
+                    'erreur'  => $result['erreur'],
                 ]);
                 $this->addFlash('notice', [
                     'type' => 'error',
                     'message' => sprintf(
                         'La récupération des findings a échoué (Erreur %s). %s',
                         $result['code'],
-                        $result['erreur'] ?? ''
+                        $result['erreur']
                     ),
                 ]);
                 $render['findings'] = [];
             } else {
-                $render['findings'] = $result['liste'] ?? [];
+                $render['findings'] = $result['liste'];
             }
         }
         $render['project_group']    = $group;
@@ -548,10 +548,10 @@ class DependencyCheckPageController extends AbstractController
             $this->logger->error('[DC] ❌ Échec de la requête listForScan (PDF)', [
                 'scan_id' => (int) $scan->getId(),
                 'code'    => $result['code'],
-                'erreur'  => $result['erreur'] ?? '',
+                'erreur'  => $result['erreur'],
             ]);
         } else {
-            $findings = $result['liste'] ?? [];
+            $findings = $result['liste'];
         }
 
         // Données executive : top 5 deps par nb CVE + top 5 CWE par occurrence
@@ -999,7 +999,7 @@ class DependencyCheckPageController extends AbstractController
             if ($aArch !== '' && $bArch === '') {
                 return -1;
             }
-            if ($aArch !== '' && $bArch !== '') {
+            if ($aArch !== '') {
                 $cmpArch = MavenVersionComparator::compare($bArch, $aArch);
                 if ($cmpArch !== 0) {
                     return $cmpArch;
@@ -1595,19 +1595,19 @@ class DependencyCheckPageController extends AbstractController
             $this->logger->error('[DC] ❌ Échec de la requête listForScan (executive)', [
                 'scan_id' => (int) $scan->getId(),
                 'code'    => $result['code'],
-                'erreur'  => $result['erreur'] ?? '',
+                'erreur'  => $result['erreur'],
             ]);
             $this->addFlash('notice', [
                 'type'    => 'error',
                 'message' => sprintf(
                     'La récupération des findings a échoué (Erreur %s). %s',
                     $result['code'],
-                    $result['erreur'] ?? ''
+                    $result['erreur']
                 ),
             ]);
             $findings = [];
         } else {
-            $findings = $result['liste'] ?? [];
+            $findings = $result['liste'];
         }
         $render['findings'] = $findings;
 
@@ -1699,11 +1699,11 @@ class DependencyCheckPageController extends AbstractController
             $this->logger->error('[DC] ❌ Échec listForScan pour diff', [
                 'scan_id' => $scanId,
                 'code'    => $result['code'],
-                'erreur'  => $result['erreur'] ?? '',
+                'erreur'  => $result['erreur'],
             ]);
             return [];
         }
-        return $result['liste'] ?? [];
+        return $result['liste'];
     }
 
     /**

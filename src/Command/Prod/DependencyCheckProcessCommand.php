@@ -211,7 +211,8 @@ class DependencyCheckProcessCommand extends Command
     private function runWatch(SymfonyStyle $io, int $batchSize, int $sleepSec): int
     {
         $cycle = 0;
-        while (true) {
+        // boucle sans conditions explicites
+        for (;;) {
             $cycle++;
             $io->section(sprintf('Tick %d (%s)', $cycle, (new \DateTimeImmutable())->format('H:i:s')));
 

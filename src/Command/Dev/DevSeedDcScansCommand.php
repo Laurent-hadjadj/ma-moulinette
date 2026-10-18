@@ -452,11 +452,9 @@ class DevSeedDcScansCommand extends Command
         $fixedVersion = null;
         if (random_int(0, 9) < 7) {
             $parts = explode('.', (string) $tplDep['version']);
-            /* MODIF 2026-05-20 : offset 0 garanti par explode. */
-            if (!empty($parts[0])) {
-                $parts[0] = (string) ((int) $parts[0] + 1);
-                $fixedVersion = implode('.', array_filter($parts, fn($p) => $p !== ''));
-            }
+            // MODIF 2026-05-20 : offset 0 garanti par explode, jamais vide pour les templates de version utilisés ici.
+            $parts[0] = (string) ((int) $parts[0] + 1);
+            $fixedVersion = implode('.', $parts);
         }
 
         $finding = (new DcFinding())
