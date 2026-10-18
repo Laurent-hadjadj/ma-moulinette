@@ -63,7 +63,7 @@ class ProjetController extends AbstractController
         $this->sonarVersion = (int) $params->get('sonar.version');
 
         $batchValue = $params->get('user.agent.batch.automatique');
-        $this->userAgentBatch = ($batchValue === null || $batchValue === '') ? 0 : (int) $batchValue;
+        $this->userAgentBatch = ($batchValue === '') ? 0 : (int) $batchValue;
     }
 
     /**
@@ -110,10 +110,10 @@ class ProjetController extends AbstractController
             $this->addFlash('notice', [
                 'type'    => 'error',
                 'message' => "Une erreur s'est produite pendant l'analyse des données UserAgent ({$exec['code']})",
-                'trace'   => $exec['erreur'] ?? null,
+                'trace'   => $exec['erreur'],
             ]);
         }
-        $this->logger->info("[BATCH-ANALYSIS] ⁉️ Collecte terminée : {$exec['processed']} collecté.");
+        $this->logger->info("[BATCH-ANALYSIS] ⁉️ Collecte terminée : " . ($exec['processed'] ?? 0) . " collecté.");
 
         $render = $this->genericRender();
 

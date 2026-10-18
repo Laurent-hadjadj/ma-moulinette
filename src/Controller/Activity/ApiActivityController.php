@@ -109,7 +109,7 @@ class ApiActivityController extends AbstractController
         $activityRepos              = $this->em->getRepository(Activity::class);
         $activityHistoriqueRepository = $this->em->getRepository(ActivityHistorique::class);
         $dateActuelle = new \DateTime('now', new \DateTimeZone(self::$europeParis));
-        $year         = $dateActuelle->format('Y');
+        $year         = (int) $dateActuelle->format('Y');
 
         $result = $activityRepos->premiereDate($year);
         if (empty($result['liste']) || !isset($result['liste']['date'])) {

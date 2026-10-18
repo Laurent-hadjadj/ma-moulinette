@@ -41,12 +41,7 @@ class UserAgentAnalysisService
      *
      * @param int $limit
      *
-     * @return array{
-     *     code: int,
-     *     erreur?: string,
-     *     processed?: int,
-     *     erreurs?: array<int, array{event_id: int|string, erreur: string}>
-     * }
+     * @return array{code: 200, processed: int, erreurs: array<int, array{event_id: int|string, erreur: string}>}|array{code: int<min, 199>|int<201, max>, erreur: string}
      *
      * Created at: 13/03/2026 13:01:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -156,12 +151,17 @@ class UserAgentAnalysisService
         $dd = new DeviceDetector($userAgent);
         $dd->parse();
 
+        $osName = $dd->getOs('name');
+        $osVersion = $dd->getOs('version');
+        $browserName = $dd->getClient('name');
+        $browserVersion = $dd->getClient('version');
+
         return [
             'device_type' => $dd->getDeviceName(),
-            'os_name' => $dd->getOs('name'),
-            'os_version' => $dd->getOs('version'),
-            'browser_name' => $dd->getClient('name'),
-            'browser_version' => $dd->getClient('version'),
+            'os_name' => is_string($osName) ? $osName : null,
+            'os_version' => is_string($osVersion) ? $osVersion : null,
+            'browser_name' => is_string($browserName) ? $browserName : null,
+            'browser_version' => is_string($browserVersion) ? $browserVersion : null,
             'is_bot' => $dd->isBot(),
         ];
     }

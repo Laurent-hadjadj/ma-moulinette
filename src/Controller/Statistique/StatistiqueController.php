@@ -66,7 +66,7 @@ class StatistiqueController extends AbstractController
         $this->dateCopyright = \date('Y');
 
         $batchValue = $params->get('user.agent.batch.manuel');
-        $this->userAgentBatch = ($batchValue === null || $batchValue === '') ? 0 : (int) $batchValue;
+        $this->userAgentBatch = ($batchValue === '') ? 0 : (int) $batchValue;
 
         $this->statsFile = $params->get('kernel.project_dir') . '/var/admin-stats.json';
         $this->fallbackStatsFile = $params->get('kernel.project_dir') . '/migrations/admin-stats.json';
@@ -138,7 +138,7 @@ class StatistiqueController extends AbstractController
             $this->addFlash('notice', [
                 'type'    => 'error',
                 'message' => "Une erreur s'est produite pendant l'analyse des données UserAgent ({$exec['code']})",
-                'trace'   => $exec['erreur'] ?? null,
+                'trace'   => $exec['erreur'],
             ]);
             return $this->redirectToRoute('statistiques_utilisateur');
         }

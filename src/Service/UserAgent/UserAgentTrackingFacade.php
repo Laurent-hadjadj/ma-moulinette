@@ -45,7 +45,7 @@ class UserAgentTrackingFacade
         if ($result['code'] !== 200) {
             $this->logger->warning('[UserAgentTracking] Échec tracking', [
                 'event_type' => $eventType,
-                'erreur' => $result['erreur'] ?? null,
+                'erreur' => $result['erreur'],
             ]);
         }
     }
