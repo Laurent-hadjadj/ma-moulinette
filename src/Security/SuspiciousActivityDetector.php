@@ -37,10 +37,10 @@ class SuspiciousActivityDetector
      *
      * @param Utilisateur $target
      * @param Utilisateur $editor
-     * @param array<int|string, mixed> $oldRoles
-     * @param array<int|string, mixed> $newRoles
+     * @param array<int, string> $oldRoles
+     * @param array<int, string> $newRoles
      *
-     * @return array<int|string, mixed>
+     * @return array<int, string>
      *
      * Created at: 23/04/2026 14:48:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

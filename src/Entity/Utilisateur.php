@@ -251,7 +251,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * [Description for setRoles]
      *
-     * @param array<int|string, mixed> $roles
+     * @param array<int, string> $roles
      *
      * @return self
      *

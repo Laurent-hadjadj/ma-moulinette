@@ -31,8 +31,8 @@ class UserRoleLoggerService
      *
      * @param Utilisateur $user
      * @param Utilisateur $editor
-     * @param array<int|string, mixed> $oldRoles
-     * @param array<int|string, mixed> $newRoles
+     * @param array<int, string> $oldRoles
+     * @param array<int, string> $newRoles
      * @param bool $oldActive
      * @param bool $newActive
      * @param array<int, string> $alerts

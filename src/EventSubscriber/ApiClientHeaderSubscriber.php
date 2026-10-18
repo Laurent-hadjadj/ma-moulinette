@@ -31,7 +31,7 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     private string $internalHeaderValue;
     private LoggerInterface $logger;
 /**
- * @param array<int|string, mixed> $allowedOrigins
+ * @param array<int, string> $allowedOrigins
  */
 
     public function __construct(
