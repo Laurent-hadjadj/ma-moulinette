@@ -391,7 +391,7 @@ export const enregistrement = async function(maven_key) {
           }
         if (t.code === http_200) {
           const message='Enregistrement des informations effectué.';
-          log(` - INFO : ${message}`);
+          log(` - 💾 [Enregistrement] ${message}`);
           showMessage('success', `${message}`);
           setTimeout(() => { hideMessage(); }, 5000);
           return;
