@@ -180,6 +180,84 @@ $('#bouton-fermer-mes-avatars').on('click', function () {
 });
 
 /**
+ * Charge les avatars d'une galerie lors de son ouverture.
+ *
+ * @param {HTMLElement} contenu
+ * @return void
+ */
+function chargerAvatarsGalerie(contenu, titre) {
+    if (!(contenu instanceof HTMLElement)) {
+        return;
+    }
+
+    const images = [...contenu.querySelectorAll('img[data-src]')];
+
+    // Aucun chargement à effectuer.
+    if (images.length === 0) {
+        return;
+    }
+
+    // Évite de créer plusieurs spinners pour le même panneau.
+    let spinner = titre.querySelector('.avatar-loading-spinner');
+
+    if (!spinner) {
+        spinner = document.createElement('span');
+        spinner.className = 'avatar-loading-spinner';
+        spinner.setAttribute('role', 'status');
+        spinner.setAttribute('aria-label', 'Chargement des avatars');
+        titre.appendChild(spinner);
+    }
+
+    let restantes = images.length;
+
+    const terminerChargement = () => {
+        restantes--;
+
+        if (restantes <= 0) {
+            spinner.remove();
+        }
+    };
+
+    images.forEach((image) => {
+        const source = image.getAttribute('data-src');
+
+        if (!source) {
+            terminerChargement();
+            return;
+        }
+
+        image.addEventListener('load', terminerChargement, { once: true });
+        image.addEventListener('error', terminerChargement, { once: true });
+
+        image.src = source;
+        image.removeAttribute('data-src');
+
+        // Gère également les images servies immédiatement depuis le cache.
+        if (image.complete) {
+            terminerChargement();
+        }
+    });
+}
+
+/**
+ * Foundation déclenche down.zf.accordion lors de l'ouverture
+ * d'un panneau. On identifie le panneau depuis la cible de l'événement.
+ */
+$('#ajouter-mes-avatars').on('click', '.accordion-title', function () {
+    const panneau = this
+        .closest('.accordion-item')
+        ?.querySelector('.accordion-content');
+
+    if (panneau) {
+        chargerAvatarsGalerie(panneau, this);
+    }
+});
+
+$('.thumbnail').on('click', function(){
+  selectAvatar(this);
+});
+
+/**
  * [Description for selectAvatar]
  * Validation du choix de l'avatar (souris ET clavier).
  *
@@ -190,29 +268,29 @@ $('#bouton-fermer-mes-avatars').on('click', function () {
  * @param {HTMLElement} el
  * @return void
  */
-const selectAvatar = function(el){
+const selectAvatar = function (el) {
   const $el = $(el);
-  const id = $el.attr('id');
   const theme = $el.data('theme');
   const image = $el.data('image');
-  const src = $el.attr('src');
+  const src = $el.attr('src') || $el.attr('data-src');
   const assets = `${theme}/${image}`;
 
-  $('.thumbnail').removeClass('selected').attr('aria-pressed', 'false');
-  $el.addClass('selected').attr('aria-pressed', 'true');
+  $('.thumbnail').removeClass('selected');
+  $('.avatar-choice').attr('aria-pressed', 'false');
+
+  $el.addClass('selected');
+  $el.closest('.avatar-choice').attr('aria-pressed', 'true');
 
   $('#ajouter-mon-avatar').prop('src', src);
+
   const data = document.getElementById('ajouter-mon-avatar');
   data.dataset.theme = theme;
   data.dataset.image = image;
+
   $('#registration_form_avatar').val(assets);
 
   changeMe(assets);
 };
-
-$('.thumbnail').on('click', function(){
-  selectAvatar(this);
-});
 
 /** Activation clavier (Entrée / Espace) : un <img role="button"> n'active pas
  * nativement au clavier, contrairement à un vrai <button>. */

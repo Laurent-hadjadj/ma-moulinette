@@ -1376,3 +1376,30 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
 		font-weight: bold;
 		color: #333;
 }
+
+/* =============== SPINER ==================== */
+/* Spinner affiché pendant le chargement des avatars */
+.avatar-loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: avatar-spinner-rotation 0.7s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes avatar-spinner-rotation {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .avatar-loading-spinner {
+        animation: none;
+        border-right-color: currentColor;
+    }
+}
