@@ -59,6 +59,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             {{ include('_tags_groupe_fonctionnel.html.twig', {'groupes': liste_groupe_fonctionnel}) }}
         </section>
 
+        <section class="grid-container">
+            {{ _self.info_callout('La colonne <strong>Version</strong> correspond à la version analysée lors de la <strong>dernière collecte</strong> effectuée pour chaque projet, pas nécessairement à la dernière version publiée du projet.') }}
+        </section>
+
         <div class="table-scroll pleine-page">
             <table id="table-mes-projets" class="hover striped" aria-label="Métriques par projet">
                 <caption class="show-for-sr">Tableau récapitulatif des projets : application, version, lignes de code,
@@ -189,6 +193,14 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             </table>
         </div>
     </main>
+
+    {% macro info_callout(text) %}
+    <div class="callout alert-callout-border info margin-bottom-1 clear-both">
+        <p class="open-sans font-size-085 margin-bottom-0">
+            <span aria-hidden="true">ℹ️</span> {{ text|raw }}
+        </p>
+    </div>
+    {% endmacro %}
 
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}

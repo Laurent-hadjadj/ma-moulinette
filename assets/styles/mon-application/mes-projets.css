@@ -61,7 +61,7 @@
 
 /* Couleur pour la note A */
 .note-a {
-  background-color: #0a0;
+  background-color: #077e07;
   color: #fff;
   border: solid 2px #00445b;
   border-radius: 0.2rem;
@@ -71,8 +71,8 @@
 
 /* Couleur pour la note B */
 .note-b {
-  background-color: #b0d513;
-  color: #fff;
+  background-color: #a3c50b;
+  color: #000;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 20px;
@@ -81,8 +81,8 @@
 
 /* Couleur pour la note C */
 .note-c {
-  background-color: #eabe06;
-  color: #fff;
+  background-color: #edbf05;
+  color: #000;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 19px;
@@ -91,7 +91,7 @@
 
 /* Couleur pour la note D */
 .note-d {
-  background-color: #ed7d20;
+  background-color: #ba5705;
   color: #fff;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
@@ -107,4 +107,22 @@
   border-radius: 0.2rem;
   padding-left: 21px;
   padding-right: 22px;
+}
+
+/*
+ * Centrage des en-têtes de colonne du tableau DataTables.
+ *
+ * `datatables.net-zf` impose `table.dataTable thead th { text-align: left; }`
+ * (voir assets/vendor/datatables.net-zf/css/dataTables.foundation.min.css).
+ * Cette règle a 3 sélecteurs de type (table/thead/th) + 1 classe (.dataTable),
+ * ce qui bat la classe `.text-center` de Foundation (1 classe seule) même si
+ * `.text-center` est posée directement sur chaque <th> dans le Twig — la
+ * colonne semble alors "non centrée" quel que soit le réglage DataTables
+ * (columnDefs/className ne corrige que la ligne d'en-tête "feuille", pas la
+ * ligne groupée avec colspan). On rajoute l'ID de la table pour dépasser
+ * cette spécificité, sur les deux lignes d'en-tête.
+ */
+#table-mes-projets.dataTable thead th.text-center,
+#table-mes-projets thead th.text-center {
+  text-align: center;
 }
