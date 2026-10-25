@@ -1,12 +1,12 @@
 {
-    "generated_at": "2026-10-25T16:48:34+01:00",
+    "generated_at": "2026-10-25T17:27:31+01:00",
     "cloc": {
         "php": {
             "fichier": 315,
-            "code": 55076,
-            "comment": 24028,
-            "vide": 10130,
-            "total": 89234
+            "code": 55099,
+            "comment": 24052,
+            "vide": 10136,
+            "total": 89287
         },
         "html": {
             "fichier": 157,
@@ -46,10 +46,10 @@
     },
     "tests": {
         "unit": {
-            "count": 3427
+            "count": 3437
         },
         "integration": {
-            "count": 674
+            "count": 678
         }
     }
 }
