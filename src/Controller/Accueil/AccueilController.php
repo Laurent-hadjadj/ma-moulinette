@@ -24,6 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{ListeProjet, Profiles, Properties, Historique, MaMoulinette};
 use App\Service\{ClientService, UrlBuilderService};
 use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentAnalysisService;
 
 /**
  * [Description AccueilController]
@@ -44,6 +45,8 @@ class AccueilController extends AbstractController
     private string $version;
     private string $dateCopyright;
 
+    private int $userAgentBatch;
+
     /**
      * [Description for __construct]
      *
@@ -57,7 +60,8 @@ class AccueilController extends AbstractController
         private ParameterBagInterface $params,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger,
-        private UserAgentTrackingFacade $tracking
+        private UserAgentTrackingFacade $tracking,
+        private UserAgentAnalysisService $analysis
     ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -65,6 +69,9 @@ class AccueilController extends AbstractController
         $this->environnement = $params->get('environnement');
         $this->version = $params->get('version');
         $this->dateCopyright = \date('Y');
+
+        $batchValue = $params->get('user.agent.batch.automatique');
+        $this->userAgentBatch = ($batchValue === '') ? 0 : (int) $batchValue;
     }
 
     /**
@@ -610,6 +617,14 @@ class AccueilController extends AbstractController
          *     properties.
          */
         $this->tracking->track('ACCUEIL');
+        $exec = $this->analysis->runBatch($this->userAgentBatch);
+
+        /* En cas d'échec, runBatch() relaie la réponse du repository : elle porte 'erreur' (le message, au singulier) et non 'erreurs' (la liste du cas nominal). */
+        if ($exec['code'] !== 200) {
+            $this->logger->error("[Accueil] ❌ Une erreur s'est produite pendant l'analyse des données UserAgent ({$exec['code']})", [
+                'trace' => $exec['erreur'],
+            ]);
+        }
 
         $this->logger->info("[Accueil] ℹ️ Chargement de la page d'accueil");
         $listeProjetRepo = $this->em->getRepository(ListeProjet::class);
