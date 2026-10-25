@@ -35,7 +35,7 @@ class PreferenceController extends AbstractController
     private static string $noData = 'Pas de données';
 
     /** Catégories autorisées pour la lecture/écriture des préférences */
-    private const CATEGORIES_AUTORISEES = ['suivi_projet', 'favori_projet', 'favori_version'];
+    private const CATEGORIES_AUTORISEES = ['suivi_projet', 'favori_projet', 'favori_version', 'presentation_projet'];
 
     private string $logoEntreprise;
     private string $marqueEntrepriseShort;
@@ -455,6 +455,7 @@ class PreferenceController extends AbstractController
         $descriptionSuiviProjet = "Liste des projets à suivre.";
         $descriptionFavoriProjet = "Liste des projets favoris.";
         $descriptionFavoriVersion = "Liste des versions favorites.";
+        $descriptionPresentationProjet = "Affichage de la page Projet en tuiles (nouveau) plutôt qu'en 3 colonnes (classique).";
 
         $mesPreferences = [
             "suivi_projet" => ["option" => "Projet", "description" => $descriptionSuiviProjet, "statut" => $preferences['statut']['suivi_projet']],
@@ -467,6 +468,14 @@ class PreferenceController extends AbstractController
                 "option" => "Version",
                 "description" => $descriptionFavoriVersion,
                 "statut" => $preferences['statut']['favori_version']
+            ],
+            /* MODIF 2026-10-23 : nouvelle présentation de la page Projet (tuiles) en test —
+               clé absente des préférences existantes, donc repli explicite sur false
+               (présentation classique) tant que l'utilisateur n'a pas basculé l'option. */
+            "presentation_projet" => [
+                "option" => "Presentation",
+                "description" => $descriptionPresentationProjet,
+                "statut" => $preferences['statut']['presentation_projet'] ?? false
             ],
         ];
 
