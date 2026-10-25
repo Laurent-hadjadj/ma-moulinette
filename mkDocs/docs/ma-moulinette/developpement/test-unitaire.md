@@ -1,19 +1,19 @@
 # 🧪 Tests unitaires et d'intégration
 
-## 📈 État des suites (relevé du 24/10/2026)
+## 📈 État des suites (relevé du 25/10/2026)
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 427 | 9 417 | Unitaires purs (mocks, aucune base réelle) |
-| `integration` (`tests/Integration`) | 674 | 1 622 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **4 101** | **11 039** | |
+| `unit` (`tests/Unit`) | 3 437 | 9 461 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 678 | 1 632 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
+| **Total** | **4 115** | **11 093** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
 **Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
 
 | Granularité | Couverture |
 | --- | --- |
-| Lignes | **80,60 %** |
+| Lignes | **80,85 %** |
 
 **Analyse statique** : **PHPStan niveau 7**, 0 erreur sur tout le périmètre configuré (`bin/`, `config/`, `public/`, `src/`, `tests/`) — voir [Analyse statique](#-analyse-statique-phpstan) plus bas.
 
