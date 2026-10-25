@@ -120,7 +120,7 @@
   margin-left: 0.7rem;
 }
 
-.preference-svg:hover { fill: #ed7d20; }
+.preference-svg:hover { fill: #ba5705; }
 
 input:checked ~ .switch-paddle { background-color: #00445b; }
 
@@ -187,7 +187,7 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 #bouton-fermer-preference-version:hover { background-color: #006182; }
 
 /** Couleurs et tailles pour les labels */
-.option-true { color: #0a0; }
+.option-true { color: #077e07; }
 .option-false { color: #d4333f; }
 
 #modal-favori-label,
@@ -215,7 +215,7 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 }
 
 .accordion-custom:hover {
-  background-color: #ed7d20;
+  background-color: #ba5705;
   color: #fff;
 }
 
