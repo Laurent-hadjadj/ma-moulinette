@@ -79,6 +79,12 @@ Au-dessus du tableau, un badge 🎯 rappelle chaque groupe fonctionnel auquel l'
     Corrigé, et le tableau est passé sous **DataTables** (extension `datatables.net-zf`, déjà utilisée sur [Statistiques › Projets](statistiques.md)) : recherche globale, tri par colonne (avec type numérique correct sur les colonnes de comptage), pagination à **15 lignes par défaut** (5/10/15/20/25 au choix).
     Le header à deux niveaux (groupes de colonnes + sous-colonnes) est géré nativement — plus de perte de l'en-tête en scrollant une longue liste.
 
+!!! note "✅ Centrage des en-têtes de colonne (25/10/2026)"
+    Les en-têtes restaient alignés à gauche malgré la classe `text-center` posée dans le template : la feuille de style du thème DataTables/Foundation (`table.dataTable thead th { text-align: left; }`) est plus spécifique que la classe utilitaire Foundation `.text-center` et l'emportait systématiquement — y compris sur la ligne d'en-tête groupée (colspan), que les réglages `columnDefs`/`className` de DataTables ne peuvent pas atteindre puisqu'ils ne s'appliquent qu'à la ligne « feuille » (une cellule par colonne réelle). Corrigé en ciblant l'ID de la table (`#table-mes-projets thead th.text-center` dans `mes-projets.css`), ce qui fonctionne sur les deux lignes d'en-tête sans dépendre des options JS de DataTables.
+
+!!! note "✅ Encart d'information sur la colonne Version (23/10/2026)"
+    Un encart rappelle désormais que la colonne **Version** correspond à la version analysée lors de la **dernière collecte** effectuée pour chaque projet — pas nécessairement à la dernière version publiée.
+
 ## ⚙️ Zone des actions
 
 | Bouton | Visible si | Action |
@@ -102,6 +108,24 @@ Tous les boutons de navigation (sauf « Afficher » et « Mes projets ») sont *
 ## 📋 Zone principale — affichage des données
 
 Trois blocs (« triptyque ») plus un bandeau, tous initialement vides et remplis par la collecte ou l'affichage :
+
+!!! note "✅ Nouvelle présentation en tuiles (optionnelle, 25/10/2026)"
+    Les données ci-dessous restent les mêmes ; seule leur mise en page peut changer. Depuis [Mes préférences](preferences.md#-tableau-des-préférences-4-interrupteurs) (option « Presentation »), un utilisateur peut basculer de ce triptyque classique en 3 colonnes vers une présentation en tuiles (une tuile par domaine : Application, Volumétrie, Complexité, Qualité interne, Tests & Violations, Analyse, Empreinte, Qualité, Répartition, Dette). Les deux présentations lisent et écrivent exactement les mêmes éléments du DOM (mêmes identifiants), donc le flux Collecte → Peinture décrit plus bas fonctionne à l'identique quel que soit le choix. Présentation classique par défaut.
+
+!!! note "✅ Tuiles enrichies avec des métriques déjà collectées (25/10/2026)"
+    Plusieurs tuiles affichent désormais des métriques déjà collectées et persistées par SonarQube, mais jamais montrées jusqu'ici (ni en tuiles, ni en présentation classique) :
+
+    - **Tests & Violations** : statut du cycle de vie des violations (ouvertes / confirmées / réouvertes), en plus des violations déjà triées (acceptées / faux positifs) — et, parmi les acceptées, celles à fort impact (blocker/high).
+    - **Qualité interne** : détail de la couverture (lignes, branches, conditions non couvertes) et de la duplication (lignes, blocs, fichiers dupliqués), avec une barre de progression pour chacune des deux mesures globales (masquée tant qu'aucune donnée n'a été peinte à l'écran).
+    - **Complexité** : en plus des ratios déjà affichés (pour 1000 lignes de code — **ce ne sont pas des pourcentages**), le nombre total de points de complexité cyclomatique et cognitive (nouvelle section « Points de complexité »).
+
+    Ces ajouts sont disponibles dans les deux présentations.
+
+!!! note "✅ Corrections de mise en page des tuiles (25/10/2026)"
+    - Les tuiles utilisaient une largeur calée sur leur contenu (`large-auto`), ce qui donnait des tuiles de largeurs très inégales sur une même ligne — remplacées par des largeurs fixes par breakpoint, avec un espacement géré par `grid-margin-x` (compense proprement la gouttière à tous les breakpoints, y compris en mode empilé sur mobile).
+    - Les icônes de section (emoji) étaient répétées sans distinction entre plusieurs tuiles d'un même bloc — remplacées par des icônes distinctes ; la tuile « Répartition » dupliquée (deux tuiles de même nom pour des données différentes) a été renommée en « Modules ».
+    - La ligne « Dette technique » de la tuile Dette pouvait chevaucher la ligne suivante quand la durée affichée était longue, faute de place (elle partageait sa ligne avec le label et le bouton de détail) — scindée en deux lignes.
+    - En largeur mobile, la marge fixe de 2rem de part et d'autre du contenu de la page laissait trop peu de place aux tuiles — réduite (0,2 à 0,5rem selon la largeur) sur ce breakpoint uniquement.
 
 ### 🏀 Bandeau « Informations générales »
 
