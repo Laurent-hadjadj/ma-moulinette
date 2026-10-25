@@ -4,9 +4,9 @@
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.6-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-4097%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-11018-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-80.59%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-4101%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11039-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-80.60%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.2.0 Release on October 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.3.0 Release on October 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -26,7 +26,7 @@ Elle s’appuie sur les **API publiques** de SonarQube et est **compatible** ave
 - SonarQube **10 LTA**
 - SonarQube **2024 LTA**
 - SonarQube **2025 LTA**
-- SonarQube **2026**
+- SonarQube **2026** (2026-10)
 
 > [!NOTE]
 > L'application est compatible pour la version 8 et 9 avec l'extension track-logger-method-1.4.0-RELEASE et avec la version track-logger-method-2.0.0-RELEASE pour SonarQube 10 , 2024, 2025 et 2026.
@@ -99,15 +99,15 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 |  SQL     |  82       | 3350   | 1694         | 757   | 5801 |
 |  MIGRATION |  12     | 701    | 200          | 139   | 1040 |
 
-### 📊 Qualité du code (relevé du 18/10/2026)
+### 📊 Qualité du code (relevé du 25/10/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 423** tests / 9 393 assertions |
-| Tests d'intégration (`tests/Integration`) | **674** tests / 1 625 assertions |
-| **Total** | **4 097** tests / **11 018** assertions |
+| Tests unitaires (`tests/Unit`) | **3 427** tests / 9 417 assertions |
+| Tests d'intégration (`tests/Integration`) | **674** tests / 1 622 assertions |
+| **Total** | **4 101** tests / **11 039** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **80,59 %** |
+| Couverture — lignes | **80,60 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
@@ -137,7 +137,7 @@ La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 097 tests, 11 018 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 101 tests, 11 039 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 
 ### 🧱 Fonctionnalités en cours de finalisation

@@ -4,6 +4,25 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.3.0] - 25-10-2026
+
+### Ajouté
+
+**Préférences** : Nouvelle option « Presentation » sur `/preferences` (même mécanisme de bascule Oui/Non que les favoris) permettant de choisir, pour la page Projet, entre la présentation classique (3 colonnes) et une nouvelle présentation en tuiles (une tuile par domaine : Application, Volumétrie, Complexité, Qualité interne, Tests & Violations, Analyse, Empreinte, Qualité, Répartition, Dette). Désactivée par défaut (présentation classique) pour ne rien changer aux utilisateurs existants ;
+**Mes Projets** : Ajout d'un encart d'information précisant que la colonne Version correspond à la version analysée lors de la dernière collecte, pas nécessairement à la dernière version publiée du projet ;
+**Page Projet** : Affichage de métriques déjà collectées et persistées par SonarQube, mais jamais montrées jusqu'ici, dans les deux présentations (tuile et classique) — statut du cycle de vie des violations (ouvertes/confirmées/réouvertes) et violations acceptées à fort impact dans le bloc Tests & Violations ; détail de la couverture (lignes/branches/conditions non couvertes) et de la duplication (lignes/blocs/fichiers dupliqués), avec une barre de progression pour chacune des deux mesures globales, dans le bloc Qualité interne ; nombre total de points de complexité cyclomatique et cognitive (nouvelle section « Points de complexité »), en plus des ratios déjà affichés, dans le bloc Complexité.
+
+### Corrigé
+
+**Mes Projets** : Les en-têtes de colonne du tableau (DataTables) restaient alignés à gauche malgré la classe `text-center` ajoutée dans le template — la feuille de style du thème DataTables/Foundation (`table.dataTable thead th { text-align: left; }`) est plus spécifique que la classe utilitaire Foundation `.text-center` et la surcharge systématiquement, y compris sur la ligne d'en-tête groupée (colspan) que les réglages `columnDefs`/`className` de DataTables ne peuvent pas atteindre. Corrigé en ciblant l'ID de la table (`#table-mes-projets thead th.text-center`), pour les deux lignes d'en-tête ;
+**Page Projet (tuiles)** : Dans les nouveaux blocs de présentation en tuiles, chaque titre de section avait une balise `<span>` d'icône mal fermée (`<span aria-hidden="true">🏀<span>Titre</h2>`), ainsi qu'un attribut `title` mal orthographié (`titre=`) et une coquille visible (« NoS0NAR » au lieu de « NoSONAR ») — ces deux dernières également présentes dans le bloc classique correspondant, corrigées aux deux endroits ;
+**Page Projet (tuiles)** : Les tuiles utilisaient une largeur calée sur leur contenu (`large-auto`), ce qui donnait des tuiles de largeurs très inégales sur une même ligne au sein d'un même bloc — remplacées par des largeurs fixes par breakpoint. L'espacement entre tuiles est désormais géré par `grid-margin-x` (compense proprement la gouttière à tous les breakpoints, y compris en mode empilé sur mobile, contrairement à une marge manuelle sur les cellules) ;
+**Page Projet (tuiles)** : Les icônes de section (emoji) étaient répétées sans distinction entre plusieurs tuiles d'un même bloc (⚾/🏀/👜 réutilisés partout) — remplacées par des icônes distinctes et porteuses de sens ; la tuile « Répartition » dupliquée (deux tuiles portant le même nom pour des données différentes : violations/scope d'un côté, répartition par module applicatif de l'autre) a été renommée en « Modules » ;
+**Page Projet** : La ligne « Dette technique » de la tuile/bloc Dette pouvait chevaucher la ligne suivante (« Ratio de dette ») quand la durée affichée était longue, faute de place sur une ligne partagée avec le label et le bouton de détail — scindée en deux lignes (label + bouton, puis la durée sur sa propre ligne) ;
+**Page Projet** : En largeur mobile, la marge fixe de 2rem de part et d'autre du contenu de la page laissait trop peu de place aux tuiles, provoquant des débordements visuels — réduite (0,2 à 0,5rem selon la largeur) sur ce breakpoint uniquement ;
+**Page CoSUI** : Le graphique de distribution des notes touchait le pied de page, faute de marge sous le dernier bloc de contenu — ajout de la marge standard déjà appliquée ailleurs dans l'application ;
+**Sécurité HTTP** : Les tests `SecurityHeadersSubscriberTest` (Unit et Integration) attendaient encore un en-tête `Content-Security-Policy` en environnement de débogage, alors que le correctif CSP du 21/10 (désactivation volontaire du CSP quand `kernel.debug` est vrai, pour ne plus bloquer les scripts injectés par la Web Debug Toolbar) a changé ce comportement — tests mis à jour pour refléter le nouveau comportement voulu (aucun CSP en dev, CSP complet en prod).
+
 ## [2.2.0] - 18-10-2026
 
 Ajout de nouvelles fonctionnalités à l'application.
