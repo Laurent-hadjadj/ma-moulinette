@@ -70,16 +70,25 @@ Page Statistiques utilisateur
     Corrigé en propageant `[$start, $end]` (déjà calculés pour les autres blocs) jusqu'aux deux requêtes SQL concernées.
     Les blocs « Session de travail unique » (nombre de sessions) et la moyenne de durée de session (`avg_session_duration`) restent, eux, calculés sur l'ensemble de l'historique, sans filtre de période — comportement distinct, non couvert par ce correctif.
 
-### Pipeline de collecte (bouton « Relancer l'analyse », `ROLE_INTERNAL`)
+### Pipeline de collecte
 
 ```mermaid
 flowchart LR
     Nav[Navigation utilisateur] -->|tracking| Evt[(user_agent_event<br/>PENDING)]
-    Btn["Relancer l'analyse<br/>ROLE_INTERNAL"] --> Batch[UserAgentAnalysisService]
+    Accueil["Page Accueil<br/>à chaque visite"] --> Batch[UserAgentAnalysisService::runBatch]
+    Projet["Page Projet<br/>à chaque visite"] --> Batch
+    Btn["Relancer l'analyse<br/>ROLE_INTERNAL"] --> Batch
     Evt --> Batch
     Batch -->|DeviceDetector| Ana[(user_agent_analysis)]
     Ana --> Util
 ```
+
+!!! note "✅ Trois points de déclenchement automatiques, un seul réglage de taille de lot"
+    `runBatch()` est appelé depuis **3 endroits** : à chaque visite de la page [Accueil](accueil.md) et de la page [Projet](projet.md) (taille de lot définie par `USER_AGENT_BATCH_AUTOMATIQUE`, `0` désactive le batch sur ces deux pages), et depuis le bouton « Relancer l'analyse » de cette page (taille définie par `USER_AGENT_BATCH_MANUEL`). Sur Accueil, l'échec éventuel du batch est uniquement journalisé (`[Accueil] ❌ ...`), sans message affiché à l'utilisateur — ce traitement est invisible pour lui, un message d'erreur serait hors de propos sur la page la plus visitée de l'application.
+
+!!! note "✅ Réclamation protégée contre les appels concurrents (25/10/2026)"
+    Avec 3 points de déclenchement automatiques, deux requêtes simultanées (deux visiteurs ouvrant Accueil et Projet au même instant) pouvaient auparavant sélectionner et traiter **le même événement en double** : la sélection des événements « PENDING » et leur passage en « PROCESSING » étaient deux requêtes SQL séparées, sans verrouillage entre les deux.
+    `UserAgentEventRepository::claimPendingEvents()` réclame désormais le lot en une transaction courte avec `SELECT ... FOR UPDATE SKIP LOCKED` (PostgreSQL ≥ 9.5) : chaque appel verrouille uniquement les lignes qu'il traite et ignore celles déjà verrouillées par un appel concurrent, sans attendre. Même principe que les files de traitement [Dependency-Check](../dependency-check/pages.md) et ZAP (`DcProcessingQueueRepository`/`ZapProcessingQueueRepository::claimNextBatch()`).
 
 ## ⚠️ Messages remontés (Statistiques utilisateur)
 

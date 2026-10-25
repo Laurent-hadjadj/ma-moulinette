@@ -135,7 +135,7 @@
 
 
 /* hover sur l'icône information */
-.information-svg:hover { fill: #ed7d20; }
+.information-svg:hover { fill: #ba5705; }
 
 /** Ajoute un bouton fermer à la fenêtre modale */
 #bouton-fermer-projet-reference {

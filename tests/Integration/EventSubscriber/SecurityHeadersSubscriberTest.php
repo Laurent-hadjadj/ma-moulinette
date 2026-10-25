@@ -32,6 +32,13 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  * retire volontairement le CSP sur toute page d'exception pour ne pas casser
  * le rendu de la page de debug elle-même — ce n'est pas une régression du
  * subscriber, juste un comportement Symfony à éviter dans ce test précis.
+ *
+ * MODIF 2026-10-25 : SecurityHeadersSubscriber ne pose plus aucun CSP quand
+ * `kernel.debug` est vrai (cas de l'environnement `test`) — la Web Debug
+ * Toolbar injecte du JS inline sans nonce et bloquait encore les scripts
+ * même avec un `script-src` relâché. Ce test vérifie donc l'absence de CSP
+ * ici ; la présence du CSP en prod est couverte par le test Unit
+ * (`testOnKernelResponseSetsAllHeadersInProdMode`, debug: false).
  */
 class SecurityHeadersSubscriberTest extends WebTestCase
 {
@@ -44,12 +51,7 @@ class SecurityHeadersSubscriberTest extends WebTestCase
 
         $this->assertSame('nosniff', $headers->get('X-Content-Type-Options'));
         $this->assertSame('DENY', $headers->get('X-Frame-Options'));
-
-        $csp = $headers->get('Content-Security-Policy');
-        $this->assertNotNull($csp);
-        $this->assertStringContainsString("frame-ancestors 'none'", $csp);
-        $this->assertStringContainsString("object-src 'none'", $csp);
-        $this->assertStringContainsString("form-action 'self'", $csp);
+        $this->assertFalse($headers->has('Content-Security-Policy'));
     }
 
     /**

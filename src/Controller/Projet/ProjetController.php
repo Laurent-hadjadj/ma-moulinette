@@ -122,6 +122,12 @@ class ProjetController extends AbstractController
         $sonar_version = (int)  ($this->sonarVersion ?: 0);
         $render['version_serveur_sonar'] = ($sonar_version != 0) ? $sonar_version : 8;
 
+        /* MODIF 2026-10-25 : présentation de la page Projet (tuiles vs 3 colonnes),
+         * réglable dans /preferences — clé absente des préférences existantes tant
+         * que l'utilisateur n'a pas basculé l'option, repli explicite sur false
+         * (présentation classique). */
+        $render['presentation_tuile'] = (bool) ($this->appUser()->getPreference()['statut']['presentation_projet'] ?? false);
+
         $this->logger->info('[Projet] ℹ️ Affichage de la page projet.');
         return $this->render('projet/index.html.twig', $render);
     }

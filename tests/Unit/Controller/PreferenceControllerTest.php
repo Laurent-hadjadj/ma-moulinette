@@ -148,6 +148,25 @@ class PreferenceControllerTest extends TestCase
         $this->assertStringContainsString('"favori_projet":"ON"', $capturedBinds['preference']);
     }
 
+    public function testApiPreferenceStatutAcceptsPresentationProjetCategory(): void
+    {
+        $this->user->expects($this->atLeastOnce())
+            ->method('getPreference')
+            ->willReturn($this->buildBasePreferences());
+
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('bindValue');
+        $this->statement->expects($this->once())->method('executeStatement')->willReturn(1);
+
+        $request = $this->jsonRequest(['statut' => true, 'category' => 'presentation_projet']);
+
+        $payload = json_decode((string) $this->controller->apiPreferenceStatut($request)->getContent(), true);
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame('presentation_projet', $payload['category']);
+        $this->assertTrue($payload['statut']['presentation_projet']);
+    }
+
     // ═════════════════════ apiPreferenceFavoriDelete ═══════════════════════
 
     public function testApiPreferenceFavoriDeleteRemovesMavenKeyFromFavoris(): void
@@ -269,6 +288,37 @@ class PreferenceControllerTest extends TestCase
         $this->assertArrayHasKey('suivi_projet', $capturedCtx['preferences']);
         $this->assertArrayHasKey('favori_projet', $capturedCtx['preferences']);
         $this->assertFalse($capturedCtx['peut_voir_actuator']);
+        // MODIF 2026-10-23 : nouvelle option "presentation_projet" (tuiles vs 3 colonnes).
+        // Clé absente de buildBasePreferences() -> repli attendu sur false.
+        $this->assertArrayHasKey('presentation_projet', $capturedCtx['preferences']);
+        $this->assertFalse($capturedCtx['preferences']['presentation_projet']['statut']);
+    }
+
+    public function testIndexExposesPresentationProjetStatutWhenSetInPreference(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(false);
+        $prefs = $this->buildBasePreferences();
+        $prefs['statut']['presentation_projet'] = true;
+        $this->user->method('getPreference')->willReturn($prefs);
+        $this->user->method('getPrenom')->willReturn('Alice');
+        $this->user->method('getNom')->willReturn('Doe');
+        $this->user->method('getAvatar')->willReturn('avatar.png');
+        $this->user->method('getRoles')->willReturn(['ROLE_USER']);
+        $this->user->method('getGroupeUtilisateur')->willReturn('Groupe-A');
+        $this->user->method('getListeGroupeFonctionnel')->willReturn(['equipe-1']);
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('preference/index.html.twig', $this->callback(function (array $ctx) use (&$capturedCtx) {
+                $capturedCtx = $ctx;
+                return true;
+            }))
+            ->willReturn('<html>prefs</html>');
+
+        $this->controller->index();
+
+        $this->assertTrue($capturedCtx['preferences']['presentation_projet']['statut']);
     }
 
     public function testIndexExposesActuatorLinkWhenRoleGranted(): void

@@ -44,6 +44,17 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * [Description for onKernelResponse]
+     *
+     * @param ResponseEvent $event
+     *
+     * @return void
+     *
+     * Created at: 21/10/2026 08:53:38 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$event->isMainRequest()) {
@@ -57,19 +68,26 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
         header_remove('X-Powered-By');
 
         $headers = $event->getResponse()->headers;
+
         $headers->set('X-Content-Type-Options', 'nosniff');
         $headers->set('X-Frame-Options', 'DENY');
-        $headers->set('Content-Security-Policy', $this->buildCsp());
+
+        // En production, applique la CSP restrictive.
+        // En développement, ne pose pas de CSP depuis ce subscriber.
+        if (!$this->debug) {
+            $headers->set('Content-Security-Policy', $this->buildCsp());
+        }
     }
 
     private function buildCsp(): string
     {
         // La Web Debug Toolbar (dev uniquement) injecte du JS inline sans nonce.
-        $scriptSrc = $this->debug ? "'self' 'unsafe-inline'" : "'self'";
+        //$scriptSrc = $this->debug ? "'self' 'unsafe-inline'" : "'self'";
 
         return implode('; ', [
             "default-src 'self'",
-            "script-src {$scriptSrc}",
+            "script-src 'self'",
+            //"script-src {$scriptSrc}",
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data:",
             "object-src 'none'",

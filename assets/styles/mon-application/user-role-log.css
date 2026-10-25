@@ -11,28 +11,34 @@
  */
 
   /* Mobile */
-@media (width <= 20em) {  }
+@media (width <= 20em) { /* Empty */ }
 
 /* Mobile */
-@media (20.025em <= width <= 22em) {  }
+@media (20.025em <= width <= 22em) { /* Empty */ }
 
 /* Mobile */
-@media (22.025em <= width <= 30em) {  }
+@media (22.025em <= width <= 30em) { /* Empty */ }
 
 /* Mobile */
-@media (30.025em <= width <= 40em) {  }
+@media (30.025em <= width <= 40em) { /* Empty */ }
 
 /* tablette */
-@media (40.025em <= width <= 64em) { }
+@media (40.025em <= width <= 64em) { /* Empty */ }
 
 /* desktop */
-@media (64.025em <= width <= 90em) { .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; } }
+@media (64.025em <= width <= 90em) {
+    .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; }
+}
 
 /* desktop */
-@media (90.025em <= width <= 120em) { .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; } }
+@media (90.025em <= width <= 120em) {
+    .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; }
+}
 
 /* desktop */
-@media (120.025em <= width <= 160em) { .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; } }
+@media (120.025em <= width <= 160em) {
+    .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; }
+}
 
 /*************************          Global     *********************************/
 

@@ -864,8 +864,15 @@ export const remplissage = async function(maven_key) {
 
     $('#js-complexity-ratio').html(displayNumber(t.complexity_ratio));
     $('#js-cognitive-complexity-ratio').html(displayNumber(t.cognitive_complexity_ratio));
+    $('#js-complexity').html(displayNumber(t.complexity));
+    $('#js-cognitive-complexity').html(displayNumber(t.cognitive_complexity));
 
     $('#js-coverage').html(displayPercent(t.coverage));
+    $('#js-coverage-bar').css('--percent', t.coverage ?? 0).removeClass('hide');
+    $('#js-line-coverage').html(displayPercent(t.line_coverage));
+    $('#js-branch-coverage').html(displayPercent(t.branch_coverage));
+    $('#js-uncovered-conditions').html(displayNumber(t.uncovered_conditions));
+    $('#js-conditions-to-cover').html(displayNumber(t.conditions_to_cover));
     $('#js-ratio-dette-technique').html(displayPercent(t.sqale_debt_ratio));
 
     /** On colorise le résultat */
@@ -887,6 +894,10 @@ export const remplissage = async function(maven_key) {
     }
 
     $('#js-duplicated-lines-density').html(displayPercent(t.duplicated_lines_density));
+    $('#js-duplication-bar').css('--percent', t.duplicated_lines_density ?? 0).removeClass('hide');
+    $('#js-duplicated-lines').html(displayNumber(t.duplicated_lines));
+    $('#js-duplicated-blocks').html(displayNumber(t.duplicated_blocks));
+    $('#js-duplicated-files').html(displayNumber(t.duplicated_files));
     $('#js-tests').html(displayNumber(t.tests));
     $('#js-violations').html(displayNumber(t.violations));
 
@@ -937,8 +948,14 @@ export const remplissage = async function(maven_key) {
     $('#js-skipped-tests').html(displayNumber(t.skipped_tests));
     $('#js-test-success-density').html(displayPercent(t.test_success_density));
 
+    /** Statut anomalies (cycle de vie, avant tout tri humain) */
+    $('#js-open-issues').html(displayNumber(t.open_issues));
+    $('#js-confirmed-issues').html(displayNumber(t.confirmed_issues));
+    $('#js-reopened-issues').html(displayNumber(t.reopened_issues));
+
     /** Statut anomalies (workflow de tri) */
     $('#js-accepted-issues').html(displayNumber(t.accepted_issues));
+    $('#js-high-impact-accepted-issues').html(displayNumber(t.high_impact_accepted_issues));
     $('#js-false-positive-issues').html(displayNumber(t.false_positive_issues));
 
     //Historique

@@ -23,8 +23,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /* MODIF 2026-06-09 : tests Integration UserAgentEventRepository.
- * Couvre insertUserAgentEvent, selectPendingEvents, updateProcessingStatus
- * avec vraie base PostgreSQL (schéma ma_moulinette).
+ * Couvre insertUserAgentEvent, selectPendingEvents, claimPendingEvents,
+ * updateProcessingStatus avec vraie base PostgreSQL (schéma ma_moulinette).
  */
 class UserAgentEventRepositoryTest extends KernelTestCase
 {
@@ -147,6 +147,54 @@ class UserAgentEventRepositoryTest extends KernelTestCase
         foreach ($result['liste'] as $row) {
             $this->assertNotSame('DONE', $row['processing_status']);
         }
+    }
+
+    // ──── claimPendingEvents ──────────────────────────────────────────────────
+
+    public function testClaimPendingEvents_ReturnsTwoPendingFromFixtures(): void
+    {
+        $repo   = $this->getRepository();
+        $result = $repo->claimPendingEvents(20);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertCount(2, $result['liste']);
+    }
+
+    public function testClaimPendingEvents_RespectsLimit(): void
+    {
+        $repo   = $this->getRepository();
+        $result = $repo->claimPendingEvents(1);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertCount(1, $result['liste']);
+    }
+
+    public function testClaimPendingEvents_SwitchesClaimedRowsToProcessing(): void
+    {
+        $repo = $this->getRepository();
+        $repo->claimPendingEvents(20);
+
+        // Les événements réclamés ne sont plus 'PENDING' : selectPendingEvents() n'en voit plus aucun.
+        $stillPending = $repo->selectPendingEvents(100);
+        $this->assertSame(200, $stillPending['code']);
+        $this->assertCount(0, $stillPending['liste']);
+    }
+
+    public function testClaimPendingEvents_SecondCallDoesNotReclaimAlreadyProcessing(): void
+    {
+        $repo = $this->getRepository();
+
+        $first = $repo->claimPendingEvents(20);
+        $this->assertSame(200, $first['code']);
+        $this->assertCount(2, $first['liste']);
+
+        // Un second appel ne doit plus rien trouver : les 2 événements sont déjà 'PROCESSING',
+        // pas 'PENDING' — même garantie que FOR UPDATE SKIP LOCKED apporte entre deux appels
+        // concurrents (ici simulé en séquentiel, faute de pouvoir ouvrir une 2e connexion/transaction
+        // dans ce test).
+        $second = $repo->claimPendingEvents(20);
+        $this->assertSame(200, $second['code']);
+        $this->assertCount(0, $second['liste']);
     }
 
     // ──── updateProcessingStatus ──────────────────────────────────────────────

@@ -14,3 +14,8 @@ import $ from 'jquery';
 
 /** Démarrage de Zurb foundation */
 $(document).foundation();
+
+/** Initialisation après chargement complet du DOM (pour les éléments ajoutés dynamiquement) */
+$(function () {
+  $(document).foundation();
+});

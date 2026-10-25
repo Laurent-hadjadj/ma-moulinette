@@ -49,10 +49,10 @@ class UserAgentAnalysisService
      */
     public function runBatch(int $limit = 50): array
     {
-        $eventsResult = $this->eventRepository->selectPendingEvents($limit);
+        $eventsResult = $this->eventRepository->claimPendingEvents($limit);
         if ($eventsResult['code'] !== 200)
         {
-            $this->logger->error('[Run-Batch] ❌ Échec de la requête selectPendingEvents().', [
+            $this->logger->error('[Run-Batch] ❌ Échec de la réclamation du lot (claimPendingEvents).', [
                 'code' => $eventsResult['code'],
                 'erreur' => $eventsResult['erreur']
             ]);
@@ -62,21 +62,10 @@ class UserAgentAnalysisService
         $processed = 0;
         $erreurs = [];
 
-        /* si la liste est vide en renvoie la réponse avec un code => 200 */
+        /* si la liste est vide en renvoie la réponse avec un code => 200.
+           Les événements sont déjà en 'PROCESSING' (verrouillés par claimPendingEvents(),
+           FOR UPDATE SKIP LOCKED) : pas de verrouillage supplémentaire à faire ici. */
         foreach ($eventsResult['liste'] as $event) {
-
-            $lock = $this->eventRepository->updateProcessingStatus(
-                $event['id'],
-                'PROCESSING'
-            );
-
-            if ($lock['code'] !== 200) {
-                $erreurs[] = [
-                    'event_id' => $event['id'],
-                    'erreur' => 'Impossible de verrouiller l’événement'
-                ];
-                continue;
-            }
 
             try {
                 $analysisMap = $this->analyzeUserAgent($event['user_agent']);

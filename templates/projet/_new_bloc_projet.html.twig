@@ -1,0 +1,264 @@
+<div class="grid-x grid-margin-x">
+
+  {# Domaine : Version #}
+  <div class="callout callout-information small-12 medium-6 large-4 cell">
+    <div class="callout-body">
+      <h2 class="h4 claire-hand container-information no-select"><span aria-hidden="true">🏷️</span>&nbsp;Application</h2>
+    </div>
+
+    <div class="callout-footer open-sans">
+      {# version #}
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Nom de la version analysée">Version&nbsp;:</span>
+        <span id="js-version" class="ligne-valeur color-noir" title="Nom de la version actuellement affichée"></span>
+      </div>
+      {# Date de la dernière analyse #}
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Date de la dernière analyse">Date&nbsp;:</span>
+        <span id="js-date-version" class="ligne-valeur color-noir" title="Date à laquelle cette version a été analysée"></span>
+      </div>
+      {# nombre de version #}
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de versions de type Release">Release&nbsp;:</span>
+        <span id="js-version-release" class="stat-projet color-noir" title="Nombre total de versions Release enregistrées"></span>
+      </div>
+      {# Snapshot #}
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de versions de type Snapshot">Snapshot&nbsp;:</span>
+        <span id="js-version-snapshot" class="stat-projet color-noir" title="Nombre total de versions Snapshot enregistrées"></span>
+      </div>
+      <div class="container-ligne open-sans">
+        <span class="ligne-gauche">
+          <span class="ligne-label" title="Nombre de versions ni Release ni Snapshot (ex : bêta, alpha)">Autre&nbsp;:</span>
+          <button id="js-graphique-version" class="no-select" aria-label="Affiche la répartition des versions">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32"
+              class="projet-graphique-svg">
+              <title>Icône pour le bouton Graphique</title>
+              <desc>Affiche le graphique des versions.</desc>
+              <path
+                d="M13.65.425C7.32 1.335 2.076 5.97.5 12.06c-.4 1.553-.492 2.294-.492 3.952 0 1.652.1 2.527.464 3.945 1.37 5.399 5.693 9.795 11.115 11.298 4.21 1.165 8.761.586 12.443-1.588 4.252-2.505 7.027-6.626 7.72-11.467.056-.388.106-.776.106-.861v-.162l-8.161-.014c-8.12-.022-8.17-.022-8.362-.17a1.934 1.934 0 01-.343-.339c-.15-.19-.15-.24-.17-8.27L14.804.312l-.235.007c-.122.007-.543.05-.92.106z" />
+              <path
+                d="M17.088 7.616v7.303h14.768v-.162c0-.085-.05-.473-.107-.86-.47-3.303-1.912-6.274-4.209-8.702-2.461-2.59-6-4.368-9.596-4.806a11.163 11.163 0 00-.728-.077c-.12 0-.128.352-.128 7.304z" />
+            </svg>
+          </button>
+        </span>
+        <span id="js-version-autre" class="stat-projet color-noir" title="Nombre total de versions Autres enregistrées"></span>
+      </div>
+    </div>
+  </div>
+
+  {# Domaine : Volumétrie #}
+  <div class="callout callout-information small-12 medium-6 large-4 cell">
+    <div class="callout-body">
+      <h2 class="h4 claire-hand container-information no-select"><span aria-hidden="true">📊</span>&nbsp;Volumétrie</h2>
+    </div>
+
+    <div class="callout-footer open-sans">
+      {# Lignes #}
+      <div class="container-ligne">
+          <span class="ligne-label" title="Nombre de lignes total">Lignes&nbsp;:</span>
+          <span id="js-nombre-ligne" class="stat-projet color-noir" title="Nombre total de lignes du projet"></span>
+      </div>
+      {# Lignes de code #}
+      <div class="container-ligne">
+          <span class="ligne-label" title="Nombre de lignes de code">Lignes de Code&nbsp;:</span>
+          <span id="js-nombre-ligne-de-code" class="stat-projet color-noir" title="Nombre total de lignes de code, hors commentaires et blancs"></span>
+      </div>
+      {# Ligne de commentaire#}
+      <div class="container-ligne">
+          <span class="ligne-label" title="Nombre de lignes de commentaire">Commentaire&nbsp;:</span>
+          <span id="js-comment-lines" class="stat-projet color-noir" title="Nombre total de lignes de commentaire"></span>
+      </div>
+      {# Nombre de fichier #}
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre de fichiers">Fichiers&nbsp;:</span>
+        <span id="js-nombre-fichier" class="stat-projet color-noir" title="Nombre total de fichiers analysés"></span>
+      </div>
+      {# Nombre de classe #}
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre de classes">Classes&nbsp;:</span>
+        <span id="js-nombre-classe" class="stat-projet color-noir" title="Nombre total de classes"></span>
+      </div>
+      {# Nombre de méthode #}
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre de méthodes">Méthodes&nbsp;:</span>
+        <span id="js-nombre-fonction" class="stat-projet color-noir" title="Nombre total de méthodes"></span>
+      </div>
+      {# Nombre de déclaration #}
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre de déclarations">Déclarations&nbsp;:</span>
+        <span id="js-nombre-statement" class="stat-projet color-noir" title="Nombre total de déclarations (variables, constantes...)"></span>
+      </div>
+    </div>
+  </div>
+
+  {# Domaine : Complexité #}
+  <div class="callout callout-information small-12 medium-6 large-4 cell">
+    <div class="callout-body">
+      <h2 class="h4 claire-hand container-information no-select"><span aria-hidden="true">🧠</span>&nbsp;Complexité</h2>
+    </div>
+
+    <div class="callout-footer open-sans">
+      {# Complexité cyclomatique : ratio + note seulement (le total est plus bas) #}
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Complexité cyclomatique : nombre de chemins d'exécution distincts dans le code, ramené à 1000 lignes de code">Cyclomatique&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-complexity-ratio" class="stat-projet color-noir" title="Ratio de complexité cyclomatique pour 1000 lignes de code (ce n'est pas un pourcentage)"></span>
+          <span id="js-note-complexity"></span>
+        </span>
+      </div>
+      {# Complexité Cognitive : ratio + note seulement (le total est plus bas) #}
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Complexité cognitive : difficulté de lecture humaine du code, ramenée à 1000 lignes de code">Cognitive&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-cognitive-complexity-ratio" class="stat-projet color-noir" title="Ratio de complexité cognitive pour 1000 lignes de code (ce n'est pas un pourcentage)"></span>
+          <span id="js-note-cognitive-complexity"></span>
+        </span>
+      </div>
+
+      {# Points de complexité : totaux bruts, détaillés séparément des ratios #}
+      <div class="margin-top-1" title="Nombre total de points de complexité, celui qui est ramené à 1000 lignes de code dans les ratios ci-dessus">
+          <span class="ligne-label"><span aria-hidden="true">ℹ️</span>Points de complexité</span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre total de points de complexité cyclomatique dans le code">Cyclomatique&nbsp;:</span>
+        <span id="js-complexity" class="stat-projet color-noir" title="Nombre total de points de complexité cyclomatique dans le code"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre total de points de complexité cognitive dans le code">Cognitive&nbsp;:</span>
+        <span id="js-cognitive-complexity" class="stat-projet color-noir" title="Nombre total de points de complexité cognitive dans le code"></span>
+      </div>
+
+      <button
+            id="bouton-ouvrir-information-complexity"
+            type="button"
+            class="margin-top-1"
+            aria-label="Afficher l'aide sur le calcul de la complexité">
+            <span class="open-sans font-size-11 color-noir cursor-help">La complexité, c'est quoi <span aria-hidden="true">❓</span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="callout callout-information small-12 medium-6 large-4 cell">
+    <div class="callout-body">
+      <h2 class="h4 claire-hand container-information no-select"><span aria-hidden="true">✨</span>&nbsp;Qualité interne</h2>
+    </div>
+    <div class="callout-footer open-sans">
+      {# Couverture densité + note + barre de progression #}
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Pourcentage de lignes et de branches couvertes par les tests">Couverture&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-coverage" class="stat-projet color-noir" title="Taux de couverture globale des tests"></span>
+          <span id="js-note-coverage"></span>
+        </span>
+      </div>
+      <div class="margin-bottom-07">
+        <span id="js-coverage-bar" class="stats-percent-bar hide" aria-hidden="true" title="Couverture globale"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Pourcentage de lignes exécutées par les tests">dont lignes&nbsp;:</span>
+        <span id="js-line-coverage" class="stat-projet color-noir" title="Taux de couverture des lignes"></span>
+      </div>
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Pourcentage de branches logiques (if/switch) couvertes par les tests">dont branches&nbsp;:</span>
+        <span id="js-branch-coverage" class="stat-projet color-noir" title="Taux de couverture des branches"></span>
+      </div>
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Nombre de conditions non couvertes, sur le nombre total de conditions à tester">Non couvertes&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-uncovered-conditions" class="stat-projet color-noir" title="Nombre de conditions non couvertes par les tests"></span>
+          <span class="stat-projet">/</span>
+          <span id="js-conditions-to-cover" class="stat-projet color-noir" title="Nombre total de conditions à tester"></span>
+        </span>
+      </div>
+      {# Duplication densité + note + barre de progression #}
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Pourcentage de duplication dans le code">Duplication&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-duplicated-lines-density" class="stat-projet color-noir" title="Taux de duplication du code"></span>
+          <span id="js-note-duplication"></span>
+        </span>
+      </div>
+      <div class="margin-bottom-07">
+        <span id="js-duplication-bar" class="stats-percent-bar hide" aria-hidden="true" title="Taux de duplication"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre de lignes dupliquées">Lignes dupliquées&nbsp;:</span>
+        <span id="js-duplicated-lines" class="stat-projet color-noir" title="Nombre total de lignes dupliquées"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre de blocs de code dupliqués">Blocs dupliqués&nbsp;:</span>
+        <span id="js-duplicated-blocks" class="stat-projet color-noir" title="Nombre total de blocs dupliqués"></span>
+      </div>
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Nombre de fichiers contenant des duplications">Fichiers concernés&nbsp;:</span>
+        <span id="js-duplicated-files" class="stat-projet color-noir" title="Nombre de fichiers touchés par la duplication"></span>
+      </div>
+      {# Commentaire densité + note #}
+      <div class="container-ligne margin-bottom-07">
+        <span class="ligne-label" title="Lignes de commentaires et densité (% du code documenté)">Commentaires&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-comment-lines-density" class="stat-projet color-noir" title="Pourcentage du code documenté par des commentaires"></span>
+          <span id="js-note-comment-lines"></span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-information small-12 medium-6 large-4 cell">
+    <div class="callout-body">
+      <h2 class="h4 claire-hand container-information no-select"><span aria-hidden="true">🧪</span>&nbsp;Tests & Violations</h2>
+    </div>
+    <div class="callout-footer open-sans">
+      {# Nombre de tests #}
+      <div class="container-ligne">
+        <span class="ligne-label" title="Nombre de tests unitaires">Tests Unitaires&nbsp;:</span>
+        <span id="js-tests" class="stat-projet color-noir" title="Nombre total de tests unitaires exécutés"></span>
+      </div>
+
+      {# Résultat d'execution #}
+      <div class="container-ligne" title="Détail des tests">
+        <span title="Taux de succès" aria-hidden="true">✅</span> <span id="js-test-success-density" class="stat-projet" title="Pourcentage de tests réussis"></span>
+        <span title="Erreurs" aria-hidden="true">❌</span><span id="js-test-errors" class="stat-projet" title="Nombre de tests en erreur technique"></span>
+        <span title="Échecs" aria-hidden="true">⚠️</span> <span id="js-test-failures" class="stat-projet" title="Nombre de tests ayant échoué (anomalie fonctionnelle)"></span>
+        <span title="Ignorés" aria-hidden="true">⏭</span><span id="js-skipped-tests" class="stat-projet" title="Nombre de tests ignorés lors de l'exécution"></span>
+      </div>
+
+      {# Statut du cycle de vie des violations (avant tout tri humain) #}
+      <div class="margin-top-1" title="Statut des violations dans le workflow SonarQube, avant tout arbitrage utilisateur">
+          <span class="ligne-label"><span aria-hidden="true">ℹ️</span>Statut</span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Violations ouvertes, en attente de correction">Ouvertes&nbsp;:</span>
+        <span id="js-open-issues" class="stat-projet color-noir" title="Nombre de violations encore ouvertes"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Violations confirmées comme réelles (hors faux positifs)">Confirmées&nbsp;:</span>
+        <span id="js-confirmed-issues" class="stat-projet color-noir" title="Nombre de violations confirmées"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Violations réouvertes après un correctif qui n'a pas tenu">Réouvertes&nbsp;:</span>
+        <span id="js-reopened-issues" class="stat-projet color-noir" title="Nombre de violations réouvertes"></span>
+      </div>
+
+      {# Workflow de tri des violations #}
+      <div class="margin-top-1"
+            title="Violations triées : acceptées (validées comme acceptables après revue) / faux positifs (marquées comme faux positifs)">
+          <span class="ligne-label"><span aria-hidden="true">ℹ️</span>Arbitrages utilisateur</span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Violations validées comme acceptables après revue">Acceptées&nbsp;:</span>
+        <span id="js-accepted-issues" class="stat-projet color-noir" title="Nombre de violations acceptées"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Parmi les violations acceptées, celles dont l'impact est fort (blocker/high) — à surveiller en priorité">dont fort impact&nbsp;:</span>
+        <span id="js-high-impact-accepted-issues" class="stat-projet color-noir" title="Nombre de violations acceptées à fort impact"></span>
+      </div>
+      <div class="container-ligne">
+        <span class="ligne-label" title="Violations marquées comme faux positifs">Faux positifs&nbsp;:</span>
+        <span id="js-false-positive-issues" class="stat-projet color-noir" title="Nombre de violations faux positifs"></span>
+      </div>
+    </div>
+  </div>
+{# ---- Fin du bloc ----- #}
+</div>

@@ -18,6 +18,7 @@ namespace App\Tests\Unit\Controller\Accueil;
 use App\Controller\Accueil\AccueilController;
 use App\Entity\{Historique, ListeProjet, MaMoulinette, Profiles, Properties, Utilisateur };
 use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentAnalysisService;
 use App\Repository\{HistoriqueRepository, ListeProjetRepository, MaMoulinetteRepository, ProfilesRepository, PropertiesRepository};
 use App\Service\{ClientService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,6 +56,7 @@ class AccueilControllerTest extends TestCase
     /** @var FlashBag&MockObject */                  private MockObject $flashBag;
 
     /** @var UserAgentTrackingFacade&MockObject */   private MockObject $tracking;
+    /** @var UserAgentAnalysisService&MockObject */  private MockObject $analysis;
 
     private AccueilController $controller;
 
@@ -77,6 +79,8 @@ class AccueilControllerTest extends TestCase
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
+        $this->analysis = $this->createMock(UserAgentAnalysisService::class);
+        $this->analysis->method('runBatch')->willReturn(['code' => 200, 'processed' => 0, 'erreurs' => []]);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -120,7 +124,7 @@ class AccueilControllerTest extends TestCase
 
         $this->controller = new AccueilController(
             $this->em, $this->client, $this->params, $this->urlBuilder,
-            $this->logger, $this->tracking
+            $this->logger, $this->tracking, $this->analysis
         );
         $this->controller->setContainer($container);
     }

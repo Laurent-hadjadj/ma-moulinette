@@ -11,7 +11,7 @@ Consultation des informations personnelles et personnalisation du suivi de proje
 ```mermaid
 flowchart TD
     Page["🌐 GET /preferences"] --> Info["👤 Informations <br>personnelles<br/>+ lien Actuator <br>si ROLE_ACTUATOR"]
-    Page --> Tableau["⭐ Tableau des 3 <br>interrupteurs<br/>Projet / Favori / Version"]
+    Page --> Tableau["⭐ Tableau des 4 <br>interrupteurs<br/>Projet / Favori / Version / Presentation"]
 
     Tableau -->|"clic icône ℹ️"| CatProjet["GET /api/secure/<br>preference/category/<br>category=suivi_projet"]
     Tableau -->|"clic icône ℹ️"| CatFavori["GET /api/secure/<br>preference/category/<br>category=favori_projet"]
@@ -47,8 +47,8 @@ Page Préférences (/preferences)
 │
 ├── 🌱 Bouton « Accéder à l'inventaire Actuator » (si ROLE_ACTUATOR)
 │
-├── ⭐ Tableau des préférences (3 lignes : Projet / Favori / Version)
-│      ├── icône ℹ️ → ouvre la modale correspondante
+├── ⭐ Tableau des préférences (4 lignes : Projet / Favori / Version / Presentation)
+│      ├── icône ℹ️ → ouvre la modale correspondante (sauf Presentation, pas de modale dédiée)
 │      └── interrupteur → bascule le statut en base
 │
 ├── 🪟 Modale Projets (liste des projets suivis)
@@ -68,15 +68,19 @@ Affiche en lecture seule : avatar, nom/prénom, adresse courriel, rôles, groupe
 
 Un bouton « Accéder à l'inventaire Actuator » est affiché sur cette page uniquement pour les utilisateurs disposant du rôle `ROLE_ACTUATOR` — voir [Actuator](actuator.md). La carte « Actuator » de la page d'accueil du back-office (même rôle requis) offre un second point d'entrée équivalent.
 
-## ⭐ Tableau des préférences (3 interrupteurs)
+## ⭐ Tableau des préférences (4 interrupteurs)
 
 | Option affichée | Clé réelle | Description affichée |
 | --- | --- | --- |
 | **Projet** | `suivi_projet` | Liste des projets à suivre |
 | **Favori** | `favori_projet` | Liste des projets favoris |
 | **Version** | `favori_version` | Liste des versions favorites |
+| **Presentation** | `presentation_projet` | Affichage de la page Projet en tuiles (nouveau) plutôt qu'en 3 colonnes (classique) |
 
 Chaque interrupteur ouvre une modale listant les éléments concernés, avec un bouton de suppression par ligne pour les favoris et les versions — ces deux suppressions déclenchent bien un appel réseau.
+
+!!! note "✅ Nouvelle option « Presentation » (23/10/2026)"
+    Contrairement aux 3 autres, cette option ne pilote pas une liste mais un simple choix d'affichage pour la page [Projet](projet.md) : tuiles (une tuile par domaine) si activée, présentation classique en 3 colonnes sinon (valeur par défaut, pour ne rien changer aux utilisateurs existants). Cliquer sur son icône ℹ️ n'ouvre pas de modale dédiée (comportement de repli générique du clic, pas une erreur) — seul l'interrupteur a un effet.
 
 !!! note "✅ clés désormais alignées avec le reste de l'application"
     Ces interrupteurs et leurs modales lisaient/écrivaient auparavant des clés `projet`/`favori`/`version` distinctes de celles utilisées ailleurs (bouton « cœur » de la page [Projet](projet.md), bloc favoris de l'[Accueil](accueil.md#-bloc-des-favoris), [Suivi](suivi.md)), ce qui rendait ces 3 réglages sans effet réel. `PreferenceController`, le JavaScript de la page et la suppression de version favorite (dont l'appel réseau était commenté) ont été corrigés pour utiliser les vraies clés `suivi_projet`/`favori_projet`/`favori_version` — les 3 interrupteurs et leurs modales pilotent maintenant bien l'état affiché ailleurs dans l'application.

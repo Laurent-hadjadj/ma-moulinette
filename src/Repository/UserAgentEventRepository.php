@@ -147,6 +147,68 @@ class UserAgentEventRepository extends ServiceEntityRepository
     }
 
     /**
+     * [Description for claimPendingEvents]
+     * Réclame un lot d'événements à analyser (batch) pour le worker courant.
+     *
+     * Utilise `FOR UPDATE SKIP LOCKED` (PostgreSQL >= 9.5) dans une transaction
+     * courte : verrouille les lignes sélectionnées puis les passe immédiatement
+     * en 'PROCESSING', avant de rendre la main. Permet à plusieurs appels
+     * concurrents de `UserAgentAnalysisService::runBatch()` (déclenchés depuis
+     * plusieurs pages : Accueil, Projet, Statistique) de se répartir des
+     * sous-ensembles disjoints d'événements sans jamais traiter deux fois le
+     * même événement — même principe que `DcProcessingQueueRepository::claimNextBatch()`
+     * / `ZapProcessingQueueRepository::claimNextBatch()`.
+     * Contrairement à `selectPendingEvents()` (lecture seule), cette méthode
+     * modifie l'état des lignes qu'elle retourne.
+     *
+     * @param int $limit
+     *
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
+     *
+     * Created at: 25/10/2026 00:00:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function claimPendingEvents(int $limit): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        try {
+            $conn->beginTransaction();
+
+            $stmt = $conn->prepare(
+                "SELECT *
+                    FROM ma_moulinette.user_agent_event
+                    WHERE processing_status = 'PENDING'
+                    ORDER BY created_at ASC
+                    LIMIT :limit
+                    FOR UPDATE SKIP LOCKED"
+            );
+            $stmt->bindValue(':limit', $limit);
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
+
+            if ($liste !== []) {
+                $updateStmt = $conn->prepare(
+                    "UPDATE ma_moulinette.user_agent_event
+                        SET processing_status = 'PROCESSING'
+                        WHERE id = :id"
+                );
+                foreach ($liste as $event) {
+                    $updateStmt->bindValue(':id', $event['id']);
+                    $updateStmt->executeStatement();
+                }
+            }
+
+            $conn->commit();
+        } catch (\Throwable $e) {
+            $conn->rollBack();
+            return $this->handleDatabaseException($e);
+        }
+
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+    }
+
+    /**
      * [Description for updateProcessingStatus]
      * Mise à jour du statut de traitement d'un événement
      *

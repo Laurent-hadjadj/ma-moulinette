@@ -20,13 +20,24 @@
                 <span class="open-sans float-right avatar-chiffre">1</span>
             </a>
             <div class="accordion-content background-color-blanc" data-tab-content>
-                {% for i in 1..1 %}
-                    {% if i < 10 %}
-                        <img id="ajouter-chiffre-0{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/0' ~ i ~ '.png') }}" data-theme="chiffre" data-image="0{{ i }}">
-                    {% else %}
-                        <img id="ajouter-chiffre-{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/' ~ i ~ '}.png') }}" data-theme="chiffre" data-image="{{ i }}">
-                    {% endif %}
-                {% endfor %}
+            <button
+                    id="js-ajouter-chiffre-1"
+                    class="avatar-choice"
+                    type="button"
+                    aria-label="Choisir l'avatar chiffre 1"
+                    aria-pressed="false">
+            <img
+                id="ajouter-chiffre-1"
+                class="thumbnail gray-scale"
+                alt=""
+                width="42"
+                height="42"
+                loading="lazy"
+                decoding="async"
+                data-src="{{ asset('avatar/chiffre/1.png') }}"
+                data-theme="chiffre"
+                data-image="1">
+            </button>
             </div>
         </li>
         <li class="accordion-item menu-accordion" data-accordion-item>
@@ -37,13 +48,27 @@
                 <span class="open-sans float-right avatar-emoticon">35</span>
             </a>
             <div class="accordion-content background-color-blanc" data-tab-content>
-                {% for i in 1..35 %}
-                    {% if i < 10 %}
-                        <img id="ajouter-emoticon-0{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/0' ~ i ~ '.png') }}" data-theme="emoticon" data-image="0{{ i }}">
-                    {% else %}
-                        <img id="ajouter-emoticon-{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/' ~ i ~ '.png') }}" data-theme="emoticon" data-image="{{ i }}">
-                    {% endif %}
-                {% endfor %}
+            {% for i in 1..35 %}
+            {% set number = '%02d'|format(i) %}
+                <button
+                        id="js-ajouter-emoticon-{{ number }}"
+                        class="avatar-choice"
+                        type="button"
+                        aria-label="Choisir l'avatar emoticon {{ number }}"
+                        aria-pressed="false">
+                <img
+                    id="ajouter-emoticon-{{ number }}"
+                    class="thumbnail gray-scale"
+                    alt=""
+                    width="42"
+                    height="42"
+                    loading="lazy"
+                    decoding="async"
+                    data-src="{{ asset('avatar/emoticon/' ~ number ~ '.png') }}"
+                    data-theme="emoticon"
+                    data-image="{{ number }}">
+                </button>
+            {% endfor %}
             </div>
         </li>
         <li class="accordion-item menu-accordion" data-accordion-item>
@@ -54,13 +79,27 @@
                 <span class="open-sans float-right avatar-fille1">27</span>
             </a>
             <div class="accordion-content background-color-blanc" data-tab-content>
-                {% for i in 1..27 %}
-                    {% if i < 10 %}
-                        <img id="ajouter-fille-1-0{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/0' ~ i ~ '.png') }}" data-theme="fille-1" data-image="0{{ i }}">
-                    {% else %}
-                        <img id="ajouter-fille-1-{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/' ~ i ~ '.png') }}" data-theme="fille-1" data-image="{{ i }}">
-                    {% endif %}
-                {% endfor %}
+            {% for i in 1..27 %}
+                {% set number = '%02d'|format(i) %}
+                <button
+                        id="js-ajouter-fille-1-{{ number }}"
+                        class="avatar-choice"
+                        type="button"
+                        aria-label="Choisir l'avatar du set fille 1 {{ number }}"
+                        aria-pressed="false">
+                <img
+                    id="ajouter-fille-1-{{ number }}"
+                    class="thumbnail gray-scale"
+                    alt=""
+                    width="42"
+                    height="42"
+                    loading="lazy"
+                    decoding="async"
+                    data-src="{{ asset('avatar/fille-1/' ~ number ~ '.png') }}"
+                    data-theme="fille-1"
+                    data-image="{{ number }}">
+                </button>
+            {% endfor %}
             </div>
         </li>
         <li class="accordion-item menu-accordion" data-accordion-item>
@@ -71,12 +110,26 @@
                 <span class="open-sans float-right avatar-fille2">27</span>
             </a>
             <div class="accordion-content background-color-blanc" data-tab-content>
-                {% for i in 1..26 %}
-                    {% if i < 10 %}
-                        <img id="ajouter-fille-2-0{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/0' ~ i ~ '.png') }}" data-theme="fille-2" data-image="0{{ i }}">
-                    {% else %}
-                        <img id="ajouter-fille-2-{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/' ~ i ~ '.png') }}" data-theme="fille-2" data-image="{{ i }}">
-                    {% endif %}
+            {% for i in 1..26 %}
+                {% set number = '%02d'|format(i) %}
+                <button
+                        id="js-ajouter-fille-2-{{ number }}"
+                        class="avatar-choice"
+                        type="button"
+                        aria-label="Choisir l'avatar du set fille 2 {{ number }}"
+                        aria-pressed="false">
+                <img
+                    id="ajouter-fille-2-{{ number }}"
+                    class="thumbnail gray-scale"
+                    alt=""
+                    width="42"
+                    height="42"
+                    loading="lazy"
+                    decoding="async"
+                    data-src="{{ asset('avatar/fille-2/' ~ number ~ '.png') }}"
+                    data-theme="fille-2"
+                    data-image="{{ number }}">
+                </button>
                 {% endfor %}
             </div>
         </li>
@@ -88,12 +141,26 @@
                 <span class="open-sans float-right avatar-garcon1">23</span>
             </a>
             <div class="accordion-content background-color-blanc" data-tab-content>
-                {% for i in 1..23 %}
-                    {% if i < 10 %}
-                        <img id="ajouter-garcon-1-0{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/0' ~ i ~ '.png') }}" data-theme="garcon-1" data-image="0{{ i }}">
-                    {% else %}
-                        <img id="ajouter-garcon-1-{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/' ~ i ~ '.png') }}" data-theme="garcon-1" data-image="{{ i }}">
-                    {% endif %}
+            {% for i in 1..23 %}
+                {% set number = '%02d'|format(i) %}
+                <button
+                        id="js-ajouter-garcon-1-{{ number }}"
+                        class="avatar-choice"
+                        type="button"
+                        aria-label="Choisir l'avatar du set garcon 1 {{ number }}"
+                        aria-pressed="false">
+                <img
+                    id="ajouter-garcon-1-{{ number }}"
+                    class="thumbnail gray-scale"
+                    alt=""
+                    width="42"
+                    height="42"
+                    loading="lazy"
+                    decoding="async"
+                    data-src="{{ asset('avatar/garcon-1/' ~ number ~ '.png') }}"
+                    data-theme="garcon-1"
+                    data-image="{{ number }}">
+                </button>
                 {% endfor %}
             </div>
         </li>
@@ -105,12 +172,26 @@
                 <span class="open-sans float-right avatar-garcon2">23</span>
             </a>
             <div class="accordion-content background-color-blanc" data-tab-content>
-                {% for i in 1..24 %}
-                    {% if i < 10 %}
-                        <img id="ajouter-garcon-2-0{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/0' ~ i ~ '.png') }}" data-theme="garcon-2" data-image="0{{ i }}">
-                    {% else %}
-                        <img id="ajouter-garcon-2-{{ i }}" class="thumbnail gray-scale" tabindex="0" role="button" aria-pressed="false" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/' ~ i ~ '.png') }}" data-theme="garcon-2" data-image="{{ i }}">
-                    {% endif %}
+            {% for i in 1..24 %}
+                {% set number = '%02d'|format(i) %}
+                <button
+                        id="js-ajouter-garcon-2-{{ number }}"
+                        class="avatar-choice"
+                        type="button"
+                        aria-label="Choisir l'avatar du set garcon 2 {{ number }}"
+                        aria-pressed="false">
+                <img
+                    id="ajouter-garcon-2-{{ number }}"
+                    class="thumbnail gray-scale"
+                    alt=""
+                    width="42"
+                    height="42"
+                    loading="lazy"
+                    decoding="async"
+                    data-src="{{ asset('avatar/garcon-2/' ~ number ~ '.png') }}"
+                    data-theme="garcon-2"
+                    data-image="{{ number }}">
+                </button>
                 {% endfor %}
             </div>
         </li>

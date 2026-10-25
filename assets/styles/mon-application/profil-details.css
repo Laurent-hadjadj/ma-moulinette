@@ -82,7 +82,7 @@
 .bulle-marge { margin-left: 2rem; }
 
 .activated {
-  background-color: #0a0;
+  background-color: #077e07;
   color: #fff;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .updated {
-  background-color: #ed7d20;
+  background-color: #ba5705;
   color: #fff;
 }
 

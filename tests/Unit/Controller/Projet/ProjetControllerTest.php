@@ -109,6 +109,8 @@ class ProjetControllerTest extends TestCase
 
     public function testIndexRendersProjetPage(): void
     {
+        $this->token->method('getUser')->willReturn($this->makeUser([]));
+
         // 1. Configuration du mock de analysis
         $this->analysis->expects($this->once())
                 ->method('runBatch')
@@ -123,6 +125,46 @@ class ProjetControllerTest extends TestCase
         $response = $this->controller->index();
 
         $this->assertSame('<html>projet</html>', (string) $response->getContent());
+    }
+
+    public function testIndexDefaultsToClassicPresentationWhenPreferenceAbsent(): void
+    {
+        $this->token->method('getUser')->willReturn($this->makeUser([]));
+        $this->analysis->method('runBatch')->willReturn(['code' => 200, 'processed' => 0, 'erreurs' => []]);
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('projet/index.html.twig', $this->callback(function (array $ctx) use (&$capturedCtx) {
+                $capturedCtx = $ctx;
+                return true;
+            }))
+            ->willReturn('<html>projet</html>');
+
+        $this->controller->index();
+
+        $this->assertFalse($capturedCtx['presentation_tuile']);
+    }
+
+    public function testIndexExposesTuilePresentationWhenPreferenceEnabled(): void
+    {
+        $user = $this->makeUser([]);
+        $user->setPreference(['statut' => ['presentation_projet' => true]]);
+        $this->token->method('getUser')->willReturn($user);
+        $this->analysis->method('runBatch')->willReturn(['code' => 200, 'processed' => 0, 'erreurs' => []]);
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('projet/index.html.twig', $this->callback(function (array $ctx) use (&$capturedCtx) {
+                $capturedCtx = $ctx;
+                return true;
+            }))
+            ->willReturn('<html>projet</html>');
+
+        $this->controller->index();
+
+        $this->assertTrue($capturedCtx['presentation_tuile']);
     }
 
     public function testMesProjetsFlashesWarningWhenNoGroupes(): void
@@ -281,13 +323,15 @@ class ProjetControllerTest extends TestCase
                     ->getMock();
 
             // 3. Configuration du container
+            $this->token->method('getUser')->willReturn($this->makeUser([]));
             $container = $this->createMock(ContainerInterface::class);
             $container->method('has')->willReturnCallback(
-                    fn(string $id): bool => in_array($id, ['twig', 'parameter_bag'], true)
+                    fn(string $id): bool => in_array($id, ['twig', 'parameter_bag', 'security.token_storage'], true)
             );
             $container->method('get')->willReturnMap([
                     ['twig', 1, $this->twig],
                     ['parameter_bag', 1, $paramsMock],
+                    ['security.token_storage', 1, $this->tokenStorage],
             ]);
             $ctrl->setContainer($container);
 

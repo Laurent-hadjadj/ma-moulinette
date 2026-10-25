@@ -62,15 +62,21 @@ class SecurityHeadersSubscriberTest extends TestCase
         $this->assertStringContainsString("form-action 'self'", $csp);
     }
 
-    public function testOnKernelResponseRelaxesScriptSrcInDebugMode(): void
+    public function testOnKernelResponseDoesNotSetCspInDebugMode(): void
     {
+        // MODIF 2026-10-21 : la Web Debug Toolbar injecte du JS inline sans
+        // nonce ; même un script-src relâché ('unsafe-inline') la bloquait
+        // encore dans certains cas, donc on ne pose plus aucun CSP en dev.
         $subscriber = new SecurityHeadersSubscriber(debug: true);
         $event = $this->buildEvent();
 
         $subscriber->onKernelResponse($event);
 
-        $csp = $event->getResponse()->headers->get('Content-Security-Policy');
-        $this->assertStringContainsString("script-src 'self' 'unsafe-inline'", $csp);
+        $headers = $event->getResponse()->headers;
+        $this->assertFalse($headers->has('Content-Security-Policy'));
+        // Les autres en-têtes restent posés en dev.
+        $this->assertSame('nosniff', $headers->get('X-Content-Type-Options'));
+        $this->assertSame('DENY', $headers->get('X-Frame-Options'));
     }
 
     public function testOnKernelResponseDoesNothingOnSubRequest(): void

@@ -30,8 +30,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * MODIF 2026-06-09 : tests Unit UserAgentEventRepository.
- * Couvre insertUserAgentEvent, selectPendingEvents, updateProcessingStatus
- * et handleDatabaseException (4 cas).
+ * Couvre insertUserAgentEvent, selectPendingEvents, claimPendingEvents,
+ * updateProcessingStatus et handleDatabaseException (4 cas).
  */
 #[AllowMockObjectsWithoutExpectations]
 class UserAgentEventRepositoryTest extends TestCase
@@ -228,6 +228,69 @@ class UserAgentEventRepositoryTest extends TestCase
 
         $this->assertSame(500, $result['code']);
         $this->assertSame('select fail', $result['erreur']);
+    }
+
+    // ──── claimPendingEvents ──────────────────────────────────────────────────
+
+    public function testClaimPendingEventsReturnsAndLocksRows(): void
+    {
+        $rows = [
+            ['id' => 1, 'event_type' => 'LOGIN_PAGE_VIEW', 'processing_status' => 'PENDING'],
+            ['id' => 2, 'event_type' => 'LOGOUT',          'processing_status' => 'PENDING'],
+        ];
+        $this->connection->expects($this->once())->method('beginTransaction');
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->statement->method('executeStatement');
+        $this->result->method('fetchAllAssociative')->willReturn($rows);
+        $this->connection->expects($this->once())->method('commit');
+
+        $result = $this->repo->claimPendingEvents(10);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame($rows, $result['liste']);
+        $this->assertSame('', $result['erreur']);
+    }
+
+    public function testClaimPendingEventsReturnsEmptyListWithoutUpdate(): void
+    {
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchAllAssociative')->willReturn([]);
+        $this->statement->expects($this->never())->method('executeStatement');
+        $this->connection->expects($this->once())->method('commit');
+
+        $result = $this->repo->claimPendingEvents(10);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame([], $result['liste']);
+    }
+
+    public function testClaimPendingEventsRollsBackOnException(): void
+    {
+        $this->connection->expects($this->once())->method('beginTransaction');
+        $this->connection->method('prepare')->willThrowException(new \RuntimeException('claim fail'));
+        $this->connection->expects($this->once())->method('rollBack');
+        $this->connection->expects($this->never())->method('commit');
+
+        $result = $this->repo->claimPendingEvents(10);
+
+        $this->assertSame(500, $result['code']);
+        $this->assertSame('claim fail', $result['erreur']);
+    }
+
+    public function testClaimPendingEventsRollsBackOnConnectionException(): void
+    {
+        $driverEx = $this->createStub(\Doctrine\DBAL\Driver\Exception::class);
+        $e = new ConnectionException($driverEx, null);
+
+        $this->connection->method('prepare')->willThrowException($e);
+        $this->connection->expects($this->once())->method('rollBack');
+
+        $result = $this->repo->claimPendingEvents(10);
+
+        $this->assertSame(500, $result['code']);
+        $this->assertSame(UserAgentEventRepository::$noDataBase, $result['erreur']);
     }
 
     // ──── updateProcessingStatus ──────────────────────────────────────────────

@@ -71,7 +71,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </div>
     </section>
 
-    <section class="grid-container">
+    <section class="margin-left-2 margin-right-2">
         {# On récupère les droits de l'utilisateur #}
         <div class="js-user-rating" data-user="{{ app.user.roles|serialize(format = 'json') }}"></div>
 
@@ -88,7 +88,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </h3>
 
         <div class="grid-x cell">
-            <div class="small-12 medium-12 large-12 cell">
+            <div class="small-12 medium-6 large-6 cell">
                 <label for="liste-projet">Liste des projets disponibles.</label>
                 <select id="liste-projet" class="js-projet form-control open-sans" name="projet"
                     title="Choisi un projet">
@@ -98,8 +98,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </div>
     </section>
 
-    <main class="margin-top-1 margin-bottom-2">
-        <section class="grid-container">
+    <main class="margin-top-1 margin-bottom-2 margin-left-2 margin-right-2">
+        <section>
             <p id="feedback" class="open-sans grid-x cell">
                 <span>La clé du projet est :&nbsp;</span>
                 <output id="select-result" aria-live="polite"><strong>N.C</strong></output>
@@ -208,7 +208,13 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             {{ include('/projet/_bloc_information_general.html.twig') }}
         </section>
 
-        {# Bloc : information, projet et qualité #}
+        {# Présentation de la page Projet : tuiles (nouveau) ou 3 colonnes (classique),
+           réglable dans /preferences (option "Presentation"). #}
+        {% if presentation_tuile %}
+        {{ include('/projet/_new_bloc_projet.html.twig') }}
+        {{ include('/projet/_new_bloc_information.html.twig') }}
+        {{ include('/projet/_new_bloc_quality.html.twig') }}
+        {% else %}
         <div class="container-bloc grid-x cell">
             {# Information sur les versions #}
             {{ include('/projet/_bloc_information.html.twig') }}
@@ -219,6 +225,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             {# Information sur la qualité #}
             {{ include('/projet/_bloc_quality.html.twig') }}
         </div>
+        {% endif %}
 
         <section id="bouton-de-gestion" class="grid-container">
             <div class="grid-x grid-margin-x">

@@ -14,19 +14,17 @@
 
   <div class="callout-footer open-sans">
     {# Notes SonarQube — résumé visuel A-E #}
-    <div class="container-ligne margin-bottom-07"
-      title="Note de Fiabilité, Sécurité et Maintenabilité (SQALE) de A à E, A étant la meilleure note et E la pire.">
-      <span class="ligne-label">Fiabilité&nbsp;:</span>
+    <div class="container-ligne margin-bottom-07">
+      <span class="ligne-label" title="Note de Fiabilité, Sécurité et Maintenabilité (SQALE) de A à E, A étant la meilleure note et E la pire.">Fiabilité&nbsp;:</span>
       <span id="js-note-reliability"></span>
     </div>
-    <div class="container-ligne margin-bottom-07"
-      title="Hotspots et vulnerabilities peuvent porter sur le même code (vu sous deux angles différents)">
-      <span class="ligne-label">Sécurité&nbsp;:</span>
+    <div class="container-ligne margin-bottom-07">
+      <span class="ligne-label" title="Hotspots et vulnerabilities peuvent porter sur le même code (vu sous deux angles différents)">Sécurité&nbsp;:</span>
       <span id="js-note-security"></span>
     </div>
-    <div class="container-ligne margin-bottom-07" title="Nombre de vulnérabilités potentielles">
+    <div class="container-ligne margin-bottom-07">
       <span class="ligne-gauche">
-        <span class="ligne-label">Hotspots&nbsp;:</span>
+        <span class="ligne-label" title="Nombre de vulnérabilités potentielles">Hotspots&nbsp;:</span>
         <button id="js-affiche-modal-menace-potentielle" aria-label="Affiche le détail des hotspots.">
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32"
             class="details-svg">
@@ -41,13 +39,13 @@
     </div>
 
     <div class="container-ligne margin-bottom-07">
-      <span class="ligne-label">Maintenabilité&nbsp;:</span>
+      <span class="ligne-label" title="Note de maintenabilité (SQALE) de A à E">Maintenabilité&nbsp;:</span>
       <span id="js-note-sqale"></span>
     </div>
 
     <h3 class="h5 claire-hand margin-top-1 margin-bottom-0">Type</h3>
     <div class="container-ligne">
-      <span class="ligne-label">Fiabilité&nbsp;:</span>
+      <span class="ligne-label" title="Nombre de bugs (fiabilité)">Fiabilité&nbsp;:</span>
       <span class="ligne-droite">
         <span id="js-nombre-bug-real" class="stat-projet font-size-1"
           title="Nombre de bugs (critiques, majeures, mineures)"></span>
@@ -55,12 +53,12 @@
         <span id="js-nombre-bug-total" class="stat-projet color-noir" title="Nombre de bugs total"></span>
       </span>
     </div>
-    <div class="container-ligne" title="Nombre de vulnérabilités">
-      <span class="ligne-label">Sécurité&nbsp;:</span>
-      <span id="js-nombre-vulnerability" class="stat-projet color-noir"></span>
+    <div class="container-ligne">
+      <span class="ligne-label" title="Nombre de vulnérabilités">Sécurité&nbsp;:</span>
+      <span id="js-nombre-vulnerability" class="stat-projet color-noir" title="Nombre total de vulnérabilités"></span>
     </div>
-    <div class="container-ligne" title="Nombre de mauvaises pratiques">
-      <span class="ligne-label">Maintenabilité&nbsp;:</span>
+    <div class="container-ligne">
+      <span class="ligne-label" title="Nombre de mauvaises pratiques">Maintenabilité&nbsp;:</span>
       <span class="ligne-droite">
         <span id="js-nombre-mauvaise-pratique-real" class="stat-projet color-noir"
           title="Nombre de mauvaises pratiques (critiques, majeures, mineures)"></span>
@@ -84,39 +82,39 @@
     </h3>
 
     <div class="container-ligne">
-      <span class="ligne-label">Présentation&nbsp;:</span>
+      <span class="ligne-label" title="Anomalies situées dans la couche présentation (frontend)">Présentation&nbsp;:</span>
       <span class="ligne-droite">
-        <span id="js-nombre-frontend" class="stat-projet color-noir"></span>
-        <span id="js-nombre-frontend-percent" class="stat-projet color-noir"></span>
+        <span id="js-nombre-frontend" class="stat-projet color-noir" title="Nombre d'anomalies en couche présentation"></span>
+        <span id="js-nombre-frontend-percent" class="stat-projet color-noir" title="Part des anomalies en couche présentation, en pourcentage"></span>
       </span>
     </div>
     <div class="container-ligne">
-      <span class="ligne-label">Métier&nbsp;:</span>
+      <span class="ligne-label" title="Anomalies situées dans la couche métier (backend)">Métier&nbsp;:</span>
       <span class="ligne-droite">
-        <span id="js-nombre-backend" class="stat-projet color-noir"></span>
-        <span id="js-nombre-backend-percent" class="stat-projet color-noir"></span>
+        <span id="js-nombre-backend" class="stat-projet color-noir" title="Nombre d'anomalies en couche métier"></span>
+        <span id="js-nombre-backend-percent" class="stat-projet color-noir" title="Part des anomalies en couche métier, en pourcentage"></span>
       </span>
     </div>
     <div class="container-ligne">
-      <span class="ligne-label">Autre&nbsp;:</span>
+      <span class="ligne-label" title="Anomalies situées dans un module non catégorisé Présentation/Métier">Autre&nbsp;:</span>
       <span class="ligne-droite">
-        <span id="js-nombre-autre" class="stat-projet color-noir"></span>
-        <span id="js-nombre-autre-percent" class="stat-projet color-noir"></span>
+        <span id="js-nombre-autre" class="stat-projet color-noir" title="Nombre d'anomalies hors Présentation/Métier"></span>
+        <span id="js-nombre-autre-percent" class="stat-projet color-noir" title="Part des anomalies hors Présentation/Métier, en pourcentage"></span>
       </span>
     </div>
     <div class="container-ligne">
-      <span class="ligne-label">Inconnu&nbsp;:</span>
+      <span class="ligne-label" title="Anomalies dont le module n'a pas pu être déterminé">Inconnu&nbsp;:</span>
       <span class="ligne-droite">
-        <span id="js-nombre-inconnu" class="stat-projet color-noir"></span>
-        <span id="js-nombre-inconnu-percent" class="stat-projet color-noir"></span>
+        <span id="js-nombre-inconnu" class="stat-projet color-noir" title="Nombre d'anomalies sans module déterminé"></span>
+        <span id="js-nombre-inconnu-percent" class="stat-projet color-noir" title="Part des anomalies sans module déterminé, en pourcentage"></span>
       </span>
     </div>
 
     {# DETTE TECHNIQUE #}
     <h3 class="h5 claire-hand margin-top-07">Dette</h3>
-    <div class="container-ligne" title="Dette technique">
+    <div class="container-ligne margin-bottom-05">
       <span class="ligne-gauche">
-        <span class="ligne-label">Dette technique&nbsp;</span>
+        <span class="ligne-label" title="Dette technique : temps estimé pour corriger toutes les anomalies">Dette technique&nbsp;</span>
         <button id="js-affiche-detail-dette" aria-label="Affiche le détail de la dette technique.">
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32"
             class=" details-svg">
@@ -127,22 +125,23 @@
           </svg>
         </button>
       </span>
-      <span id="js-dette" class="stat-dette color-noir" data-dette="0"></span>
+    </div>
+    <div class="container-ligne margin-bottom-07">
+      <span class="ligne-label" title="Dette technique totale, en temps estimé">Durée&nbsp;:</span>
+      <span id="js-dette" class="stat-dette color-noir" data-dette="0" title="Dette technique totale, en temps estimé"></span>
     </div>
 
-    <div class="container-ligne"
-      title="Ratio de dette technique (dette technique / effort pour corriger les anomalies) exprimé en pourcentage. Plus le ratio est élevé, plus la part de dette technique est importante par rapport à l'effort de correction des anomalies.">
-      <span class="ligne-label">Ratio de dette&nbsp;:</span>
-      <span id="js-ratio-dette-technique" class="stat-projet color-noir"></span>
+    <div class="container-ligne">
+      <span class="ligne-label" title="Ratio de dette technique (dette technique / effort pour corriger les anomalies) exprimé en pourcentage. Plus le ratio est élevé, plus la part de dette technique est importante par rapport à l'effort de correction des anomalies.">Ratio de dette&nbsp;:</span>
+      <span id="js-ratio-dette-technique" class="stat-projet color-noir" title="Ratio de dette technique en pourcentage"></span>
     </div>
 
     {# REPARTITION PAR SEVERITY #}
     <h3 class="h5 claire-hand margin-top-07">Violations</h3>
     <div class="margin-top-07">
-      <div class="container-ligne open-sans"
-        title="Nombre de violations à corriger (bugs, vulnérabilités, mauvaises pratiques)">
+      <div class="container-ligne open-sans">
         <span class="ligne-gauche">
-          <span class="ligne-label">Violations&nbsp;:</span>
+          <span class="ligne-label" title="Nombre de violations à corriger (bugs, vulnérabilités, mauvaises pratiques)">Violations&nbsp;:</span>
           <button id="js-affiche-violations" aria-label="Affiche le détail des violations par sévérité.">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32"
               class="details-svg">
@@ -153,7 +152,7 @@
             </svg>
           </button>
         </span>
-        <span id="js-violations" class="stat-projet color-noir"></span>
+        <span id="js-violations" class="stat-projet color-noir" title="Nombre total de violations"></span>
       </div>
     </div>
   </div>

@@ -435,6 +435,40 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 </div>
             </div>
 
+            {# Sécurité : ZAP (DAST) #}
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                </div>
+                <div class="timeline-content">
+                    <p class="open-sans timeline-content-titre">
+                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                        <span class="show-for-sr">Section nécessitant une authentification : </span>
+                        <span aria-hidden="true">🕷️</span> Sécurité — ZAP (DAST)
+                    </p>
+                    <ul class="open-sans timeline-content-liste">
+                        <li class="timeline-content-link marqueur-circle">
+                            <a href="{{ path('zap', {}) }}"><span aria-hidden="true">📌</span> Rapport ZAP (DAST) du
+                                projet (si un scan existe) (<span aria-hidden="true">🚦</span> habilitation
+                                nécessaire).</a>
+                        </li>
+                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le
+                            bandeau clé (date du dernier scan, URL cible, répartition des alertes par niveau de
+                            risque).</li>
+                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le
+                            détail des alertes du dernier scan.</li>
+                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le
+                            graphique des alertes par catégorie OWASP Top 10 (2017/2021).</li>
+                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le
+                            graphique d'évolution du risque dans le temps.</li>
+                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le
+                            tableau d'historique des scans (20 derniers).</li>
+                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Exporter
+                            le rapport ZAP au format PDF.</li>
+                    </ul>
+                </div>
+            </div>
+
             {# Clean Code #}
             <div class="timeline-item">
                 <div class="timeline-icon">

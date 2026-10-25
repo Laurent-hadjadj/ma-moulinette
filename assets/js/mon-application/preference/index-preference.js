@@ -287,7 +287,7 @@ const version=async function(){
           ligne = `
             <tr id="ligne-version-${ n }${ m }">
               <td class="preference-compteur-tableau">${ m }</td>
-              <td id="version-${ n }${ m }" class="preference-ligne-tableau" data-index="${ parseInt(n, 10) - 1 }" data-key="${ key }">${ e }</td>
+              <td id="version-${ n }${ m }" class="preference-ligne-tableau" data-index="${ Number(n) - 1 }" data-key="${ key }">${ e }</td>
               <td id="poubelle-version-${ n }${ m }" class="js-poubelle text-center">${ poubelleSVG }</td>
             </tr>`;
           lignes = lignes + ligne;
@@ -316,7 +316,7 @@ const version=async function(){
     /** On prépare les données avant l'appel Ajax */
     const t = document.getElementById(`version-${ id[2] }`);
     const mavenKey = t.dataset.key;
-    const index = parseInt(t.dataset.index, 10);
+    const index = Number(t.dataset.index);
     const version = $(`#version-${ id[2] }`).text();
 
     const data_1 = { index, mavenKey, version };
@@ -466,7 +466,7 @@ $('#bouton-fermer-preference-projet').on('click', () => {
  */
 $('#js-switch-favori').on('click', ()=> {
   const ouinon = $('#js-switch-favori').is(':checked');
-  if (ouinon===true) {
+  if (ouinon === true) {
     /** on active l'option */
     modifierStatut(true, 'favori_projet');
   } else {
@@ -481,7 +481,7 @@ $('#js-switch-favori').on('click', ()=> {
  */
 $('#js-switch-projet').on('click', ()=> {
   const ouinon = $('#js-switch-projet').is(':checked');
-  if (ouinon===true) {
+  if (ouinon === true) {
     /** on active l'option */
     modifierStatut(true, 'suivi_projet');
   } else {
@@ -502,6 +502,21 @@ $('#js-switch-version').on('click', ()=> {
   } else {
     /** on désactive l'option */
     modifierStatut(false, 'favori_version');
+  }
+});
+
+/**
+ * Description
+ * On bascule la présentation de la page Projet (tuiles / 3 colonnes)
+ */
+$('#js-switch-presentation').on('click', ()=> {
+  const ouinon = $('#js-switch-presentation').is(':checked');
+  if (ouinon === true) {
+    /** on active l'option (présentation en tuiles) */
+    modifierStatut(true, 'presentation_projet');
+  } else {
+    /** on désactive l'option (présentation classique en 3 colonnes) */
+    modifierStatut(false, 'presentation_projet');
   }
 });
 

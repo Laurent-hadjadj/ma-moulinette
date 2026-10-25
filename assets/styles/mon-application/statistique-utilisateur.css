@@ -201,7 +201,7 @@
 /* ========= ChartJs ============ */
 /** Pour les graphiques de type bar */
 .chart-container {
-  width: 100;
+  width: 100%;
   max-width: 600px;
   margin: 20px auto;
 }

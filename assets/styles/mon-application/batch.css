@@ -11,31 +11,31 @@
  */
 
 /* Mobile */
-@media (width <= 20em) { }
+@media (width <= 20em) { /*empty bloc*/ }
 
 /* Mobile */
-@media (20.025em <= width <= 22em) { }
+@media (20.025em <= width <= 22em) { /*empty bloc*/ }
 
 /* Mobile */
-@media (22.025em <= width <= 30em) { }
+@media (22.025em <= width <= 30em) { /*empty bloc*/ }
 
 /* Mobile */
-@media (30.025em <= width <= 40em) { }
+@media (30.025em <= width <= 40em) { /*empty bloc*/ }
 
 /* tablette */
-@media (40.025em <= width <= 64em) { }
+@media (40.025em <= width <= 64em) { /*empty bloc*/ }
 
 /* desktop */
-@media (64.025em <= width <= 90em) { }
+@media (64.025em <= width <= 90em) { /*empty bloc*/ }
 
 /* desktop */
-@media (90.025em <= width <= 120em) { }
+@media (90.025em <= width <= 120em) { /*empty bloc*/ }
 
 /* desktop  4k */
-@media (120.025em <= width <= 160em) { }
+@media (120.025em <= width <= 160em) { /*empty bloc*/ }
 
 /* Media Extra-large 8k */
-@media (120.025em <= width <= 160em) { }
+@media (120.025em <= width <= 160em) { /*empty bloc*/ }
 
 /*************************          Global     *********************************/
 
@@ -87,7 +87,7 @@ tbody tr:nth-child(even) {
 
 .i-am-human-svg:hover {
   cursor: progress;
-  fill: #ed7d20;
+  fill: #ba5705;
 }
 
 /* Bouton information SVG */
@@ -105,7 +105,7 @@ tbody tr:nth-child(even) {
 /* hover sur l'icône information */
 .information-svg:hover,
 .affiche-svg:hover,
-.download-svg:hover { fill: #ed7d20;}
+.download-svg:hover { fill: #ba5705;}
 
 /* disable */
 .disable { cursor: not-allowed; }
@@ -145,7 +145,6 @@ tbody tr:nth-child(even) {
   height: 1.5em;
   font-size: 0.85em;
   line-height: 1;
-  /*margin: 0 6px;*/
   border-radius: 50%;
   font-weight: 600;
   color: #fff;
@@ -157,7 +156,7 @@ tbody tr:nth-child(even) {
 
 .bulle-init {
   background-color: #bdc3c7;
-  color: #fff;
+  color: #000;
 }
 
 /* 🟢 Worker/in_progress actif (animation douce) */
@@ -306,15 +305,9 @@ tbody tr:nth-child(even) {
 }
 
 @keyframes blink {
-  from { visibility: 100%; }
+  from { visibility: visible; }
   to { visibility: hidden; }
 }
-
-@keyframes blink {
-  from { visibility: 100%; }
-  to { visibility: hidden; }
-}
-
 
 /* ==== SECTION INFORMATIONS ==== */
 .batch-info p {

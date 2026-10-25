@@ -276,14 +276,16 @@
 /* Tablette */
 @media (40em <= width <= 64em) {
   .open-sans { font-size: 1rem; }
-  .ma-moulinette-container { margin-top: -1rem; }
+  .ma-moulinette-container {
+    margin-top: -1rem;
+    padding-bottom: 1rem;
+}
 
   .logo {
     margin-top: 5px;
     margin-left: 10px;
   }
 
-  .ma-moulinette-container { padding-bottom: 1rem; }
   .marque-entreprise {
     width: 120px;
     padding-bottom: 0.5rem;
@@ -566,6 +568,8 @@ body {
 .source-code { color: #000; }
 .code-block { margin-bottom: 0; }
 
+.cursor-help { cursor:help; }
+
 /* désactive la selection de texte sur un élément */
 .no-select {
   -webkit-touch-callout: none; /* iOS Safari */
@@ -592,8 +596,8 @@ body {
 .color-bleu { color: #00445b; }
 .color-rouge { color: #a00a14; }
 .color-vert { color: #037505; }
-.color-orange { color: #ed7d20; }
-.color-jaune { color: #eabe06; }
+.color-orange { color: #ba5705; }
+.color-jaune { color: #edbf05; }
 
 .background-color-blanc { background-color: #eee; }
 .background-color-noir { background-color: #000; }
@@ -602,8 +606,8 @@ body {
 .background-color-bleu { background-color: #00445b; }
 .background-color-rouge { background-color: #a00a14; }
 .background-color-vert { background-color: #037505; }
-.background-color-orange { background-color: #ed7d20; }
-.background-color-jaune { background-color: #eabe06; }
+.background-color-orange { background-color: #ba5705; }
+.background-color-jaune { background-color: #edbf05; }
 
 .margin-top-01 { margin-top: 0.1rem; }
 .margin-top-05 { margin-top: 0.5rem; }
@@ -901,11 +905,6 @@ body {
   box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
 }
 
-.close-button.critical:hover {
-  background-color: #450505;;
-  box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
-}
-
 .close-button.success:hover {
   background-color: #6DCE90;
   box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
@@ -1130,7 +1129,7 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
 
 .footer-bottom-links { display: flex; }
 .footer-bottom-links a { color: #fefefe; }
-.footer-bottom-links a:hover { color: #ed7d20; }
+.footer-bottom-links a:hover { color: #ba5705; }
 
 /* Gestion des crédits */
 
@@ -1180,10 +1179,10 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
   color: #fff;
 }
 
-.note-a { background-color: #0a0; }    /* Note de couleur A */
-.note-b { background-color: #b0d513; } /* Note de couleur B */
-.note-c { background-color: #eabe06; } /* Note de couleur C */
-.note-d { background-color: #ed7d20; } /* Note de couleur D */
+.note-a { background-color: #077e07; } /* Note de couleur A */
+.note-b { background-color: #a3c50b; } /* Note de couleur B */
+.note-c { background-color: #edbf05; } /* Note de couleur C */
+.note-d { background-color: #ba5705; } /* Note de couleur D */
 .note-e { background-color: #d4333f; } /* Note de couleur E */
 .note-z { background-color: #00445b; } /* Note de couleur Z */
 
@@ -1200,8 +1199,8 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
   padding-right: 12px;
 }
 
-.qg-ok    { background-color: #0a0; }    /* Quality Gate OK */
-.qg-warn  { background-color: #ed7d20; } /* Quality Gate WARN */
+.qg-ok    { background-color: #077e07; } /* Quality Gate OK */
+.qg-warn  { background-color: #ba5705; } /* Quality Gate WARN */
 .qg-error { background-color: #d4333f; } /* Quality Gate ERROR */
 
 .couleur-vert { color: #048404 !important; }
@@ -1375,4 +1374,31 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
 .data-list .lead strong {
 		font-weight: bold;
 		color: #333;
+}
+
+/* =============== SPINER ==================== */
+/* Spinner affiché pendant le chargement des avatars */
+.avatar-loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: avatar-spinner-rotation 0.7s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes avatar-spinner-rotation {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .avatar-loading-spinner {
+        animation: none;
+        border-right-color: currentColor;
+    }
 }

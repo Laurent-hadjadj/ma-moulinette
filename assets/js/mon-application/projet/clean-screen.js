@@ -121,14 +121,25 @@
   /** Complexité */
   $('#js-complexity-ratio').text('');
   $('#js-cognitive-complexity-ratio').text('');
+  $('#js-complexity').text('');
+  $('#js-cognitive-complexity').text('');
   $('#js-note-complexity').text('');
   $('#js-note-cognitive-complexity').text('');
 
   $('#js-coverage').text('').removeAttr('data-coverage');
+  $('#js-coverage-bar').css('--percent', 0).addClass('hide');
+  $('#js-line-coverage').text('');
+  $('#js-branch-coverage').text('');
+  $('#js-uncovered-conditions').text('');
+  $('#js-conditions-to-cover').text('');
   $('#js-ratio-dette-technique').text('')
     .removeClass('couleur-vert couleur-orange couleur-rouge couleur-bordeaux')
     .removeAttr('data-sqale-debt-ratio');
   $('#js-duplicated-lines-density').text('').removeAttr('data-duplicated-lines-density');
+  $('#js-duplication-bar').css('--percent', 0).addClass('hide');
+  $('#js-duplicated-lines').text('');
+  $('#js-duplicated-blocks').text('');
+  $('#js-duplicated-files').text('');
   $('#js-tests').text('').removeAttr('data-tests');
   $('#js-violations').text('').removeAttr('data-violations');
   /* MODIF 2026-10-06 : data-scope-main/test (répartition MAIN/TEST globale) +
@@ -205,7 +216,11 @@
   $('#js-test-failures').text('');
   $('#js-skipped-tests').text('');
   $('#js-test-success-density').text('');
+  $('#js-open-issues').text('');
+  $('#js-confirmed-issues').text('');
+  $('#js-reopened-issues').text('');
   $('#js-accepted-issues').text('');
+  $('#js-high-impact-accepted-issues').text('');
   $('#js-false-positive-issues').text('');
 
   /** Menaces potentielles (hotspots) — le conteneur est vidé/reconstruit par
