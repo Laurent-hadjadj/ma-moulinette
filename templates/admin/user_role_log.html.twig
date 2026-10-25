@@ -1,7 +1,7 @@
 {% set title = "Journal des rôles" %}
 {% set description = "Consultation du journal des changements de rôle" %}
 {% set type_content = "Application Ma-Moulinette, journal des changements de rôle." %}
-{% set bottom="footer-fixed footer-fixed-small" %}
+{% set bottom = "footer-fixed footer-fixed-small" %}
 <!DOCTYPE html>
 <!--
 .__  __             __  __             _ _            _   _
@@ -36,7 +36,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {{ include('_message.html.twig') }}
 
         <header class="grid-container margin-top-2">
-            {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
             <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
                 <ol class="claire-hand breadcrumbs">
                     <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>

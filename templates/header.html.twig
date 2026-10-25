@@ -81,8 +81,11 @@
     {% if is_granted('ROLE_UTILISATEUR') %}
     <div id="container-information-user" class="cell container-identifiant">
       {# Déclencheur de la modale "Mes informations personnelles" (cf. information.utilisateur.html.twig).#}
-      <button id="bouton-ouvrir-information-utilisateur" type="button" class="identifiant-titre color-bleu"
-        aria-label="Afficher mes informations personnelles"><span aria-hidden="true">⚙️</span>{{ app.user.courriel}}
+      <button id="bouton-ouvrir-information-utilisateur"
+              type="button"
+              class="identifiant-titre color-bleu"
+              aria-label="Afficher mes informations personnelles">
+              <span aria-hidden="true">⚙️</span>{{ app.user.courriel}}
       </button>
     </div>
     {% endif %}

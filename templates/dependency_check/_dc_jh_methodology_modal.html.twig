@@ -4,11 +4,15 @@ MODIF 2026-05-12 : modale partagée par la page executive (Section 9 Plan de rem
 Attendu en contexte : variable `jh_params` (array<string, mixed>) issue de
 DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonus,getTestEffortByFamily}().
 #}
-<dialog id="dc-jh-methodology-modal" class="reveal large" data-close-on-click="true" data-reveal data-overlay="true"
-    aria-modal="true" aria-labelledby="titre-ouvrir-methodology-jh" aria-describedby="desc-ouvrir-methodology-jh">
+<dialog id="dc-jh-methodology-modal"
+        class="reveal large"
+        data-close-on-click="true"
+        data-reveal
+        data-overlay="true"
+        aria-modal="true"
+        aria-labelledby="titre-ouvrir-methodology-jh" aria-describedby="desc-ouvrir-methodology-jh">
     <h2 id="titre-ouvrir-methodology-jh" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
-    <h3 id="desc-ouvrir-methodology-jh" class="h4 claire-hand"><span aria-hidden="true">🎚️</span>Méthode de calcul du
-        JH par dépendance</h3>
+    <h3 id="desc-ouvrir-methodology-jh" class="h4 claire-hand"><span aria-hidden="true">🎚️</span>Méthode de calcul du JH par dépendance</h3>
     <span class="show-for-sr">
         Cette page présente la méthodologie de calcul du Jour/Homme par dépendance.
     </span>
@@ -22,8 +26,7 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
     <h4 class="claire-hand">Formule</h4>
     <div class="callout alert-callout-border info" style="padding: 0.6rem;">
         <p class="open-sans" style="margin-bottom: 0;">
-            <code><strong>JH<sub>dep</sub> = (effort_tests_famille + overhead_upgrade) × marge_sécurité +
-                    bonus_sévérité</strong></code>
+            <code><strong>JH<sub>dep</sub> = (effort_tests_famille + overhead_upgrade) × marge_sécurité + bonus_sévérité</strong></code>
         </p>
     </div>
 
@@ -32,13 +35,11 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
                 j</strong> : effort fixe (bump version + recompile + préparation release).</li>
         <li><strong>marge_sécurité</strong> = <strong>×{{ jh_params.safety_margin|number_format(1, ',', ' ') }}</strong>
             : aléas non prévus ({{ ((jh_params.safety_margin - 1) * 100)|round }} %).</li>
-        <li><strong>effort_tests_famille</strong> : effort de tests de non-régression et d'acceptance, dépend de la
-            famille de la dépendance (cf. table ci-dessous).</li>
-        <li><strong>bonus_sévérité</strong> : escalade de validation sécurité selon la sévérité max CVE de la
-            dépendance.</li>
+        <li><strong>effort_tests_famille</strong> : effort de tests de non-régression et d'acceptance, dépend de la famille de la dépendance (cf. table ci-dessous).</li>
+        <li><strong>bonus_sévérité</strong> : escalade de validation sécurité selon la sévérité max CVE de la dépendance.</li>
     </ul>
 
-    <h4 class="claire-hand">Effort tests par famille technologique</h4>
+    <h4 class="h4 claire-hand">Effort tests par famille technologique</h4>
     <table class="open-sans">
         <thead>
             <tr>
@@ -56,7 +57,7 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
         </tbody>
     </table>
 
-    <h4 class="claire-hand">Bonus sécurité par sévérité max</h4>
+    <h4 class="h4 claire-hand">Bonus sécurité par sévérité max</h4>
     <table class="open-sans">
         <thead>
             <tr>
@@ -88,7 +89,7 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
         </tbody>
     </table>
 
-    <h4 class="claire-hand">Exemples calculés (avec les valeurs ci-dessus)</h4>
+    <h4 class="h4 claire-hand">Exemples calculés (avec les valeurs ci-dessus)</h4>
     <table class="open-sans">
         <thead>
             <tr>
@@ -138,7 +139,7 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
         </tbody>
     </table>
 
-    <h4 class="claire-hand">Ajuster les coefficients</h4>
+    <h4 class="h4 claire-hand">Ajuster les coefficients</h4>
     <p class="open-sans text-muted">
         <small>
             Toutes les valeurs ci-dessus sont définies dans
@@ -151,8 +152,10 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
 
     <footer class="grid-x grid-margin-x align-right margin-top-2">
         <div class="cell shrink">
-            <button id="bouton-fermer-methodology-jh" class="button open-sans focus-dark-light" type="button"
-                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+            <button id="bouton-fermer-methodology-jh"
+                    class="button open-sans focus-dark-light"
+                    type="button"
+                    aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
             </button>
         </div>
     </footer>
