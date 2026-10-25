@@ -1,10 +1,10 @@
-ARG php_version=8.3.6-fpm-bullseye
+ARG php_version=8.5.12-fpm-trixie
 
 FROM php:${php_version}
 
 LABEL maintainer "laurent HADJADJ <laurent_h@me.com>"
 LABEL environnement "prd"
-LABEL version "php-8.3.6"
+LABEL version "php-8.5.12"
 
 ENV GIT_USER="Laurent HADJADJ"
 ENV GIT_COURRIEL="laurent_h@me.com"
@@ -58,6 +58,8 @@ RUN sed -i -r "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" "$PHP_INI_DIR/php.ini
     && sed -i -r "s/;realpath_cache_ttl = 120/realpath_cache_ttl = 600/" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/;session.cookie_secure =/session.cookie_secure = 1/" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/;session.cookie_httponly/session.cookie_httponly = 1/" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/;session.upload_progress.enabled = On/session.upload_progress.enabled = Off/" \
+                "$PHP_INI_DIR/php.ini" \
     # Setup FPM global config
     && sed -i '0,/^\[www\].*/s/^\[www\].*/emergency_restart_threshold = 10\n&/' "/usr/local/etc/php-fpm.d/docker.conf" \
     && sed -i '0,/^\[www\].*/s/^\[www\].*/emergency_restart_interval = 1m\n&/' "/usr/local/etc/php-fpm.d/docker.conf" \
@@ -67,7 +69,8 @@ RUN sed -i -r "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" "$PHP_INI_DIR/php.ini
     && sed -i -r "s/pm.start_servers = 2/pm.start_servers = 18/g" "/usr/local/etc/php-fpm.d/www.conf" \
     && sed -i -r "s/pm.min_spare_servers = 1/pm.min_spare_servers = 12/g" "/usr/local/etc/php-fpm.d/www.conf" \
     && sed -i -r "s/pm.max_spare_servers = 3/pm.max_spare_servers = 24/g" "/usr/local/etc/php-fpm.d/www.conf" \
-    && sed -i -r "s/;pm.process_idle_timeout = 10s/pm.process_idle_timeout = 10s/g" "/usr/local/etc/php-fpm.d/www.conf" \
+    && sed -i -r "s/;pm.process_idle_timeout = 10s/pm.process_idle_timeout = 10s/g" \
+                "/usr/local/etc/php-fpm.d/www.conf" \
     && sed -i -r "s/;pm.max_requests = 500/pm.max_requests = 500/g" "/usr/local/etc/php-fpm.d/www.conf" \
     && sed -i -r "s/;pm.status_path/pm.status_path/g" "/usr/local/etc/php-fpm.d/www.conf" \
     # Install symfony-cli & composer (facultatif)
