@@ -176,6 +176,7 @@
 #bouton-ouvrir-rapport-zap,
 #bouton-fermer-comparaison-owasp,
 #bouton-ouvrir-details,
+#bouton-fermer-details-owasp,
 #bouton-ouvrir-rapport-dependency-check,
 #bouton-retour-precedent {
   min-width: 9rem;
@@ -204,6 +205,7 @@
 #bouton-ouvrir-comparaison-owasp:hover,
 #bouton-fermer-comparaison-owasp:hover,
 #bouton-ouvrir-details:hover,
+#bouton-fermer-details-owasp:hover,
 #bouton-ouvrir-rapport-dependency-check:hover,
 #bouton-retour-precedent:hover { background-color: #006182; }
 
