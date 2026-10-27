@@ -2,12 +2,13 @@
 ####################################################
 ##                                                ##
 ##         Mise à jour de la base de données      ##
-##               V1.1.0 - 25/10/2026              ##
+##               V1.2.0 - 26/10/2026              ##
 ##                                                ##
 ####################################################*/
 
 -- Laurent HADJADJ, 21/10/2026 - 1.0.0 version initiale ;
 -- Laurent HADJADJ, 25/10/2026 - 1.1.0 ajout de la version 2.3.0 ;
+-- Laurent HADJADJ, 26/10/2026 - 1.2.0 ajout de la version 2.4.0 ;
 
 \c ma_moulinette postgres;
 
@@ -35,7 +36,8 @@ BEGIN
     FOR record IN (
         SELECT * FROM (VALUES
             ('2.2.0', '2026-10-18'),
-            ('2.3.0', '2026-10-25')
+            ('2.3.0', '2026-10-25'),
+            ('2.4.0', '2026-10-27')
         ) AS t(version, date_str)
     ) LOOP
         -- Vérifier si les données existent déjà
