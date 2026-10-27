@@ -1,6 +1,5 @@
 {% set title = 'Inscription' %}
-{% set description = 'Ma-Moulinette - Inscription' %}
-{% set type_content = "Application Ma-Moulinette, formulaire d'inscription." %}
+{% set description = app_name ~ ' - Inscription' %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -43,7 +42,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </header>
 
         <header id="main-content" class="grid-container" aria-labelledby="titre-principal">
-            <h2 id="titre-principal" class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette —
+            <h2 id="titre-principal" class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur {{ app_name }} —
                 Formulaire d'inscription</h2>
         </header>
 

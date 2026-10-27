@@ -1,5 +1,5 @@
 {% set title = 'Plan du site' %}
-{% set description = 'Ma Moulinette - plan du site.' %}
+{% set description = app_name ~ ' - plan du site.' %}
 {% set bottom = "footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -93,11 +93,11 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         </p>
                         <ul class="open-sans timeline-content-liste">
                             <li class="timeline-content-link marqueur-circle">
-                                <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> Ma-Moulinette
+                                <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> {{ app_name }}
                                     (accueil).</a>
                             </li>
                             <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le
-                                logo Ma-Moulinette.</li>
+                                logo {{ app_name }}.</li>
                             <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la
                                 version de l'application.</li>
                             <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le
@@ -119,7 +119,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         </p>
                         <ul class="open-sans timeline-content-liste">
                             <li class="timeline-content-link marqueur-circle">
-                                <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> Ma-Moulinette
+                                <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> {{ app_name }}
                                     (accueil).</a>
                             </li>
                             <li class="timeline-content-link marqueur-circle">

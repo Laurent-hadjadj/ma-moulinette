@@ -1,6 +1,5 @@
-{% set title = "Statistiques — Ma-Moulinette" %}
-{% set description = "Ma Moulinette - Statistiques fonctionnelles SonarQube" %}
-{% set type_content = "Application Ma-Moulinette, statistiques fonctionnelles SonarQube." %}
+{% set title = "Statistiques — " ~ app_name %}
+{% set description = app_name ~ ' - Statistiques fonctionnelles SonarQube' %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -51,7 +50,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             <ol class="claire-hand breadcrumbs">
                 <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
                 <li><a href="{{ path('statistiques', {}) }}">Statistiques</a></li>
-                <li aria-current="page">Ma-Moulinette</li>
+                <li aria-current="page">{{ app_name }}</li>
             </ol>
         </nav>
     </header>

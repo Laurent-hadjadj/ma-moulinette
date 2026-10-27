@@ -18,13 +18,13 @@
         <img class="show-for-medium marque-entreprise" src="{{ asset('images/' ~logo_entreprise) }}"
           alt="Logo de {{ marque_entreprise_long ?? 'l\'entreprise' }}">
         <img class="marque-mm" src="{{ asset('images/logo-mm-300x150.min.svg') }}"
-          alt="Logo Ma-Moulinette v{{ version }}">
+          alt="Logo {{ app_name }} v{{ version }}">
       </div>
 
       <div class="ma-moulinette-container">
         <h1 class="claire-hand">
           <a tabindex="0" class="ma-moulinette" href="{{ path('accueil', {}) }}" rel="next"
-            title="Retour vers la page principale">Ma-Moulinette</a>
+            title="Retour vers la page principale">{{ app_name }}</a>
         </h1>
         <h2 class="show-for-small-only claire-hand version" aria-label="Version">
           V.

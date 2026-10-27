@@ -1,5 +1,5 @@
 {% set title = 'RGPD' %}
-{% set description = 'Ma Moulinette - données personnelles.' %}
+{% set description = app_name ~ ' - données personnelles.' %}
 {% set bottom = "footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -44,7 +44,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             <h2 class="h2 claire-hand">Informations sur vos données personnelles</h2>
             <hr>
             <p class="open-sans text-justify">
-                Ma-Moulinette est l'outil qui collecte, historise et restitue les indicateurs de qualité et de sécurité logicielle (SonarQube, OWASP Dependency-Check, ZAP, Actuator) d'un portefeuille de projets, avec traçabilité des actions d'administration.
+                {{ app_name }} est l'outil qui collecte, historise et restitue les indicateurs de qualité et de sécurité logicielle (SonarQube, OWASP Dependency-Check, ZAP, Actuator) d'un portefeuille de projets, avec traçabilité des actions d'administration.
             </p>
 
             <section class="cell">
@@ -63,7 +63,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 <h3 class="h4 claire-hand">Personnes concernées et données traitées</h3>
                 <ul class="open-sans">
                     <li><strong>Les utilisateurs de l'application</strong> : identité (nom, prénom, courriel), mot de passe (haché, jamais en clair, ou authentification déléguée à l'annuaire de l'organisme sans aucun stockage), rôles et groupe fonctionnel, préférences d'affichage.</li>
-                    <li><strong>Les auteurs d'analyses SonarQube</strong> : leur identifiant de connexion SonarQube apparaît dans l'historique d'activité, qu'ils soient ou non eux-mêmes utilisateurs de Ma-Moulinette.</li>
+                    <li><strong>Les auteurs d'analyses SonarQube</strong> : leur identifiant de connexion SonarQube apparaît dans l'historique d'activité, qu'ils soient ou non eux-mêmes utilisateurs de {{ app_name }}.</li>
                     <li><strong>Tout visiteur des pages de connexion</strong> : informations techniques de navigation (type de navigateur, système, détection de robot), à des fins statistiques uniquement — l'adresse IP n'est jamais conservée en clair, seule une empreinte (hachage) l'est.</li>
                 </ul>
                 <p class="open-sans text-justify">
@@ -119,7 +119,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             <section class="cell">
                 <h3 class="h4 claire-hand">Cookies utilisés sur {{urlSite}}</h3>
                 <table>
-                    <caption class="h5 open-sans">Cookies déposés par Ma-Moulinette</caption>
+                    <caption class="h5 open-sans">Cookies déposés par {{ app_name }}</caption>
                     <thead>
                         <tr>
                             <th scope="col" id="data1">Nom technique</th>

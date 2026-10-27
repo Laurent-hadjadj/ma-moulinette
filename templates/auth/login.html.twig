@@ -1,6 +1,5 @@
 {% set title = 'Authentification' %}
-{% set description = 'Ma-Moulinette - Authentification' %}
-{% set type_content = "Application Ma-Moulinette, l'authentification sécurisée." %}
+{% set description = app_name ~ ' - Authentification' %}
 {% set bottom = "footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -43,7 +42,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </header>
 
         <main id="main-content" class="grid-container main-container">
-            <h2 class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette</h2>
+            <h2 class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur {{ app_name }}</h2>
             <div class="grid-x">
                 <div class="small-12 medium-6 large-6 cell">
                     <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>

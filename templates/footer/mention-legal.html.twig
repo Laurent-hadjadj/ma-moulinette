@@ -1,5 +1,5 @@
 {% set title = 'Mentions Légales' %}
-{% set description = 'Ma Moulinette - mention légales.' %}
+{% set description = app_name ~ ' - mention légales.' %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -47,10 +47,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             <section id="section-editeur" class="cell">
                 <h3 class="h4 claire-hand">Éditeur</h3>
                 <p id="editeur" class="open-sans text-justify">Ce site est édité par
-                    {{ editeur| default("Ma Moulinette, l'équipe en charge des développements de l'application Ma-Moulinette.") }}.
+                    {{ editeur| default(app_name ~ ", l'équipe en charge des développements de l'application " ~ app_name ~ ".") }}.
                 </p>
                 <p id="adresse" class="open-sans">
-                    {{ adresse | default("Ma-moulinette, <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y")|raw }}
+                    {{ adresse | default(app_name ~ ', <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y')|raw }}
                 </p>
                 <div id="bloc-siret-siren" class="cell" aria-description="Section SIRET et SIREN">
                     {% if siret is same as(true) %}
@@ -79,7 +79,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 <p class="open-sans text-justify">Ce site est développé selon un principe d’amélioration continue.</p>
                 <p class="open-sans text-justify">
                     Le suivi éditorial et graphique est assuré au quotidien par l'équipe de
-                    conception de Ma-Moulinette. L'ensemble des technologies utilisé est respectueuse des bonnes pratiques formalisées par le W3C et le WCAG.</p>
+                    conception de {{ app_name }}. L'ensemble des technologies utilisé est respectueuse des bonnes pratiques formalisées par le W3C et le WCAG.</p>
                 <br>
             </section>
 
@@ -101,7 +101,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 <div class="callout alert-callout-border primary">
                     <p class="open-sans inline-block">
                         <a class="source-link" href="https://github.com/Laurent-hadjadj/ma-moulinette"
-                            rel="external">Ma-Moulinette</a>
+                            rel="external">{{ app_name }}</a>
                         de
                         <span>Laurent HADJADJ</span>
                         est sous licence
@@ -133,7 +133,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             <section id="section-hebergement" class="cell">
                 <h3 class="h3 claire-hand">Hébergement</h3>
                 <p id="hebergement" class="open-sans">
-                    {{ hebergement | default("Ma-moulinette, <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y")|raw }}
+                    {{ hebergement | default(app_name ~ ', <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y')|raw }}
                 </p>
 
             </section>

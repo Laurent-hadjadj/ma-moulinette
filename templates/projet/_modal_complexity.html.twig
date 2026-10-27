@@ -121,11 +121,11 @@
             d'une refactorisation pour améliorer la lisibilité, la maintenabilité et la qualité globale du code.
         </p>
 
-        <h4 class="h4 claire-hand"><span aria-hidden="true">🧮</span>Comment Ma-Moulinette calcule le ratio et la note
+        <h4 class="h4 claire-hand"><span aria-hidden="true">🧮</span>Comment {{ app_name }} calcule le ratio et la note
             affichés</h4>
         <p class="open-sans">
             SonarQube expose la complexité cyclomatique et cognitive sous forme de <strong>compteurs bruts</strong>
-            (nombre total de points de décision pour l'ensemble du projet). Ma-Moulinette calcule ensuite, pour chacun
+            (nombre total de points de décision pour l'ensemble du projet). {{ app_name }} calcule ensuite, pour chacun
             des deux compteurs, un <strong>ratio</strong> en divisant le nombre de lignes de code (<code>ncloc</code>)
             par ce compteur : <code>ratio = ncloc ÷ complexité</code>. Un ratio élevé signifie donc plus de lignes de
             code pour un même nombre de points de complexité ; un ratio faible signifie une concentration plus forte de
