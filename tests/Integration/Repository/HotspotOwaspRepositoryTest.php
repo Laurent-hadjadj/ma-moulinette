@@ -120,7 +120,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
-        $map = ['maven_key' => self::$mavenKey, 'menace' => 'a1', 'probability' => 'MEDIUM'];
+        $map = ['maven_key' => self::$mavenKey, 'menace' => 'a1', 'referential_owasp' => 2021, 'probability' => 'MEDIUM'];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->countHotspotOwaspMenaceByStatus($map);

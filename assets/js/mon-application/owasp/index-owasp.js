@@ -41,12 +41,10 @@ import { modalSafe } from '../../common/safeModal.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
-import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import {dateOptions, content_type, couleur, note, espace, rien,
-  http_200, http_400, http_406,
-  listeOwasp2017, listeOwasp2021, listeOwasp2025,
+import {dateOptions, content_type, couleur, note, espace, rien, http_400, http_406, listeOwasp2017, listeOwasp2021, listeOwasp2025,
   un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze,
   vingtNeuf, trente, soixanteNeuf, soixanteDix, cent} from '../../common/constante.js';
 
@@ -177,6 +175,9 @@ const videLeTableau = function() {
 * Created at: 19/12/2022, 21:32:27 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
+/* MODIF 26/10/2026 : cache de la répartition par sévérité des violations par catégorie (a1..a10), reconstruit à chaque remplissageOwaspInfo() (donc à chaque changement de référentiel) — voir son utilisation dans remplissageDetailsHotspotOwasp() plus bas. */
+const owaspSeverityByCategory = {};
+
 const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
 
   /** si la clé maven n'est pas défini alors on sort */
@@ -210,6 +211,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     return;
   }
 
+  /* MODIF 26/10/2026 : met en cache la répartition par sévérité des
+   * VIOLATIONS de chaque catégorie (a1Blocker..a10Minor, déjà présents * dans cette même réponse, jusqu'ici jamais lus) — réutilisé par
+   * remplissageDetailsHotspotOwasp() pour les afficher dans la modale
+   * "Détail", qui ne montrait jusqu'ici que la sévérité des hotspots. */
+  for (let i = 1; i <= 10; i++) {
+    owaspSeverityByCategory[`a${i}`] = {
+      bloquant: r[`a${i}Blocker`],
+      critique: r[`a${i}Critical`],
+      majeur: r[`a${i}Major`],
+      mineur: r[`a${i}Minor`],
+    };
+  }
+
   /** On affiche la version et la date du projet dans SonarQube */
   const date_version = new Intl.DateTimeFormat('default', dateOptions).format(new Date(r.date_version));
   $('#js-application-version').html(`V${r.version}, (${date_version})`);
@@ -218,7 +232,12 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
    *  MODIF 2026-07-18 : ajout de la source (facet = classification officielle
    *  SonarQube, tag = secours par tag owasp-aXX quand la facette ne renvoie
    *  rien) — cf. owasp.md. */
-  const sourceLabel = r.source === 'tag' ? 'OWASP (tag)' : 'OWASP (facet)';
+  /* MODIF 26/10/2026 : 3e valeur possible 'mixed' — certaines catégories
+   * viennent de la facette officielle SonarQube, d'autres du secours par tag
+   * owasp-aXX (cf. BatchCollecteOwaspController::prepareOwaspData). */
+  let sourceLabel = 'OWASP (facet)';
+  if (r.source === 'tag') { sourceLabel = 'OWASP (tag)'; }
+  if (r.source === 'mixed') { sourceLabel = 'OWASP (mixte facet+tag)'; }
   $('#owasp-version').html(`Référentiel OWASP Actuel : <span class="lead color-noir">${r.referential_owasp}</span> — <span class="lead color-noir">${sourceLabel}</span>`);
 
   /* On génère l'histogramme avec les menaces OWASP */
@@ -872,7 +891,12 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
         injectionHotspotDetails(monNumber, serveurURL, c, detail.rule_key, detail.severity, detail.file_path, detail.line, detail.message, detail.status);
       }
 
-    /** Met à jour la répartition par module */
+    /* Met à jour la répartition par module — MODIF 26/10/2026 : cette
+     * répartition (Frontend/Backend/Autres, blocs #frontend/#backend/#autre)
+     * porte uniquement sur les HOTSPOTS (r.details.menaces, endpoint
+     * /api/secure/peinture/owasp/hotspot/details), jamais sur les violations
+     * OWASP (a1..a10) — 0 partout ici est donc correct dès que le projet n'a
+     * aucun hotspot TO_REVIEW, même avec de vraies violations par ailleurs. */
     totalABC = Number(frontend + backend + autre);
     const moduleVert = 'note-a';
     const moduleOrange = 'note-d';
@@ -960,7 +984,12 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
     return;
   }
 
-  const data = { maven_key, menace };
+  /* MODIF 26/10/2026 : BUG CORRIGÉ — referential_owasp n'était jamais envoyé
+   * au backend : countHotspotOwaspMenaceByStatus()
+   * sommait silencieusement 2017 ET 2021, donnant le même résultat quel que
+   * soit l'onglet sélectionné. */
+  const referentialOwasp = sessionStorage.getItem('ma_moulinette_referential_owasp');
+  const data = { maven_key, menace, referential_owasp: referentialOwasp };
   const options = {
     url: `${serveur()}/api/secure/peinture/owasp/hotspot/severity`,
     type: 'POST',
@@ -981,9 +1010,9 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
   }
 
     /** on affiche le titre en fonction du référentiel */
-    const x = sessionStorage.getItem('ma_moulinette_referential_owasp');
+    const x = referentialOwasp;
 
-    if (x === undefined || x == '') { return; }
+    if (x === undefined || x == null || x == '') { return; }
 
     if (x === "2017") {
       $('.details-titre').html(listeOwasp2017[titre]);
@@ -998,6 +1027,15 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
     $('#detail-haut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high));
     $('#detail-moyen').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium));
     $('#detail-faible').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
+
+    /* MODIF 26/10/2026 : répartition par sévérité des VIOLATIONS de cette
+     * catégorie, déjà en cache depuis le dernier remplissageOwaspInfo(). */
+    const violationSeverity = owaspSeverityByCategory[menace] ?? { bloquant: 0, critique: 0, majeur: 0, mineur: 0 };
+    const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(n ?? 0);
+    $('#detail-violation-bloquant').html(fmt(violationSeverity.bloquant));
+    $('#detail-violation-critique').html(fmt(violationSeverity.critique));
+    $('#detail-violation-majeur').html(fmt(violationSeverity.majeur));
+    $('#detail-violation-mineur').html(fmt(violationSeverity.mineur));
 };
 
 /**
@@ -1169,13 +1207,17 @@ const dessineMoiUneBarre = function (referential, data){
             },
           tooltip: {
               callbacks: {
+                  // MODIF 26/10/2026 : context.parsed est l'objet {x, y} du point
+                  // (format Chart.js pour un bar/line chart), pas directement la
+                  // valeur — concaténer l'objet entier affichait "[object Object]%"
+                  // au lieu du nombre.
                   label: function(context) {
                       let label = context.label || '';
                       if (label) {
                           label += ': ';
                       }
-                      if (context.parsed !== null) {
-                          label += context.parsed + '%';
+                      if (context.parsed.y !== null) {
+                          label += context.parsed.y + '%';
                       }
                       return label;
                   }
@@ -1265,38 +1307,42 @@ $('#bouton-ouvrir-rapport-owasp').on('click', () => {
   window.open(`${serveur()}/owasp/rapport/pdf?${params.toString()}`, '_blank');
 });
 
-$('.js-details').on('click', function () {
+/* MODIF 26/10/2026 : BUG CORRIGÉ — remplissageDetailsHotspotOwasp() est async
+ * (elle attend une réponse AJAX avant de mettre à jour le titre et les
+ * compteurs HIGH/MEDIUM/LOW), mais la modale s'ouvrait AVANT la fin de cet
+ * appel : elle affichait donc le contenu laissé par le clic précédent. Gestionnaire passé en async + attente du remplissage avant d'ouvrir la modale. */
+$('.js-details').on('click', async function () {
   const id = $(this).attr('id').split('-');
   const k_key=sessionStorage.getItem('ma_moulinette_projet');
   if (id[1] === 'a1') {
-    remplissageDetailsHotspotOwasp(k_key, 'a1', un);
+    await remplissageDetailsHotspotOwasp(k_key, 'a1', un);
   }
   if (id[1] === 'a2') {
-    remplissageDetailsHotspotOwasp(k_key, 'a2', deux);
+    await remplissageDetailsHotspotOwasp(k_key, 'a2', deux);
   }
   if (id[1] === 'a3') {
-    remplissageDetailsHotspotOwasp(k_key, 'a3', trois);
+    await remplissageDetailsHotspotOwasp(k_key, 'a3', trois);
   }
   if (id[1] === 'a4') {
-    remplissageDetailsHotspotOwasp(k_key, 'a4', quatre);
+    await remplissageDetailsHotspotOwasp(k_key, 'a4', quatre);
   }
   if (id[1] === 'a5') {
-    remplissageDetailsHotspotOwasp(k_key, 'a5', cinq);
+    await remplissageDetailsHotspotOwasp(k_key, 'a5', cinq);
   }
   if (id[1] === 'a6') {
-    remplissageDetailsHotspotOwasp(k_key, 'a6', six);
+    await remplissageDetailsHotspotOwasp(k_key, 'a6', six);
   }
   if (id[1] === 'a7') {
-    remplissageDetailsHotspotOwasp(k_key, 'a7', sept);
+    await remplissageDetailsHotspotOwasp(k_key, 'a7', sept);
   }
   if (id[1] === 'a8') {
-    remplissageDetailsHotspotOwasp(k_key, 'a8',huit);
+    await remplissageDetailsHotspotOwasp(k_key, 'a8',huit);
   }
   if (id[1] === 'a9') {
-    remplissageDetailsHotspotOwasp(k_key, 'a9', neuf);
+    await remplissageDetailsHotspotOwasp(k_key, 'a9', neuf);
   }
   if (id[1] === 'a10') {
-    remplissageDetailsHotspotOwasp(k_key, 'a10', dix);
+    await remplissageDetailsHotspotOwasp(k_key, 'a10', dix);
   }
   modalSafe.open('#details');
 });

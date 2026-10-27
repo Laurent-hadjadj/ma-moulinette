@@ -217,7 +217,7 @@ class HotspotOwaspRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => self::$mavenKey, 'menace' => 'a1', 'probability' => 'MEDIUM'];
+        $map = ['maven_key' => self::$mavenKey, 'menace' => 'a1', 'referential_owasp' => 2021, 'probability' => 'MEDIUM'];
         $result = $repo->countHotspotOwaspMenaceByStatus($map);
 
         // 9) Vérification

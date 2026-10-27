@@ -366,6 +366,18 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $this->assertJsonStatus($response, 400, 'error');
     }
 
+    // MODIF 26/10/2026 : referential_owasp est désormais requis (bug corrigé —
+    // voir testPeintureOwaspSeverityPropagatesReferentialOwaspToQuery).
+    public function testPeintureOwaspSeverityReturns400WhenReferentialOwaspMissing(): void
+    {
+        $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'menace' => 'a1', // pas de 'referential_owasp'
+        ]));
+
+        $this->assertJsonStatus($response, 400, 'error');
+    }
+
     public function testPeintureOwaspSeverityReturnsAllThreeProbabilityBuckets(): void
     {
         $this->authorizeMavenKey();
@@ -382,12 +394,33 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $payload = $this->decode($this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ])));
 
         $this->assertSame(200, $payload['code']);
         $this->assertSame(4, $payload['high']);
         $this->assertSame(2, $payload['medium']);
         $this->assertSame(1, $payload['low']);
+    }
+
+    // MODIF 26/10/2026 : BUG CORRIGÉ — referential_owasp n'était jamais transmis
+    // à countHotspotOwaspMenaceByStatus(), qui sommait silencieusement 2017 et
+    // 2021. Vérifie qu'il est bien propagé jusqu'à la requête.
+    public function testPeintureOwaspSeverityPropagatesReferentialOwaspToQuery(): void
+    {
+        $this->authorizeMavenKey();
+        $this->hotspotOwaspRepo->expects($this->exactly(3))
+            ->method('countHotspotOwaspMenaceByStatus')
+            ->with($this->callback(fn (array $map) => $map['referential_owasp'] === 2021))
+            ->willReturn(['code' => 200, 'nombre' => ['total' => 0]]);
+
+        $payload = $this->decode($this->controller->peintureOwaspSeverity($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'menace' => 'a6',
+            'referential_owasp' => 2021,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
     }
 
     public function testPeintureOwaspSeverityPropagatesErrorFromHighQuery(): void
@@ -400,6 +433,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 500, 'error');
@@ -418,6 +452,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 500);
@@ -436,6 +471,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 500);
@@ -596,6 +632,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 406, 'warning');
