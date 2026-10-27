@@ -23,6 +23,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 /**
  * MODIF 2026-10-13 : test unit du ZapIngester, sur le gabarit
@@ -68,7 +70,12 @@ class ZapIngesterTest extends TestCase
             $this->persisted[] = $entity;
         });
 
-        $this->ingester = new ZapIngester($this->em, $this->ruleRepo, $this->scanRepo, $this->logger);
+        // MODIF 26/10/2026 : vrai sanitizer (même allow-list que
+        // config/packages/html_sanitizer.yaml, service app.zap_rule_text) —
+        // pas un mock, pour exercer la vraie logique de filtrage HTML.
+        $sanitizer = new HtmlSanitizer((new HtmlSanitizerConfig())->allowElement('p'));
+
+        $this->ingester = new ZapIngester($this->em, $this->ruleRepo, $this->scanRepo, $this->logger, $sanitizer);
     }
 
     // ═══════════════════ Idempotence ══════════════════════════════════════════

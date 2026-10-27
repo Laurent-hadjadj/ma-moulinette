@@ -1,0 +1,21 @@
+# Ma-Moulinette
+# --------------
+# Copyright (c) 2021-2026.
+# Laurent HADJADJ <laurent_h@me.com>.
+# Licensed Creative Common  CC-BY-NC-SA 4.0.
+#
+# MODIF 26/10/2026 : sanitizer dédié au texte des règles ZAP (description,
+# solution, référence), toujours du HTML externe (catalogue de règles ZAP),
+# jamais rendu brut sans passer par ici — voir ZapIngester::findOrCreateRule().
+# Sur tous les rapports ZAP réels inspectés (plusieurs scans distincts,
+# plusieurs centaines d'alertes), ces 3 champs ne contiennent jamais rien
+# d'autre qu'un unique <p>...</p> englobant du texte — l'allow-list reste
+# volontairement restreinte à cette seule balise, sans attribut.
+
+framework:
+    html_sanitizer:
+        sanitizers:
+            app.zap_rule_text:
+                default_action: 'block'
+                allow_elements:
+                    p: []

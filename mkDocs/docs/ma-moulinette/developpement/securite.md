@@ -50,6 +50,18 @@ l'environnement de développement local a confirmé l'absence de tout en-tête d
     comme faux positif : les chaînes exactes rapportées n'apparaissent dans aucune réponse HTTP réelle
     (`/sitemap.xml` et `/vendor/autoload_runtime.php`, les deux 404 — aucune route de ce nom dans l'appli).
 
+## 🧼 Sanitization du HTML externe (rapports ZAP)
+
+La page [ZAP (DAST)](../application/zap.md) affiche la description, la solution et la référence de chaque règle ZAP déclenchée, directement fournies par le catalogue de règles de ZAP sous forme de HTML (`<p>...</p>`). Avant le 26/10/2026, ce HTML était rendu via `|raw` sans aucune neutralisation côté
+Symfony : un rapport malveillant (déposé via `POST /api/secure/zap/upload`, protégé par jeton mais pas par validation de contenu) aurait pu injecter du JavaScript exécuté dans le navigateur de l'utilisateur consultant la page.
+
+Correctif : `App\Service\Zap\ZapIngester::findOrCreateRule()` passe ces 3 champs au composant [symfony/html-sanitizer](https://symfony.com/doc/current/html_sanitizer.html) (sanitizer nommé`app.zap_rule_text`, défini dans `config/packages/html_sanitizer.yaml`) **une seule fois, à l'ingestion**,
+avant toute persistance en base — jamais au rendu. La liste blanche se limite à la seule balise `<p>`, sans attribut : sur l'ensemble des rapports ZAP réels inspectés (plusieurs scans distincts, plusieurs centaines d'alertes), ces 3 champs n'ont jamais contenu autre chose. Les templates (`zap/index.html.twig`,
+export PDF) peuvent donc utiliser `|raw` sans risque, le contenu étant déjà neutralisé en amont.
+
+!!! warning "Ne pas réintroduire ces champs ailleurs sans repasser par ce sanitizer"
+    `ZapRule::description`/`solution`/`reference` sont assainis une seule fois, à la création de la ligne — une ré-exposition (API, export, autre vue) doit soit réutiliser la valeur déjà en base (déjà sûre), soit repasser explicitement par `html_sanitizer.sanitizer.app.zap_rule_text` si la source change.
+
 ## 🧩 Rôles et hiérarchie
 
 `config/packages/security.yaml` définit la hiérarchie de rôles suivante :
