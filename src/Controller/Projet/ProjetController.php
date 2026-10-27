@@ -119,7 +119,7 @@ class ProjetController extends AbstractController
 
         /** On récupère la version du serveur SonarQube */
         /** MODIF 12/07/2026 : getenv ne fonctionne pas toujours, on utilise la méthode de récupération des paramètres depuis service.yml */
-        $sonar_version = (int)  ($this->sonarVersion ?: 0);
+        $sonar_version = (int) ($this->sonarVersion ?: 0);
         $render['version_serveur_sonar'] = ($sonar_version != 0) ? $sonar_version : 8;
 
         /* MODIF 2026-10-25 : présentation de la page Projet (tuiles vs 3 colonnes),
