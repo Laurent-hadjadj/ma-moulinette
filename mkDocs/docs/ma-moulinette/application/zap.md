@@ -69,6 +69,13 @@ flowchart TD
 ```
 <!-- markdownlint-enable MD046 -->
 
+## 🎯 Plusieurs cibles sous une même clé Maven (« lanes »)
+
+Une clé Maven peut recouvrir **plusieurs cibles DAST réelles** — par exemple le tier présentation et le tier métier d'une même application, suivis sous la même clé côté SonarQube mais scannés séparément par ZAP (2 `target_url` distinctes). Depuis le 26/10/2026, la page affiche une **lane** (bloc KPI +
+graphiques + tableaux + historique, entièrement indépendant) par `target_url` distincte détectée pour le projet (`ZapScanRepository::listDistinctTargetUrlsByMavenKey()`), plutôt que de mélanger leurs scans dans un seul historique — ce qui n'aurait aucun sens (comparer le volume d'alertes de deux applications différentes comme s'il s'agissait du même historique).
+
+S'il n'existe qu'une seule cible pour le projet, une seule lane s'affiche et son titre « Cible : ... » reste masqué (pas de bruit visuel inutile pour le cas, très majoritaire, d'une seule cible). S'il en existe plusieurs, chacune s'affiche à la suite des autres, la plus récemment scannée en premier.
+
 ## 📋 Contenu de la page
 
 - **Bandeau KPI** : date du dernier scan (+ version ZAP), cible scannée (URL), total d'alertes ;
@@ -106,6 +113,12 @@ Pas de bouton dédié sur la page [Projet](projet.md) : la page ZAP se rejoint u
 
 `GET /zap/rapport/pdf?token=...` (bouton 📄 Export PDF sur la page) : synthèse par risque, catégories OWASP 2017/2021 (histogramme), évolution du risque (historique) et liste détaillée des alertes du dernier scan. Même mécanisme que `PdfExportService::generateOwaspPdf()` (Dompdf + Twig, `templates/rapport/rapport-zap.html.twig`), même jeton d'accès que la page web.
 
+Paramètre `target_url` optionnel : précise la lane à exporter quand le projet en a plusieurs — chaque bouton Export PDF d'une lane le transmet automatiquement. Omis (lien historique ou externe), le PDF porte sur la cible la plus récemment scannée toutes cibles confondues.
+
+!!! note "🧼 Description des règles : HTML externe assaini à l'ingestion"
+    Les champs description/solution/référence de chaque règle proviennent du catalogue ZAP sous forme de HTML (`<p>...</p>`), assaini une seule fois à l'ingestion — voir [Sanitization du HTML externe](../developpement/securite.md#-sanitization-du-html-externe-rapports-zap).
+    Dans ce PDF, l'aperçu tronqué de la description passe en plus par `striptags` : les balises `<p>` n'y seraient pas interprétées comme sur la page web, et resteraient visibles littéralement.
+
 ## 🚧 Hors périmètre (différé explicitement)
 
 - **Vue transverse multi-projets** (pas de dashboard/comparer/mutualisables façon Dependency-Check) — la page reste volontairement centrée sur un seul projet.
@@ -117,6 +130,7 @@ Pas de bouton dédié sur la page [Projet](projet.md) : la page ZAP se rejoint u
 - [Dependency-Check](../dependency-check/pages.md) — autre scanner de sécurité poussé par la CI, même principe d'ingestion.
 - [Commandes Prod](../commandes/prod.md) — `app:zap:process` et `app:zap:purge`.
 - [Exploration OWASP API Security](../developpement/exploration-owasp-api-security.md) — couverture réelle des règles ZAP par catégorie OWASP.
+- [Gestion de la sécurité](../developpement/securite.md) — sanitization du HTML externe des règles ZAP, en-têtes de sécurité HTTP.
 
 -**-- FIN --**-
 

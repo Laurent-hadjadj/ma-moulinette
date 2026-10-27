@@ -284,7 +284,7 @@
 
 /* ========= gestion des bouton ============ */
 #bouton-ouvrir-rapport-zap,
-#bouton-ouvrir-rapport-zap-pdf,
+.bouton-ouvrir-rapport-zap-pdf,
 .bouton-ouvrir-details,
 .bouton-fermer-details {
   min-width: 9rem;
@@ -299,6 +299,6 @@
 }
 
 #bouton-ouvrir-rapport-zap:hover,
-#bouton-ouvrir-rapport-zap-pdf:hover,
+.bouton-ouvrir-rapport-zap-pdf:hover,
 .bouton-ouvrir-details:hover,
 .bouton-fermer-details:hover { background-color: #006182; }
