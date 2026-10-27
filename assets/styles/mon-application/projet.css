@@ -29,10 +29,11 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
+
   .separate-ligne { margin-bottom: 0.6rem; }
-  /* MODIF : marge réduite pour gagner en largeur dans les tuiles (débordement
-     sur Répartition/Dette résolu en libérant cette largeur). */
+  /* MODIF : marge réduite pour gagner en largeur dans les tuiles (débordement sur Répartition/Dette résolu en libérant cette largeur). */
   main.margin-left-2 { margin-left: 0.2rem; }
   main.margin-right-2 { margin-right: 0.2rem; }
 }
@@ -50,6 +51,7 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
   main.margin-left-2 { margin-left: 0.2rem; }
@@ -69,6 +71,7 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
   main.margin-left-2 { margin-left: 0.3rem; }
@@ -88,6 +91,7 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
   main.margin-left-2 { margin-left: 0.5rem; }
@@ -120,8 +124,10 @@
   .stat-projet { font-size: 1.6rem; }
   .stat-note { font-size: 1.2rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.6rem; }
+
   .todo-svg,
   .scope-svg,
+  .accessibility-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 28px; }
@@ -137,8 +143,10 @@
   .stat-projet { font-size: 1.8rem; }
   .stat-note { font-size: 1.4rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+
   .todo-svg,
   .scope-svg,
+  .accessibility-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
@@ -154,8 +162,10 @@
   .stat-projet { font-size: 1.8rem; }
   .stat-note { font-size: 1.5rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+
   .todo-svg,
   .scope-svg,
+  .accessibility-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
@@ -171,9 +181,11 @@
   .stat-projet { font-size: 2rem; }
   .stat-note { font-size: 1.5rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+
   .todo-svg,
   .logger-svg,
   .scope-svg,
+  .accessibility-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
   .separate-ligne { margin-bottom: 1rem; }
@@ -187,9 +199,11 @@
   .stat-projet { font-size: 2rem; }
   .stat-note { font-size: 1.5rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+
   .todo-svg,
   .logger-svg,
   .scope-svg,
+  .accessibility-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
   .separate-ligne { margin-bottom: 1rem; }
@@ -271,6 +285,12 @@ textarea[readonly] {
   flex-shrink: 0;
 }
 
+/* Ligne de détail imbriquée sous une ligne de synthèse (ex : Accessibilité par langage) */
+.ligne-sous-detail {
+  padding-left: 1rem;
+  font-size: 0.9em;
+}
+
 /* Valeur textuelle dans container-ligne (texte long, UUID, nom de projet…) */
 .ligne-valeur {
   text-align: right;
@@ -317,6 +337,7 @@ textarea[readonly] {
 .todo-svg,
 .logger-svg,
 .scope-svg,
+.accessibility-svg,
 .favori-liste-svg { cursor: none; }
 
 /* Images SVG dynamiques Bleu */
@@ -328,6 +349,12 @@ textarea[readonly] {
     width: 100%;
     height: auto;
     fill: #00445b;
+}
+
+.accessibility-svg {
+  fill:none;
+  stroke:#00445b;
+  stroke-miterlimit:10
 }
 
 /* Images SVG 32px Bleu */
@@ -627,6 +654,14 @@ textarea[readonly] {
 .note-rouge {
   background-color: #d4333f;
   color: #fff;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+}
+
+/* Note non calculable (ex : langage absent du projet, ratio dette/ncloc non calculable) */
+.note-gris {
+  background-color: #e0e0e0;
+  color: #5f5e5e;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
 }

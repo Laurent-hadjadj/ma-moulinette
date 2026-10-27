@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Projet;
 
-use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController,BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController};
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController, BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController, BatchCollecteAccessibilityController};
 use App\Controller\Projet\ApiCollecteController;
 use App\Entity\Utilisateur;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
@@ -50,6 +50,7 @@ class ApiCollecteControllerTest extends TestCase
     /** @var BatchCollecteCleanCodeController&MockObject */          private MockObject $batchCleanCode;
     /** @var BatchCollecteRciController&MockObject */                private MockObject $batchRci;
     /** @var BatchCollecteEmpreinteEcologiqueController&MockObject */ private MockObject $batchEmpreinteEcologique;
+    /** @var BatchCollecteAccessibilityController&MockObject */      private MockObject $batchAccessibility;
 
     /** @var Security&MockObject */                                  private MockObject $security;
     /** @var LoggerInterface&MockObject */                           private MockObject $logger;
@@ -78,6 +79,7 @@ class ApiCollecteControllerTest extends TestCase
             ->willReturn(['code' => 200, 'skipped' => true]);
         $this->batchRci = $this->createMock(BatchCollecteRciController::class);
         $this->batchEmpreinteEcologique = $this->createMock(BatchCollecteEmpreinteEcologiqueController::class);
+        $this->batchAccessibility = $this->createMock(BatchCollecteAccessibilityController::class);
 
         $this->security = $this->createMock(Security::class);
         $user = $this->createMock(Utilisateur::class);
@@ -126,6 +128,7 @@ class ApiCollecteControllerTest extends TestCase
             $this->batchCleanCode,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->security,
             $this->logger,
         );
@@ -210,8 +213,12 @@ class ApiCollecteControllerTest extends TestCase
             ->with(self::MAVEN_KEY, 'COLLECTE', self::USER_EMAIL)
             ->willReturn(['code' => 200, 'historique' => [
                 'version' => '1.0.0',
-                'version_release' => 3, 'version_snapshot' => 1, 'version_autre' => 0,
-                'version_release_sonar' => 5, 'version_snapshot_sonar' => 2, 'version_autre_sonar' => 1,
+                'version_release' => 3,
+                'version_snapshot' => 1,
+                'version_autre' => 0,
+                'version_release_sonar' => 5,
+                'version_snapshot_sonar' => 2,
+                'version_autre_sonar' => 1,
             ]]);
 
         $payload = $this->decode($this->controller->apiCollecteInformation(
@@ -228,12 +235,19 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchMesure->expects($this->once())
             ->method('batchCollecteMesure')
             ->willReturn(['code' => 200, 'data' => [
-                'maven_key' => self::MAVEN_KEY, 'project_name' => 'App',
-                'lines' => 1000, 'ncloc' => 800, 'classes' => 50,
-                'functions' => 200, 'files' => 30,
+                'maven_key' => self::MAVEN_KEY,
+                'project_name' => 'App',
+                'lines' => 1000,
+                'ncloc' => 800,
+                'classes' => 50,
+                'functions' => 200,
+                'files' => 30,
                 'language_distribution' => ['java' => 100],
-                'sqale_debt_ratio' => 1.5, 'coverage' => 85,
-                'duplicated_lines_density' => 2.0, 'tests' => 150, 'issues' => 10,
+                'sqale_debt_ratio' => 1.5,
+                'coverage' => 85,
+                'duplicated_lines_density' => 2.0,
+                'tests' => 150,
+                'issues' => 10,
             ]]);
 
         $payload = $this->decode($this->controller->apiCollecteMesure(
@@ -265,8 +279,10 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchHotspot->expects($this->once())
             ->method('batchCollecteHotspot')
             ->willReturn(['code' => 200, 'historique' => [
-                'hotspot_high' => 2, 'hotspot_medium' => 4,
-                'hotspot_low' => 1, 'nombre_hotspot' => 7,
+                'hotspot_high' => 2,
+                'hotspot_medium' => 4,
+                'hotspot_low' => 1,
+                'nombre_hotspot' => 7,
             ]]);
 
         $payload = $this->decode($this->controller->apiCollecteHotspot(
@@ -282,11 +298,14 @@ class ApiCollecteControllerTest extends TestCase
     {
         $this->batchAnomalie->expects($this->once())
             ->method('batchCollecteAnomalie')
-            ->willReturn(['code' => 200,
+            ->willReturn([
+                'code' => 200,
                 'info' => 'info text',
                 'historique' => [
-                    'violations' => 10, 'nombre_bug' => 2,
-                    'nombre_vulnerability' => 3, 'nombre_code_smell' => 5,
+                    'violations' => 10,
+                    'nombre_bug' => 2,
+                    'nombre_vulnerability' => 3,
+                    'nombre_code_smell' => 5,
                 ],
             ]);
 
@@ -329,10 +348,13 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchHotspotOwasp->expects($this->once())
             ->method('BatchCollecteHotspotOwasp')
             ->with(self::MAVEN_KEY, 'COLLECTE', self::USER_EMAIL, 'a1')
-            ->willReturn(['code' => 200,
+            ->willReturn([
+                'code' => 200,
                 'info' => 'collect mode',
-                'owasp_2017' => 2, 'owasp_2021' => 4,
-                'message' => 'ok', 'data' => [['x' => 1]],
+                'owasp_2017' => 2,
+                'owasp_2021' => 4,
+                'message' => 'ok',
+                'data' => [['x' => 1]],
             ]);
 
         $payload = $this->decode($this->controller->apiCollecteHotspotOwasp(
@@ -364,7 +386,8 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchNoSonar->expects($this->once())
             ->method('BatchCollecteNoSonar')
             ->willReturn(['code' => 200, 'historique' => [
-                'suppress_warning' => 3, 'total_no_sonar' => 5,
+                'suppress_warning' => 3,
+                'total_no_sonar' => 5,
             ]]);
 
         $payload = $this->decode($this->controller->apiCollecteNoSonar(
@@ -417,8 +440,10 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchLogger->expects($this->once())
             ->method('BatchCollecteLogger')
             ->willReturn(['code' => 200, 'historique' => [
-                'logger_info' => 10, 'logger_warn' => 5,
-                'logger_error' => 2, 'logger_debug' => 20,
+                'logger_info' => 10,
+                'logger_warn' => 5,
+                'logger_error' => 2,
+                'logger_debug' => 20,
             ], 'data' => []]);
 
         $payload = $this->decode($this->controller->apiCollecteLogger(
@@ -434,8 +459,11 @@ class ApiCollecteControllerTest extends TestCase
             ->method('buildRciMeasures')
             ->with(self::MAVEN_KEY, 'COLLECTE', self::USER_EMAIL)
             ->willReturn(['code' => 200, 'historique' => [
-                'rating' => 'B', 'frontend_rating' => 'C', 'backend_rating' => 'A',
-                'autre_rating' => null, 'inconnu_rating' => 'A',
+                'rating' => 'B',
+                'frontend_rating' => 'C',
+                'backend_rating' => 'A',
+                'autre_rating' => null,
+                'inconnu_rating' => 'A',
             ]]);
 
         $payload = $this->decode($this->controller->apiCollecteRci(

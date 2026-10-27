@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail, Historique, Rci, EcoConception};
+use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail, Historique, Rci, EcoConception, Accessibility};
 use App\Service\IsValideMavenKey;
 
 /**
@@ -304,16 +304,26 @@ class ApiPeintureController extends AbstractController
         $mesuresRciListe = $mesures_RCI['liste'] ?? false;
         $l = is_array($mesuresRciListe) ? $mesuresRciListe : [];
         $rci_mesures_json = [
-            'ncloc' => $l['ncloc'] ?? null, 'weight' => $l['weight'] ?? null,
-            'indicator' => $l['indicator'] ?? null, 'rating' => $l['rating'] ?? null,
-            'frontend_ncloc' => $l['frontend_ncloc'] ?? null,  'frontend_weight' => $l['frontend_weight'] ?? null,
-            'frontend_indicator' => $l['frontend_indicator'] ?? null, 'frontend_rating' => $l['frontend_rating'] ?? null,
-            'backend_ncloc' => $l['backend_ncloc'] ?? null, 'backend_weight' => $l['backend_weight'] ?? null,
-            'backend_indicator' => $l['backend_indicator'] ?? null, 'backend_rating' => $l['backend_rating'] ?? null,
-            'autre_ncloc' => $l['autre_ncloc'] ?? null, 'autre_weight' => $l['autre_weight'] ?? null,
-            'autre_indicator' => $l['autre_indicator'] ?? null, 'autre_rating' => $l['autre_rating'] ?? null,
-            'inconnu_ncloc' => $l['inconnu_ncloc'] ?? null, 'inconnu_weight' => $l['inconnu_weight'] ?? null,
-            'inconnu_indicator' => $l['inconnu_indicator'] ?? null, 'inconnu_rating' => $l['inconnu_rating'] ?? null
+            'ncloc' => $l['ncloc'] ?? null,
+            'weight' => $l['weight'] ?? null,
+            'indicator' => $l['indicator'] ?? null,
+            'rating' => $l['rating'] ?? null,
+            'frontend_ncloc' => $l['frontend_ncloc'] ?? null,
+            'frontend_weight' => $l['frontend_weight'] ?? null,
+            'frontend_indicator' => $l['frontend_indicator'] ?? null,
+            'frontend_rating' => $l['frontend_rating'] ?? null,
+            'backend_ncloc' => $l['backend_ncloc'] ?? null,
+            'backend_weight' => $l['backend_weight'] ?? null,
+            'backend_indicator' => $l['backend_indicator'] ?? null,
+            'backend_rating' => $l['backend_rating'] ?? null,
+            'autre_ncloc' => $l['autre_ncloc'] ?? null,
+            'autre_weight' => $l['autre_weight'] ?? null,
+            'autre_indicator' => $l['autre_indicator'] ?? null,
+            'autre_rating' => $l['autre_rating'] ?? null,
+            'inconnu_ncloc' => $l['inconnu_ncloc'] ?? null,
+            'inconnu_weight' => $l['inconnu_weight'] ?? null,
+            'inconnu_indicator' => $l['inconnu_indicator'] ?? null,
+            'inconnu_rating' => $l['inconnu_rating'] ?? null
         ];
 
         return new JsonResponse(
@@ -424,6 +434,109 @@ class ApiPeintureController extends AbstractController
                 'eco_python_anomalies' => $l['eco_python_anomalies'] ?? null,
                 'eco_python_dette_minute' => $l['eco_python_dette_minute'] ?? null,
                 'eco_python_rating' => $l['eco_python_rating'] ?? null,
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * [Description for peintureProjetAccessibility]
+     * Récupère l'Accessibilité (tag SonarQube `accessibility`) de la table.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 26/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/peinture/projet/accessibility', name: 'peinture_projet_accessibility', methods: ['POST'])]
+    public function peintureProjetAccessibility(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/accessibility");
+
+        /** On instancie l'entityRepository */
+        $accessibilityRepos = $this->em->getRepository(Accessibility::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
+        if ($isValide['code'] === 404) {
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => self::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** Accessibilité (null si jamais collectée) */
+        $map = ['maven_key' => $maven_key];
+        $accessibility = $accessibilityRepos->selectAccessibility($map);
+
+        if ($accessibility['code'] != 200) {
+            $this->logger->error('[Collecte-Peinture] ❌ Échec de la requête selectAccessibility.', [
+                'code' => $accessibility['code'],
+                'erreur' => $accessibility['erreur'] ?? self::$noData,
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => $accessibility['code'],
+                'type' => 'error',
+                'message' => "La récupération de l'Accessibilité du projet a échouée (Erreur {$accessibility['code']}).",
+                'trace' => $accessibility['erreur'] ?? self::$noData
+            ], Response::HTTP_OK);
+        }
+
+        /* selectAccessibility() utilise fetchAssociative() — 'liste' vaut soit
+         * la ligne (array), soit false si le projet n'a jamais eu de collecte
+         * Accessibilité. Même pattern que peintureProjetEcoConception. */
+        $accessibilityListe = $accessibility['liste'] ?? false;
+        $l = is_array($accessibilityListe) ? $accessibilityListe : [];
+
+        return new JsonResponse(
+            [
+                'code' => 200,
+                'accessibility_anomalies' => $l['accessibility_anomalies'] ?? null,
+                'accessibility_dette_minute' => $l['accessibility_dette_minute'] ?? null,
+                'accessibility_rating' => $l['accessibility_rating'] ?? null,
+                'accessibility_css_anomalies' => $l['accessibility_css_anomalies'] ?? null,
+                'accessibility_css_dette_minute' => $l['accessibility_css_dette_minute'] ?? null,
+                'accessibility_css_rating' => $l['accessibility_css_rating'] ?? null,
+                'accessibility_web_anomalies' => $l['accessibility_web_anomalies'] ?? null,
+                'accessibility_web_dette_minute' => $l['accessibility_web_dette_minute'] ?? null,
+                'accessibility_web_rating' => $l['accessibility_web_rating'] ?? null,
+                'accessibility_javascript_anomalies' => $l['accessibility_javascript_anomalies'] ?? null,
+                'accessibility_javascript_dette_minute' => $l['accessibility_javascript_dette_minute'] ?? null,
+                'accessibility_javascript_rating' => $l['accessibility_javascript_rating'] ?? null,
+                'accessibility_typescript_anomalies' => $l['accessibility_typescript_anomalies'] ?? null,
+                'accessibility_typescript_dette_minute' => $l['accessibility_typescript_dette_minute'] ?? null,
+                'accessibility_typescript_rating' => $l['accessibility_typescript_rating'] ?? null,
             ],
             Response::HTTP_OK
         );

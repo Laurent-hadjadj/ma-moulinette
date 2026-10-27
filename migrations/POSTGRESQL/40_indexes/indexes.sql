@@ -24,6 +24,7 @@
 --- 2026-09-25 : Ajout des indexes pour la table RCI.
 --- 2026-10-08 : Ajout des indexes pour la table eco_conception.
 --- 2026-10-13 : Ajout des indexes pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
+--- 2026-10-26 : Ajout des indexes pour la table accessibility.
 
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
@@ -100,6 +101,10 @@ CREATE INDEX IF NOT EXISTS idx_rci_date ON ma_moulinette.rci (date_enregistremen
 -- eco_conception — MODIF 2026-10-08
 CREATE INDEX IF NOT EXISTS idx_eco_conception_maven_key ON ma_moulinette.eco_conception (maven_key);
 CREATE INDEX IF NOT EXISTS idx_eco_conception_date ON ma_moulinette.eco_conception (date_enregistrement);
+
+-- accessibility — MODIF 2026-10-26
+CREATE INDEX IF NOT EXISTS idx_accessibility_maven_key ON ma_moulinette.accessibility (maven_key);
+CREATE INDEX IF NOT EXISTS idx_accessibility_date ON ma_moulinette.accessibility (date_enregistrement);
 
 -- groupe utilisateur
 CREATE INDEX IF NOT EXISTS idx_groupe_groupe_utilisateur ON ma_moulinette.groupe_utilisateur (groupe_utilisateur);

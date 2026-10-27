@@ -16,9 +16,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiPeintureController;
-use App\Entity\{Anomalie, AnomalieDetails, Historique, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Rci, Todo};
+use App\Entity\{Accessibility, Anomalie, AnomalieDetails, Historique, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Rci, Todo};
 use App\Entity\Logger as LoggerEntity;
-use App\Repository\{AnomalieDetailsRepository, AnomalieRepository, HistoriqueRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, RciRepository, TodoRepository};
+use App\Repository\{AccessibilityRepository, AnomalieDetailsRepository, AnomalieRepository, HistoriqueRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, RciRepository, TodoRepository};
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
@@ -55,6 +55,7 @@ class ApiPeintureControllerTest extends TestCase
     /** @var LoggerDetailRepository&MockObject */    private MockObject $loggerDetailRepo;
     /** @var HistoriqueRepository&MockObject */      private MockObject $historiqueRepo;
     /** @var RciRepository&MockObject */              private MockObject $rciRepo;
+    /** @var AccessibilityRepository&MockObject */    private MockObject $accessibilityRepo;
 
     private ApiPeintureController $controller;
 
@@ -75,6 +76,7 @@ class ApiPeintureControllerTest extends TestCase
         $this->loggerDetailRepo = $this->createMock(LoggerDetailRepository::class);
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
         $this->rciRepo = $this->createMock(RciRepository::class);
+        $this->accessibilityRepo = $this->createMock(AccessibilityRepository::class);
 
         $this->em->method('getRepository')->willReturnMap([
             [Anomalie::class, $this->anomalieRepo],
@@ -88,6 +90,7 @@ class ApiPeintureControllerTest extends TestCase
             [LoggerDetail::class, $this->loggerDetailRepo],
             [Historique::class, $this->historiqueRepo],
             [Rci::class, $this->rciRepo],
+            [Accessibility::class, $this->accessibilityRepo],
         ]);
 
         // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
@@ -176,7 +179,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->mesuresRepo->method('selectMesuresVersionLast')->willReturn([
-            'code' => 500, 'erreur' => 'db',
+            'code' => 500,
+            'erreur' => 'db',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetMesures($this->jsonRequest([
@@ -233,7 +237,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->rciRepo->method('selectMesuresRci')->willReturn([
-            'code' => 500, 'erreur' => 'db',
+            'code' => 500,
+            'erreur' => 'db',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetRci($this->jsonRequest([
@@ -249,11 +254,26 @@ class ApiPeintureControllerTest extends TestCase
         $this->rciRepo->expects($this->once())
             ->method('selectMesuresRci')
             ->willReturn(['code' => 200, 'liste' => [
-                'ncloc' => 28188, 'weight' => 16732, 'indicator' => 40.6, 'rating' => 'E',
-                'frontend_ncloc' => 16590, 'frontend_weight' => 3725, 'frontend_indicator' => 77.55, 'frontend_rating' => 'D',
-                'backend_ncloc' => 11330, 'backend_weight' => 12995, 'backend_indicator' => 0.0, 'backend_rating' => 'E',
-                'autre_ncloc' => 0, 'autre_weight' => 0, 'autre_indicator' => null, 'autre_rating' => null,
-                'inconnu_ncloc' => 268, 'inconnu_weight' => 12, 'inconnu_indicator' => 95.52, 'inconnu_rating' => 'A',
+                'ncloc' => 28188,
+                'weight' => 16732,
+                'indicator' => 40.6,
+                'rating' => 'E',
+                'frontend_ncloc' => 16590,
+                'frontend_weight' => 3725,
+                'frontend_indicator' => 77.55,
+                'frontend_rating' => 'D',
+                'backend_ncloc' => 11330,
+                'backend_weight' => 12995,
+                'backend_indicator' => 0.0,
+                'backend_rating' => 'E',
+                'autre_ncloc' => 0,
+                'autre_weight' => 0,
+                'autre_indicator' => null,
+                'autre_rating' => null,
+                'inconnu_ncloc' => 268,
+                'inconnu_weight' => 12,
+                'inconnu_indicator' => 95.52,
+                'inconnu_rating' => 'A',
             ]]);
 
         $payload = $this->decode($this->controller->peintureProjetRci($this->jsonRequest([
@@ -290,17 +310,34 @@ class ApiPeintureControllerTest extends TestCase
         $this->anomalieRepo->expects($this->once())
             ->method('selectAnomalie')
             ->willReturn(['code' => 200, 'liste' => [[
-                'dette' => '1h', 'dette_minute' => 60,
-                'dette_reliability' => '15m', 'dette_reliability_minute' => 15,
-                'dette_vulnerability' => '10m', 'dette_vulnerability_minute' => 10,
-                'dette_code_smell' => '35m', 'dette_code_smell_minute' => 35,
-                'bug' => 2, 'vulnerability' => 3, 'code_smell' => 5,
-                'blocker' => 1, 'critical' => 2, 'major' => 3, 'info' => 1, 'minor' => 3,
-                'frontend' => 4, 'backend' => 3, 'autre' => 2, 'inconnu' => 1,
-                'scope_main' => 8, 'scope_test' => 2,
-                'bug_scope_main' => 1, 'bug_scope_test' => 1,
-                'vulnerability_scope_main' => 3, 'vulnerability_scope_test' => 0,
-                'code_smell_scope_main' => 4, 'code_smell_scope_test' => 1,
+                'dette' => '1h',
+                'dette_minute' => 60,
+                'dette_reliability' => '15m',
+                'dette_reliability_minute' => 15,
+                'dette_vulnerability' => '10m',
+                'dette_vulnerability_minute' => 10,
+                'dette_code_smell' => '35m',
+                'dette_code_smell_minute' => 35,
+                'bug' => 2,
+                'vulnerability' => 3,
+                'code_smell' => 5,
+                'blocker' => 1,
+                'critical' => 2,
+                'major' => 3,
+                'info' => 1,
+                'minor' => 3,
+                'frontend' => 4,
+                'backend' => 3,
+                'autre' => 2,
+                'inconnu' => 1,
+                'scope_main' => 8,
+                'scope_test' => 2,
+                'bug_scope_main' => 1,
+                'bug_scope_test' => 1,
+                'vulnerability_scope_main' => 3,
+                'vulnerability_scope_test' => 0,
+                'code_smell_scope_main' => 4,
+                'code_smell_scope_test' => 1,
             ]]]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
@@ -325,13 +362,26 @@ class ApiPeintureControllerTest extends TestCase
         $this->anomalieRepo->expects($this->once())
             ->method('selectAnomalie')
             ->willReturn(['code' => 200, 'liste' => [[
-                'dette' => '1h', 'dette_minute' => 60,
-                'dette_reliability' => '15m', 'dette_reliability_minute' => 15,
-                'dette_vulnerability' => '10m', 'dette_vulnerability_minute' => 10,
-                'dette_code_smell' => '35m', 'dette_code_smell_minute' => 35,
-                'bug' => 30, 'vulnerability' => 3, 'code_smell' => 5,
-                'blocker' => 1, 'critical' => 2, 'major' => 3, 'info' => 1, 'minor' => 27,
-                'frontend' => 4, 'backend' => 3, 'autre' => 2, 'inconnu' => 1,
+                'dette' => '1h',
+                'dette_minute' => 60,
+                'dette_reliability' => '15m',
+                'dette_reliability_minute' => 15,
+                'dette_vulnerability' => '10m',
+                'dette_vulnerability_minute' => 10,
+                'dette_code_smell' => '35m',
+                'dette_code_smell_minute' => 35,
+                'bug' => 30,
+                'vulnerability' => 3,
+                'code_smell' => 5,
+                'blocker' => 1,
+                'critical' => 2,
+                'major' => 3,
+                'info' => 1,
+                'minor' => 27,
+                'frontend' => 4,
+                'backend' => 3,
+                'autre' => 2,
+                'inconnu' => 1,
             ]]]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
@@ -346,13 +396,26 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->anomalieRepo->method('selectAnomalie')->willReturn(['code' => 200, 'liste' => [[
-            'dette' => '0', 'dette_minute' => 0,
-            'dette_reliability' => '0', 'dette_reliability_minute' => 0,
-            'dette_vulnerability' => '0', 'dette_vulnerability_minute' => 0,
-            'dette_code_smell' => '0', 'dette_code_smell_minute' => 0,
-            'bug' => 5, 'vulnerability' => 0, 'code_smell' => 0,
-            'blocker' => 0, 'critical' => 0, 'major' => 0, 'info' => 0, 'minor' => 0,
-            'frontend' => 0, 'backend' => 0, 'autre' => 0, 'inconnu' => 0,
+            'dette' => '0',
+            'dette_minute' => 0,
+            'dette_reliability' => '0',
+            'dette_reliability_minute' => 0,
+            'dette_vulnerability' => '0',
+            'dette_vulnerability_minute' => 0,
+            'dette_code_smell' => '0',
+            'dette_code_smell_minute' => 0,
+            'bug' => 5,
+            'vulnerability' => 0,
+            'code_smell' => 0,
+            'blocker' => 0,
+            'critical' => 0,
+            'major' => 0,
+            'info' => 0,
+            'minor' => 0,
+            'frontend' => 0,
+            'backend' => 0,
+            'autre' => 0,
+            'inconnu' => 0,
         ]]]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
@@ -371,12 +434,22 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->anomalieRepo->method('selectAnomalie')->willReturn(['code' => 200, 'liste' => [[
-            'dette' => '0', 'dette_minute' => 0,
-            'dette_reliability' => '0', 'dette_reliability_minute' => 0,
-            'dette_vulnerability' => '0', 'dette_vulnerability_minute' => 0,
-            'dette_code_smell' => '0', 'dette_code_smell_minute' => 0,
-            'bug' => 0, 'vulnerability' => 0, 'code_smell' => 0,
-            'blocker' => 0, 'critical' => 0, 'major' => 0, 'info' => 0, 'minor' => 0,
+            'dette' => '0',
+            'dette_minute' => 0,
+            'dette_reliability' => '0',
+            'dette_reliability_minute' => 0,
+            'dette_vulnerability' => '0',
+            'dette_vulnerability_minute' => 0,
+            'dette_code_smell' => '0',
+            'dette_code_smell_minute' => 0,
+            'bug' => 0,
+            'vulnerability' => 0,
+            'code_smell' => 0,
+            'blocker' => 0,
+            'critical' => 0,
+            'major' => 0,
+            'info' => 0,
+            'minor' => 0,
             // frontend/backend/autre/inconnu + scope_* absents de la ligne.
         ]]]);
 
@@ -751,7 +824,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->infoRepo->method('selectInformationProjetVersion')->willReturn([
-            'code' => 500, 'erreur' => 'fail',
+            'code' => 500,
+            'erreur' => 'fail',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetVersion($this->jsonRequest([
@@ -765,7 +839,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->anomalieDetailsRepo->method('selectAnomalieDetailsMavenKey')->willReturn([
-            'code' => 500, 'erreur' => 'fail',
+            'code' => 500,
+            'erreur' => 'fail',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalieDetails($this->jsonRequest([
@@ -779,7 +854,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->hotspotsRepo->method('countHotspotsStatus')->willReturn([
-            'code' => 500, 'erreur' => 'fail',
+            'code' => 500,
+            'erreur' => 'fail',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetHotspots($this->jsonRequest([
@@ -793,7 +869,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->hotspotsRepo->method('selectHotspotsByNiveau')->willReturn([
-            'code' => 500, 'erreur' => 'fail',
+            'code' => 500,
+            'erreur' => 'fail',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetHotspotsDetails($this->jsonRequest([
@@ -807,7 +884,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->noSonarRepo->method('selectNoSonarRuleGroupByRule')->willReturn([
-            'code' => 500, 'erreur' => 'fail',
+            'code' => 500,
+            'erreur' => 'fail',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetNoSonar($this->jsonRequest([
@@ -821,7 +899,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->todoRepo->method('selectTodoRuleGroupByRule')->willReturn([
-            'code' => 500, 'erreur' => 'fail',
+            'code' => 500,
+            'erreur' => 'fail',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetTodo($this->jsonRequest([
@@ -835,7 +914,8 @@ class ApiPeintureControllerTest extends TestCase
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->loggerRepo->method('selectLogger')->willReturn([
-            'code' => 500, 'erreur' => 'fail',
+            'code' => 500,
+            'erreur' => 'fail',
         ]);
 
         $payload = $this->decode($this->controller->peintureProjetLogger($this->jsonRequest([
@@ -843,6 +923,80 @@ class ApiPeintureControllerTest extends TestCase
         ])));
 
         $this->assertSame(500, $payload['code']);
+    }
+
+    // MODIF 26/10/2026 : comble le trou de couverture jamais rempli pour
+    // peintureProjetEcoConception() (sosie direct de cette méthode, jamais
+    // testée) — cf. mkDocs/docs/ma-moulinette/application/projet.md.
+    public function testPeintureProjetaccessibilityPropagatesRepoError(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->accessibilityRepo->method('selectaccessibility')->willReturn([
+            'code' => 500,
+            'erreur' => 'fail',
+        ]);
+
+        $payload = $this->decode($this->controller->peintureProjetaccessibility($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(500, $payload['code']);
+    }
+
+    public function testPeintureProjetaccessibilityReturnsAllFieldsOnHappyPath(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->accessibilityRepo->method('selectaccessibility')->willReturn([
+            'code' => 200,
+            'liste' => [
+                'accessibility_anomalies' => 9,
+                'accessibility_dette_minute' => 27,
+                'accessibility_rating' => 'C',
+                'accessibility_css_anomalies' => 9,
+                'accessibility_css_dette_minute' => 27,
+                'accessibility_css_rating' => 'C',
+                'accessibility_web_anomalies' => null,
+                'accessibility_web_dette_minute' => null,
+                'accessibility_web_rating' => null,
+                'accessibility_javascript_anomalies' => null,
+                'accessibility_javascript_dette_minute' => null,
+                'accessibility_javascript_rating' => null,
+                'accessibility_typescript_anomalies' => null,
+                'accessibility_typescript_dette_minute' => null,
+                'accessibility_typescript_rating' => null,
+            ],
+        ]);
+
+        $payload = $this->decode($this->controller->peintureProjetaccessibility($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame(9, $payload['accessibility_anomalies']);
+        $this->assertSame(27, $payload['accessibility_dette_minute']);
+        $this->assertSame('C', $payload['accessibility_rating']);
+        $this->assertSame(9, $payload['accessibility_css_anomalies']);
+        $this->assertNull($payload['accessibility_web_anomalies']);
+        $this->assertNull($payload['accessibility_typescript_rating']);
+    }
+
+    public function testPeintureProjetaccessibilityReturnsAllNullWhenNeverCollected(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        // selectaccessibility() utilise fetchAssociative() -> false si jamais collectée.
+        $this->accessibilityRepo->method('selectaccessibility')->willReturn([
+            'code' => 200,
+            'liste' => false,
+        ]);
+
+        $payload = $this->decode($this->controller->peintureProjetaccessibility($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertNull($payload['accessibility_anomalies']);
+        $this->assertNull($payload['accessibility_rating']);
+        $this->assertNull($payload['accessibility_typescript_rating']);
     }
 
     // ═══════════════════ 400 / 404 bulk coverage ═══════════════════════════
@@ -864,6 +1018,7 @@ class ApiPeintureControllerTest extends TestCase
             'todo'             => ['peintureProjetTodo',            'error'],
             'logger'           => ['peintureProjetLogger',          'error'],
             'actuator'         => ['peintureProjetActuator',        'error'],
+            'accessibility'    => ['peintureProjetaccessibility',   'error'],
         ];
     }
 

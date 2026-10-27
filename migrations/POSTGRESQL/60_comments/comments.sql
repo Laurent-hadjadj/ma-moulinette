@@ -30,6 +30,7 @@
 -- 2026-10-08 : Ajout des commentaires pour les attributs de la table eco_conception.
 --- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
 --- 2026-10-13 : Ajout des commentaires pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
+--- 2026-10-26 : Ajout des commentaires pour les attributs de la table accessibility.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -943,6 +944,32 @@ COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_rating IS 'Note A-E po
 COMMENT ON COLUMN ma_moulinette.eco_conception.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.eco_conception.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
 COMMENT ON COLUMN ma_moulinette.eco_conception.date_enregistrement IS 'Date d''enregistrement de la ligne.';
+
+-- ============================================
+-- TABLE accessibility
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.accessibility IS 'Accessibilité (tag SonarQube accessibility, css/web/javascript/typescript) — snapshot courant, une ligne par maven_key.';
+COMMENT ON COLUMN ma_moulinette.accessibility.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.accessibility.maven_key IS 'Clé unique du projet SonarQube.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_anomalies IS 'Nombre d''anomalies accessibilité (OPEN, tag SonarQube accessibility), tous langages confondus.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_dette_minute IS 'Dette estimée en minutes (effortTotal SonarQube), tous langages confondus.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_rating IS 'Note A-E dérivée du ratio accessibility_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_css_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage CSS. Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_css_dette_minute IS 'Dette estimée en minutes pour le langage CSS. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_css_rating IS 'Note A-E pour le langage CSS. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_web_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage Web (HTML). Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_web_dette_minute IS 'Dette estimée en minutes pour le langage Web (HTML). Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_web_rating IS 'Note A-E pour le langage Web (HTML). Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_javascript_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage JavaScript. Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_javascript_dette_minute IS 'Dette estimée en minutes pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_javascript_rating IS 'Note A-E pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_typescript_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage TypeScript. Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_typescript_dette_minute IS 'Dette estimée en minutes pour le langage TypeScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_typescript_rating IS 'Note A-E pour le langage TypeScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.accessibility.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.accessibility.date_enregistrement IS 'Date d''enregistrement de la ligne.';
 
 -- ============================================
 -- TABLE repartition_temp

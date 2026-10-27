@@ -21,6 +21,7 @@
 --- 2026-10-08 : Ajout des attributs eco_anomalies, eco_dette_minute (Empreinte Écologique, plugins SonarQube Creedengo).
 --- 2026-10-08 : Ajout de eco_rating et du détail par langage java/javascript/php/python (Empreinte Écologique).
 --- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
+--- 2026-10-26 : Ajout des attributs accessibility_* (Accessibilité, tag SonarQube accessibility), globale et par langage css/web/javascript/typescript.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -265,6 +266,22 @@ CREATE TABLE ma_moulinette.historique
     eco_python_anomalies INT,
     eco_python_dette_minute INT,
     eco_python_rating VARCHAR(4),
+
+    accessibility_anomalies INT,
+    accessibility_dette_minute INT,
+    accessibility_rating VARCHAR(4),
+    accessibility_css_anomalies INT,
+    accessibility_css_dette_minute INT,
+    accessibility_css_rating VARCHAR(4),
+    accessibility_web_anomalies INT,
+    accessibility_web_dette_minute INT,
+    accessibility_web_rating VARCHAR(4),
+    accessibility_javascript_anomalies INT,
+    accessibility_javascript_dette_minute INT,
+    accessibility_javascript_rating VARCHAR(4),
+    accessibility_typescript_anomalies INT,
+    accessibility_typescript_dette_minute INT,
+    accessibility_typescript_rating VARCHAR(4),
 
     initial BOOLEAN NOT NULL,
 
