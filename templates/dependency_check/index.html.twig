@@ -118,7 +118,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                             uniquement pertinent en mode prod permissif. En mode dev (Option C),
                                             l'app peut avoir une release ancienne — le badge serait trompeur. #}
                                 {% if vue|default('prod') == 'prod' and not p.has_release %}
-                                <br><span class="badge-level low" style="font-size: 0.75rem;"
+                                <br><span class="badge-level low font-size-075"
                                     title="Cette application n'a pas de scan d'une version release ingéré. Le dernier scan ingéré est une version dev (SNAPSHOT/RC).">❓
                                     Pas de release ingérée</span>
                                 {% endif %}

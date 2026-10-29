@@ -86,6 +86,11 @@ https://github.com/Laurent-hadjadj/ma-moulinette
       .badge-type.large { background: #f08a24; }
       .badge-type.concentre { background: #cc4b37; }
 
+      /* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline sur la légende. */
+      .puce-normale { background: #00445b; }
+      .puce-large { background: #f08a24; margin-left: 10px; }
+      .puce-concentre { background: #cc4b37; margin-left: 10px; }
+
       .page-break-before { page-break-before: always; }
       .empty { text-align: center; color: #888; padding: 12px; font-style: italic; }
     </style>
@@ -149,9 +154,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </tr>
       </table>
       <p class="legende">
-        <span class="puce" style="background:#00445b;"></span>Semaine normale
-        <span class="puce" style="background:#f08a24; margin-left:10px;"></span>Pic large (beaucoup de projets distincts)
-        <span class="puce" style="background:#cc4b37; margin-left:10px;"></span>Pic concentré (ré-analyses répétées sur peu de projets)
+        <span class="puce puce-normale"></span>Semaine normale
+        <span class="puce puce-large"></span>Pic large (beaucoup de projets distincts)
+        <span class="puce puce-concentre"></span>Pic concentré (ré-analyses répétées sur peu de projets)
       </p>
     {% else %}
       <p class="empty">Aucune donnée d'activité sur la période.</p>

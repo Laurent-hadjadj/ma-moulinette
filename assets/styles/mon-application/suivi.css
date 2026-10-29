@@ -41,6 +41,15 @@
 /** Ajustement close-button sur alert-callout */
 .padding-right-1 { padding-right: 1rem; }
 
+/* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline sur le container du
+ * graphique de distribution langage (_suivi_distribution_langage.html.twig).
+ * Hauteur explicite requise par Chart.js (`maintainAspectRatio: false`), qui a
+ * besoin d'une hauteur définie sur le parent pour ne pas aplatir le canvas. */
+.chart-container-360 {
+  height: 360px;
+  position: relative;
+}
+
 .text-up { color: #187e3d; }
 .text-down { color: #971c09; }
 

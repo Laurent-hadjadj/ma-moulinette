@@ -40,6 +40,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             page: landscape;
         }
 
+        /* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline, répété 6 fois. */
+        .page-break-before { page-break-before: always; }
+        .footnote { font-size: 10px; color: #666; }
+
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 11px;
@@ -395,7 +399,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
     {# ════════════════════════════════════════════════════════════════════
             SECTION 2 — EXECUTIVE SUMMARY (portrait, nouvelle page)
             ════════════════════════════════════════════════════════════════════ #}
-    <div class="section-portrait" style="page-break-before: always;">
+    <div class="section-portrait page-break-before">
         <header class="header">
             <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
             <div class="header-title">
@@ -480,7 +484,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {# === Top 5 dépendances === #}
         {% if top_deps|length > 0 %}
         <h2>Top {{ top_deps|length }} des dépendances vulnérables</h2>
-        <p style="font-size: 10px; color: #666;">Classement par nombre de CVE détectées sur ce scan.</p>
+        <p class="footnote">Classement par nombre de CVE détectées sur ce scan.</p>
         <table class="top-table">
             <thead>
                 <tr>
@@ -505,8 +509,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
         {# === Top 5 CWE === #}
         {% if top_cwes|length > 0 %}
-        <h2 style="page-break-before: always;">Top {{ top_cwes|length }} des familles CWE</h2>
-        <p style="font-size: 10px; color: #666;">CWE = catégorie type de faiblesse logicielle (cf. glossaire).</p>
+        <h2 class="page-break-before">Top {{ top_cwes|length }} des familles CWE</h2>
+        <p class="footnote">CWE = catégorie type de faiblesse logicielle (cf. glossaire).</p>
         <table class="top-table">
             <thead>
                 <tr>
@@ -532,7 +536,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             SECTION 3 — DÉTAILS PAR SÉVÉRITÉ (paysage, nouvelle page)
             ════════════════════════════════════════════════════════════════════ #}
     {% if findings is not empty %}
-    <div class="section-landscape" style="page-break-before: always;">
+    <div class="section-landscape page-break-before">
         <h2>Détail des vulnérabilités ({{ findings|length }})</h2>
 
         {% set severities = [
@@ -548,8 +552,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {% for sev in severities %}
         {% set sev_findings = findings|filter(f => f.severity == sev.key) %}
         {% if sev_findings|length > 0 %}
-        <div class="sev-section-title {{ sev.cls }}" {% if not first_sev_displayed %}style="page-break-before: always;"
-            {% endif %}>
+        <div class="sev-section-title {{ sev.cls }} {{ not first_sev_displayed ? 'page-break-before' : '' }}">
             {{ sev.label }} — {{ sev_findings|length }} vulnérabilité{{ sev_findings|length > 1 ? 's' }}
         </div>
         <table class="findings">
@@ -599,7 +602,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
     {# ════════════════════════════════════════════════════════════════════
             SECTION 4 — GLOSSAIRE (portrait, nouvelle page)
             ════════════════════════════════════════════════════════════════════ #}
-    <div class="section-portrait" style="page-break-before: always;">
+    <div class="section-portrait page-break-before">
         <header class="header">
             <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
             <div class="header-title">
@@ -719,7 +722,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
     </div>
 
     {% else %}
-    <div class="section-portrait" style="page-break-before: always;">
+    <div class="section-portrait page-break-before">
         <h2>Aucun scan disponible</h2>
         <p>Aucun rapport DependencyCheck n'a été ingéré pour <strong>{{ project_label }}</strong>.</p>
     </div>

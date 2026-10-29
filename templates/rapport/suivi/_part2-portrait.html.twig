@@ -50,7 +50,7 @@ Tient en 1 a 2 pages portrait selon le nombre d'alertes. #}
     </table>
 
     <div class="legende">
-        Légende : <span style="color:#ed7d20;">(reconstitué)</span> = version importée depuis SonarQube search_history
+        Légende : <span class="suivi-reconstitue">(reconstitué)</span> = version importée depuis SonarQube search_history
         (indicateurs partiels) ;
         (collecte) = version collectée à chaud (indicateurs complets).
     </div>
@@ -85,9 +85,9 @@ Tient en 1 a 2 pages portrait selon le nombre d'alertes. #}
                     {% else %}
                     <span class="trend trend-flat">→</span>
                     {% endif %}
-                    {{ k.delta_label }} <span style="color:#aaa;">vs N-1</span>
+                    {{ k.delta_label }} <span class="text-gris-clair">vs N-1</span>
                     {% else %}
-                    <span style="color:#bbb;">— pas de comparable</span>
+                    <span class="text-gris-tres-clair">— pas de comparable</span>
                     {% endif %}
                 </div>
             </td>

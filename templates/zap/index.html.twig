@@ -302,7 +302,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                 {% for instance in finding.instances %}
                                     <tr>
                                         <td>{{ instance.method ?? '---' }}</td>
-                                        <td style="word-break: break-all;">{{ instance.uri ?? '---' }}</td>
+                                        <td class="word-break-all">{{ instance.uri ?? '---' }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

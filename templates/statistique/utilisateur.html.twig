@@ -218,9 +218,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             id="week-picker"
                             value="{{ selected_week|default('') }}"
                             min="2025-W01"
-                            class="stats-period-input"
+                            class="stats-period-input {{ period != 'week' ? 'display-none' : '' }}"
                             aria-label="Choisir une semaine"
-                            {% if period != 'week' %}style="display:none"{% endif %}
                         >
                     </div>
 
@@ -231,9 +230,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             id="month-picker"
                             value="{{ selected_month|default('') }}"
                             min="2025-01"
-                            class="stats-period-input"
+                            class="stats-period-input {{ period != 'month' ? 'display-none' : '' }}"
                             aria-label="Choisir un mois"
-                            {% if period != 'month' %}style="display:none"{% endif %}
                         >
                     </div>
 

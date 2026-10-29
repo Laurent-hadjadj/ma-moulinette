@@ -113,8 +113,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         <div class="callout alert-callout-border info margin-bottom-1">
             <p class="open-sans font-size-085 margin-bottom-0">
                 <span aria-hidden="true">ℹ️</span> <strong>Delta</strong> = variation par rapport au scan immédiatement
-                antérieur. <span style="color: #1a5f3f; font-weight: 600;">↓ vert</span> = baisse (CVE corrigées, bonne
-                nouvelle). <span style="color: #cc4b37; font-weight: 600;">↑ rouge</span> = hausse (régression ou
+                antérieur. <span class="dc-score-good font-weight-600">↓ vert</span> = baisse (CVE corrigées, bonne
+                nouvelle). <span class="dc-score-bad font-weight-600">↑ rouge</span> = hausse (régression ou
                 nouvelles CVE NVD). <span class="text-muted">—</span> = premier scan (pas de référence).
             </p>
         </div>
@@ -159,10 +159,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             {% if delta is null %}
                             <br><span class="text-muted font-size-085">—</span>
                             {% elseif delta < 0 %}
-                            <br><span class="font-size-085" style="color: #1a5f3f; font-weight: 600;">↓
+                            <br><span class="font-size-085 dc-score-good font-weight-600">↓
                                 {{ delta|abs }}</span>
                             {% elseif delta > 0 %}
-                            <br><span class="font-size-085" style="color: #cc4b37; font-weight: 600;">↑
+                            <br><span class="font-size-085 dc-score-bad font-weight-600">↑
                                 +{{ delta }}</span>
                             {% else %}
                             <br><span class="text-muted font-size-085">=</span>

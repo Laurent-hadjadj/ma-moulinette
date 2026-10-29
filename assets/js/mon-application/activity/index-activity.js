@@ -61,7 +61,7 @@ const refreshActivity=async function() {
     let str = '';
 
   // Afficher le spinner
-  $spinner.show();
+  $spinner.removeClass('display-none');
 
   try {
         // Configuration de l'appel Ajax
@@ -122,7 +122,7 @@ const refreshActivity=async function() {
         showMessage('critical', 'Une erreur globale est survenue lors de la mise à jour (Erreur 500).');
       } finally {
         // Cacher le spinner
-        $spinner.hide();
+        $spinner.addClass('display-none');
       }
     };
 

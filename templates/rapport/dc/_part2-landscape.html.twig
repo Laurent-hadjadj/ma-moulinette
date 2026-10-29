@@ -28,8 +28,7 @@
     {% for sev in severities %}
     {% set sev_findings = findings|filter(f => f.severity == sev.key) %}
     {% if sev_findings|length > 0 %}
-    <div class="sev-section-title {{ sev.cls }}" {% if not first_sev_displayed %}style="page-break-before: always;"
-        {% endif %}>
+    <div class="sev-section-title {{ sev.cls }} {{ not first_sev_displayed ? 'page-break-before' : '' }}">
         {{ sev.label }} — {{ sev_findings|length }} vulnérabilité{{ sev_findings|length > 1 ? 's' }}
     </div>
     <table class="findings">

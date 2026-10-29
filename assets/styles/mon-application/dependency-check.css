@@ -188,6 +188,29 @@
    Signale "opportunité d'action à exploiter". */
 .badge-level.convergence { background-color: #17a2b8; }
 
+/* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline sur le score sécurité
+ * (comparer.html.twig, kpi.html.twig, projet_history.html.twig). Mêmes couleurs que
+ * les badges critical/high ci-dessus, en texte plutôt qu'en fond. */
+.dc-score-good { color: #1a5f3f; }
+.dc-score-warn { color: #f08a24; }
+.dc-score-bad { color: #cc4b37; }
+
+/* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline (_dc_jh_methodology_modal.html.twig). */
+.padding-06 { padding: 0.6rem; }
+
+/* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline (mutualisables.html.twig) ;
+ * hauteur calée sur celle de la ligne <select> voisine pour un alignement visuel propre. */
+.dc-checkbox-row-height { height: 2.4375rem; }
+
+/* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline (executive.html.twig) —
+ * hauteur minimale des conteneurs de graphique Chart.js. */
+.min-height-320 { min-height: 320px; }
+.min-height-280 { min-height: 280px; }
+
+/* MODIF 28/10/2026 : BUG CORRIGÉ — suppression du style inline (executive.html.twig). */
+.dc-border-top-separator { border-top: 2px solid #333; }
+.font-size-16em { font-size: 1.6em; }
+
 /* ==== Appliction dans mutualisables.html.twig :
         badge rectangulaire pour les projets utilisant une dépendance mutualisable.
         Couleur neutre (gris) pour ne pas prêter à confusion
