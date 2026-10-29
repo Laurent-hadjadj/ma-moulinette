@@ -20,44 +20,28 @@ use PHPUnit\Framework\TestCase;
 /**
  * [Description OwaspCaseTest]
  *
- * v2.0.0 : test compact via dataProvider couvrant les 69 attributs de l'entite Owasp.
+ * MODIF 27/10/2026 : les 60 attributs a1..a10/aN_blocker..minor + source sont
+ * remplacés par un seul attribut `categories` (JSON) + module_frontend/backend/autre
+ * (cf. OwaspRuleClassifierService, BatchCollecteOwaspController).
  */
 class OwaspCaseTest extends TestCase
 {
     /**
-     * Liste des [setter/getter suffix, valeur a injecter] pour 65 attributs simples.
-     * id, referentialOwasp, dateVersion, dateEnregistrement testes a part.
+     * Liste des [setter/getter suffix, valeur a injecter] pour les attributs simples.
+     * id, referentialOwasp, dateVersion, dateEnregistrement, categories testes a part.
      *
-     * @return iterable<string, array{0: string, 1: string|int}>
+     * @return iterable<string, array{0: string, 1: mixed}>
      */
     public static function attributesProvider(): iterable
     {
-        // Identification
         yield 'mavenKey' => ['MavenKey', 'fr.ma-moulinette:ma-moulinette'];
         yield 'version' => ['Version', '1.2.0-RELEASE'];
-
-        // Effort global
         yield 'effortTotal' => ['EffortTotal', 1500];
-
-        // Totaux par categorie A1..A10
-        for ($i = 1; $i <= 10; $i++) {
-            yield "a{$i}" => ["A{$i}", $i * 10];
-        }
-
-        // Detail par severite pour chaque A1..A10
-        $severities = ['Blocker', 'Critical', 'Major', 'Info', 'Minor'];
-        for ($i = 1; $i <= 10; $i++) {
-            foreach ($severities as $idx => $sev) {
-                yield "a{$i}{$sev}" => ["A{$i}{$sev}", $i + $idx];
-            }
-        }
-
-        // Mode de collecte / utilisateur
+        yield 'moduleFrontend' => ['ModuleFrontend', 12];
+        yield 'moduleBackend' => ['ModuleBackend', 34];
+        yield 'moduleAutre' => ['ModuleAutre', 5];
         yield 'modeCollecte' => ['ModeCollecte', 'COLLECTE'];
         yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'admin@ma-moulinette.fr'];
-
-        // MODIF 2026-07-18 : 'facet' (classification officielle) ou 'tag' (secours owasp-aXX).
-        yield 'source' => ['Source', 'tag'];
     }
 
     #[DataProvider('attributesProvider')]
@@ -106,13 +90,26 @@ class OwaspCaseTest extends TestCase
         $this->assertEquals($date, $entity->getDateEnregistrement());
     }
 
+    public function testSettingAndGettingCategoriesDefaultsToEmptyArray(): void
+    {
+        $entity = new Owasp();
+        $this->assertSame([], $entity->getCategories());
+
+        $categories = [
+            'a1' => ['total' => 5, 'blocker' => 1, 'critical' => 2, 'major' => 2, 'minor' => 0, 'info' => 0, 'source' => 'mixed'],
+        ];
+        $entity->setCategories($categories);
+        $this->assertSame($categories, $entity->getCategories());
+    }
+
     /**
-     * v2.0.0 : l’entité Owasp comporte 70 attributs (dont `source` depuis le 2026-07-18).
+     * MODIF 27/10/2026 : 70 → 13 (suppression des 60 attributs a1..a10/aN_blocker..minor
+     * + source, remplacés par categories + module_frontend/backend/autre : -60 +3 = -57,
+     * 70 - 57 = 13).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Owasp());
-        // MODIF 2026-07-18 : +1 (nouveau champ `source` : 'facet'|'tag').
-        $this->assertEquals(70, count($reflectionClass->getProperties()));
+        $this->assertEquals(13, count($reflectionClass->getProperties()));
     }
 }

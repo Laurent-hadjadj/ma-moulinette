@@ -32,24 +32,6 @@ class OwaspRepositoryTest extends KernelTestCase
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
     private static int $effortTotal = 0;
-
-    /** @var array<int, int> */
-    private static array $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    /** @var array<int, int> */
-    private static array $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    /** @var array<int, int> */
-    private static array $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    /** @var array<int, int> */
-    private static array $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    /** @var array<int, int> */
-    private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    /** @var array<int, int> */
-    private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
     private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
@@ -169,29 +151,20 @@ class OwaspRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map = [];
-
-        // Ajouter les propriétés de l'objet $owasp au tableau $map
-        $map['referential_owasp'] = 2017;
-        $map['maven_key'] = self::$mavenKey;
-        $map['version'] = self::$version;
-        $map['date_version'] = self::$dateVersion;
-        $map['effort_total'] = self::$effortTotal;
-        // MODIF 2026-07-18 : nouvelle colonne NOT NULL (source du comptage : facet|tag).
-        $map['source'] = 'facet';
-
-        for ($i = 0; $i < 10; $i++) {
-            $map["a" . ($i + 1)] = self::$a[$i];
-            $map["a" . ($i + 1) . "_blocker"] = self::$aBlocker[$i];
-            $map["a" . ($i + 1) . "_critical"] = self::$aCritical[$i];
-            $map["a" . ($i + 1) . "_major"] = self::$aMajor[$i];
-            $map["a" . ($i + 1) . "_info"] = self::$aInfo[$i];
-            $map["a" . ($i + 1) . "_minor"] = self::$aMinor[$i];
-        }
-
-        $map['mode_collecte'] = self::$modeCollecte;
-        $map['utilisateur_collecte'] = self::$utilisateurCollecte;
-        $map['date_enregistrement'] = new \DateTimeImmutable(self::$dateEnregistrement);
+        $map = [
+            'referential_owasp' => 2017,
+            'maven_key' => self::$mavenKey,
+            'version' => self::$version,
+            'date_version' => self::$dateVersion,
+            'effort_total' => self::$effortTotal,
+            'categories' => [],
+            'module_frontend' => 0,
+            'module_backend' => 0,
+            'module_autre' => 0,
+            'mode_collecte' => self::$modeCollecte,
+            'utilisateur_collecte' => self::$utilisateurCollecte,
+            'date_enregistrement' => new \DateTimeImmutable(self::$dateEnregistrement),
+        ];
 
         // Appel de la méthode
         $owaspRepository = $entityManager->getRepository(Owasp::class);
@@ -200,6 +173,61 @@ class OwaspRepositoryTest extends KernelTestCase
         // Assert
         $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
+    /**
+     * MODIF 27/10/2026 : prouve que `categories` (JSONB) survit réellement à
+     * l'INSERT dynamique puis à la relecture via selectOwaspOrderByDateEnregistrement()
+     * — colonne structurée.
+     */
+    public function testInsertOwaspPersistsCategoriesAsReadableJson(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        $entityManager->getConnection()->executeStatement(
+            'DELETE FROM ma_moulinette.owasp WHERE maven_key = ?',
+            [self::$mavenKey]
+        );
+
+        $categories = [
+            'a1' => ['total' => 5, 'blocker' => 1, 'critical' => 2, 'major' => 2, 'minor' => 0, 'info' => 0, 'source' => 'mixed'],
+            'a6' => ['total' => 9, 'blocker' => 0, 'critical' => 0, 'major' => 9, 'minor' => 0, 'info' => 0, 'source' => 'findsecbugs'],
+        ];
+
+        $map = [
+            'referential_owasp' => 2017,
+            'maven_key' => self::$mavenKey,
+            'version' => self::$version,
+            'date_version' => self::$dateVersion,
+            'effort_total' => self::$effortTotal,
+            'categories' => $categories,
+            'module_frontend' => 3,
+            'module_backend' => 4,
+            'module_autre' => 5,
+            'mode_collecte' => self::$modeCollecte,
+            'utilisateur_collecte' => self::$utilisateurCollecte,
+            'date_enregistrement' => new \DateTimeImmutable(self::$dateEnregistrement),
+        ];
+
+        $owaspRepository = $entityManager->getRepository(Owasp::class);
+        $r = $owaspRepository->insertOwasp([$map]);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+
+        $select = $owaspRepository->selectOwaspOrderByDateEnregistrement([
+            'maven_key' => self::$mavenKey,
+            'referential_owasp' => 2017,
+        ]);
+        $this->assertSame(200, $select['code']);
+        $this->assertNotEmpty($select['liste']);
+
+        $row = $select['liste'][0];
+        // assertEquals (pas assertSame) : JSONB Postgres ne garantit pas l'ordre des clés d'un objet.
+        $this->assertEquals($categories, json_decode((string) $row['categories'], true));
+        $this->assertSame(3, (int) $row['module_frontend']);
+        $this->assertSame(4, (int) $row['module_backend']);
+        $this->assertSame(5, (int) $row['module_autre']);
     }
 
     /**
@@ -217,26 +245,20 @@ class OwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get(EntityManagerInterface::class);
 
         $buildMap = function (int $referentialOwasp): array {
-            $map = [
+            return [
                 'referential_owasp' => $referentialOwasp,
                 'maven_key' => self::$mavenKey,
                 'version' => self::$version,
                 'date_version' => self::$dateVersion,
                 'effort_total' => self::$effortTotal,
-                'source' => 'facet',
+                'categories' => [],
+                'module_frontend' => 0,
+                'module_backend' => 0,
+                'module_autre' => 0,
+                'mode_collecte' => self::$modeCollecte,
+                'utilisateur_collecte' => self::$utilisateurCollecte,
+                'date_enregistrement' => new DateTimeImmutable(self::$dateEnregistrement),
             ];
-            for ($i = 0; $i < 10; $i++) {
-                $map["a" . ($i + 1)] = self::$a[$i];
-                $map["a" . ($i + 1) . "_blocker"] = self::$aBlocker[$i];
-                $map["a" . ($i + 1) . "_critical"] = self::$aCritical[$i];
-                $map["a" . ($i + 1) . "_major"] = self::$aMajor[$i];
-                $map["a" . ($i + 1) . "_info"] = self::$aInfo[$i];
-                $map["a" . ($i + 1) . "_minor"] = self::$aMinor[$i];
-            }
-            $map['mode_collecte'] = self::$modeCollecte;
-            $map['utilisateur_collecte'] = self::$utilisateurCollecte;
-            $map['date_enregistrement'] = new DateTimeImmutable(self::$dateEnregistrement);
-            return $map;
         };
 
         // Les fixtures posent déjà 3 lignes pour self::$mavenKey (cf. testSelectOwaspVersionHappyPath) :

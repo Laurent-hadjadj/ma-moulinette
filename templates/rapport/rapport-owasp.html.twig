@@ -183,10 +183,30 @@ https://github.com/Laurent-hadjadj/ma-moulinette
       .menaces-table .col-rule {
         width: 130px;
       }
-      .menaces-table .col-component {
+      .menaces-table th.col-component {
+        width: 140px;
+      }
+      /* MODIF 28/10/2026 : BUG CORRIGÉ — la police monospace réduite, pensée
+         * pour les chemins de fichier des cellules, s'appliquait aussi à l'en-tête
+         * "Composant"/"Component" (même classe .col-component sur <th> et <td>),
+         * le faisant apparaître plus petit et fin que les autres en-têtes du
+         * tableau. Restreint aux <td> uniquement. */
+      .menaces-table td.col-component {
         width: 140px;
         font-family: monospace;
         font-size: 9px;
+      }
+      /* MODIF 28/10/2026 : même largeur que .col-status (70px, déjà validée en
+         * production sur ce tableau) — largement suffisant pour un texte court
+         * type "A4, A5". */
+      .menaces-table .col-categorie {
+        width: 70px;
+        text-align: center;
+      }
+      .total-note {
+        font-size: 10px;
+        font-style: italic;
+        margin-top: 4px;
       }
 
       /* Histogramme vertical (X = A1..A10, Y = nombre de vulnérabilités).
@@ -427,12 +447,57 @@ https://github.com/Laurent-hadjadj/ma-moulinette
       <p class="empty">Pas de données pour le graphique.</p>
     {% endif %}
 
-    {# --- Page break avant la liste détaillée (souvent volumineuse) --- #}
+    {# --- Page break avant la liste détaillée des vulnérabilités OWASP --- #}
     <div class="page-break-before"></div>
 
-    {# --- Liste détaillée des vulnérabilités --- #}
-    <h2>Liste détaillée des vulnérabilités</h2>
-    {% if rapport.menaces|default([])|length > 0 %}
+    {# MODIF 28/10/2026 : nouvelle page — le tableau détaillé de ce rapport n'a
+    jusqu'ici jamais couvert que les Security Hotspots (page suivante), jamais
+    les vulnérabilités OWASP elles-mêmes (même dérive que celle déjà corrigée
+    sur la page web). Limité aux 10 vulnérabilités les plus critiques, triées
+    par sévérité (cf. OwaspDetailsRepository::selectOwaspDetailsTop10BySeverity()) ;
+    le nombre total réel est indiqué sous le tableau. #}
+    <h2>Liste détaillée des vulnérabilités OWASP</h2>
+    {% if rapport.owasp_details|default([])|length > 0 %}
+      <table class="menaces-table">
+        <thead>
+          <tr>
+            <th class="col-n">N°</th>
+            <th class="col-rule">Règle</th>
+            <th class="col-sev">Sévérité</th>
+            <th class="col-categorie">Catégorie</th>
+            <th class="col-component">Composant</th>
+            <th class="col-line">Ligne</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vulnerabilite in rapport.owasp_details %}
+            <tr>
+              <td class="col-n">{{ loop.index }}</td>
+              <td>{{ vulnerabilite.rule|default('—') }}</td>
+              <td class="col-sev">{{ vulnerabilite.severity|default('—')|upper }}</td>
+              <td class="col-categorie">{{ vulnerabilite.categories|default('—') }}</td>
+              <td class="col-component">{{ vulnerabilite.component|default('—') }}</td>
+              <td class="col-line">{{ vulnerabilite.ligne|default('—') }}</td>
+              <td>{{ vulnerabilite.message|default('—') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="total-note">Affichage des {{ rapport.owasp_details|length }} vulnérabilité(s) la/les plus critique(s) sur {{ rapport.owasp_details_total|default(0) }} au total, triées par sévérité.</p>
+    {% else %}
+      <p class="empty">Aucune vulnérabilité OWASP détaillée à afficher.</p>
+    {% endif %}
+
+    {# --- Page break avant la liste détaillée des hotspots --- #}
+    <div class="page-break-before"></div>
+
+    {# MODIF 28/10/2026 : titre précisé — ce tableau ne liste que les Security
+    Hotspots (hotspot_details), jamais les vulnérabilités OWASP (page
+    précédente) — même correctif que celui déjà fait sur la page web
+    (templates/owasp/index.html.twig). #}
+    <h2>Liste détaillée des Hotspots (menaces potentielles)</h2>
+    {% if rapport.hotspot_menaces|default([])|length > 0 %}
       <table class="menaces-table">
         <thead>
           <tr>
@@ -446,7 +511,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
           </tr>
         </thead>
         <tbody>
-          {% for menace in rapport.menaces %}
+          {% for menace in rapport.hotspot_menaces %}
             <tr>
               <td class="col-n">{{ loop.index }}</td>
               <td>{{ menace.rule|default('—') }}</td>
@@ -460,7 +525,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </tbody>
       </table>
     {% else %}
-      <p class="empty">Aucune vulnérabilité détaillée à afficher.</p>
+      <p class="empty">Aucun hotspot détaillé à afficher.</p>
     {% endif %}
 
   </body>

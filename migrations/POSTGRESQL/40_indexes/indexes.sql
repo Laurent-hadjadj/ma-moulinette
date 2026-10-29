@@ -180,6 +180,10 @@ CREATE INDEX IF NOT EXISTS idx_owasp_maven_key ON ma_moulinette.owasp (maven_key
 CREATE INDEX IF NOT EXISTS idx_owasp_date_version ON ma_moulinette.owasp (date_version);
 CREATE INDEX IF NOT EXISTS idx_owasp_key_ver_date ON ma_moulinette.owasp (maven_key, version, date_version);
 
+-- owasp_details
+CREATE INDEX IF NOT EXISTS idx_owasp_details_maven_key_referential ON ma_moulinette.owasp_details (maven_key, referential_owasp);
+CREATE INDEX IF NOT EXISTS idx_owasp_details_date ON ma_moulinette.owasp_details (date_enregistrement);
+
 -- portefeuille_historique
 CREATE INDEX IF NOT EXISTS idx_portefeuille_historique_action ON ma_moulinette.portefeuille_historique (action);
 CREATE INDEX IF NOT EXISTS idx_portefeuille_historique_date ON ma_moulinette.portefeuille_historique (date);

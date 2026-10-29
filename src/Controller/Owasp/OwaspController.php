@@ -21,10 +21,11 @@ use Symfony\Component\HttpFoundation\{Request, Response, ResponseHeaderBag};
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entity\{OwaspTop10, Owasp, HotspotOwasp, HotspotDetails, Historique};
+use App\Entity\{OwaspTop10, Owasp, OwaspDetails, HotspotOwasp, HotspotDetails, Historique};
 use App\Repository\DcScanRepository;
 use App\Repository\ZapScanRepository;
 use App\Service\{PdfExportService};
+use App\Service\Owasp\OwaspRuleClassifierService;
 use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
@@ -62,6 +63,7 @@ class OwaspController extends AbstractController
         private PdfExportService $pdfExportService,
         private DcScanRepository $dcScanRepository,
         private ZapScanRepository $zapScanRepository,
+        private OwaspRuleClassifierService $ruleClassifier,
         private UserAgentTrackingFacade $tracking)
     {
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -206,6 +208,8 @@ class OwaspController extends AbstractController
         $render['has_dc_scan'] = false;
         $render['has_zap_scan'] = false;
         $render['zap_link_token'] = null;
+        $render['owasp_rule_count_2017'] = 0;
+        $render['owasp_rule_count_2021'] = 0;
 
         $token = $request->query->get('token');
         if (empty($token)) {
@@ -320,6 +324,12 @@ class OwaspController extends AbstractController
         $render['owasp_2017'] = $owasp_2017;
         $render['owasp_2021'] = $owasp_2021;
         $render['owasp_2025'] = $owasp_2025;
+        /* MODIF 27/10/2026 : nombre de règles (core + FindSecBugs) couvrant
+         * chaque référentiel, pour le callout d'information de la page
+         * (OwaspRuleClassifierService — donnée statique, indépendante du
+         * projet consulté). */
+        $render['owasp_rule_count_2017'] = $this->ruleClassifier->ruleCount(2017);
+        $render['owasp_rule_count_2021'] = $this->ruleClassifier->ruleCount(2021);
         $render['application_group']   = $parts[0] ?? null;
         $render['application']         = $parts[1] ?? null;
         $render['application_version'] = $breadCrumb['version'] ?? null;
@@ -498,6 +508,7 @@ class OwaspController extends AbstractController
 
         /** Repos */
         $owaspRepo = $this->em->getRepository(Owasp::class);
+        $owaspDetailsRepo = $this->em->getRepository(OwaspDetails::class);
         $hotspotOwaspRepo = $this->em->getRepository(HotspotOwasp::class);
         $hotspotDetailsRepo = $this->em->getRepository(HotspotDetails::class);
 
@@ -510,6 +521,11 @@ class OwaspController extends AbstractController
         $vuln = ['total' => 0, 'blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 0];
         $version = null;
         $dateVersion = null;
+        /* MODIF 28/10/2026 : répartition par module des VULNÉRABILITÉS OWASP (colonnes
+         * owasp.module_frontend/backend/autre), même source que la page web depuis le
+         * 27/10/2026 — jusqu'ici le PDF la calculait encore depuis hotspot_details
+         * (ancienne répartition par hotspots, jamais mise à jour lors de ce changement). */
+        $moduleCounts = ['frontend' => 0, 'backend' => 0, 'autre' => 0];
         $categoriesFaille = array_fill(1, 10, 0);
         /** Severity breakdown par catégorie pour calculer le rating A-E à la
          *  manière de la page (cf. JS remplissageOwaspInfo) :
@@ -521,13 +537,20 @@ class OwaspController extends AbstractController
             $ligne = $owaspResult['liste'][0];
             $version = $ligne['version'] ?? null;
             $dateVersion = $ligne['date_version'] ?? null;
+            $moduleCounts['frontend'] = (int) ($ligne['module_frontend'] ?? 0);
+            $moduleCounts['backend']  = (int) ($ligne['module_backend']  ?? 0);
+            $moduleCounts['autre']    = (int) ($ligne['module_autre']    ?? 0);
+            /* MODIF 27/10/2026 : `categories` (JSON, sparse) remplace les 60
+             * colonnes à plat a1..a10/aN_blocker..minor — cf. owasp.md. */
+            $categories = json_decode((string) ($ligne['categories'] ?? '{}'), true) ?? [];
             for ($i = 1; $i <= 10; $i++) {
-                $categoriesFaille[$i] = (int) ($ligne["a{$i}"] ?? 0);
+                $cat = $categories["a{$i}"] ?? null;
+                $categoriesFaille[$i] = (int) ($cat['total'] ?? 0);
                 $sevBreakdown[$i] = [
-                    'blocker'  => (int) ($ligne["a{$i}_blocker"] ?? 0),
-                    'critical' => (int) ($ligne["a{$i}_critical"] ?? 0),
-                    'major'    => (int) ($ligne["a{$i}_major"] ?? 0),
-                    'minor'    => (int) ($ligne["a{$i}_minor"] ?? 0),
+                    'blocker'  => (int) ($cat['blocker'] ?? 0),
+                    'critical' => (int) ($cat['critical'] ?? 0),
+                    'major'    => (int) ($cat['major'] ?? 0),
+                    'minor'    => (int) ($cat['minor'] ?? 0),
                 ];
                 $vuln['total']    += $categoriesFaille[$i];
                 $vuln['blocker']  += $sevBreakdown[$i]['blocker'];
@@ -597,19 +620,14 @@ class OwaspController extends AbstractController
             }
         }
 
-        /** Liste détaillée des menaces + répartition module calculée à partir des flags.
-         *  Colonnes hotspot_details : rule_key (clé technique SonarQube),
-         *  rule_name (libellé), file_path (chemin complet du fichier), line. */
+        /** Liste détaillée des menaces (hotspots). La répartition par module
+         *  ($moduleCounts, vulnérabilités OWASP) est calculée plus haut. */
         $detailsResult = $hotspotDetailsRepo->selectHotspotDetailsByStatus(['maven_key' => $mavenKey]);
-        $repartition = ['frontend' => 0, 'backend' => 0, 'autre' => 0, 'inconnu' => 0];
-        $menacesListe = [];
+        $repartition = $moduleCounts;
+        $hotspotMenacesListe = [];
         if (($detailsResult['code'] ?? null) === 200) {
             foreach ($detailsResult['menaces'] ?? [] as $row) {
-                $repartition['frontend'] += (int) ($row['frontend'] ?? 0);
-                $repartition['backend']  += (int) ($row['backend']  ?? 0);
-                $repartition['autre']    += (int) ($row['autre']    ?? 0);
-                $repartition['inconnu']  += (int) ($row['inconnu']  ?? 0);
-                $menacesListe[] = [
+                $hotspotMenacesListe[] = [
                     'rule'      => $row['rule_key'] ?? $row['rule_name'] ?? '—',
                     'severity'  => $row['severity'] ?? '',
                     'component' => $row['file_path'] ?? $row['file_name'] ?? '—',
@@ -619,6 +637,28 @@ class OwaspController extends AbstractController
                 ];
             }
         }
+
+        /* MODIF 28/10/2026 : détail des 10 vulnérabilités OWASP les plus critiques
+         * (triées par sévérité) + total réel — le tableau détaillé du PDF n'a
+         * jusqu'ici jamais couvert que les Security Hotspots (ci-dessus),
+         * jamais les vulnérabilités OWASP elles-mêmes. */
+        $owaspDetailsMap = ['maven_key' => $mavenKey, 'referential_owasp' => $referentialOwasp];
+        $owaspDetailsResult = $owaspDetailsRepo->selectOwaspDetailsTop10BySeverity($owaspDetailsMap);
+        $owaspDetailsListe = [];
+        if (($owaspDetailsResult['code'] ?? null) === 200) {
+            foreach ($owaspDetailsResult['details'] ?? [] as $row) {
+                $owaspDetailsListe[] = [
+                    'rule'       => $row['rule_key'] ?? '—',
+                    'severity'   => $row['severity'] ?? '',
+                    'categories' => $row['categories'] ?? '—',
+                    'component'  => $row['file_path'] ?? '—',
+                    'ligne'      => $row['line'] ?? '—',
+                    'message'    => $row['message'] ?? '—',
+                ];
+            }
+        }
+        $owaspDetailsTotalResult = $owaspDetailsRepo->countOwaspDetails($owaspDetailsMap);
+        $owaspDetailsTotal = ($owaspDetailsTotalResult['code'] ?? null) === 200 ? $owaspDetailsTotalResult['total'] : 0;
 
         /** Construction des catégories A1..A10 avec libellés selon le référentiel
          *  + ratings A-E vulnérabilité (severity breakdown) et hotspot (taux
@@ -650,7 +690,9 @@ class OwaspController extends AbstractController
             'hotspots'          => $hotspots,
             'repartition'       => $repartition,
             'categories'        => $categories,
-            'menaces'           => $menacesListe,
+            'hotspot_menaces'   => $hotspotMenacesListe,
+            'owasp_details'       => $owaspDetailsListe,
+            'owasp_details_total' => $owaspDetailsTotal,
         ];
 
         $pdfContent = $this->pdfExportService->generateOwaspPdf($rapport, 'Document Interne');

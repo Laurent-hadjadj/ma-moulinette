@@ -15,10 +15,31 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
+/* MODIF 27/10/2026 : réécriture complète — le mécanisme facette+secours par tag
+ * (catégorie par catégorie) est remplacé par un seul appel paginé
+ * /api/issues/search?rules=<...> délégué à OwaspRuleClassifierService::classify().
+ * Les anciens tests sur la fusion facette/tag par catégorie n'ont plus d'objet
+ * (ce mécanisme n'existe plus) — remplacés par des tests sur la pagination et
+ * la délégation à OwaspRuleClassifierService (mocké).
+ *
+ * MODIF 28/10/2026 : BatchCollecteOwasp() persiste désormais aussi le détail
+ * individuel de chaque vulnérabilité classée (table owasp_details, repository
+ * OwaspDetailsRepository mocké) — ajout du mock manquant (le contrôleur
+ * appelle $this->em->getRepository(OwaspDetails::class) dès le début de la
+ * méthode, sans lui tout appel repartait en erreur TypeError "Return value
+ * must be of type EntityRepository, null returned"), du 3e couple
+ * delete+insert dans le scénario nominal, et de tests dédiés sur la forme des
+ * lignes owasp_details (référentiel, troncature message/file_path à 255
+ * caractères, garde 2017/2021 alignée sur $owaspDataList). OwaspRuleClassifierService::classify()
+ * retourne aussi 'module' par référentiel (2017/2021 séparément, cf. bug de
+ * répartition corrigé le même jour) et 'details' (une ligne par issue classée).
+ */
+
 use App\Controller\Batch\BatchCollecteOwaspController;
-use App\Entity\{InformationProjet, Owasp};
-use App\Repository\{InformationProjetRepository, OwaspRepository};
+use App\Entity\{InformationProjet, Owasp, OwaspDetails};
+use App\Repository\{InformationProjetRepository, OwaspDetailsRepository, OwaspRepository};
 use App\Service\{ClientService, GetSonarVersionService, UrlBuilderService};
+use App\Service\Owasp\OwaspRuleClassifierService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,13 +53,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
 {
     private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
     private const SONAR_URL = 'https://sonar.example.com';
-    private const BUILT_URL_2017 = 'https://sonar.example.com/api/issues/search?...owasp2017';
-    private const BUILT_URL_2021 = 'https://sonar.example.com/api/issues/search?...owasp2021';
-    private const BUILT_URL_TAG_FALLBACK = 'https://sonar.example.com/api/issues/search?...tags';
-    // MODIF 26/10/2026 : même liste que BatchCollecteOwaspController::$owaspCategories,
-    // pour distinguer dans le mock la requête combinée (facette, les 10 catégories) de
-    // l'appel ciblé "une seule catégorie" (fetchCategorySeverityBreakdown()).
-    private const ALL_CATEGORIES = 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10';
+    private const BUILT_URL = 'https://sonar.example.com/api/issues/search?...';
 
     /** @var EntityManagerInterface&MockObject */
     private MockObject $em;
@@ -49,6 +64,9 @@ class BatchCollecteOwaspControllerTest extends TestCase
     /** @var OwaspRepository&MockObject */
     private MockObject $owaspRepo;
 
+    /** @var OwaspDetailsRepository&MockObject */
+    private MockObject $owaspDetailsRepo;
+
     /** @var ClientService&MockObject */
     private MockObject $client;
 
@@ -57,6 +75,9 @@ class BatchCollecteOwaspControllerTest extends TestCase
 
     /** @var GetSonarVersionService&MockObject */
     private MockObject $sonarVersion;
+
+    /** @var OwaspRuleClassifierService&MockObject */
+    private MockObject $ruleClassifier;
 
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
@@ -71,39 +92,25 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->infoRepo = $this->createMock(InformationProjetRepository::class);
         $this->owaspRepo = $this->createMock(OwaspRepository::class);
+        $this->owaspDetailsRepo = $this->createMock(OwaspDetailsRepository::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
         $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
+        $this->ruleClassifier = $this->createMock(OwaspRuleClassifierService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
 
         $this->sonarVersion->method('componentKeyParam')->willReturn('components');
-        // Les fixtures d'issues de ce test utilisent le champ legacy 'status' (OPEN/CLOSED/...) :
-        // on stub issueStatusParam() sur l'ancien modèle pour que $statusField résolve à 'status'.
-        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'statuses', 'value' => 'OPEN,CONFIRMED,REOPENED']);
+        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED']);
+        $this->ruleClassifier->method('allRuleKeys')->willReturn(['java:S2077', 'findsecbugs:SQL_INJECTION_JPA']);
 
         $this->em->method('getRepository')->willReturnMap([
             [InformationProjet::class, $this->infoRepo],
             [Owasp::class, $this->owaspRepo],
+            [OwaspDetails::class, $this->owaspDetailsRepo],
         ]);
 
-        // url-builder renvoie des URL distinctes selon owaspTop10/owaspTop10-2021/tags
-        // (secours) — MODIF 26/10/2026 : une requête "une seule catégorie" (ex.
-        // owaspTop10-2021=a5, fetchCategorySeverityBreakdown()) obtient une URL
-        // distincte de la requête combinée (owaspTop10-2021=a1,...,a10), pour que les
-        // tests puissent mocker les deux séparément plutôt que de les confondre.
-        $this->urlBuilder->method('build')
-            ->willReturnCallback(function (string $base, string $path, array $params) {
-                if (isset($params['tags'])) {
-                    return self::BUILT_URL_TAG_FALLBACK;
-                }
-                foreach (['owaspTop10-2021' => self::BUILT_URL_2021, 'owaspTop10' => self::BUILT_URL_2017] as $param => $url) {
-                    if (isset($params[$param])) {
-                        return $params[$param] === self::ALL_CATEGORIES ? $url : "{$url}&single={$params[$param]}";
-                    }
-                }
-                return self::BUILT_URL_2017;
-            });
+        $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
 
         // Mock du container pour $this->getParameter() — pattern AbstractController.
         $container = $this->createMock(ContainerInterface::class);
@@ -120,26 +127,71 @@ class BatchCollecteOwaspControllerTest extends TestCase
             $this->client,
             $this->urlBuilder,
             $this->sonarVersion,
+            $this->ruleClassifier,
             $this->logger
         );
         $this->controller->setContainer($container);
     }
 
-    // ─── 1. Erreur HTTP sur OWASP 2017 ────────────────────────────────────────
-
-    #[DataProvider('httpErrorCodesProvider')]
-    public function testReturnsErrorWhenOwasp2017HttpCallFails(int $httpCode): void
+    private function stubParams(string $sonarVersion): void
     {
         $this->parameterBag->method('get')->willReturnMap([
             ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '10'],
+            ['sonar.version', $sonarVersion],
         ]);
+    }
+
+    /**
+     * Stub par défaut (succès) du couple delete+insert sur owasp_details —
+     * à appeler dans tout test qui atteint cette étape (insertOwasp réussi).
+     */
+    private function stubOwaspDetailsSuccess(): void
+    {
+        $this->owaspDetailsRepo->method('deleteOwaspDetailsMavenKey')->willReturn(['code' => 200]);
+        $this->owaspDetailsRepo->method('insertOwaspDetails')->willReturn(['code' => 200]);
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $issues
+     *
+     * @return array{total: int, effortTotal: int, issues: array<int, array<string, mixed>>, paging: array{total: int}}
+     */
+    private function page(array $issues, int $total, int $effortTotal = 0): array
+    {
+        return ['total' => $total, 'effortTotal' => $effortTotal, 'issues' => $issues, 'paging' => ['total' => $total]];
+    }
+
+    /**
+     * @return array{
+     *     2017: array<string, array<string, mixed>>,
+     *     2021: array<string, array<string, mixed>>,
+     *     module: array{2017: array{frontend: int, backend: int, autre: int}, 2021: array{frontend: int, backend: int, autre: int}},
+     *     details: array{2017: array<int, array<string, mixed>>, 2021: array<int, array<string, mixed>>}
+     * }
+     */
+    private function emptyClassification(): array
+    {
+        return [
+            2017 => [],
+            2021 => [],
+            'module' => [
+                2017 => ['frontend' => 0, 'backend' => 0, 'autre' => 0],
+                2021 => ['frontend' => 0, 'backend' => 0, 'autre' => 0],
+            ],
+            'details' => [2017 => [], 2021 => []],
+        ];
+    }
+
+    // ─── 1. Erreur HTTP sur l'appel issues ────────────────────────────────────
+
+    #[DataProvider('httpErrorCodesProvider')]
+    public function testReturnsErrorWhenIssuesFetchFails(int $httpCode): void
+    {
+        $this->stubParams('10');
 
         $this->client->expects($this->once())
             ->method('httpSonarQube')
             ->willReturn(['code' => $httpCode, 'erreur' => "HTTP $httpCode"]);
-
-        $this->logger->expects($this->once())->method('error');
 
         $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
 
@@ -154,97 +206,50 @@ class BatchCollecteOwaspControllerTest extends TestCase
         return [[400], [401], [500], [503]];
     }
 
-    // ─── 2. sonar.version = 8 : 2021 pas appelé ──────────────────────────────
+    // ─── 2. Pagination : plusieurs pages jusqu'à paging.total ────────────────
 
-    public function testSkipsOwasp2021WhenSonarVersionIs8(): void
+    public function testPaginatesUntilAllIssuesAreFetched(): void
     {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
+        $this->stubParams('10');
 
-        // MODIF 26/10/2026 : a1/a3 classées par la facette officielle -> 1 appel
-        // ciblé par catégorie en plus (fetchCategorySeverityBreakdown()), ainsi que
-        // le secours par tag (désormais toujours calculé, même si inutilisé ici).
-        $this->client->expects($this->exactly(4))
+        // Page 1 pleine (self::$pageSize = 500) + page 2 avec le reliquat, pour forcer
+        // une 2e page (total=501 > une seule page de 500).
+        $page1Issues = array_fill(0, 500, ['rule' => 'java:S2077', 'component' => 'webapp/A.java', 'severity' => 'MAJOR']);
+        $page2Issues = [['rule' => 'findsecbugs:SQL_INJECTION_JPA', 'component' => 'metier/B.java', 'severity' => 'CRITICAL']];
+
+        $call = 0;
+        $this->client->expects($this->exactly(2))
             ->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) {
-                if ($url === self::BUILT_URL_2017) {
-                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
-                        total: 3,
-                        facets: [['val' => 'a1', 'count' => 2], ['val' => 'a3', 'count' => 1]]
-                    )];
-                }
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
-                }
-                if ($url === $this->singleCategoryUrl(2017, 1)) {
-                    return $this->categorySeverityResponse([
-                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
-                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
-                    ]);
-                }
-                if ($url === $this->singleCategoryUrl(2017, 3)) {
-                    return $this->categorySeverityResponse([
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                    ]);
-                }
-                throw new \LogicException("URL inattendue dans ce test : {$url}");
+            ->willReturnCallback(function () use (&$call, $page1Issues, $page2Issues) {
+                $call++;
+                return $call === 1
+                    ? ['code' => 200, 'json' => $this->page($page1Issues, 501, 15)]
+                    : ['code' => 200, 'json' => $this->page($page2Issues, 501, 15)];
             });
 
-        $this->infoRepo->expects($this->once())
-            ->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [
-                'date' => '2026-04-22',
-                'version' => '1.0.0',
-            ]]);
+        $this->ruleClassifier->expects($this->once())
+            ->method('classify')
+            ->with($this->callback(fn (array $issues) => count($issues) === 501))
+            ->willReturn($this->emptyClassification());
 
-        $this->owaspRepo->expects($this->once())->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(fn (array $list) => count($list) === 1 && $list[0]['referential_owasp'] === 2017))
-            ->willReturn(['code' => 200]);
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->owaspRepo->method('insertOwasp')->willReturn(['code' => 200]);
+        $this->stubOwaspDetailsSuccess();
 
         $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
 
         $this->assertSame(200, $result['code']);
-        $this->assertSame(3, $result['owasp2017']);
-        $this->assertSame('NC', $result['owasp2021']);
     }
 
-    // ─── 3. Erreur HTTP sur OWASP 2021 ──────────────────────────────────────
-
-    public function testReturnsErrorWhenOwasp2021HttpCallFails(): void
-    {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '10'],
-        ]);
-
-        $this->client->expects($this->exactly(2))
-            ->method('httpSonarQube')
-            ->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'json' => $this->buildOwaspPayload(0)],
-                ['code' => 500, 'erreur' => 'owasp 2021 failed']
-            );
-
-        $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
-
-        $this->assertSame(['code' => 500, 'erreur' => 'owasp 2021 failed'], $result);
-    }
-
-    // ─── 4. selectInformationProjetVersion échoue ────────────────────────────
+    // ─── 3. selectInformationProjetVersion échoue ────────────────────────────
 
     public function testReturnsErrorWhenInformationProjetVersionQueryFails(): void
     {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
+        $this->stubParams('8');
 
-        $this->client->expects($this->once())
-            ->method('httpSonarQube')
-            ->willReturn(['code' => 200, 'json' => $this->buildOwaspPayload(0)]);
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
 
         $this->infoRepo->expects($this->once())
             ->method('selectInformationProjetVersion')
@@ -252,24 +257,22 @@ class BatchCollecteOwaspControllerTest extends TestCase
 
         $this->owaspRepo->expects($this->never())->method('deleteOwaspMavenKey');
         $this->owaspRepo->expects($this->never())->method('insertOwasp');
+        $this->owaspDetailsRepo->expects($this->never())->method('deleteOwaspDetailsMavenKey');
+        $this->owaspDetailsRepo->expects($this->never())->method('insertOwaspDetails');
 
         $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
 
         $this->assertSame(['code' => 503, 'erreur' => 'DB down'], $result);
     }
 
-    // ─── 5. Aucune info projet ────────────────────────────────────────────────
+    // ─── 4. Aucune info projet ────────────────────────────────────────────────
 
     public function testReturns404WhenNoProjectInfoIsFound(): void
     {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
+        $this->stubParams('8');
 
-        $this->client->expects($this->once())
-            ->method('httpSonarQube')
-            ->willReturn(['code' => 200, 'json' => $this->buildOwaspPayload(0)]);
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
 
         $this->infoRepo->expects($this->once())
             ->method('selectInformationProjetVersion')
@@ -284,99 +287,117 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->assertSame(404, $result['code']);
     }
 
-    // ─── 6. deleteOwasp échoue ───────────────────────────────────────────────
+    // ─── 5. deleteOwasp échoue ───────────────────────────────────────────────
 
     public function testReturnsErrorWhenDeleteOwaspFails(): void
     {
-        $this->stubOk(sonarVersion: '8');
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
 
         $this->owaspRepo->expects($this->once())
             ->method('deleteOwaspMavenKey')
             ->willReturn(['code' => 500, 'erreur' => 'delete failed']);
-
         $this->owaspRepo->expects($this->never())->method('insertOwasp');
+        $this->owaspDetailsRepo->expects($this->never())->method('deleteOwaspDetailsMavenKey');
 
         $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
 
         $this->assertSame(['code' => 500, 'erreur' => 'delete failed'], $result);
     }
 
-    // ─── 7. insertOwasp échoue ───────────────────────────────────────────────
+    // ─── 6. insertOwasp échoue ───────────────────────────────────────────────
 
     public function testReturnsErrorWhenInsertOwaspFails(): void
     {
-        $this->stubOk(sonarVersion: '8');
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
 
         $this->owaspRepo->expects($this->once())->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
         $this->owaspRepo->expects($this->once())
             ->method('insertOwasp')
             ->willReturn(['code' => 500, 'erreur' => 'insert failed']);
+        $this->owaspDetailsRepo->expects($this->never())->method('deleteOwaspDetailsMavenKey');
 
         $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
 
         $this->assertSame(['code' => 500, 'erreur' => 'insert failed'], $result);
     }
 
-    // ─── 8. Happy path version 10+ : 2017 ET 2021 persistés ────────────────
+    // ─── 7. sonar.version = 8 : une seule ligne (2017) ───────────────────────
 
-    public function testHappyPathWithBothReferentialsPersistsSeparateRows(): void
+    public function testSkipsOwasp2021RowWhenSonarVersionIs8(): void
     {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '10'],
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+
+        $this->ruleClassifier->method('classify')->willReturn([
+            2017 => ['a1' => ['total' => 3, 'blocker' => 1, 'critical' => 0, 'major' => 2, 'minor' => 0, 'info' => 0, 'source' => 'core']],
+            2021 => ['a3' => ['total' => 9, 'blocker' => 0, 'critical' => 9, 'major' => 0, 'minor' => 0, 'info' => 0, 'source' => 'core']],
+            'module' => [
+                2017 => ['frontend' => 1, 'backend' => 2, 'autre' => 0],
+                2021 => ['frontend' => 1, 'backend' => 0, 'autre' => 0],
+            ],
+            'details' => [2017 => [], 2021 => []],
         ]);
 
-        // MODIF 26/10/2026 : a1/a2 (2017) et a4/a6 (2021) classées par la facette
-        // officielle -> 4 appels ciblés par catégorie en plus, ainsi que le secours
-        // par tag (toujours calculé, un seul appel partagé 2017+2021, inutilisé ici).
-        $this->client->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) {
-                if ($url === self::BUILT_URL_2017) {
-                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
-                        total: 5,
-                        facets: [['val' => 'a1', 'count' => 3], ['val' => 'a2', 'count' => 2]]
-                    )];
-                }
-                if ($url === self::BUILT_URL_2021) {
-                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
-                        total: 7,
-                        facets: [['val' => 'a4', 'count' => 4], ['val' => 'a6', 'count' => 3]]
-                    )];
-                }
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
-                }
-                if ($url === $this->singleCategoryUrl(2017, 1)) {
-                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'MAJOR'], ['status' => 'OPEN', 'severity' => 'MAJOR'], ['status' => 'OPEN', 'severity' => 'MAJOR']]);
-                }
-                if ($url === $this->singleCategoryUrl(2017, 2)) {
-                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'MINOR'], ['status' => 'OPEN', 'severity' => 'MINOR']]);
-                }
-                if ($url === $this->singleCategoryUrl(2021, 4)) {
-                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'CRITICAL'], ['status' => 'OPEN', 'severity' => 'CRITICAL'], ['status' => 'OPEN', 'severity' => 'CRITICAL'], ['status' => 'OPEN', 'severity' => 'CRITICAL']]);
-                }
-                if ($url === $this->singleCategoryUrl(2021, 6)) {
-                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'BLOCKER'], ['status' => 'OPEN', 'severity' => 'BLOCKER'], ['status' => 'OPEN', 'severity' => 'BLOCKER']]);
-                }
-                throw new \LogicException("URL inattendue dans ce test : {$url}");
-            });
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0.0']]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->stubOwaspDetailsSuccess();
 
-        $this->infoRepo->expects($this->once())
-            ->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [
-                'date' => '2026-04-22',
-                'version' => '2.0.0',
-            ]]);
-
-        $this->owaspRepo->expects($this->once())->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-
+        $captured = [];
         $this->owaspRepo->expects($this->once())
             ->method('insertOwasp')
-            ->with($this->callback(function (array $list) {
-                // Correction du bug : [0]=2017, [1]=2021 distincts, pas d'écrasement
-                return count($list) === 2
-                    && $list[0]['referential_owasp'] === 2017
-                    && $list[1]['referential_owasp'] === 2021;
+            ->with($this->callback(function (array $list) use (&$captured) {
+                $captured = $list;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame(3, $result['owasp2017']);
+        $this->assertSame('NC', $result['owasp2021'], 'Pas de ligne 2021 construite pour sonar.version = 8.');
+        $this->assertCount(1, $captured);
+        $this->assertSame(2017, $captured[0]['referential_owasp']);
+    }
+
+    // ─── 8. Happy path version 10+ : 2017 ET 2021 persistés depuis classify() ─
+
+    public function testHappyPathBuildsBothRowsFromClassifierOutput(): void
+    {
+        $this->stubParams('10');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 12, 42)]);
+
+        $classified = [
+            2017 => [
+                'a1' => ['total' => 5, 'blocker' => 1, 'critical' => 2, 'major' => 2, 'minor' => 0, 'info' => 0, 'source' => 'mixed'],
+            ],
+            2021 => [
+                'a3' => ['total' => 7, 'blocker' => 0, 'critical' => 7, 'major' => 0, 'minor' => 0, 'info' => 0, 'source' => 'core'],
+            ],
+            'module' => [
+                2017 => ['frontend' => 3, 'backend' => 4, 'autre' => 5],
+                2021 => ['frontend' => 2, 'backend' => 1, 'autre' => 0],
+            ],
+            'details' => [2017 => [], 2021 => []],
+        ];
+        $this->ruleClassifier->expects($this->once())->method('classify')->willReturn($classified);
+
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '2.0.0']]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->stubOwaspDetailsSuccess();
+
+        $captured = [];
+        $this->owaspRepo->expects($this->once())
+            ->method('insertOwasp')
+            ->with($this->callback(function (array $list) use (&$captured) {
+                $captured = $list;
+                return true;
             }))
             ->willReturn(['code' => 200]);
 
@@ -386,586 +407,281 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->assertSame(5, $result['owasp2017']);
         $this->assertSame(7, $result['owasp2021']);
         $this->assertStringContainsString('OWASP', $result['message']);
+
+        $this->assertCount(2, $captured);
+        $this->assertSame(2017, $captured[0]['referential_owasp']);
+        $this->assertSame($classified[2017], $captured[0]['categories']);
+        $this->assertSame(42, $captured[0]['effort_total']);
+        $this->assertSame(3, $captured[0]['module_frontend']);
+        $this->assertSame(4, $captured[0]['module_backend']);
+        $this->assertSame(5, $captured[0]['module_autre']);
+
+        $this->assertSame(2021, $captured[1]['referential_owasp']);
+        $this->assertSame($classified[2021], $captured[1]['categories']);
+        $this->assertSame(42, $captured[1]['effort_total'], 'Même effort global reporté sur les deux lignes (simplification assumée).');
+        $this->assertSame(2, $captured[1]['module_frontend'], 'Répartition module propre au référentiel 2021, distincte de 2017.');
+        $this->assertSame(self::MAVEN_KEY, $captured[0]['maven_key']);
+        $this->assertSame('2.0.0', $captured[0]['version']);
+        $this->assertSame('auto', $captured[0]['mode_collecte']);
+        $this->assertSame('batch', $captured[0]['utilisateur_collecte']);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $captured[0]['date_version']);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $captured[0]['date_enregistrement']);
     }
 
-    // ─── 9. La map produit par prepareOwaspData contient a1..a10 + severities ─
+    // ─── 9. Aucune catégorie classée : ligne 2017 quand même construite (évite le 406 front) ─
 
-    public function testPersistedMapHasExpectedShape(): void
+    public function testBuilds2017RowEvenWhenNoCategoryMatched(): void
     {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
 
-        $payload = $this->buildOwaspPayload(
-            total: 3,
-            facets: [
-                ['val' => 'a1', 'count' => 1],
-                ['val' => 'a5', 'count' => 2],
-            ]
-        );
-
-        // MODIF 26/10/2026 : la répartition par sévérité des catégories classées
-        // par la facette officielle (a1, a5) vient désormais d'un appel ciblé par
-        // catégorie, pas des `issues` de la requête combinée (qui ne portent
-        // jamais de tag owasp-aX exploitable, cf. BatchCollecteOwaspController).
-        $this->client->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) use ($payload) {
-                if ($url === self::BUILT_URL_2017) {
-                    return ['code' => 200, 'json' => $payload];
-                }
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
-                }
-                if ($url === $this->singleCategoryUrl(2017, 1)) {
-                    return $this->categorySeverityResponse([
-                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
-                        ['status' => 'CLOSED', 'severity' => 'MAJOR'], // ignoré (status)
-                    ]);
-                }
-                if ($url === $this->singleCategoryUrl(2017, 5)) {
-                    return $this->categorySeverityResponse([
-                        ['status' => 'OPEN', 'severity' => 'CRITICAL'],
-                    ]);
-                }
-                throw new \LogicException("URL inattendue dans ce test : {$url}");
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [
-                'date' => '2026-04-22', 'version' => '1.0',
-            ]]);
-
-        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
-        $capturedMap = [];
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
         $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->stubOwaspDetailsSuccess();
+
+        $captured = [];
         $this->owaspRepo->expects($this->once())
             ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedMap) {
-                $capturedMap = $list[0];
+            ->with($this->callback(function (array $list) use (&$captured) {
+                $captured = $list;
                 return true;
             }))
             ->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        $this->assertSame(0, $result['owasp2017'], 'Zéro réel, pas une absence de collecte.');
+        $this->assertCount(1, $captured);
+        $this->assertSame([], $captured[0]['categories']);
+    }
+
+    // ─── 10. Les clés de règles du classifier sont transmises en rules= ─────
+
+    public function testPassesClassifierRuleKeysAsRulesParameter(): void
+    {
+        // setUp() stub allRuleKeys() -> ['java:S2077', 'findsecbugs:SQL_INJECTION_JPA'].
+        $this->stubParams('10');
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
+
+        $this->urlBuilder->expects($this->atLeastOnce())
+            ->method('build')
+            ->with(
+                self::SONAR_URL,
+                '/api/issues/search',
+                $this->callback(fn (array $params) => $params['rules'] === 'java:S2077,findsecbugs:SQL_INJECTION_JPA')
+            )
+            ->willReturn(self::BUILT_URL);
+
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->owaspRepo->method('insertOwasp')->willReturn(['code' => 200]);
+        $this->stubOwaspDetailsSuccess();
 
         $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
-
-        $this->assertSame(self::MAVEN_KEY, $capturedMap['maven_key']);
-        $this->assertSame('1.0', $capturedMap['version']);
-        $this->assertSame('manual', $capturedMap['mode_collecte']);
-        $this->assertSame('admin', $capturedMap['utilisateur_collecte']);
-        $this->assertInstanceOf(\DateTimeImmutable::class, $capturedMap['date_version']);
-        $this->assertInstanceOf(\DateTimeImmutable::class, $capturedMap['date_enregistrement']);
-
-        // Compteurs a1..a10 depuis les facets
-        $this->assertSame(1, $capturedMap['a1']);
-        $this->assertSame(2, $capturedMap['a5']);
-        $this->assertSame(0, $capturedMap['a3']);
-
-        // Severity buckets : 'OPEN' + 'owasp-a1' + 'BLOCKER' → a1_blocker=1 ;
-        // l'issue CLOSED sur a1 ne doit PAS être comptée (filtre status)
-        $this->assertSame(1, $capturedMap['a1_blocker']);
-        $this->assertSame(0, $capturedMap['a1_major']); // CLOSED ignorée
-        $this->assertSame(1, $capturedMap['a5_critical']);
     }
 
-    // ─── 9bis. Même filtre côté nouveau modèle (issueStatus, ACCEPTED inclus) — MODIF 2026-10-11 ─
+    // ─── 11. owasp_details : deleteOwaspDetailsMavenKey échoue ──────────────
 
-    public function testPersistedMapHasExpectedShapeWithNewIssueStatusModel(): void
+    public function testReturnsErrorWhenDeleteOwaspDetailsFails(): void
     {
-        // Contrôleur dédié : issueStatusParam() doit résoudre le nouveau modèle ici,
-        // contrairement au défaut legacy stubbé dans setUp() (réutilisé par les
-        // fixtures 'status' des autres tests de cette classe).
-        $sonarVersion = $this->createMock(GetSonarVersionService::class);
-        $sonarVersion->method('componentKeyParam')->willReturn('components');
-        $sonarVersion->method('issueStatusParam')->willReturn([
-            'param' => 'issueStatuses',
-            'value' => 'OPEN,CONFIRMED,ACCEPTED',
-        ]);
-        $controller = new BatchCollecteOwaspController(
-            $this->em,
-            $this->client,
-            $this->urlBuilder,
-            $sonarVersion,
-            $this->logger
-        );
-
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
-
-        $container = $this->createMock(ContainerInterface::class);
-        $container->method('has')->willReturnMap([['parameter_bag', true], ['serializer', false]]);
-        $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
-        $controller->setContainer($container);
-
-        $payload = $this->buildOwaspPayload(
-            total: 3,
-            facets: [
-                ['val' => 'a1', 'count' => 1],
-                ['val' => 'a5', 'count' => 2],
-            ]
-        );
-
-        // MODIF 26/10/2026 : même raison que testPersistedMapHasExpectedShape —
-        // sévérité par catégorie via un appel ciblé, pas via les `issues` combinées.
-        $this->client->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) use ($payload) {
-                if ($url === self::BUILT_URL_2017) {
-                    return ['code' => 200, 'json' => $payload];
-                }
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
-                }
-                if ($url === $this->singleCategoryUrl(2017, 1)) {
-                    return $this->categorySeverityResponse([
-                        ['issueStatus' => 'OPEN', 'severity' => 'BLOCKER'],
-                        ['issueStatus' => 'FIXED', 'severity' => 'MAJOR'], // ignoré
-                    ]);
-                }
-                if ($url === $this->singleCategoryUrl(2017, 5)) {
-                    return $this->categorySeverityResponse([
-                        ['issueStatus' => 'ACCEPTED', 'severity' => 'CRITICAL'], // compté (nouveau modèle)
-                    ]);
-                }
-                throw new \LogicException("URL inattendue dans ce test : {$url}");
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [
-                'date' => '2026-04-22', 'version' => '1.0',
-            ]]);
-
-        $capturedMap = [];
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
         $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedMap) {
-                $capturedMap = $list[0];
-                return true;
-            }))
-            ->willReturn(['code' => 200]);
+        $this->owaspRepo->method('insertOwasp')->willReturn(['code' => 200]);
 
-        $controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
-
-        // 'ACCEPTED' compté (nouveau modèle), 'FIXED' ignoré.
-        $this->assertSame(1, $capturedMap['a1_blocker']);
-        $this->assertSame(0, $capturedMap['a1_major']); // FIXED ignorée
-        $this->assertSame(1, $capturedMap['a5_critical']); // ACCEPTED comptée
-    }
-
-    // ─── 10. Secours par tag quand la facette officielle ne classe rien (MODIF 2026-07-18) ─
-
-    public function testFallsBackToTagCountWhenFacetTotalIsZero(): void
-    {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '10'],
-        ]);
-
-        // MODIF 26/10/2026 : tag sans zéro-padding (owasp-a1/owasp-a4, bug corrigé) +
-        // a3 (2021, classée par la facette officielle) nécessite désormais 1 appel
-        // ciblé supplémentaire pour sa répartition par sévérité.
-        $this->client->expects($this->exactly(4))
-            ->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) {
-                if ($url === self::BUILT_URL_2017) {
-                    return ['code' => 200, 'json' => $this->buildOwaspPayload(0)];
-                }
-                if ($url === self::BUILT_URL_2021) {
-                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
-                        total: 5,
-                        facets: [['val' => 'a3', 'count' => 5]]
-                    )];
-                }
-                if ($url === $this->singleCategoryUrl(2021, 3)) {
-                    return $this->categorySeverityResponse([
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                    ]);
-                }
-                // secours par tag (owasp-a1/owasp-a4, sans zéro-padding)
-                return ['code' => 200, 'json' => [
-                    'total' => 2,
-                    'effortTotal' => 20,
-                    'issues' => [
-                        ['status' => 'OPEN', 'severity' => 'BLOCKER', 'tags' => ['owasp-a1']],
-                        ['status' => 'OPEN', 'severity' => 'MAJOR', 'tags' => ['owasp-a4']],
-                    ],
-                ]];
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
-            'date' => '2026-04-22', 'version' => '1.0',
-        ]]);
-        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-
-        $capturedList = [];
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedList) {
-                $capturedList = $list;
-                return true;
-            }))
-            ->willReturn(['code' => 200]);
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('deleteOwaspDetailsMavenKey')
+            ->willReturn(['code' => 500, 'erreur' => 'delete details failed']);
+        $this->owaspDetailsRepo->expects($this->never())->method('insertOwaspDetails');
 
         $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
 
-        $this->assertSame(200, $result['code']);
-        // 2017 : facette vide -> secours par tag (2 violations : a1, a4)
-        $this->assertSame(2, $result['owasp2017']);
-        $this->assertSame('tag', $capturedList[0]['source']);
-        $this->assertSame(1, $capturedList[0]['a1']);
-        $this->assertSame(1, $capturedList[0]['a4']);
-        $this->assertSame(1, $capturedList[0]['a1_blocker']);
-        $this->assertSame(1, $capturedList[0]['a4_major']);
-
-        // 2021 : a3 classée par la facette officielle (pas de secours nécessaire
-        // pour cette catégorie) — MAIS a1/a4 restent classées par le secours par
-        // tag, qui n'est pas spécifique à un référentiel (même donnée partagée que
-        // pour 2017, cf. testTagFallbackIsMemoizedAcrossBothReferentials) : la
-        // facette 2021 ne les couvrant pas, le secours s'applique aussi à elles.
-        // MODIF 26/10/2026 : source 'mixed' (a3 = facette, a1/a4 = tag), pas 'facet'
-        // pur comme avant la fusion par catégorie.
-        $this->assertSame(7, $result['owasp2021']);
-        $this->assertSame('mixed', $capturedList[1]['source']);
-        $this->assertSame(5, $capturedList[1]['a3']);
-        $this->assertSame(1, $capturedList[1]['a1']);
-        $this->assertSame(1, $capturedList[1]['a4']);
-        // MODIF 26/10/2026 : sévérité via l'appel ciblé par catégorie (bug corrigé —
-        // ne vaut plus structurellement 0 pour les catégories classées par la facette).
-        $this->assertSame(5, $capturedList[1]['a3_major']);
+        $this->assertSame(['code' => 500, 'erreur' => 'delete details failed'], $result);
     }
 
-    // ─── 10bis. Fusion par catégorie : facette ET tag contribuent au même référentiel (MODIF 26/10/2026) ─
-    // Cas réel rencontré sur SonarQube Community 26.10 : la
-    // facette officielle owaspTop10-2021 classe A5/A7 (règles cœur SonarQube), mais
-    // ignore A6 — pourtant réellement détecté par un plugin tiers (findsecbugs) qui
-    // pose son propre tag `owasp-a6`. Comme le total de la facette n'est pas nul
-    // (A5+A7 = 3), l'ancienne logique prenait la branche "officielle" pour tout le
-    // référentiel et ne regardait jamais le secours par tag : les 9 anomalies A6
-    // restaient invisibles, et la répartition par sévérité de A5/A7 restait à 0
-    // (cf. bug corrigé dans fetchCategorySeverityBreakdown()).
-    public function testMergesFacetAndTagPerCategoryWhenBothContributeToSameReferential(): void
+    // ─── 12. owasp_details : insertOwaspDetails échoue ───────────────────────
+
+    public function testReturnsErrorWhenInsertOwaspDetailsFails(): void
     {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
-
-        $this->client->expects($this->exactly(4))
-            ->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) {
-                if ($url === self::BUILT_URL_2017) {
-                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
-                        total: 3,
-                        facets: [['val' => 'a5', 'count' => 2], ['val' => 'a7', 'count' => 1]]
-                    )];
-                }
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 200, 'json' => [
-                        'total' => 9,
-                        'effortTotal' => 90,
-                        'issues' => array_fill(0, 9, ['status' => 'OPEN', 'severity' => 'MAJOR', 'tags' => ['cwe', 'cryptography', 'owasp-a6']]),
-                    ]];
-                }
-                if ($url === $this->singleCategoryUrl(2017, 5)) {
-                    return $this->categorySeverityResponse([
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
-                    ]);
-                }
-                if ($url === $this->singleCategoryUrl(2017, 7)) {
-                    return $this->categorySeverityResponse([
-                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
-                    ]);
-                }
-                throw new \LogicException("URL inattendue dans ce test : {$url}");
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
-            'date' => '2026-04-22', 'version' => '1.0',
-        ]]);
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+        $this->ruleClassifier->method('classify')->willReturn($this->emptyClassification());
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
         $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->owaspRepo->method('insertOwasp')->willReturn(['code' => 200]);
+        $this->owaspDetailsRepo->method('deleteOwaspDetailsMavenKey')->willReturn(['code' => 200]);
 
-        $capturedList = [];
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedList) {
-                $capturedList = $list;
-                return true;
-            }))
-            ->willReturn(['code' => 200]);
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('insertOwaspDetails')
+            ->willReturn(['code' => 500, 'erreur' => 'insert details failed']);
 
         $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
 
-        $this->assertSame(200, $result['code']);
-        // Total = 2 (a5, facette) + 1 (a7, facette) + 9 (a6, tag) = 12.
-        $this->assertSame(12, $result['owasp2017']);
-        $this->assertSame('mixed', $capturedList[0]['source']);
-
-        // A5/A7 : facette, avec leur vraie répartition par sévérité (plus 0 partout).
-        $this->assertSame(2, $capturedList[0]['a5']);
-        $this->assertSame(2, $capturedList[0]['a5_major']);
-        $this->assertSame(1, $capturedList[0]['a7']);
-        $this->assertSame(1, $capturedList[0]['a7_blocker']);
-
-        // A6 : secours par tag, jamais classé par la facette.
-        $this->assertSame(9, $capturedList[0]['a6']);
-        $this->assertSame(9, $capturedList[0]['a6_major']);
-
-        // Les autres catégories restent à 0.
-        $this->assertSame(0, $capturedList[0]['a1']);
-        $this->assertSame(0, $capturedList[0]['a3']);
+        $this->assertSame(['code' => 500, 'erreur' => 'insert details failed'], $result);
     }
 
-    public function testTagFallbackIsMemoizedAcrossBothReferentials(): void
+    // ─── 13. owasp_details : forme des lignes persistées depuis classify()['details'] ─
+
+    public function testHappyPathPersistsOwaspDetailsRowsFromClassifierOutput(): void
     {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '10'],
-        ]);
+        $this->stubParams('10');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
 
-        $tagCallCount = 0;
-        $this->client->expects($this->exactly(3))
-            ->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) use (&$tagCallCount) {
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    $tagCallCount++;
-                    return ['code' => 200, 'json' => [
-                        'total' => 1,
-                        'effortTotal' => 5,
-                        'issues' => [
-                            ['status' => 'OPEN', 'severity' => 'MINOR', 'tags' => ['owasp-a02']],
-                        ],
-                    ]];
-                }
-                return ['code' => 200, 'json' => $this->buildOwaspPayload(0)];
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
-            'date' => '2026-04-22', 'version' => '1.0',
-        ]]);
-        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-
-        $capturedList = [];
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedList) {
-                $capturedList = $list;
-                return true;
-            }))
-            ->willReturn(['code' => 200]);
-
-        $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
-
-        // Un seul appel HTTP de secours, réutilisé pour 2017 ET 2021 (le tag
-        // n'est pas spécifique à un référentiel).
-        $this->assertSame(1, $tagCallCount);
-        $this->assertSame('tag', $capturedList[0]['source']);
-        $this->assertSame('tag', $capturedList[1]['source']);
-        $this->assertSame(1, $capturedList[0]['a2']);
-        $this->assertSame(1, $capturedList[1]['a2']);
-    }
-
-    public function testKeepsSourceFacetWhenTagFallbackAlsoFindsNothing(): void
-    {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
-
-        $this->client->expects($this->exactly(2))
-            ->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) {
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
-                }
-                return ['code' => 200, 'json' => $this->buildOwaspPayload(0)];
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
-            'date' => '2026-04-22', 'version' => '1.0',
-        ]]);
-        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-
-        $capturedList = [];
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedList) {
-                $capturedList = $list;
-                return true;
-            }))
-            ->willReturn(['code' => 200]);
-
-        $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
-
-        $this->assertSame('facet', $capturedList[0]['source']);
-        $this->assertSame(0, $capturedList[0]['a1']);
-    }
-
-    public function testTagFallbackHttpFailureDoesNotCrashAndKeepsSourceFacet(): void
-    {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
-
-        $this->client->expects($this->exactly(2))
-            ->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) {
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 500, 'erreur' => 'tag fallback failed'];
-                }
-                return ['code' => 200, 'json' => $this->buildOwaspPayload(0)];
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
-            'date' => '2026-04-22', 'version' => '1.0',
-        ]]);
-        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-
-        $this->logger->expects($this->atLeastOnce())->method('warning');
-
-        $capturedList = [];
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedList) {
-                $capturedList = $list;
-                return true;
-            }))
-            ->willReturn(['code' => 200]);
-
-        $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
-
-        $this->assertSame(200, $result['code']);
-        $this->assertSame('facet', $capturedList[0]['source']);
-    }
-
-    // ─── 11. facets structurellement absent alors que total > 0 (MODIF 2026-07-26) ─
-    // Cas réel observé : SonarQube peut renvoyer total > 0 avec facets: [] (pas
-    // même de facets[0]) quand la requête ne demande pas explicitement la
-    // facette owaspTop10 — ce que fait le double d'e2e SonarFixtureClientService,
-    // qui réutilise le même fixture issues/search.json pour tous les endpoints
-    // /api/issues/search. Avant fix : facets[0]['values'] plantait (Undefined
-    // array key 0 → ErrorException fatale, cf. BatchCollecteOwaspControllerTest
-    // ne le couvrait pas car buildOwaspPayload() garantit toujours facets[0]).
-    public function testFallsBackToTagCountWhenFacetsArrayIsStructurallyEmpty(): void
-    {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', '8'],
-        ]);
-
-        $this->client->expects($this->exactly(2))
-            ->method('httpSonarQube')
-            ->willReturnCallback(function (string $url) {
-                if ($url === self::BUILT_URL_TAG_FALLBACK) {
-                    return ['code' => 200, 'json' => [
-                        'total' => 1,
-                        'effortTotal' => 5,
-                        'issues' => [
-                            ['status' => 'OPEN', 'severity' => 'MAJOR', 'tags' => ['owasp-a07']],
-                        ],
-                    ]];
-                }
-                // total > 0 mais facets structurellement vide (pas de facets[0]).
-                return ['code' => 200, 'json' => [
-                    'total' => 132,
-                    'effortTotal' => 40,
-                    'facets' => [],
-                    'issues' => [],
-                ]];
-            });
-
-        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
-            'date' => '2026-04-22', 'version' => '1.0',
-        ]]);
-        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-
-        $capturedList = [];
-        $this->owaspRepo->expects($this->once())
-            ->method('insertOwasp')
-            ->with($this->callback(function (array $list) use (&$capturedList) {
-                $capturedList = $list;
-                return true;
-            }))
-            ->willReturn(['code' => 200]);
-
-        $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
-
-        $this->assertSame(200, $result['code']);
-        $this->assertSame('tag', $capturedList[0]['source']);
-        $this->assertSame(1, $capturedList[0]['a7']);
-        $this->assertSame(1, $capturedList[0]['a7_major']);
-    }
-
-    // ─── helpers ─────────────────────────────────────────────────────────────
-
-    /**
-     * Construit un payload SonarQube /api/issues/search minimal exploitable
-     * par le controller.
-     *
-     * @param array<int, array{val: string, count: int}>                       $facets
-     * @param array<int, array{status?: string, issueStatus?: string, severity: string, tags: array<int, string>}> $issues
-     *
-     * @return array{total: int, effortTotal: int, facets: array<int, array{values: array<int, array{val: string, count: int}>}>, issues: array<int, array{status?: string, issueStatus?: string, severity: string, tags: array<int, string>}>}
-     */
-    private function buildOwaspPayload(int $total = 0, array $facets = [], array $issues = []): array
-    {
-        return [
-            'total' => $total,
-            'effortTotal' => 10,
-            'facets' => [
-                ['values' => $facets],
+        $classified = $this->emptyClassification();
+        $classified['details'] = [
+            2017 => [
+                [
+                    'rule' => 'java:S2077',
+                    'categories' => 'A1',
+                    'severity' => 'CRITICAL',
+                    'source' => 'core',
+                    'component' => self::MAVEN_KEY . ':webapp/Foo.java',
+                    'module' => 'frontend',
+                    'line' => 10,
+                    'message' => 'SQL injection risk',
+                ],
             ],
-            'issues' => $issues,
+            2021 => [
+                [
+                    'rule' => 'java:S2077',
+                    'categories' => 'A3',
+                    'severity' => 'CRITICAL',
+                    'source' => 'core',
+                    'component' => self::MAVEN_KEY . ':webapp/Foo.java',
+                    'module' => 'frontend',
+                    'line' => 10,
+                    'message' => 'SQL injection risk',
+                ],
+            ],
         ];
+        $this->ruleClassifier->method('classify')->willReturn($classified);
+
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '2.0.0']]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->owaspRepo->method('insertOwasp')->willReturn(['code' => 200]);
+        $this->owaspDetailsRepo->method('deleteOwaspDetailsMavenKey')->willReturn(['code' => 200]);
+
+        $captured = [];
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('insertOwaspDetails')
+            ->with($this->callback(function (array $list) use (&$captured) {
+                $captured = $list;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        $this->assertCount(2, $captured, 'Une ligne par référentiel (2017 et 2021, sonar.version=10 > 8).');
+
+        $this->assertSame(2017, $captured[0]['referential_owasp']);
+        $this->assertSame(self::MAVEN_KEY, $captured[0]['maven_key']);
+        $this->assertSame('java:S2077', $captured[0]['rule_key']);
+        $this->assertSame('A1', $captured[0]['categories']);
+        $this->assertSame('CRITICAL', $captured[0]['severity']);
+        $this->assertSame('core', $captured[0]['source']);
+        $this->assertSame('frontend', $captured[0]['module']);
+        $this->assertSame('webapp/Foo.java', $captured[0]['file_path'], 'Préfixe "maven_key:" retiré du component brut.');
+        $this->assertSame(10, $captured[0]['line']);
+        $this->assertSame('SQL injection risk', $captured[0]['message']);
+        $this->assertSame('manual', $captured[0]['mode_collecte']);
+        $this->assertSame('admin', $captured[0]['utilisateur_collecte']);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $captured[0]['date_version']);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $captured[0]['date_enregistrement']);
+
+        $this->assertSame(2021, $captured[1]['referential_owasp']);
+        $this->assertSame('A3', $captured[1]['categories']);
     }
 
-    /**
-     * URL mockée d'un appel ciblé "une seule catégorie" (fetchCategorySeverityBreakdown()).
-     */
-    private function singleCategoryUrl(int $referentialYear, int $category): string
+    // ─── 14. owasp_details : message/file_path tronqués à 255 caractères avant insertion ─
+
+    public function testTruncatesLongMessageAndFilePathBeforePersistingOwaspDetails(): void
     {
-        $base = $referentialYear === 2021 ? self::BUILT_URL_2021 : self::BUILT_URL_2017;
-        return "{$base}&single=a{$category}";
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
+
+        $longMessage = str_repeat('m', 300);
+        $longFilePath = str_repeat('f', 300);
+
+        $classified = $this->emptyClassification();
+        $classified['details'][2017] = [
+            [
+                'rule' => 'findsecbugs:SQL_INJECTION_JPA',
+                'categories' => 'A1',
+                'severity' => 'CRITICAL',
+                'source' => 'findsecbugs',
+                'component' => self::MAVEN_KEY . ':' . $longFilePath,
+                'module' => 'backend',
+                'line' => null,
+                'message' => $longMessage,
+            ],
+        ];
+        $this->ruleClassifier->method('classify')->willReturn($classified);
+
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->owaspRepo->method('insertOwasp')->willReturn(['code' => 200]);
+        $this->owaspDetailsRepo->method('deleteOwaspDetailsMavenKey')->willReturn(['code' => 200]);
+
+        $captured = [];
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('insertOwaspDetails')
+            ->with($this->callback(function (array $list) use (&$captured) {
+                $captured = $list;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        $this->assertCount(1, $captured);
+        $this->assertSame(255, strlen($captured[0]['message']), 'owasp_details.message est VARCHAR(255) : tronqué, pas rejeté.');
+        $this->assertSame(str_repeat('m', 255), $captured[0]['message']);
+        $this->assertSame(255, strlen($captured[0]['file_path']));
+        $this->assertSame(str_repeat('f', 255), $captured[0]['file_path']);
+        $this->assertNull($captured[0]['line'], 'line reste nullable (règle au niveau fichier, pas de ligne précise).');
     }
 
-    /**
-     * Réponse HTTP minimale pour un appel ciblé "une seule catégorie" — juste une
-     * liste d'issues (status/issueStatus + severity), comme lu par
-     * fetchCategorySeverityBreakdown().
-     *
-     * @param array<int, array{status?: string, issueStatus?: string, severity: string}> $issues
-     *
-     * @return array{code: int, json: array{issues: array<int, array<string, string>>}}
-     */
-    private function categorySeverityResponse(array $issues): array
+    // ─── 15. owasp_details : lignes 2021 jamais persistées si sonar.version = 8 ─
+
+    public function testSkipsOwasp2021DetailRowsWhenSonarVersionIs8(): void
     {
-        return ['code' => 200, 'json' => ['issues' => $issues]];
-    }
+        $this->stubParams('8');
+        $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
 
-    /**
-     * Stubs le happy path jusqu'à la persistence (sonar + info projet OK).
-     */
-    private function stubOk(string $sonarVersion): void
-    {
-        $this->parameterBag->method('get')->willReturnMap([
-            ['sonar.url', self::SONAR_URL],
-            ['sonar.version', $sonarVersion],
-        ]);
+        $detailRow2017 = [
+            'rule' => 'java:S2077', 'categories' => 'A1', 'severity' => 'CRITICAL', 'source' => 'core',
+            'component' => self::MAVEN_KEY . ':webapp/Foo.java', 'module' => 'frontend', 'line' => 10, 'message' => 'msg',
+        ];
+        $detailRow2021 = [
+            'rule' => 'java:S2077', 'categories' => 'A3', 'severity' => 'CRITICAL', 'source' => 'core',
+            'component' => self::MAVEN_KEY . ':webapp/Foo.java', 'module' => 'frontend', 'line' => 10, 'message' => 'msg',
+        ];
+        $classified = $this->emptyClassification();
+        $classified['details'] = [2017 => [$detailRow2017], 2021 => [$detailRow2021]];
+        $this->ruleClassifier->method('classify')->willReturn($classified);
 
-        $this->client->method('httpSonarQube')
-            ->willReturn(['code' => 200, 'json' => $this->buildOwaspPayload(1)]);
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->owaspRepo->method('insertOwasp')->willReturn(['code' => 200]);
+        $this->owaspDetailsRepo->method('deleteOwaspDetailsMavenKey')->willReturn(['code' => 200]);
 
-        $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [
-                'date' => '2026-04-22',
-                'version' => '1.0',
-            ]]);
+        $captured = [];
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('insertOwaspDetails')
+            ->with($this->callback(function (array $list) use (&$captured) {
+                $captured = $list;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        $this->assertCount(1, $captured, 'classified["details"][2021] existe mais ne doit pas être persisté (sonar.version = 8).');
+        $this->assertSame(2017, $captured[0]['referential_owasp']);
     }
 }

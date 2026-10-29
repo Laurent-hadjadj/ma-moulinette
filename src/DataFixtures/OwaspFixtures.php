@@ -22,9 +22,10 @@ use Doctrine\Persistence\ObjectManager;
 /* MODIF 2026-05-08 : création OwaspFixtures.
  * Contrat : 3 lignes pour la même mavenKey (référentiel 2017) afin de satisfaire
  * OwaspKernelTest::testOwaspCount (assertCount 3 sur findBy mavenKey) et
- * OwaspKernelTest::testOwaspFindOneBy (findOneBy mavenKey non null). Les 60 compteurs
- * Ax/AxBlocker/AxCritical/AxMajor/AxMinor/AxInfo + effortTotal sont fixés à 0
- * (PositiveOrZero), versions distinctes pour garder 3 rows réels.
+ * OwaspKernelTest::testOwaspFindOneBy (findOneBy mavenKey non null).
+ * MODIF 27/10/2026 : les 60 compteurs Ax/AxBlocker/.../AxMinor + source sont
+ * remplacés par categories (JSON, vide = jamais collecté) + module_frontend/
+ * backend/autre (à 0). effortTotal reste à 0 (PositiveOrZero).
  */
 
 class OwaspFixtures extends Fixture
@@ -47,30 +48,23 @@ class OwaspFixtures extends Fixture
     }
 
     /**
-     * Construit une entité Owasp avec tous les compteurs OWASP Top 10 (a1..a10
-     * et leurs sous-niveaux Blocker/Critical/Major/Minor/Info) initialisés à zéro.
+     * Construit une entité Owasp jamais collectée : categories vide, répartition
+     * par module à zéro.
      */
     private function buildOwasp(string $version, \DateTimeImmutable $now): Owasp
     {
-        $owasp = (new Owasp())
+        return (new Owasp())
             ->setReferentialOwasp(2017)
             ->setMavenKey(self::MAVEN_KEY)
             ->setVersion($version)
             ->setDateVersion($now)
             ->setEffortTotal(0)
+            ->setCategories([])
+            ->setModuleFrontend(0)
+            ->setModuleBackend(0)
+            ->setModuleAutre(0)
             ->setModeCollecte(self::MODE_COLLECTE)
             ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
             ->setDateEnregistrement($now);
-
-        for ($i = 1; $i <= 10; $i++) {
-            $owasp->{"setA{$i}"}(0);
-            $owasp->{"setA{$i}Blocker"}(0);
-            $owasp->{"setA{$i}Critical"}(0);
-            $owasp->{"setA{$i}Major"}(0);
-            $owasp->{"setA{$i}Info"}(0);
-            $owasp->{"setA{$i}Minor"}(0);
-        }
-
-        return $owasp;
     }
 }
