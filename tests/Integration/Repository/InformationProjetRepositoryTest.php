@@ -87,6 +87,24 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
+    /**
+     * MODIF 29/10/2026 : signal "projet déjà collecté" (pastille du sélecteur de la page
+     * Projet) — vérifie que la clé Maven posée par la fixture est bien remontée.
+     */
+    public function testSelectAllMavenKeysIncludesFixtureProject(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
+        $r = $informationProjetRepository->selectAllMavenKeys();
+
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+        $this->assertContains(self::$mavenKey, $r['liste']);
+    }
+
     public function testDeleteInformationProjetMavenKey(): void
     {
         // Connexion à la base de données

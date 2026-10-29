@@ -16,8 +16,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiProjetController;
-use App\Entity\{ListeProjet, Utilisateur};
-use App\Repository\{ListeProjetRepository, UtilisateurRepository};
+use App\Entity\{InformationProjet, ListeProjet, Utilisateur};
+use App\Repository\{InformationProjetRepository, ListeProjetRepository, UtilisateurRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -37,6 +37,7 @@ class ApiProjetControllerTest extends TestCase
     /** @var Security&MockObject */                private MockObject $security;
     /** @var UtilisateurRepository&MockObject */   private MockObject $utilisateurRepo;
     /** @var ListeProjetRepository&MockObject */   private MockObject $listeProjetRepo;
+    /** @var InformationProjetRepository&MockObject */ private MockObject $informationProjetRepo;
     /** @var TokenInterface&MockObject */          private MockObject $token;
 
     private ApiProjetController $controller;
@@ -48,10 +49,15 @@ class ApiProjetControllerTest extends TestCase
         $this->security = $this->createMock(Security::class);
         $this->utilisateurRepo = $this->createMock(UtilisateurRepository::class);
         $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
+        $this->informationProjetRepo = $this->createMock(InformationProjetRepository::class);
+        // Pas de stub par défaut ici : PHPUnit ne remplace pas un ->method() par un
+        // ->method() suivant sur le même mock (le premier configuré gagne pour tous les
+        // appels) — chaque test liste_projet() qui atteint ce point pose son propre stub.
 
         $this->em->method('getRepository')->willReturnMap([
             [Utilisateur::class, $this->utilisateurRepo],
             [ListeProjet::class, $this->listeProjetRepo],
+            [InformationProjet::class, $this->informationProjetRepo],
         ]);
 
         // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
@@ -214,12 +220,56 @@ class ApiProjetControllerTest extends TestCase
             'code' => 200,
             'liste' => [['id' => 'k1'], ['id' => 'k2']],
         ]);
+        $this->informationProjetRepo->method('selectAllMavenKeys')->willReturn(['code' => 200, 'liste' => []]);
 
         $response = $this->controller->liste_projet(new Request());
         $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(2, $data['projet']);
+    }
+
+    /* ============ liste_projet : pastille "déjà collecté" (29/10/2026) ============ */
+
+    public function testListeProjetMarksCollectedProjectsFromInformationProjet(): void
+    {
+        $this->security->method('getUser')->willReturn($this->makeUser('u@x', ['TeamA']));
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'k1', 'text' => 'Projet 1'], ['id' => 'k2', 'text' => 'Projet 2']],
+        ]);
+        $this->informationProjetRepo->method('selectAllMavenKeys')->willReturn([
+            'code' => 200,
+            'liste' => ['k1'],
+        ]);
+
+        $response = $this->controller->liste_projet(new Request());
+        $data = json_decode((string) $response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertTrue($data['projet'][0]['collected'], 'k1 est présent dans information_projet.');
+        $this->assertFalse($data['projet'][1]['collected'], 'k2 est absent de information_projet.');
+    }
+
+    public function testListeProjetDefaultsToNotCollectedWhenInformationProjetQueryFails(): void
+    {
+        // La pastille est purement visuelle : un échec de cette requête ne doit jamais
+        // bloquer l'affichage de la liste des projets (repli best-effort).
+        $this->security->method('getUser')->willReturn($this->makeUser('u@x', ['TeamA']));
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'k1', 'text' => 'Projet 1']],
+        ]);
+        $this->informationProjetRepo->method('selectAllMavenKeys')->willReturn([
+            'code' => 500,
+            'erreur' => 'db down',
+        ]);
+
+        $response = $this->controller->liste_projet(new Request());
+        $data = json_decode((string) $response->getContent(), true);
+
+        $this->assertSame(200, $data['code'], 'La liste des projets reste disponible malgré l\'échec de la pastille.');
+        $this->assertFalse($data['projet'][0]['collected']);
     }
 
     /* ============ helpers ============ */

@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{Utilisateur, ListeProjet};
+use App\Entity\{Utilisateur, ListeProjet, InformationProjet};
 use App\Repository\ListeProjetRepository;
 
 /**
@@ -268,6 +268,26 @@ class ApiProjetController extends AbstractController
             'utilisateur' => $username,
             'nombre_projets' => count($projets)
         ]);
+
+        /* MODIF 29/10/2026 : pastille "déjà collecté" sur le sélecteur de la page Projet —
+         * information_projet est toujours la première table peuplée par n'importe quelle
+         * collecte (interactive ou batch), avant tout autre indicateur. Une seule requête
+         * groupée (pas de N+1 par projet) ; en cas d'échec, on reste en best-effort : la
+         * liste des projets ne doit jamais être bloquée par cet enrichissement purement
+         * visuel, tous les projets repartent simplement non marqués "collecté". */
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
+        $collectedResult = $informationProjetRepos->selectAllMavenKeys();
+        $collectedKeys = $collectedResult['code'] === 200 ? array_flip($collectedResult['liste']) : [];
+        if ($collectedResult['code'] !== 200) {
+            $this->logger->warning('[Projet-Liste] ⚠️ Échec de la récupération des projets déjà collectés (pastille).', [
+                'code' => $collectedResult['code'],
+                'erreur' => $collectedResult['erreur'] ?? self::$noData
+            ]);
+        }
+        foreach ($projets as &$projet) {
+            $projet['collected'] = isset($collectedKeys[$projet['id']]);
+        }
+        unset($projet);
 
         return new JsonResponse([
             'code' => 200,

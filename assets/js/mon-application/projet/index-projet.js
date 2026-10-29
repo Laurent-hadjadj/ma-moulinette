@@ -233,6 +233,102 @@ const match = function (params, data) {
 };
 
 /**
+ * [Description for listeProjetData]
+ * Conserve le dernier tableau de projets reçu de /api/secure/projet/liste
+ * (portée module) — select2 est initialisé en mode "data array" (pas de
+ * vrais <option> DOM, cf. selectProjet()), donc mettre à jour la pastille
+ * d'un seul projet après une collecte (markProjetCollecte()) demande de
+ * muter ce tableau puis de réinitialiser select2 dessus.
+ */
+let listeProjetData = [];
+
+/**
+ * [Description for templateProjetOption]
+ * Rendu d'une option du sélecteur de projet avec sa pastille "déjà
+ * collecté" (vert) / "jamais collecté" (gris) — même pattern visuel que le
+ * select2 custom de la page Batch (index-batch.js), adapté au mode "data
+ * array" : l'info est lue directement sur `data.collected`, pas sur un
+ * attribut `data-*` d'un <option> DOM (qui n'existe pas ici).
+ *
+ * @param object data
+ *
+ * @return string|jQuery
+ *
+ * Created at: 29/10/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const templateProjetOption = function (data) {
+  if (!data.id) { return data.text; }
+
+  const dotClass = data.collected ? 'status-dot-collected' : 'status-dot-not-collected';
+  const label = data.collected ? 'Collecté' : 'Jamais collecté';
+
+  return $(`
+    <div class="select2-option-custom">
+      <span class="status-dot ${dotClass}"></span>
+      <span class="option-text">${data.text}</span>
+      <span class="option-status">${label}</span>
+    </div>
+  `);
+};
+
+const templateProjetSelection = function (data) {
+  if (!data.id) { return data.text; }
+
+  const dotClass = data.collected ? 'status-dot-collected' : 'status-dot-not-collected';
+
+  return $(`
+    <span class="selected-option">
+      <span class="status-dot ${dotClass}"></span>
+      ${data.text}
+    </span>
+  `);
+};
+
+/**
+ * [Description for markProjetCollecte]
+ * Bascule la pastille d'un projet sur "déjà collecté" juste après le succès
+ * d'une collecte, sans recharger la page ni refaire d'appel réseau — mutation
+ * de listeProjetData puis réinitialisation de select2 en conservant la
+ * sélection courante.
+ *
+ * @param string maven_key
+ *
+ * @return void
+ *
+ * Created at: 29/10/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const markProjetCollecte = function (maven_key) {
+  const projet = listeProjetData.find(p => p.id === maven_key);
+  if (!projet || projet.collected) {
+    return;
+  }
+  projet.collected = true;
+
+  const $select = $('.js-projet');
+  const selected = $select.val();
+  if ($select.hasClass('select2-hidden-accessible')) {
+    $select.select2('destroy');
+  }
+  $select.select2({
+    matcher: match,
+    placeholder: 'Cliquez pour ouvrir la liste',
+    allowClear: true,
+    width: '100%',
+    minimumInputLength: 2,
+    minimumResultsForSearch: 20,
+    language: 'fr',
+    data: listeProjetData,
+    templateResult: templateProjetOption,
+    templateSelection: templateProjetSelection
+  });
+  if (selected) {
+    $select.val(selected).trigger('change.select2');
+  }
+};
+
+/**
  * [Description for selectProjet]
  * Création du sélecteur de projet.
  * http://{url}/api/secure/liste/projet
@@ -266,6 +362,7 @@ const selectProjet = async function () {
 
   if (t.code === http_200) {
     log(' - ℹ️ Je construit la liste des projets autorisés.');
+    listeProjetData = t.projet;
     $('.js-projet').select2({
       matcher: match,
       placeholder: 'Cliquez pour ouvrir la liste',
@@ -274,7 +371,9 @@ const selectProjet = async function () {
       minimumInputLength: 2,
       minimumResultsForSearch: 20,
       language: 'fr',
-      data: t.projet
+      data: listeProjetData,
+      templateResult: templateProjetOption,
+      templateSelection: templateProjetSelection
     });
     $('.analyse').removeClass('hide');
   }
@@ -1454,6 +1553,7 @@ const finCollecte = function (maven_key) {
     showMessage('success', `<strong>${collecte}</strong> Le processus de collecte a été réalisé avec success pour le projet ${maven_key} !`);
     setTimeout(() => { hideMessage(); }, troisMille);
     enableButton($boutonCollecteIndicateur, aria_label);
+    markProjetCollecte(maven_key);
   } else {
     sessionStorage.setItem('ma_moulinette_info', 'On ne devrait pas tomber dans cette branche.')
   }
