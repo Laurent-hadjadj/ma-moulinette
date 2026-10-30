@@ -510,8 +510,9 @@ class ApiOwaspPeintureController extends AbstractController
             $data === null
             || !property_exists($data, 'maven_key') || !is_string($data->maven_key)
             || !property_exists($data, 'menace') || !is_string($data->menace)
+            || !property_exists($data, 'referential_owasp')
         ) {
-            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'menace' manquante ou JSON mal formé.", [
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'menace' ou 'referential_owasp' manquante, ou JSON mal formé.", [
                 'payload' => $data ?? self::$noData
             ]);
 
@@ -527,10 +528,13 @@ class ApiOwaspPeintureController extends AbstractController
             return $guard;
         }
 
-        /** On compte le nombre de faille OWASP au statut HIGH */
+        /** On compte le nombre de faille OWASP au statut HIGH
+         *  MODIF 26/10/2026 : referential_owasp ajouté — sans lui, les 2
+         *  référentiels étaient comptés ensemble (voir countHotspotOwaspMenaceByStatus()). */
         $map = [
             'maven_key' => $data->maven_key,
             'menace' => $data->menace,
+            'referential_owasp' => $data->referential_owasp,
             'probability' => 'HIGH'
         ];
         $high = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
@@ -556,6 +560,7 @@ class ApiOwaspPeintureController extends AbstractController
         $map = [
             'maven_key' => $data->maven_key,
             'menace' => $data->menace,
+            'referential_owasp' => $data->referential_owasp,
             'probability' => 'MEDIUM'
         ];
         $medium = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
@@ -581,6 +586,7 @@ class ApiOwaspPeintureController extends AbstractController
         $map = [
             'maven_key' => $data->maven_key,
             'menace' => $data->menace,
+            'referential_owasp' => $data->referential_owasp,
             'probability' => 'LOW'
         ];
         $low = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);

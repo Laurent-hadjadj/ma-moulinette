@@ -38,6 +38,19 @@ APP_ENV=dev
 APP_DEBUG=1
 ```
 
+## 🏷️ Personnalisation du nom affiché
+
+Le nom affiché dans l'interface (titre des pages, en-tête, pied de page, rapports PDF…) est piloté par la variable d'environnement `MA_MOULINETTE_NAME`, avec `Ma-Moulinette` comme valeur par défaut
+(`config/services.yaml`). Pour l'adapter à un déploiement spécifique, sans toucher au code :
+
+```bash
+# dans .env.local, jamais dans .env versionné
+MA_MOULINETTE_NAME=Mon-TicTac
+```
+
+Cette variable est exposée à tous les templates Twig via la variable globale `app_name` (`config/packages/twig.yaml`), sans injection manuelle dans chaque contrôleur. À ne pas confondre avec `MARQUE_ENTREPRISE_SHORT`/`MARQUE_ENTREPRISE_LONG` : ces deux variables désignent l'**auteur/éditeur**
+affiché dans les mentions légales et le copyright, pas le nom du produit.
+
 ## 🖥️ Démarrer en développement
 
 Deux façons de démarrer l'environnement de développement, selon les habitudes :

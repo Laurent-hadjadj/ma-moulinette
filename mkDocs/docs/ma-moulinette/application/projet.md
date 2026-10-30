@@ -127,6 +127,9 @@ Trois blocs (« triptyque ») plus un bandeau, tous initialement vides et rempli
     - La ligne « Dette technique » de la tuile Dette pouvait chevaucher la ligne suivante quand la durée affichée était longue, faute de place (elle partageait sa ligne avec le label et le bouton de détail) — scindée en deux lignes.
     - En largeur mobile, la marge fixe de 2rem de part et d'autre du contenu de la page laissait trop peu de place aux tuiles — réduite (0,2 à 0,5rem selon la largeur) sur ce breakpoint uniquement.
 
+!!! note "✅ Débordement de la ligne Maintenabilité (tuile Répartition, 27/10/2026)"
+    Sur la tuile « Répartition », la ligne « Maintenabilité » affichait deux compteurs (mauvaises pratiques réelles / total) côte à côte, non compressibles — ils débordaient de la tuile sur un projet comptant beaucoup de violations. Scindée en deux sous-lignes (« Réelles » / « Total »), même convention que le détail par langage d'Accessibilité (`.ligne-sous-detail`), sans changer la largeur des tuiles ni leur disposition sur la page.
+
 ### 🏀 Bandeau « Informations générales »
 
 Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution des langages détectés. Purement informatif.
@@ -194,6 +197,23 @@ Aucun seuil de couleur n'est codé en dur dans les templates : les badges de not
 
 **Vérifié en conditions réelles** (comparaison live des deux filtres, serveur SonarQube 26.9.0, projet `monAppliation`) : avant bascule, `statuses=OPEN,CONFIRME REOPENED` et `issueStatuses=OPEN,CONFIRMED` valaient tous les deux 595. Après avoir basculé une issue BUG/BLOCKER en « Accept » dans l'interface SonarQube : `statuses=OPEN,CONFIRMED,REOPENED` et `issueStatuses=OPEN,CONFIRMED` descendent tous les deux à 594 (perdent l'issue), tandis que `issueStatuses=OPEN,CONFIRMED ACCEPTED` reste à 595 (la récupère) — confirmant que la règle retenue reproduit exactement le total de l'ancien modèle **avant** triage, tout en gardant les issues `ACCEPTED` dans le décompte après triage, contrairement à l'ancien modèle.
 
+### 🏀 Bloc « Accessibilité »
+
+!!! note "✅ Nouveau bloc 27/10/2026 : Accessibilité (tag SonarQube `accessibility`)"
+    Nombre d'anomalies accessibilité (OPEN) détectées par SonarQube via le tag `accessibility` (122 règles couvrant les langages CSS / Web (HTML) / JavaScript / TypeScript), avec une note A-E — même méthode SQALE que RCI et Empreinte Écologique (dette estimée ÷ (ncloc × 30 min), seuils 5/10/20/50 %) — globale **et** par langage (4 lignes de détail affichées directement sous la ligne globale, sans modale).
+
+    Pas de facette WCAG officielle côté SonarQube (confirmé en direct : `/api/issues/search?facets=wcag` renvoie 400 et liste exhaustivement les facettes supportées — aucune dédiée à l'accessibilité). Le tag `wcag` existe mais ne couvre que 6 règles très récentes ; le tag `accessibility`, bien plus représentatif, a été retenu comme filtre. Pas de numéro de critère WCAG (1.4.3, 2.4.4…) exploitable via l'API : seulement un détail par règle/sévérité/langage.
+
+    Contrairement à l'Empreinte Écologique (plugins tiers Creedengo, activable via `CREEDENGO_ENABLED`), les règles d'accessibilité sont intégrées aux plugins de langage standards de SonarQube — pas de feature-flag, toujours collecté.
+
+!!! note "✅ Historique alimenté par les deux pipelines, y compris un enregistrement manuel"
+   Accessibilité suit le pattern **RCI** : `peinture.js` pose la réponse complète de l'API sur le `dataset` de l'élément pivot, relue par `enregistrement.js` au clic « Enregistrer ». `historique.accessibility_*` est donc alimenté quel que soit le pipeline (interactif ou batch/cron).
+
+!!! note "✅ Distinction « 0 mesuré » / « non calculable »"
+    Quand un langage n'a aucune ligne de code dans le projet (absent de `ncloc_language_distribution`), le nombre d'anomalies et la note affichent un tiret grisé plutôt que `0` : `0` reste réservé au cas réellement mesuré (le langage existe, zéro anomalie trouvée). Dans ce cas, `BatchCollecteaccessibilityController` n'effectue même pas l'appel `/api/issues/search` pour ce langage (langage absent détecté avant l'appel).
+
+    Disponible dans les deux présentations (classique 3 colonnes et tuiles).
+
 ## 🔄 Le flux Collecte → Peinture → Sauvegarde
 
 Trois opérations bien distinctes, souvent confondues :
@@ -236,6 +256,10 @@ sequenceDiagram
 - **Projet déjà collecté par le passé** : « Afficher » fonctionne **directement**, sans relancer de collecte — il relit simplement la dernière collecte connue, quelle que soit sa date ou son auteur.
 - **Erreur en cours de collecte** : l'étape en échec affiche un message et arrête les appels réseau suivants ; les indicateurs déjà collectés avant l'erreur restent en base (pas d'annulation globale).
 - **Collecte réussie mais pas d'enregistrement** : les tables brutes contiennent bien les nouvelles données (consultables via « Afficher ») mais rien n'est écrit dans `historique`. À la prochaine collecte de ce projet, ces données seront écrasées — cette version n'aura alors **jamais existé** dans l'historique versionné.
+
+!!! bug "🔴 Bug corrigé le 26/10/2026 — Enregistrer sans avoir cliqué Afficher au préalable"
+    Cas réel : Collecte, puis clic direct sur « Enregistrer » **sans** passer par « Afficher » entre les deux. `enregistrement.js` lit l'intégralité de ses valeurs dans des éléments du DOM posés par `peinture.js` — certains, comme `#js-menace-potentielle-to-review-high`, sont injectés dynamiquement par `peinture.js` (absents du gabarit Twig tant qu'elle n'a jamais tourné), contrairement à la plupart des autres qui existent dès le chargement de la page (juste vides avant Peinture). Résultat : `TypeError: Cannot read properties of null (reading 'dataset')` en pleine fonction, sans aucun message pour l'utilisateur.
+    Corrigé par un garde-fou en tout début de fonction : `#js-key-analyse` (toujours présent dans le gabarit) n'a son `dataset.analyseKey` rempli que par `peinture.js`, et n'est jamais vide pour un vrai projet peint — un indicateur fiable pour détecter ce cas tôt. Message désormais affiché : « Aucune donnée à enregistrer : lance une Peinture avant d'enregistrer. »
 
 !!! caution "⚠️ La « peinture » ne vérifie pas le périmètre du groupe fonctionnel"
     Contrairement au sélecteur de projet (filtré par groupe fonctionnel), les routes `ApiPeintureController` ne vérifient que l'**existence** d'une clé maven en base — pas son appartenance au périmètre de l'utilisateur connecté.

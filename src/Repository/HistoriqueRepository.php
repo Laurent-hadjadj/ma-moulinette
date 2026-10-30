@@ -93,7 +93,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -172,8 +172,8 @@ class HistoriqueRepository extends ServiceEntityRepository
             /** On désactive toutes les versions */
             $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $stmt->executeStatement();
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
@@ -189,12 +189,12 @@ class HistoriqueRepository extends ServiceEntityRepository
         /** On met à jour la version de reference pour le projet */
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql2));
-                $stmt->bindValue(':initial', $map['initial']);
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(self::$version, $map['version']);
-                $stmt->bindValue(self::$dateVersion, $map['date_version']);
-                $stmt->executeStatement();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql2));
+            $stmt->bindValue(':initial', $map['initial']);
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$version, $map['version']);
+            $stmt->bindValue(self::$dateVersion, $map['date_version']);
+            $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
@@ -224,11 +224,11 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(self::$version, $map['version']);
-                $stmt->bindValue(self::$dateVersion, $map['date_version']);
-                $stmt->executeStatement();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$version, $map['version']);
+            $stmt->bindValue(self::$dateVersion, $map['date_version']);
+            $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
@@ -343,12 +343,12 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date ASC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                    $stmt->bindValue(self::$initialTrue, 1);
-                    $stmt->bindValue(self::$initialFalse, 0);
-                    $stmt->bindValue(self::$limit, $map['limit']);
-                $suivi = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$initialTrue, 1);
+            $stmt->bindValue(self::$initialFalse, 0);
+            $stmt->bindValue(self::$limit, $map['limit']);
+            $suivi = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -474,10 +474,10 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(self::$initialTrue, 1);
-                $stmt->bindValue(self::$initialFalse, 0);
-                $stmt->bindValue(self::$limit, $map['limit']);
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$initialTrue, 1);
+            $stmt->bindValue(self::$initialFalse, 0);
+            $stmt->bindValue(self::$limit, $map['limit']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -523,10 +523,10 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(self::$initialTrue, 1);
-                $stmt->bindValue(self::$initialFalse, 0);
-                $stmt->bindValue(self::$limit, $map['limit']);
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$initialTrue, 1);
+            $stmt->bindValue(self::$initialFalse, 0);
+            $stmt->bindValue(self::$limit, $map['limit']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -579,12 +579,12 @@ class HistoriqueRepository extends ServiceEntityRepository
                     ORDER BY date ASC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                    $stmt->bindValue(self::$initialTrue, 1);
-                    $stmt->bindValue(self::$initialFalse, 0);
-                    $stmt->bindValue(self::$limit, $map['limit']);
-                $details = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$initialTrue, 1);
+            $stmt->bindValue(self::$initialFalse, 0);
+            $stmt->bindValue(self::$limit, $map['limit']);
+            $details = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -633,7 +633,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     functions, ncloc, ncloc_language_distribution, mode_collecte, initial
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key AND (initial = true" .
-                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+            ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
                 ORDER BY date_version ASC";
 
         try {
@@ -666,7 +666,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     functions AS nombre_functions
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key AND (initial = true" .
-                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+            ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
                 ORDER BY date_version ASC";
 
         try {
@@ -698,7 +698,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     major_violations AS majeur, minor_violations AS mineur
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key AND (initial = true" .
-                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+            ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
                 ORDER BY date_version ASC";
 
         try {
@@ -733,7 +733,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     code_smell_minor, code_smell_info, initial
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key AND (initial = true" .
-                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+            ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
                 ORDER BY date_version ASC";
 
         try {
@@ -773,9 +773,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date ASC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $graph = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $graph = $stmt->executeQuery()->fetchAllAssociative();
 
             // Conversion des dates en format ISO 8601 (DateTime::ATOM)
             array_walk($graph, function (&$row) {
@@ -815,17 +815,17 @@ class HistoriqueRepository extends ServiceEntityRepository
                         date_version AS date
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key AND (initial = true" .
-                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+            ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
                 GROUP BY bugs, vulnerabilities, code_smells, date_version
                 ORDER BY date ASC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                foreach ($versions as $i => $v) {
-                    $stmt->bindValue(':v' . $i, $v);
-                }
-                $graph = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            foreach ($versions as $i => $v) {
+                $stmt->bindValue(':v' . $i, $v);
+            }
+            $graph = $stmt->executeQuery()->fetchAllAssociative();
 
             // Conversion des dates en format ISO 8601 (DateTime::ATOM)
             array_walk($graph, function (&$row) {
@@ -859,114 +859,257 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     private static array $historiqueColumns = [
         // Identité projet / version
-        'maven_key', 'analyse_key', 'version', 'date_version', 'project_name',
+        'maven_key',
+        'analyse_key',
+        'version',
+        'date_version',
+        'project_name',
         // MODIF 2026-10-08 : Version du serveur SonarQube
         'sonarqube_server_version',
         // Version typée par parser ma-moulinette
-        'version_release', 'version_snapshot', 'version_autre',
+        'version_release',
+        'version_snapshot',
+        'version_autre',
         // Répartition langages (parser ma-moulinette)
-        'repartition_frontend', 'repartition_backend', 'repartition_autre', 'repartition_inconnu',
+        'repartition_frontend',
+        'repartition_backend',
+        'repartition_autre',
+        'repartition_inconnu',
         // No-sonar / suppress / pmd / checkstyle (parser ma-moulinette)
-        'java_no_sonar', 'python_no_sonar', 'php_no_sonar',
-        'suppress_warning', 'no_pmd', 'check_style',
+        'java_no_sonar',
+        'python_no_sonar',
+        'php_no_sonar',
+        'suppress_warning',
+        'no_pmd',
+        'check_style',
         // MODIF 2026-05-06 : ajout web_to.do
-        'java_todo', 'python_todo', 'php_todo', 'xml_todo', 'web_todo',
-        'javascript_todo', 'typescript_todo', 'ruby_todo',
+        'java_todo',
+        'python_todo',
+        'php_todo',
+        'xml_todo',
+        'web_todo',
+        'javascript_todo',
+        'typescript_todo',
+        'ruby_todo',
         // Quality gate
         'alert_status',
         // Size
-        'lines', 'ncloc', 'files', 'classes', 'functions', 'statements',
+        'lines',
+        'ncloc',
+        'files',
+        'classes',
+        'functions',
+        'statements',
         // MODIF 2026-05-06 :ncloc_language_distribution était pose dans $map cote ApiEnregistrement
         // (cf. serializeLanguageDistribution) mais absent du whitelist => INSERT
         // l'ignorait silencieusement => colonne NULL en base.
         'ncloc_language_distribution',
         // Comments
-        'comment_lines', 'comment_lines_density', 'comment_lines_rating',
+        'comment_lines',
+        'comment_lines_density',
+        'comment_lines_rating',
         // Coverage
         // MODIF 2026-05-15 : ajout `coverage_rating` (présent
         // dans mesures + peintureProjetMesures + table historique, mais oublié
         // dans la whitelist → colonne toujours NULL après INSERT).
-        'coverage', 'branch_coverage', 'line_coverage', 'coverage_rating',
-        'lines_to_cover', 'conditions_to_cover', 'uncovered_conditions',
+        'coverage',
+        'branch_coverage',
+        'line_coverage',
+        'coverage_rating',
+        'lines_to_cover',
+        'conditions_to_cover',
+        'uncovered_conditions',
         // Tests
-        'tests', 'test_execution_time', 'test_errors', 'test_failures',
-        'skipped_tests', 'test_success_density',
+        'tests',
+        'test_execution_time',
+        'test_errors',
+        'test_failures',
+        'skipped_tests',
+        'test_success_density',
         // Duplication
         // MODIF 2026-05-15 : ajout `duplicated_lines_rating`.
-        'duplicated_files', 'duplicated_blocks', 'duplicated_lines', 'duplicated_lines_density',
+        'duplicated_files',
+        'duplicated_blocks',
+        'duplicated_lines',
+        'duplicated_lines_density',
         'duplicated_lines_rating',
         // Complexity (cyclomatique + cognitive + ratios + ratings dérivés)
-        'complexity', 'complexity_rating', 'cognitive_complexity', 'cognitive_complexity_rating',
-        'complexity_ratio', 'cognitive_complexity_ratio',
+        'complexity',
+        'complexity_rating',
+        'cognitive_complexity',
+        'cognitive_complexity_rating',
+        'complexity_ratio',
+        'cognitive_complexity_ratio',
         // Issues status (Core + LTA10)
-        'open_issues', 'reopened_issues', 'confirmed_issues', 'false_positive_issues',
-        'accepted_issues', 'high_impact_accepted_issues',
+        'open_issues',
+        'reopened_issues',
+        'confirmed_issues',
+        'false_positive_issues',
+        'accepted_issues',
+        'high_impact_accepted_issues',
         // Violations (Core severity breakdown)
-        'violations', 'blocker_violations', 'critical_violations',
-        'major_violations', 'minor_violations', 'info_violations',
+        'violations',
+        'blocker_violations',
+        'critical_violations',
+        'major_violations',
+        'minor_violations',
+        'info_violations',
         // MODIF 2026-10-06 : répartition par portée SonarQube (MAIN = code
         // source, TEST = code de test), globale et par catégorie d'anomalie.
-        'scope_main', 'scope_test',
-        'bug_scope_main', 'bug_scope_test',
-        'vulnerability_scope_main', 'vulnerability_scope_test',
-        'code_smell_scope_main', 'code_smell_scope_test',
+        'scope_main',
+        'scope_test',
+        'bug_scope_main',
+        'bug_scope_test',
+        'vulnerability_scope_main',
+        'vulnerability_scope_test',
+        'code_smell_scope_main',
+        'code_smell_scope_test',
         // Software quality issues (LTA24/26 severity breakdown)
-        'software_quality_blocker_issues', 'software_quality_high_issues',
-        'software_quality_medium_issues', 'software_quality_low_issues',
+        'software_quality_blocker_issues',
+        'software_quality_high_issues',
+        'software_quality_medium_issues',
+        'software_quality_low_issues',
         'software_quality_info_issues',
         // Code smells (Core + ma-moulinette severity legacy)
-        'code_smells', 'code_smell_blocker', 'code_smell_critical',
-        'code_smell_major', 'code_smell_minor', 'code_smell_info',
+        'code_smells',
+        'code_smell_blocker',
+        'code_smell_critical',
+        'code_smell_major',
+        'code_smell_minor',
+        'code_smell_info',
         // Maintainability (Core + LTA10 + LTA24/26)
-        'maintainability_issues', 'sqale_index', 'sqale_debt_ratio', 'sqale_rating',
+        'maintainability_issues',
+        'sqale_index',
+        'sqale_debt_ratio',
+        'sqale_rating',
         'effort_to_reach_maintainability_rating_a',
-        'software_quality_maintainability_issues', 'software_quality_maintainability_rating',
+        'software_quality_maintainability_issues',
+        'software_quality_maintainability_rating',
         'software_quality_maintainability_debt_ratio',
         'software_quality_maintainability_remediation_effort',
         'effort_to_reach_software_quality_maintainability_rating_a',
         // Reliability (Core + LTA10 + LTA24/26)
-        'bugs', 'bug_blocker', 'bug_critical', 'bug_major', 'bug_minor', 'bug_info',
-        'reliability_issues', 'reliability_rating', 'reliability_remediation_effort',
-        'software_quality_reliability_issues', 'software_quality_reliability_rating',
+        'bugs',
+        'bug_blocker',
+        'bug_critical',
+        'bug_major',
+        'bug_minor',
+        'bug_info',
+        'reliability_issues',
+        'reliability_rating',
+        'reliability_remediation_effort',
+        'software_quality_reliability_issues',
+        'software_quality_reliability_rating',
         'software_quality_reliability_remediation_effort',
         // Security (Core + LTA10 + LTA24/26)
-        'vulnerabilities', 'vulnerability_blocker', 'vulnerability_critical',
-        'vulnerability_major', 'vulnerability_minor', 'vulnerability_info',
-        'security_issues', 'security_rating', 'security_remediation_effort',
-        'software_quality_security_issues', 'software_quality_security_rating',
+        'vulnerabilities',
+        'vulnerability_blocker',
+        'vulnerability_critical',
+        'vulnerability_major',
+        'vulnerability_minor',
+        'vulnerability_info',
+        'security_issues',
+        'security_rating',
+        'security_remediation_effort',
+        'software_quality_security_issues',
+        'software_quality_security_rating',
         'software_quality_security_remediation_effort',
         // Security review
-        'security_hotspots', 'security_review_rating', 'security_hotspots_reviewed',
+        'security_hotspots',
+        'security_review_rating',
+        'security_hotspots_reviewed',
         // MODIF 2026-10-11 : métriques "optionnelles", pas encore LTS.
-        'maintainability_issue_severity', 'reliability_issue_severity', 'security_issue_severity',
+        'maintainability_issue_severity',
+        'reliability_issue_severity',
+        'security_issue_severity',
         // Menace potentielle (custom ma-moulinette)
-        'menace_potentielle_to_review_high', 'menace_potentielle_to_review_medium',
+        'menace_potentielle_to_review_high',
+        'menace_potentielle_to_review_medium',
         'menace_potentielle_to_review_low',
-        'menace_potentielle_reviewed_high', 'menace_potentielle_reviewed_medium',
+        'menace_potentielle_reviewed_high',
+        'menace_potentielle_reviewed_medium',
         'menace_potentielle_reviewed_low',
         'menace_potentielle_totale',
         // Logger (parser ma-moulinette)
-        'logger_info', 'logger_warn', 'logger_error', 'logger_debug',
+        'logger_info',
+        'logger_warn',
+        'logger_error',
+        'logger_debug',
         // MODIF 2026-05-17 : indicateurs SonarQube 10+
-        'cc_consistent', 'cc_intentional', 'cc_adaptable', 'cc_responsible',
-        'quality_maintainability', 'quality_reliability', 'quality_security',
-        'impact_blocker', 'impact_high', 'impact_medium', 'impact_low', 'impact_info',
-        'owasp_top10', 'sans_top25', 'cwe',
+        'cc_consistent',
+        'cc_intentional',
+        'cc_adaptable',
+        'cc_responsible',
+        'quality_maintainability',
+        'quality_reliability',
+        'quality_security',
+        'impact_blocker',
+        'impact_high',
+        'impact_medium',
+        'impact_low',
+        'impact_info',
+        'owasp_top10',
+        'sans_top25',
+        'cwe',
         // MODIF 2026-09-25 : RCI (Risk Criticality Index, plugin sonar-rci porté en PHP)
         // MODIF 2026-09-29 : ncloc/weight bruts (global + par module), en plus de l'indicateur/note
-        'rci_indicator', 'rci_rating', 'rci_ncloc', 'rci_weight',
-        'rci_frontend_indicator', 'rci_frontend_rating', 'rci_frontend_ncloc', 'rci_frontend_weight',
-        'rci_backend_indicator', 'rci_backend_rating', 'rci_backend_ncloc', 'rci_backend_weight',
-        'rci_autre_indicator', 'rci_autre_rating', 'rci_autre_ncloc', 'rci_autre_weight',
-        'rci_inconnu_indicator', 'rci_inconnu_rating', 'rci_inconnu_ncloc', 'rci_inconnu_weight',
+        'rci_indicator',
+        'rci_rating',
+        'rci_ncloc',
+        'rci_weight',
+        'rci_frontend_indicator',
+        'rci_frontend_rating',
+        'rci_frontend_ncloc',
+        'rci_frontend_weight',
+        'rci_backend_indicator',
+        'rci_backend_rating',
+        'rci_backend_ncloc',
+        'rci_backend_weight',
+        'rci_autre_indicator',
+        'rci_autre_rating',
+        'rci_autre_ncloc',
+        'rci_autre_weight',
+        'rci_inconnu_indicator',
+        'rci_inconnu_rating',
+        'rci_inconnu_ncloc',
+        'rci_inconnu_weight',
         // MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo, activable via CREEDENGO_ENABLED)
-        'eco_anomalies', 'eco_dette_minute', 'eco_rating',
-        'eco_java_anomalies', 'eco_java_dette_minute', 'eco_java_rating',
-        'eco_javascript_anomalies', 'eco_javascript_dette_minute', 'eco_javascript_rating',
-        'eco_php_anomalies', 'eco_php_dette_minute', 'eco_php_rating',
-        'eco_python_anomalies', 'eco_python_dette_minute', 'eco_python_rating',
+        'eco_anomalies',
+        'eco_dette_minute',
+        'eco_rating',
+        'eco_java_anomalies',
+        'eco_java_dette_minute',
+        'eco_java_rating',
+        'eco_javascript_anomalies',
+        'eco_javascript_dette_minute',
+        'eco_javascript_rating',
+        'eco_php_anomalies',
+        'eco_php_dette_minute',
+        'eco_php_rating',
+        'eco_python_anomalies',
+        'eco_python_dette_minute',
+        'eco_python_rating',
+        // MODIF 26/10/2026 : Accessibilité (tag SonarQube accessibility, css/web/javascript/typescript)
+        'accessibility_anomalies',
+        'accessibility_dette_minute',
+        'accessibility_rating',
+        'accessibility_css_anomalies',
+        'accessibility_css_dette_minute',
+        'accessibility_css_rating',
+        'accessibility_web_anomalies',
+        'accessibility_web_dette_minute',
+        'accessibility_web_rating',
+        'accessibility_javascript_anomalies',
+        'accessibility_javascript_dette_minute',
+        'accessibility_javascript_rating',
+        'accessibility_typescript_anomalies',
+        'accessibility_typescript_dette_minute',
+        'accessibility_typescript_rating',
         // Méta enregistrement
-        'initial', 'mode_collecte', 'utilisateur_collecte', 'date_enregistrement',
+        'initial',
+        'mode_collecte',
+        'utilisateur_collecte',
+        'date_enregistrement',
     ];
 
     /* MODIF 2026-05-06 : liste des colonnes ratings
@@ -975,15 +1118,33 @@ class HistoriqueRepository extends ServiceEntityRepository
      * On normalise au moment de l'INSERT pour avoir toujours A-E ou null en base. */
     /** @var array<int, string> */
     private static array $historiqueRatingColumns = [
-        'comment_lines_rating', 'coverage_rating', 'duplicated_lines_rating',
-        'complexity_rating', 'cognitive_complexity_rating',
-        'sqale_rating', 'software_quality_maintainability_rating',
-        'reliability_rating', 'software_quality_reliability_rating',
-        'security_rating', 'software_quality_security_rating',
+        'comment_lines_rating',
+        'coverage_rating',
+        'duplicated_lines_rating',
+        'complexity_rating',
+        'cognitive_complexity_rating',
+        'sqale_rating',
+        'software_quality_maintainability_rating',
+        'reliability_rating',
+        'software_quality_reliability_rating',
+        'security_rating',
+        'software_quality_security_rating',
         'security_review_rating',
-        'rci_rating', 'rci_frontend_rating',
-        'rci_backend_rating', 'rci_autre_rating', 'rci_inconnu_rating',
-        'eco_rating', 'eco_java_rating', 'eco_javascript_rating', 'eco_php_rating', 'eco_python_rating',
+        'rci_rating',
+        'rci_frontend_rating',
+        'rci_backend_rating',
+        'rci_autre_rating',
+        'rci_inconnu_rating',
+        'eco_rating',
+        'eco_java_rating',
+        'eco_javascript_rating',
+        'eco_php_rating',
+        'eco_python_rating',
+        'accessibility_rating',
+        'accessibility_css_rating',
+        'accessibility_web_rating',
+        'accessibility_javascript_rating',
+        'accessibility_typescript_rating',
     ];
 
     /**
@@ -1055,7 +1216,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $cols = self::$historiqueColumns;
         $colList = implode(', ', $cols) . ', actuator_info, logger_breakdown';
         $loggerBreakdownLit = $loggerBreakdown === null ? 'NULL' : "'" . json_encode($loggerBreakdown) . "'";
-        $placeholders = implode(', ', array_map(static fn (string $c): string => ':' . $c, $cols))
+        $placeholders = implode(', ', array_map(static fn(string $c): string => ':' . $c, $cols))
             . ", '" . json_encode($json) . "'"
             . ", " . $loggerBreakdownLit;
         $sql = "INSERT INTO ma_moulinette.historique ($colList) VALUES ($placeholders)";
@@ -1086,7 +1247,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     $value = $value->format('Y-m-d H:i:sO');
                 } elseif (isset($ratingColsSet[$col])) {
                     $value = self::normalizeRating($value);
-                // MODIF 2026-05-26 : else terminal requis par S126 (colonne standard, valeur inchangée).
+                    // MODIF 2026-05-26 : else terminal requis par S126 (colonne standard, valeur inchangée).
                 } else {
                     // colonne standard : $value déjà assigné depuis $map[$col] ?? null
                 }
@@ -1129,7 +1290,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         if ($dates === []) {
             return null;
         }
-        usort($dates, fn (string $a, string $b): int => $this->comparerDateVersion($a, $b));
+        usort($dates, fn(string $a, string $b): int => $this->comparerDateVersion($a, $b));
 
         return $dates[count($dates) - 1];
     }
@@ -1265,14 +1426,14 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date_version DESC LIMIT 1";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $infos = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $infos = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-            /** on prépare la réponse */
-            return ['code' => 200, 'infos' => $infos, 'erreur' => ''];
+        /** on prépare la réponse */
+        return ['code' => 200, 'infos' => $infos, 'erreur' => ''];
     }
 
     /**
@@ -1300,9 +1461,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                 WHERE maven_key=:maven_key AND initial=true";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $liste = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -1391,13 +1552,13 @@ class HistoriqueRepository extends ServiceEntityRepository
                 WHERE maven_key = :maven_key
                 ORDER BY date_version DESC LIMIT 1";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $isValide = $stmt->executeQuery()->fetchAllAssociative();
-                    /** j'ai pas trouvé de projet */
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $isValide = $stmt->executeQuery()->fetchAllAssociative();
+            /** j'ai pas trouvé de projet */
             if (!$isValide) {
-                    return ['code' => 404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
-                }
+                return ['code' => 404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
+            }
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -1566,5 +1727,4 @@ class HistoriqueRepository extends ServiceEntityRepository
         }
         return ['code' => 200, 'projets' => $rows, 'erreur' => ''];
     }
-
 }

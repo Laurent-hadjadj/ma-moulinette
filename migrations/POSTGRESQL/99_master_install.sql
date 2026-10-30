@@ -41,6 +41,7 @@
 \ir 10_schema/01_create_schema.sql
 
 \echo ===== 6. Tables =====
+\ir 20_tables/accessibility.sql
 \ir 20_tables/activity.sql
 \ir 20_tables/activity_batch_report.sql
 \ir 20_tables/activity_historique.sql

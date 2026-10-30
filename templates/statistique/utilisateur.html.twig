@@ -1,7 +1,6 @@
 {# MODIF 2026-09-14 : </tr> manquant dans la boucle for #}
 {% set title = "Statistiques" %}
-{% set description = "Sonar-Report, statistiques utilisateur" %}
-{% set type_content = "Application Sonar-Report, La page des statistiques utilisateur." %}
+{% set description = app_name ~ ", statistiques utilisateur" %}
 {% set bottom = "footer-fixed footer-fixed-small" %}
 {% if nombre_utilisateur_disponible != 0 %}
     {# MODIF 2026-07-19 : adhesion est une fraction (0-1), pas un pourcentage (0-100) —

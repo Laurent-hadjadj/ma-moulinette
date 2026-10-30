@@ -8,6 +8,10 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     date:
         timezone: Europe/Paris
+    # MODIF 27/10/2026 : nom affiché de l'application (title/description/meta/alt), disponible dans tous les templates sans injection contrôleur par contrôleur —
+    # voir config/services.yaml (app.name, MA_MOULINETTE_NAME).
+    globals:
+        app_name: '%app.name%'
 
 when@test:
     twig:

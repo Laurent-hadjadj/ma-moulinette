@@ -372,9 +372,9 @@ const projetInformation = async function (maven_key) {
     if (t.code === http_200) {
       // 📌 Vérification des erreurs
       log(` - ℹ️ (01) Collecte des informations pour la version : ${t.message.projet_version}`);
-      const release = parseInt(t.message.release, 10) || 0;
-      const snapshot = parseInt(t.message.snapshot, 10) || 0;
-      const autre = parseInt(t.message.autre, 10) || 0;
+      const release = Number(t.message.release) || 0;
+      const snapshot = Number(t.message.snapshot) || 0;
+      const autre = Number(t.message.autre) || 0;
       const nombre = release + snapshot + autre;
       log(` -     📌 Nombre de version disponible : ${nombre}`);
     } else {
@@ -457,8 +457,8 @@ const projetMesure = async function (maven_key) {
   }
 };
 
-/* (v2.0) projetRating() supprime : les notes sont desormais
-   collectees dans mesures en phase (02) via projetMesure(). */
+/* (v2.0) projetRating() supprime : les notes sont désormais
+   collectées dans mesures en phase (02) via projetMesure(). */
 
 /**
  * [Description for projetOwasp]
@@ -530,13 +530,13 @@ const projetOwasp = async function (maven_key) {
 
     if (t.code === http_200 && t.owasp2017 !== 0) {
       let s = '';
-      if (parseInt(t.owasp2017, 10) > 1) { s = 's'; }
-      log(` -     ⚠️ J'ai trouvé ${t.owasp2017} faille${s}.`);
+      if (Number(t.owasp2017) > 1) { s = 's'; }
+      log(` -     ⚠️ J'ai trouvé ${t.owasp2017} faille${s} OWASP 2017.`);
     }
     if (t.code === http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'NC') {
       let s = '';
-      if (parseInt(t.owasp2021, 10) > 1) { s = 's'; }
-      log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s}.`);
+      if (Number(t.owasp2021) > 1) { s = 's'; }
+      log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s} OWASP 2021.`);
     }
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
@@ -612,7 +612,7 @@ const projetHotspot = async function (maven_key) {
       log(' -     ✅ Bravo aucune faille potentielle détectée.');
     } else {
       let s = '';
-      if (parseInt(t.nombre, 10) > 1) { s = 's'; }
+      if (Number(t.nombre) > 1) { s = 's'; }
       log(` -     ⚠️ J'ai trouvé ${t.nombre} faille${s} potentielle${s}.`);
     }
   } catch (error) {
@@ -834,12 +834,12 @@ const projetHotspotOwasp = async function (maven_key, menace) {
 
     if (t.code === http_200 && t.owasp2017 !== 0 && t.info === 'enregistrement' && t.owasp2017 != 'NC') {
       let s = '';
-      if (parseInt(t.owasp2017, 10) > 1) { s = 's'; }
+      if (Number(t.owasp2017) > 1) { s = 's'; }
       log(` -     ⚠️ J'ai trouvé ${t.owasp2017} faille${s} OWASP2017 ${menace} potentielle${s}.`);
     }
     if (t.code === http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'NC' && t.info === 'enregistrement') {
       let s = '';
-      if (parseInt(t.owasp2021, 10) > 1) { s = 's'; }
+      if (Number(t.owasp2021) > 1) { s = 's'; }
       log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s} OWASP2021 ${menace} potentielle${s}.`);
     }
   } catch (error) {
@@ -906,7 +906,7 @@ const projetHotspotOwaspDetails = async function (maven_key) {
 
     if (t.code === http_200) {
       log(` - ℹ️ (09) Collecte des informations détaillées pour les hotspots.`);
-      const s = parseInt(t.nombre, 10) > 1 ? 's' : '';
+      const s = Number(t.nombre) > 1 ? 's' : '';
       log(` -     ✅ On a trouvé ${t.nombre} description${s}.`);
     } else if (t.code === http_406) {
       log(` -     📌 Aucune information n'est disponible pour les hotspots.`);
@@ -1378,6 +1378,63 @@ const projetEmpreinteEcologique = async function (maven_key) {
 };
 
 /**
+ * [Description for projetAccessibility]
+ * Lance la collecte de l'Accessibilité (tag SonarQube `accessibility`).
+ *
+ * @param string maven_key
+ *
+ * @return response
+ *
+ * Created at: 26/10/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetAccessibility = async function (maven_key) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
+  if (!collecte || collecte != 'Tout va bien!') {
+    return;
+  }
+
+  const data = { maven_key };
+  const options = {
+    url: `${serveur()}/api/secure/collecte/accessibility`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(options);
+
+    // 📌 Vérification des erreurs
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 16');
+      errorButton($boutonCollecteIndicateur, aria_label);
+      return;
+    }
+    log(` - ℹ️ (16) Collecte de l'Accessibilité terminée.`);
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de la phase 16.";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 16');
+    log(` - ❌ (16) Collecte des indicateurs WCAG en échec.`);
+    errorButton($boutonCollecteIndicateur, aria_label);
+    return;
+  }
+};
+
+/**
  * [Description for finCollecte]
  * Affiche un message de fin de collecte
  *
@@ -1493,29 +1550,29 @@ $('select[name="projet"]').on('change', function () {
   const $boutonOuvreSuivi = $('.js-tableau-de-bord');
 
   if (document.getElementById("bouton-collecte-indicateur") && !$boutonCollecteIndicateur.hasClass('disabled-bouton')) {
-      $boutonCollecteIndicateur.removeClass('clicked-true clicked-false');
-      return;
+    $boutonCollecteIndicateur.removeClass('clicked-true clicked-false');
+    return;
   }
 
 
   let aria_label;
 
-if (document.getElementById("bouton-collecte-indicateur")){
-  aria_label = 'Lancer la collecte pour ce projet.';
-  enableButton($boutonCollecteIndicateur, aria_label);
-}
+  if (document.getElementById("bouton-collecte-indicateur")) {
+    aria_label = 'Lancer la collecte pour ce projet.';
+    enableButton($boutonCollecteIndicateur, aria_label);
+  }
   aria_label = 'Affiche les données collectées.';
   enableButton($boutonAfficheIndicateur, aria_label);
 
-if (document.getElementById("bouton-collecte-indicateur")){
-  aria_label = 'Enregistre les données collectées.';
-  enableButton($boutonEnregistreIndicateur, aria_label);
-}
+  if (document.getElementById("bouton-collecte-indicateur")) {
+    aria_label = 'Enregistre les données collectées.';
+    enableButton($boutonEnregistreIndicateur, aria_label);
+  }
 
-if (document.getElementById("bouton-collecte-indicateur")){
-  aria_label = 'Ouvre la page de calcul de la répartition.';
-  enableLink($boutonOuvreRepartition, aria_label);
-}
+  if (document.getElementById("bouton-collecte-indicateur")) {
+    aria_label = 'Ouvre la page de calcul de la répartition.';
+    enableLink($boutonOuvreRepartition, aria_label);
+  }
 
   aria_label = 'Ouvre la page COSUI.';
   enableLink($boutonOuvreCosui, aria_label);
@@ -1625,6 +1682,9 @@ $('.js-analyse').on('click', function () {
 
     /* Collecte de l'Empreinte Écologique (plugins SonarQube Creedengo, best effort). */
     await projetEmpreinteEcologique(idProject);   /*(15)*/
+
+    /* Collecte de l'Accessibilité (tag SonarQube accessibility, best effort). */
+    await projetAccessibility(idProject);         /*(16)*/
 
     /* Renvoie le statut de fin */
     finCollecte(idProject);
@@ -1837,11 +1897,11 @@ $('#bouton-fermer-information-complexity').on('click', function () {
  * On affiche la liste des types d'anomalies par sévérité.
  */
 $('#js-affiche-severity').on('click', function () {
-    if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
-      showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
+  if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
+    showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
     return;
   }
-    modalSafe.open('#modal-affiche-severity');
+  modalSafe.open('#modal-affiche-severity');
 });
 $('#bouton-fermer-liste-severity').on('click', function () {
   modalSafe.close('#modal-affiche-severity');
@@ -1852,11 +1912,11 @@ $('#bouton-fermer-liste-severity').on('click', function () {
  * On affiche la liste des violations par sévérité.
  */
 $('#js-affiche-violations').on('click', function () {
-    if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
-      showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
+  if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
+    showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
     return;
   }
-    modalSafe.open('#modal-affiche-violations-par-severity');
+  modalSafe.open('#modal-affiche-violations-par-severity');
 });
 $('#bouton-fermer-liste-violations').on('click', function () {
   modalSafe.close('#modal-affiche-violations-par-severity');
@@ -1886,7 +1946,7 @@ $('#js-affiche-detail-dette').on('click', () => {
     showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
     return;
   }
-      modalSafe.open('#modal-dette-technique');
+  modalSafe.open('#modal-dette-technique');
 });
 $('#bouton-fermer-dette-technique').on('click', function () {
   modalSafe.close('#modal-dette-technique');
@@ -1916,7 +1976,7 @@ $('#js-affiche-liste-nosonar').on('click', function () {
     showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
     return;
   }
-    modalSafe.open('#modal-affiche-liste-nosonar');
+  modalSafe.open('#modal-affiche-liste-nosonar');
 });
 $('#bouton-fermer-liste-nosonar').on('click', function () {
   modalSafe.close('#modal-affiche-liste-nosonar');
@@ -1934,7 +1994,7 @@ $('#js-affiche-logger').on('click', function () {
   modalSafe.open('#modal-affiche-liste-logger');
 });
 $('#bouton-fermer-liste-logger').on('click', function () {
-    modalSafe.close('#modal-affiche-liste-logger');
+  modalSafe.close('#modal-affiche-liste-logger');
 });
 
 /**
@@ -1949,7 +2009,7 @@ $('#js-affiche-actuator').on('click', function () {
   modalSafe.open('#modal-affiche-actuator');
 });
 $('#bouton-fermer-actuator').on('click', function () {
-    modalSafe.close('#modal-affiche-actuator');
+  modalSafe.close('#modal-affiche-actuator');
 });
 
 /* Graphique RCI (bar empilé RCI% + Dette% = 100%, un empilement par
@@ -2051,7 +2111,7 @@ $('#js-affiche-modal-mesures-rci').on('click', function () {
   }, 50);
 });
 $('#bouton-fermer-mesures-rci').on('click', function () {
-    modalSafe.close('#modal-affiche-mesures-rci');
+  modalSafe.close('#modal-affiche-mesures-rci');
 });
 
 /* MODIF 2026-10-08 : modale détail Scopes (répartition MAIN/TEST).
@@ -2148,7 +2208,7 @@ $('#js-affiche-modal-scope').on('click', function () {
   }, 50);
 });
 $('#bouton-fermer-scope').on('click', function () {
-    modalSafe.close('#modal-affiche-scope');
+  modalSafe.close('#modal-affiche-scope');
 });
 
 /* MODIF 2026-05-25  :
@@ -2224,9 +2284,9 @@ const collectLoggerFrameworks = function (breakdown) {
  * Délégation sur document : sûr même si l'élément est re-rendu après init. */
 $(document).on('click', '#js-affiche-logger-detail', function () {
   if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
-      showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
-      return;
-    }
+    showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
+    return;
+  }
 
   // 1. Matrice level × framework depuis le dataset
   const breakdown = readLoggerBreakdown();
@@ -2272,7 +2332,7 @@ $(document).on('click', '#js-affiche-logger-detail', function () {
       details.slice(0, 50).map(d => [
         d.file_path || d.file_name || '—',
         d.line_number != null ? d.line_number : '—',
-        d.level     || '—',
+        d.level || '—',
         d.framework || '—',
       ])
     ).draw(false);

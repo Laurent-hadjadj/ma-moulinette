@@ -59,10 +59,24 @@ Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SON
     Ce n'est **pas** la même chose que la facette générique `sonarsourceSecurity` (catégories propriétaires SonarSource) ni que les tags libres d'une issue (`owasp-a01`, etc.) : une règle peut très bien être détectée comme un problème de sécurité (`sonarsourceSecurity` non vide, éventuellement classée `"others"` ou dans une catégorie propriétaire comme `"encrypt-data"`) **sans** que ses métadonnées `owaspTop10`/`owaspTop10-2021` soient renseignées pour la version de SonarQube installée, ni qu'elle porte le moindre tag `owasp-aXX` — auquel cas les deux mécanismes ci-dessous renvoient 0 en toute cohérence : SonarQube ne rattache tout simplement plus cette faille à OWASP (par exemple parce qu'il la classe uniquement par CWE).
     Pour vérifier rapidement : `GET /api/issues/search?componentKeys={maven_key}&facets=owaspTop10,owaspTop10-2021,sonarsourceSecurity` — si `sonarsourceSecurity` remonte des comptes alors que `owaspTop10`/`owaspTop10-2021` sont vides, le problème est une classification manquante côté SonarQube (règle/version), pas un bug applicatif.
 
-!!! note "✅ Secours par tag `owasp-aXX` implémenté (colonne `owasp.source`)"
-    Quand la facette officielle renvoie `total=0` pour un référentiel, `BatchCollecteOwaspController` déclenche un appel de secours (`GET /api/issues/search?tags=owasp-a01,...,owasp-a10`, mémoïsé — un seul appel HTTP même si 2017 **et** 2021 en ont besoin, le tag n'étant pas spécifique à une année de référentiel).
-    La ligne persistée en base porte alors `source='tag'` au lieu de `'facet'`, exposé par l'API de peinture et affiché sur la page à côté du référentiel actif (« OWASP 2021 — OWASP (tag) »).
-    Un callout pédagogique sur la page explique cette distinction aux utilisateurs. Si le secours ne trouve rien non plus, `source` reste `'facet'` (rien à attribuer à l'un ou l'autre mécanisme).
+!!! note "✅ Secours par tag `owasp-aXX`, fusionné catégorie par catégorie (colonne `owasp.source`)"
+    `BatchCollecteOwaspController` interroge systématiquement les deux mécanismes, puis fusionne **catégorie par catégorie** (A1 à A10 indépendamment) : pour chaque catégorie, la facette officielle est prioritaire si elle y a classé quelque chose, sinon le secours par tag (`GET /api/issues/search?tags=owasp-a1,...,owasp-a10`, mémorisé — un seul appel HTTP même si 2017 **et** 2021 en ont besoin, le tag n'étant pas spécifique à une année de référentiel) complète.
+    La ligne persistée en base porte `source='facet'` si toutes les catégories trouvées viennent de la facette, `'tag'` si elles viennent toutes du secours, et **`'mixed'`** si certaines viennent de l'un et d'autres de l'autre — exposé par l'API de peinture et affiché sur la page à côté du référentiel actif (« OWASP 2021 — OWASP (mixte facet+tag) »).
+
+    !!! bug "🔴 Bug corrigé le 26/10/2026 — vérifié sur une instance SonarQube 26.10 Community"
+        Deux défauts réels, trouvés en recoupant les vrais résultats avec des appels API directs :
+
+        1. **Zéro-padding incorrect** : la liste de tags de secours valait `owasp-a01,owasp-a02,...` alors que le tag réellement posé par les règles (ex. plugin tiers `findsecbugs`) est `owasp-a1` (sans zéro) — `tags=owasp-a06` ne matchait **aucune** issue, `tags=owasp-a6` en trouvait 9. Le secours par tag était donc silencieusement aveugle pour A1 à A9 depuis son introduction, seul A10 pouvait fonctionner par coïncidence de format.
+        2. **Bascule tout-ou-rien par référentiel** : tant que la facette officielle classait *au moins une* catégorie (total ≠ 0), l'ancienne logique ignorait complètement le secours par tag pour **toutes** les autres catégories du même référentiel. Cas réel : la facette classait A5/A7 (2 règles cœur SonarQube) mais ignorait totalement A6, pourtant bien détecté par `findsecbugs` — 9 anomalies A6 restaient invisibles uniquement parce que A5/A7 avaient déjà rendu le total non nul.
+        3. **Répartition par sévérité structurellement vide** : pour toute catégorie classée par la facette officielle, l'ancien code cherchait un tag `owasp-aX` sur les issues retournées par la facette — qui n'en portent jamais (la facette et les tags libres sont deux systèmes de classification indépendants). La répartition par sévérité restait donc à 0 partout dès que la facette était utilisée. Corrigé par un appel ciblé sur chaque catégorie classée par la facette (`owaspTop10-2021=a5` seul, par exemple), qui isole ses vraies issues et leur vraie sévérité.
+
+!!! bug "🔴 Bug corrigé le 26/10/2026 — modale « Détail » d'une catégorie (sévérité hotspot)"
+    `HotspotOwaspRepository::countHotspotOwaspMenaceByStatus()` (utilisée par la modale ouverte via l'icône 🔎 d'une ligne du tableau de synthèse) ne filtrait pas par `referential_owasp` — alors que `hotspot_owasp` porte une ligne distincte par (maven_key, menace, referential_owasp) pour 2017 **et** 2021. Les compteurs Élevée/Moyenne/Faible de la modale sommaient donc silencieusement les deux référentiels, affichant le même résultat quel que soit l'onglet 2017/2021 sélectionné. `referential_owasp` est désormais transmis de bout en bout (JS → `peintureOwaspSeverity()` → repository).
+
+    Deux autres défauts corrigés sur cette même modale :
+
+    - **Contenu non à jour au changement de catégorie** : le clic sur l'icône 🔎 ouvrait la modale **avant** la fin de l'appel AJAX de remplissage (fonction asynchrone non attendue) — elle affichait un instant le contenu de la catégorie précédemment consultée, avant de se mettre à jour. Le clic attend désormais la fin du chargement avant d'ouvrir la modale.
+    - **Aucune donnée de vulnérabilité** : la modale n'a toujours affiché que la sévérité des **hotspots** (Élevée/Moyenne/Faible), jamais celle des **vulnérabilités** (Bloquant/Critique/Majeur/Mineur) — alors que la colonne « Faille » de la même ligne du tableau peut être non nulle. Une nouvelle section « Vulnérabilités » a été ajoutée dans la modale, réutilisant les données déjà renvoyées par `/api/secure/peinture/owasp/liste` à chaque changement de référentiel (pas de nouvel appel réseau).
 
 ## 🧭 Chemin de fer de la page
 
@@ -83,7 +97,7 @@ Page OWASP
 │        └── Répartition par module (frontend/backend/autre)
 │
 ├── 📊 Tableau de synthèse (une ligne par catégorie A1..A10)
-│        ├── icône 🔎 → modale détail (sévérité HIGH/MEDIUM/LOW de la catégorie)
+│        ├── icône 🔎 → modale détail (sévérité des vulnérabilités ET des hotspots de la catégorie)
 │        ├── colonne Faille (compteur)
 │        └── colonne Hotspot (compteur + % examiné)
 │
@@ -96,14 +110,14 @@ Page OWASP
 ├── 📘 Accordéon Référentiel (sélecteur + 3 blocs 2017/2021/2025, 10 catégories chacun)
 │        └── « Plus de détails... » → /owasp/detail/{id}
 │
-└── 🪟 Modale « Owasp et points chauds » (détail HIGH/MEDIUM/LOW d'une catégorie)
+└── 🪟 Modale « Owasp et points chauds » (détail d'une catégorie : sévérité des vulnérabilités Bloquant/Critique/Majeur/Mineur + sévérité des hotspots Élevée/Moyenne/Faible)
 ```
 <!-- markdownlint-enable MD046 -->
 
 ## 📋 Contenu de la page
 
 - **Callout d'information** : encart pédagogique expliquant la distinction facet/tag (voir « ✅ Secours par tag `owasp-aXX` implémenté » plus haut) — toujours visible, en tête de page ;
-- **Bloc Informations** : référentiel actif, total de vulnérabilités par sévérité (bloquante/critique/majeure/mineure), total de hotspots par probabilité et par statut (examiné/à vérifier) avec note A-E, répartition par module (frontend/backend/autre — voir [Architecture des applications Java](../architecture/architecture-java.md)) ;
+- **Bloc Informations** : référentiel actif, total de vulnérabilités par sévérité (bloquante/critique/majeure/mineure), total de hotspots par probabilité et par statut (examiné/à vérifier) avec note A-E, répartition par module (frontend/backend/autre — voir [Architecture des applications Java](../architecture/architecture-java.md)) ; **cette répartition par module ne porte que sur les hotspots**, jamais sur les vulnérabilités — un projet sans aucun hotspot `TO_REVIEW` y affiche `0` partout de façon tout à fait correcte, même avec de vraies vulnérabilités classées par ailleurs ;
 - **Tableau de synthèse** : une ligne par catégorie A1-A10, nombre de failles et de hotspots avec badge de note ; la source (facet/tag) du référentiel actif est affichée juste au-dessus, à côté de son numéro ;
 - **Tableau détaillé** : liste des hotspots (règle, sévérité, composant, ligne, message, statut) ;
 - **Graphique en barres** : répartition des failles par catégorie ;

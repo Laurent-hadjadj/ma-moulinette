@@ -1,5 +1,5 @@
-{% set title = 'ZAP (DAST)' ~ (scan ? ' - ' ~ scan.mavenKey : '') %}
-{% set description = 'Ma Moulinette - Résultats du scan DAST ZAP.' %}
+{% set title = 'ZAP (DAST)' ~ (maven_key ? ' - ' ~ maven_key : '') %}
+{% set description = app_name ~ ' - Résultats du scan DAST ZAP.' %}
 {% set bottom = 'footer-fixed' %}
 
 <!DOCTYPE html>
@@ -42,199 +42,212 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         <main class="grid-container margin-bottom-2">
             <h2 class="h4 claire-hand">
                 <span aria-hidden="true">👻</span> ZAP (DAST)
-                {% if scan %}
-                    &mdash; <span class="open-sans">{{ scan.mavenKey }}</span>
+                {% if maven_key %}
+                    &mdash; <span class="open-sans">{{ maven_key }}</span>
                 {% endif %}
             </h2>
 
-            {% if scan is null %}
+            {% if lanes is empty %}
                 <div class="callout alert-callout-border info">
                     <p><span aria-hidden="true">ℹ️</span> Aucun scan ZAP disponible pour ce projet.</p>
                     <p>Les rapports ZAP sont postés par la CI sur <code>POST /api/secure/zap/upload</code>.</p>
                 </div>
             {% else %}
-                {# Export PDF — lien direct, le token est déjà décodé côté serveur
-                    (contrairement à la page OWASP, pas besoin de sessionStorage/JS). #}
-                <a id="bouton-ouvrir-rapport-zap-pdf"
-                    href="{{ path('zap_rapport_pdf', {token: app.request.query.get('token')}) }}"
-                    target="_blank"
-                    class="button open-sans focus-dark-light"
-                    title="Exporter le rapport ZAP au format PDF"
-                    aria-label="Export PDF">
-                    <span aria-hidden="true">📄</span> Export PDF
-                </a>
+                {# MODIF 26/10/2026 : un maven_key peut recouvrir plusieurs cibles DAST
+                    réelles (ex. tier présentation + tier métier d'une même application) —
+                    1 "lane" par target_url distinct, chacune avec son propre KPI,
+                    graphiques et historique, plutôt que de les mélanger. #}
+                {% for lane in lanes %}
+                <section class="zap-lane{% if not loop.first %} margin-top-2{% endif %}">
+                    {% if lanes|length > 1 %}
+                        <h3 class="h5 claire-hand zap-lane-title">
+                            <span aria-hidden="true">🎯</span> Cible : <span class="open-sans word-break-all">{{ lane.targetUrl ?? '---' }}</span>
+                        </h3>
+                    {% endif %}
 
-                {# Bandeau KPI — scan du jour + cible + total alertes #}
-                <div class="grid-x grid-margin-x zap-kpi-row margin-bottom-1">
-                    <div class="cell small-12 medium-4">
-                        <div class="callout alert-callout-border secondary">
-                            <p class="open-sans"><strong>Scan du</strong></p>
-                            <p>{{ scan.generatedAt|date('Y-m-d H:i') }}</p>
-                            <p class="text-muted">ZAP {{ scan.zapVersion ?? '---' }}</p>
-                        </div>
-                    </div>
-                    <div class="cell small-12 medium-4">
-                        <div class="callout alert-callout-border info">
-                            <p class="open-sans"><strong>Cible scannée</strong></p>
-                            <p class="open-sans word-break-all">{{ scan.targetUrl ?? '---' }}</p>
-                        </div>
-                    </div>
-                    <div class="cell small-12 medium-4">
-                        <div class="callout alert-callout-border error">
-                            <p class="open-sans"><strong>Alertes</strong></p>
-                            <p><strong>{{ scan.alertCountTotal }}</strong> au total</p>
-                        </div>
-                    </div>
-                </div>
+                    {# Export PDF — lien direct, le token est déjà décodé côté serveur
+                        (contrairement à la page OWASP, pas besoin de sessionStorage/JS).
+                        target_url précise la lane à exporter. #}
+                    <a id="bouton-ouvrir-rapport-zap-pdf-{{ lane.index }}"
+                        href="{{ path('zap_rapport_pdf', {token: app.request.query.get('token'), target_url: lane.targetUrl}) }}"
+                        target="_blank"
+                        class="button open-sans focus-dark-light bouton-ouvrir-rapport-zap-pdf"
+                        title="Exporter le rapport ZAP au format PDF"
+                        aria-label="Export PDF">
+                        <span aria-hidden="true">📄</span> Export PDF
+                    </a>
 
-                <h3 class="h5 claire-hand"><span aria-hidden="true">📊</span> Répartition par risque</h3>
-                <div class="grid-x grid-margin-x grid-margin-y severity-summary margin-bottom-1">
-                    <div class="cell small-12 medium-auto large-auto severity-cell">
-                        <span class="badge-level high">HIGH</span>
-                        <span class="severity-count">{{ scan.riskCountHigh }}</span>
-                    </div>
-                    <div class="cell small-12 medium-auto large-auto severity-cell">
-                        <span class="badge-level medium">MEDIUM</span>
-                        <span class="severity-count">{{ scan.riskCountMedium }}</span>
-                    </div>
-                    <div class="cell small-12 medium-auto large-auto severity-cell">
-                        <span class="badge-level low">LOW</span>
-                        <span class="severity-count">{{ scan.riskCountLow }}</span>
-                    </div>
-                    <div class="cell small-12 medium-auto large-auto severity-cell">
-                        <span class="badge-level info">INFORMATIONAL</span>
-                        <span class="severity-count">{{ scan.riskCountInformational }}</span>
-                    </div>
-                </div>
-
-                {# MODIF 2026-10-16 : liste détaillée des alertes du dernier scan — sans
-                    elle, les compteurs ci-dessus ne disent rien de concret ("9 alertes"
-                    ne dit pas de quoi il s'agit). 1 bouton Détail = 1 modale (rendu
-                    serveur, pas d'AJAX, même principe que le reste de la page). #}
-                <h3 class="h5 claire-hand margin-top-1"><span aria-hidden="true">🗒️</span> Détail des alertes ({{ findings|length }})</h3>
-                {% if findings is empty %}
-                    <p class="open-sans">Aucune alerte sur ce scan.</p>
-                {% else %}
-                    <div class="cell table-scroll">
-                        <table class="open-sans">
-                            <thead>
-                                <tr>
-                                    <th>Risque</th>
-                                    <th>Règle</th>
-                                    <th class="text-right">Instances</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for finding in findings %}
-                                    <tr>
-                                        <td><span class="badge-level {{ finding.riskLabel }}">{{ finding.riskLabel }}</span></td>
-                                        <td class="open-sans">{{ finding.rule.name }}</td>
-                                        <td class="text-right">{{ finding.instanceCount }}</td>
-                                        <td class="text-right">
-                                            <button type="button"
-                                                    class="button bouton-ouvrir-details open-sans focus-dark-light"
-                                                data-open="zap-finding-{{ finding.id }}"
-                                                aria-label="Détail de l'alerte {{ finding.rule.name }}">
-                                                <span aria-hidden="true">🔎</span>Détail
-                                            </button>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
-
-                {# Graphiques : catégories (dernier scan) + évolution du risque (historique) #}
-                <h3 class="h5 claire-hand"><span aria-hidden="true">📈</span> Alertes par catégorie OWASP</h3>
-                {% if owaspByReferential is empty %}
-                    <div class="callout alert-callout-border info">
-                        <p><span aria-hidden="true">ℹ️</span> Aucune des alertes de ce scan ne porte de tag OWASP 2017/2021 reconnu.</p>
-                    </div>
-                {% else %}
-                    <div class="grid-x grid-margin-x margin-bottom-1">
-                        {% for owaspDast in owaspByReferential %}
-                            <div class="cell small-12 medium-6">
-                                <div class="graph-280">
-                                    <canvas id="zap-chart-categories-{{ owaspDast.referentialOwasp }}"></canvas>
-                                </div>
+                    {# Bandeau KPI — scan du jour + cible + total alertes #}
+                    <div class="grid-x grid-margin-x zap-kpi-row margin-bottom-1">
+                        <div class="cell small-12 medium-4">
+                            <div class="callout alert-callout-border secondary">
+                                <p class="open-sans"><strong>Scan du</strong></p>
+                                <p>{{ lane.scan.generatedAt|date('Y-m-d H:i') }}</p>
+                                <p class="text-muted">ZAP {{ lane.scan.zapVersion ?? '---' }}</p>
                             </div>
-                        {% endfor %}
+                        </div>
+                        <div class="cell small-12 medium-4">
+                            <div class="callout alert-callout-border info">
+                                <p class="open-sans"><strong>Cible scannée</strong></p>
+                                <p class="open-sans word-break-all">{{ lane.scan.targetUrl ?? '---' }}</p>
+                            </div>
+                        </div>
+                        <div class="cell small-12 medium-4">
+                            <div class="callout alert-callout-border error">
+                                <p class="open-sans"><strong>Alertes</strong></p>
+                                <p><strong>{{ lane.scan.alertCountTotal }}</strong> au total</p>
+                            </div>
+                        </div>
                     </div>
-                    {{ _self.info_callout('Nombre de <strong>règles ZAP distinctes</strong> déclenchées par catégorie OWASP Top 10, sur le dernier scan. <strong>Lecture prudente pour A07 (authentification) et A09 (journalisation)</strong> : d\'après la documentation officielle ZAP, très peu de règles automatisées couvrent ces deux catégories — un score bas n\'y signifie pas forcément « rien à signaler », mais plutôt « peu testé ». A10 (SSRF) dépend de l\'add-on OAST, non activé par défaut.') }}
 
-                    {% for owaspDast in owaspByReferential %}
-                        <h4 class="h5 claire-hand margin-top-1">OWASP {{ owaspDast.referentialOwasp }}</h4>
+                    <h4 class="h5 claire-hand"><span aria-hidden="true">📊</span> Répartition par risque</h4>
+                    <div class="grid-x grid-margin-x grid-margin-y severity-summary margin-bottom-1">
+                        <div class="cell small-12 medium-auto large-auto severity-cell">
+                            <span class="badge-level high">HIGH</span>
+                            <span class="severity-count">{{ lane.scan.riskCountHigh }}</span>
+                        </div>
+                        <div class="cell small-12 medium-auto large-auto severity-cell">
+                            <span class="badge-level medium">MEDIUM</span>
+                            <span class="severity-count">{{ lane.scan.riskCountMedium }}</span>
+                        </div>
+                        <div class="cell small-12 medium-auto large-auto severity-cell">
+                            <span class="badge-level low">LOW</span>
+                            <span class="severity-count">{{ lane.scan.riskCountLow }}</span>
+                        </div>
+                        <div class="cell small-12 medium-auto large-auto severity-cell">
+                            <span class="badge-level info">INFORMATIONAL</span>
+                            <span class="severity-count">{{ lane.scan.riskCountInformational }}</span>
+                        </div>
+                    </div>
+
+                    {# MODIF 2026-10-16 : liste détaillée des alertes du dernier scan — sans
+                        elle, les compteurs ci-dessus ne disent rien de concret ("9 alertes"
+                        ne dit pas de quoi il s'agit). 1 bouton Détail = 1 modale (rendu
+                        serveur, pas d'AJAX, même principe que le reste de la page). #}
+                    <h4 class="h5 claire-hand margin-top-1"><span aria-hidden="true">🗒️</span> Détail des alertes ({{ lane.findings|length }})</h4>
+                    {% if lane.findings is empty %}
+                        <p class="open-sans">Aucune alerte sur ce scan.</p>
+                    {% else %}
                         <div class="cell table-scroll">
                             <table class="open-sans">
                                 <thead>
                                     <tr>
-                                        <th>Catégorie</th>
-                                        <th class="text-right">Alertes</th>
+                                        <th>Risque</th>
+                                        <th>Règle</th>
+                                        <th class="text-right">Instances</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for i in 1..10 %}
+                                    {% for finding in lane.findings %}
                                         <tr>
-                                            <td>A{{ i }} - {{ categoryLabels[owaspDast.referentialOwasp][i] ?? '' }}</td>
-                                            <td class="text-right">{{ owaspDast.getCategoryCount(i) }}</td>
+                                            <td><span class="badge-level {{ finding.riskLabel }}">{{ finding.riskLabel }}</span></td>
+                                            <td class="open-sans">{{ finding.rule.name }}</td>
+                                            <td class="text-right">{{ finding.instanceCount }}</td>
+                                            <td class="text-right">
+                                                <button type="button"
+                                                        class="button bouton-ouvrir-details open-sans focus-dark-light"
+                                                    data-open="zap-finding-{{ finding.id }}"
+                                                    aria-label="Détail de l'alerte {{ finding.rule.name }}">
+                                                    <span aria-hidden="true">🔎</span>Détail
+                                                </button>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                    {% endfor %}
-                {% endif %}
+                    {% endif %}
 
-                <h3 class="h5 claire-hand margin-top-1"><span aria-hidden="true">📉</span> Évolution du risque</h3>
-                <div class="graph-320">
-                    <canvas id="zap-chart-history"></canvas>
-                </div>
-                {{ _self.info_callout('Chaque point correspond à un <strong>scan ZAP ingéré</strong> (pas un jour calendaire) — l\'historique s\'enrichit à chaque nouveau rapport posté par la CI, sans jamais écraser les scans précédents.') }}
+                    {# Graphiques : catégories (dernier scan) + évolution du risque (historique) #}
+                    <h4 class="h5 claire-hand"><span aria-hidden="true">📈</span> Alertes par catégorie OWASP</h4>
+                    {% if lane.owaspByReferential is empty %}
+                        <div class="callout alert-callout-border info">
+                            <p><span aria-hidden="true">ℹ️</span> Aucune des alertes de ce scan ne porte de tag OWASP 2017/2021 reconnu.</p>
+                        </div>
+                    {% else %}
+                        <div class="grid-x grid-margin-x margin-bottom-1">
+                            {% for owaspDast in lane.owaspByReferential %}
+                                <div class="cell small-12 medium-6">
+                                    <div class="graph-280">
+                                        <canvas id="zap-chart-categories-{{ lane.index }}-{{ owaspDast.referentialOwasp }}"></canvas>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {{ _self.info_callout('Nombre de <strong>règles ZAP distinctes</strong> déclenchées par catégorie OWASP Top 10, sur le dernier scan. <strong>Lecture prudente pour A07 (authentification) et A09 (journalisation)</strong> : d\'après la documentation officielle ZAP, très peu de règles automatisées couvrent ces deux catégories — un score bas n\'y signifie pas forcément « rien à signaler », mais plutôt « peu testé ». A10 (SSRF) dépend de l\'add-on OAST, non activé par défaut.') }}
 
-                <h3 class="h5 claire-hand margin-top-1"><span aria-hidden="true">🕒</span> Historique des scans ({{ history|length }})</h3>
-                {% if history is empty %}
-                    <p class="open-sans">Aucun historique.</p>
-                {% else %}
-                    <div class="cell table-scroll">
-                        <table class="open-sans">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Cible</th>
-                                    <th class="text-right">Total</th>
-                                    <th class="text-right">HIGH</th>
-                                    <th class="text-right">MEDIUM</th>
-                                    <th class="text-right">LOW</th>
-                                    <th class="text-right">INFO</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for h in history %}
-                                    <tr>
-                                        <td>{{ h.generatedAt|date('Y-m-d H:i') }}</td>
-                                        <td style="word-break: break-all;">{{ h.targetUrl ?? '---' }}</td>
-                                        <td class="text-right">{{ h.alertCountTotal }}</td>
-                                        <td class="text-right">
-                                            {% if h.riskCountHigh > 0 %}<span class="badge-count high">{{ h.riskCountHigh }}</span>{% endif %}
-                                        </td>
-                                        <td class="text-right">
-                                            {% if h.riskCountMedium > 0 %}<span class="badge-count medium">{{ h.riskCountMedium }}</span>{% endif %}
-                                        </td>
-                                        <td class="text-right">
-                                            {% if h.riskCountLow > 0 %}<span class="badge-count low">{{ h.riskCountLow }}</span>{% endif %}
-                                        </td>
-                                        <td class="text-right">
-                                            {% if h.riskCountInformational > 0 %}<span class="badge-count info">{{ h.riskCountInformational }}</span>{% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        {% for owaspDast in lane.owaspByReferential %}
+                            <h5 class="h5 claire-hand margin-top-1">OWASP {{ owaspDast.referentialOwasp }}</h5>
+                            <div class="cell table-scroll">
+                                <table class="open-sans">
+                                    <thead>
+                                        <tr>
+                                            <th>Catégorie</th>
+                                            <th class="text-right">Alertes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in 1..10 %}
+                                            <tr>
+                                                <td>A{{ i }} - {{ categoryLabels[owaspDast.referentialOwasp][i] ?? '' }}</td>
+                                                <td class="text-right">{{ owaspDast.getCategoryCount(i) }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <h4 class="h5 claire-hand margin-top-1"><span aria-hidden="true">📉</span> Évolution du risque</h4>
+                    <div class="graph-320">
+                        <canvas id="zap-chart-history-{{ lane.index }}"></canvas>
                     </div>
-                    {{ _self.info_callout('Liste des ' ~ history|length ~ ' scans les plus récents pour ce projet (limité à 20, pas de pagination pour l\'instant).') }}
-                {% endif %}
+                    {{ _self.info_callout('Chaque point correspond à un <strong>scan ZAP ingéré</strong> (pas un jour calendaire) — l\'historique s\'enrichit à chaque nouveau rapport posté par la CI, sans jamais écraser les scans précédents.') }}
+
+                    <h4 class="h5 claire-hand margin-top-1"><span aria-hidden="true">🕒</span> Historique des scans ({{ lane.history|length }})</h4>
+                    {% if lane.history is empty %}
+                        <p class="open-sans">Aucun historique.</p>
+                    {% else %}
+                        <div class="cell table-scroll">
+                            <table class="open-sans">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th class="text-right">Total</th>
+                                        <th class="text-right">HIGH</th>
+                                        <th class="text-right">MEDIUM</th>
+                                        <th class="text-right">LOW</th>
+                                        <th class="text-right">INFO</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for h in lane.history %}
+                                        <tr>
+                                            <td>{{ h.generatedAt|date('Y-m-d H:i') }}</td>
+                                            <td class="text-right">{{ h.alertCountTotal }}</td>
+                                            <td class="text-right">
+                                                {% if h.riskCountHigh > 0 %}<span class="badge-count high">{{ h.riskCountHigh }}</span>{% endif %}
+                                            </td>
+                                            <td class="text-right">
+                                                {% if h.riskCountMedium > 0 %}<span class="badge-count medium">{{ h.riskCountMedium }}</span>{% endif %}
+                                            </td>
+                                            <td class="text-right">
+                                                {% if h.riskCountLow > 0 %}<span class="badge-count low">{{ h.riskCountLow }}</span>{% endif %}
+                                            </td>
+                                            <td class="text-right">
+                                                {% if h.riskCountInformational > 0 %}<span class="badge-count info">{{ h.riskCountInformational }}</span>{% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{ _self.info_callout('Liste des ' ~ lane.history|length ~ ' scans les plus récents pour cette cible (limité à 20, pas de pagination pour l\'instant).') }}
+                    {% endif %}
+                </section>
+                {% endfor %}
 
                 <script type="application/json" id="zap-chart-data">{{ zapChartData|json_encode|raw }}</script>
             {% endif %}
@@ -242,13 +255,18 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
         {# MODIF 2026-10-16 : 1 modale par alerte (rendu serveur, ouverture
             déclarative Foundation via data-open, pas de JS dédié — même
-            principe que templates/auth/register.html.twig). Texte ZAP
-            (description/reference) toujours échappé, jamais |raw : ZAP
-            l'embarque en <p>...</p>, même précaution que les descriptions
-            CVE de Dependency-Check (texte externe, jamais rendu brut). #}
-        {% for finding in findings %}
+            principe que templates/auth/register.html.twig).
+            MODIF 26/10/2026 : description/solution/reference sont du HTML
+            externe (catalogue de règles ZAP, <p>...</p>) — |raw n'est sûr
+            ici que parce que ZapIngester::findOrCreateRule() les passe au
+            sanitizer `app.zap_rule_text` (config/packages/html_sanitizer.yaml)
+            une seule fois, à l'ingestion, avant persistance. Ne jamais
+            réintroduire ces champs ailleurs (ex. API, export) sans repasser
+            par ce même sanitizer en amont. #}
+        {% for lane in lanes %}
+        {% for finding in lane.findings %}
         <dialog id="zap-finding-{{ finding.id }}"
-                    class="reveal"
+                    class="reveal large"
                     data-reveal
                     data-close-on-click="true"
                     data-animation-in="fade-in">
@@ -292,7 +310,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     </div>
                 {% endif %}
                 <footer class="grid-x grid-margin-x align-right margin-top-2">
-                    <div class="cell shrink">
+                    <div class="cell shrink margin-bottom-2">
                         <button type="button"
                                 class="button bouton-fermer-details open-sans focus-dark-light"
                                 data-close
@@ -302,6 +320,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     </div>
                 </footer>
             </dialog>
+        {% endfor %}
         {% endfor %}
 
         {# MODIF 2026-10-13 : macro réutilisée pour afficher un encadré bleu

@@ -21,7 +21,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
 /** Gestion de accès aux API */
-use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController};
+
+use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController, BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController, BatchCollecteActuatorController, BatchCollecteLoggerController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController, BatchCollecteAccessibilityController};
 
 /**
  * [Description ApiMesureController]
@@ -59,6 +60,8 @@ class ApiCollecteController extends AbstractController
         private BatchCollecteRciController $batchCollecteRci,
         /** MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo) */
         private BatchCollecteEmpreinteEcologiqueController $batchCollecteEmpreinteEcologique,
+        /** MODIF 26/10/2026 : Accessibilité (tag SonarQube Accessibility) */
+        private BatchCollecteAccessibilityController $batchCollecteAccessibility,
         private Security $security,
         private LoggerInterface $logger,
     ) {}
@@ -149,8 +152,8 @@ class ApiCollecteController extends AbstractController
         ]);
 
         $total_sonar =  $information['historique']['version_release_sonar'] +
-                        $information['historique']['version_snapshot_sonar'] +
-                        $information['historique']['version_autre_sonar'];
+            $information['historique']['version_snapshot_sonar'] +
+            $information['historique']['version_autre_sonar'];
 
         return new JsonResponse([
             'code' => 200,
@@ -1043,7 +1046,7 @@ class ApiCollecteController extends AbstractController
         ]);
 
         $nombre = ($noSonar['historique']['suppress_warning'] ?? 0)
-                + ($noSonar['historique']['total_no_sonar'] ?? 0);
+            + ($noSonar['historique']['total_no_sonar'] ?? 0);
         return new JsonResponse([
             'code' => 200,
             'nombre' => $nombre,
@@ -1401,6 +1404,94 @@ class ApiCollecteController extends AbstractController
             'code' => 200,
             'message' => 'Données enregistrées dans la table eco_conception.',
             'data' => $empreinteEcologique['historique'] ?? null
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for apiCollecteAccessibility]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 26/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/collecte/accessibility', name: 'api_collecte_accessibility', methods: ['POST'])]
+    public function apiCollecteAccessibility(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/accessibility");
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On teste si la clé est valide */
+        if (!is_object($data) || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning(self::$loggerE403, [
+                'maven_key' => $data->maven_key,
+                'utilisateur' => $this->security->getUser()?->getUserIdentifier()
+            ]);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On contrôle le mode d'utilisation */
+        $utilisateur_collecte = $this->appUser()->getCourriel() ?? 'null';
+        $this->logger->info('[Collecte] ℹ️ Début de collecte de l\'Accessibilité du projet.', [
+            'maven_key' => $data->maven_key,
+            'utilisateur' => $utilisateur_collecte
+        ]);
+
+        $accessibility = $this->batchCollecteAccessibility->BatchCollecteAccessibility(
+            $data->maven_key,
+            'COLLECTE',
+            $utilisateur_collecte
+        );
+
+        if ($accessibility['code'] !== 200) {
+            $this->logger->error('[Collecte] ❌ Échec de collecte de l\'Accessibilité du projet.', [
+                'code' => $accessibility['code'],
+                'maven_key' => $data->maven_key,
+                'erreur' => $accessibility['erreur'] ?? $accessibility['trace'] ?? self::$noSpecify,
+            ]);
+
+            $message = "Collecte de l'Accessibilité du projet.";
+            return new JsonResponse([
+                'code' => $accessibility['code'],
+                'type' => 'error',
+                'message' => $accessibility['message'] ?? $message,
+                'trace' => $accessibility['erreur'] ?? $accessibility['trace'] ?? null
+            ], Response::HTTP_OK);
+        }
+
+        $this->logger->info('[Collecte] ℹ️ Accessibilité collectée avec succès.', [
+            'maven_key' => $data->maven_key,
+        ]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'message' => 'Données enregistrées dans la table accessibility.',
+            'data' => $accessibility['historique'] ?? null
         ], Response::HTTP_OK);
     }
 }

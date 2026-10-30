@@ -107,7 +107,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
   <body>
 
     <header class="header">
-      <div><img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo Ma-Moulinette" class="logo"></div>
+      <div><img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo {{ app_name }}" class="logo"></div>
       <div class="header-title">
         <h1>Rapport ZAP (DAST)</h1>
         <div class="subtitle">Scanner dynamique — complément de l'analyse statique OWASP</div>
@@ -244,7 +244,11 @@ https://github.com/Laurent-hadjadj/ma-moulinette
               <td class="col-risk"><span class="badge-risk {{ f.risk_label }}">{{ f.risk_label }}</span></td>
               <td>{{ f.rule_name }}</td>
               <td class="col-instances">{{ f.instance_count }}</td>
-              <td>{{ f.description|default('—')|slice(0, 220) }}</td>
+              {# MODIF 26/10/2026 : description = HTML externe (<p>...</p>, cf.
+                  ZapIngester) — striptags avant slice() pour un aperçu tronqué
+                  propre dans cette cellule dense, plutôt que des balises <p>
+                  visibles ou un slice() coupant la balise au milieu. #}
+              <td>{{ f.description|default('—')|striptags|slice(0, 220) }}</td>
             </tr>
           {% endfor %}
         </tbody>

@@ -161,10 +161,18 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    */
     public function countHotspotOwaspMenaceByStatus(array $map): array
   {
+    /* MODIF 26/10/2026 : BUG CORRIGÉ — cette requête ne filtrait pas par
+     * referential_owasp, alors que hotspot_owasp porte une ligne par
+     * (maven_key, menace, referential_owasp) distincte pour 2017 ET 2021 :
+     * le décompte HIGH/MEDIUM/LOW de la modale de détail ("menaces
+     * potentielles") sommait silencieusement les deux référentiels,
+     * donnant le même résultat quel que soit l'onglet 2017/2021 sélectionné
+     * sur la page (modale jamais "à jour" lors du changement de référentiel). */
     $sql = "SELECT count(*) as total
             FROM ma_moulinette.hotspot_owasp
             WHERE maven_key=:maven_key
             AND menace=:menace
+            AND referential_owasp=:referential_owasp
             AND status='TO_REVIEW'
             AND probability=:probability";
 
@@ -172,6 +180,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $stmt->bindValue(self::$mavenKey, $map['maven_key']);
           $stmt->bindValue(':menace', $map['menace']);
+          $stmt->bindValue(':referential_owasp', $map['referential_owasp']);
           $stmt->bindValue(':probability', $map['probability']);
         $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {

@@ -35,6 +35,10 @@ class BatchCollecteOwaspControllerTest extends TestCase
     private const BUILT_URL_2017 = 'https://sonar.example.com/api/issues/search?...owasp2017';
     private const BUILT_URL_2021 = 'https://sonar.example.com/api/issues/search?...owasp2021';
     private const BUILT_URL_TAG_FALLBACK = 'https://sonar.example.com/api/issues/search?...tags';
+    // MODIF 26/10/2026 : même liste que BatchCollecteOwaspController::$owaspCategories,
+    // pour distinguer dans le mock la requête combinée (facette, les 10 catégories) de
+    // l'appel ciblé "une seule catégorie" (fetchCategorySeverityBreakdown()).
+    private const ALL_CATEGORIES = 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10';
 
     /** @var EntityManagerInterface&MockObject */
     private MockObject $em;
@@ -83,15 +87,22 @@ class BatchCollecteOwaspControllerTest extends TestCase
             [Owasp::class, $this->owaspRepo],
         ]);
 
-        // url-builder renvoie des URL distinctes selon owaspTop10/owaspTop10-2021/tags (secours)
+        // url-builder renvoie des URL distinctes selon owaspTop10/owaspTop10-2021/tags
+        // (secours) — MODIF 26/10/2026 : une requête "une seule catégorie" (ex.
+        // owaspTop10-2021=a5, fetchCategorySeverityBreakdown()) obtient une URL
+        // distincte de la requête combinée (owaspTop10-2021=a1,...,a10), pour que les
+        // tests puissent mocker les deux séparément plutôt que de les confondre.
         $this->urlBuilder->method('build')
             ->willReturnCallback(function (string $base, string $path, array $params) {
                 if (isset($params['tags'])) {
                     return self::BUILT_URL_TAG_FALLBACK;
                 }
-                return isset($params['owaspTop10-2021'])
-                    ? self::BUILT_URL_2021
-                    : self::BUILT_URL_2017;
+                foreach (['owaspTop10-2021' => self::BUILT_URL_2021, 'owaspTop10' => self::BUILT_URL_2017] as $param => $url) {
+                    if (isset($params[$param])) {
+                        return $params[$param] === self::ALL_CATEGORIES ? $url : "{$url}&single={$params[$param]}";
+                    }
+                }
+                return self::BUILT_URL_2017;
             });
 
         // Mock du container pour $this->getParameter() — pattern AbstractController.
@@ -152,14 +163,34 @@ class BatchCollecteOwaspControllerTest extends TestCase
             ['sonar.version', '8'],
         ]);
 
-        // Un seul appel httpSonarQube (2017 uniquement)
-        $this->client->expects($this->once())
+        // MODIF 26/10/2026 : a1/a3 classées par la facette officielle -> 1 appel
+        // ciblé par catégorie en plus (fetchCategorySeverityBreakdown()), ainsi que
+        // le secours par tag (désormais toujours calculé, même si inutilisé ici).
+        $this->client->expects($this->exactly(4))
             ->method('httpSonarQube')
-            ->with(self::BUILT_URL_2017)
-            ->willReturn(['code' => 200, 'json' => $this->buildOwaspPayload(
-                total: 3,
-                facets: [['val' => 'a1', 'count' => 2], ['val' => 'a3', 'count' => 1]]
-            )]);
+            ->willReturnCallback(function (string $url) {
+                if ($url === self::BUILT_URL_2017) {
+                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
+                        total: 3,
+                        facets: [['val' => 'a1', 'count' => 2], ['val' => 'a3', 'count' => 1]]
+                    )];
+                }
+                if ($url === self::BUILT_URL_TAG_FALLBACK) {
+                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
+                }
+                if ($url === $this->singleCategoryUrl(2017, 1)) {
+                    return $this->categorySeverityResponse([
+                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
+                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
+                    ]);
+                }
+                if ($url === $this->singleCategoryUrl(2017, 3)) {
+                    return $this->categorySeverityResponse([
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                    ]);
+                }
+                throw new \LogicException("URL inattendue dans ce test : {$url}");
+            });
 
         $this->infoRepo->expects($this->once())
             ->method('selectInformationProjetVersion')
@@ -295,18 +326,40 @@ class BatchCollecteOwaspControllerTest extends TestCase
             ['sonar.version', '10'],
         ]);
 
-        $this->client->expects($this->exactly(2))
-            ->method('httpSonarQube')
-            ->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'json' => $this->buildOwaspPayload(
-                    total: 5,
-                    facets: [['val' => 'a1', 'count' => 3], ['val' => 'a2', 'count' => 2]]
-                )],
-                ['code' => 200, 'json' => $this->buildOwaspPayload(
-                    total: 7,
-                    facets: [['val' => 'a4', 'count' => 4], ['val' => 'a6', 'count' => 3]]
-                )],
-            );
+        // MODIF 26/10/2026 : a1/a2 (2017) et a4/a6 (2021) classées par la facette
+        // officielle -> 4 appels ciblés par catégorie en plus, ainsi que le secours
+        // par tag (toujours calculé, un seul appel partagé 2017+2021, inutilisé ici).
+        $this->client->method('httpSonarQube')
+            ->willReturnCallback(function (string $url) {
+                if ($url === self::BUILT_URL_2017) {
+                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
+                        total: 5,
+                        facets: [['val' => 'a1', 'count' => 3], ['val' => 'a2', 'count' => 2]]
+                    )];
+                }
+                if ($url === self::BUILT_URL_2021) {
+                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
+                        total: 7,
+                        facets: [['val' => 'a4', 'count' => 4], ['val' => 'a6', 'count' => 3]]
+                    )];
+                }
+                if ($url === self::BUILT_URL_TAG_FALLBACK) {
+                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
+                }
+                if ($url === $this->singleCategoryUrl(2017, 1)) {
+                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'MAJOR'], ['status' => 'OPEN', 'severity' => 'MAJOR'], ['status' => 'OPEN', 'severity' => 'MAJOR']]);
+                }
+                if ($url === $this->singleCategoryUrl(2017, 2)) {
+                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'MINOR'], ['status' => 'OPEN', 'severity' => 'MINOR']]);
+                }
+                if ($url === $this->singleCategoryUrl(2021, 4)) {
+                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'CRITICAL'], ['status' => 'OPEN', 'severity' => 'CRITICAL'], ['status' => 'OPEN', 'severity' => 'CRITICAL'], ['status' => 'OPEN', 'severity' => 'CRITICAL']]);
+                }
+                if ($url === $this->singleCategoryUrl(2021, 6)) {
+                    return $this->categorySeverityResponse([['status' => 'OPEN', 'severity' => 'BLOCKER'], ['status' => 'OPEN', 'severity' => 'BLOCKER'], ['status' => 'OPEN', 'severity' => 'BLOCKER']]);
+                }
+                throw new \LogicException("URL inattendue dans ce test : {$url}");
+            });
 
         $this->infoRepo->expects($this->once())
             ->method('selectInformationProjetVersion')
@@ -349,16 +402,34 @@ class BatchCollecteOwaspControllerTest extends TestCase
             facets: [
                 ['val' => 'a1', 'count' => 1],
                 ['val' => 'a5', 'count' => 2],
-            ],
-            issues: [
-                ['status' => 'OPEN', 'severity' => 'BLOCKER', 'tags' => ['owasp-a1']],
-                ['status' => 'OPEN', 'severity' => 'CRITICAL', 'tags' => ['owasp-a5']],
-                ['status' => 'CLOSED', 'severity' => 'MAJOR', 'tags' => ['owasp-a1']], // ignoré (status)
             ]
         );
 
-        $this->client->expects($this->once())->method('httpSonarQube')
-            ->willReturn(['code' => 200, 'json' => $payload]);
+        // MODIF 26/10/2026 : la répartition par sévérité des catégories classées
+        // par la facette officielle (a1, a5) vient désormais d'un appel ciblé par
+        // catégorie, pas des `issues` de la requête combinée (qui ne portent
+        // jamais de tag owasp-aX exploitable, cf. BatchCollecteOwaspController).
+        $this->client->method('httpSonarQube')
+            ->willReturnCallback(function (string $url) use ($payload) {
+                if ($url === self::BUILT_URL_2017) {
+                    return ['code' => 200, 'json' => $payload];
+                }
+                if ($url === self::BUILT_URL_TAG_FALLBACK) {
+                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
+                }
+                if ($url === $this->singleCategoryUrl(2017, 1)) {
+                    return $this->categorySeverityResponse([
+                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
+                        ['status' => 'CLOSED', 'severity' => 'MAJOR'], // ignoré (status)
+                    ]);
+                }
+                if ($url === $this->singleCategoryUrl(2017, 5)) {
+                    return $this->categorySeverityResponse([
+                        ['status' => 'OPEN', 'severity' => 'CRITICAL'],
+                    ]);
+                }
+                throw new \LogicException("URL inattendue dans ce test : {$url}");
+            });
 
         $this->infoRepo->method('selectInformationProjetVersion')
             ->willReturn(['code' => 200, 'info' => [
@@ -433,16 +504,32 @@ class BatchCollecteOwaspControllerTest extends TestCase
             facets: [
                 ['val' => 'a1', 'count' => 1],
                 ['val' => 'a5', 'count' => 2],
-            ],
-            issues: [
-                ['issueStatus' => 'OPEN', 'severity' => 'BLOCKER', 'tags' => ['owasp-a1']],
-                ['issueStatus' => 'ACCEPTED', 'severity' => 'CRITICAL', 'tags' => ['owasp-a5']], // compté (nouveau modèle)
-                ['issueStatus' => 'FIXED', 'severity' => 'MAJOR', 'tags' => ['owasp-a1']], // ignoré
             ]
         );
 
-        $this->client->expects($this->once())->method('httpSonarQube')
-            ->willReturn(['code' => 200, 'json' => $payload]);
+        // MODIF 26/10/2026 : même raison que testPersistedMapHasExpectedShape —
+        // sévérité par catégorie via un appel ciblé, pas via les `issues` combinées.
+        $this->client->method('httpSonarQube')
+            ->willReturnCallback(function (string $url) use ($payload) {
+                if ($url === self::BUILT_URL_2017) {
+                    return ['code' => 200, 'json' => $payload];
+                }
+                if ($url === self::BUILT_URL_TAG_FALLBACK) {
+                    return ['code' => 200, 'json' => ['total' => 0, 'effortTotal' => 0, 'issues' => []]];
+                }
+                if ($url === $this->singleCategoryUrl(2017, 1)) {
+                    return $this->categorySeverityResponse([
+                        ['issueStatus' => 'OPEN', 'severity' => 'BLOCKER'],
+                        ['issueStatus' => 'FIXED', 'severity' => 'MAJOR'], // ignoré
+                    ]);
+                }
+                if ($url === $this->singleCategoryUrl(2017, 5)) {
+                    return $this->categorySeverityResponse([
+                        ['issueStatus' => 'ACCEPTED', 'severity' => 'CRITICAL'], // compté (nouveau modèle)
+                    ]);
+                }
+                throw new \LogicException("URL inattendue dans ce test : {$url}");
+            });
 
         $this->infoRepo->method('selectInformationProjetVersion')
             ->willReturn(['code' => 200, 'info' => [
@@ -476,7 +563,10 @@ class BatchCollecteOwaspControllerTest extends TestCase
             ['sonar.version', '10'],
         ]);
 
-        $this->client->expects($this->exactly(3))
+        // MODIF 26/10/2026 : tag sans zéro-padding (owasp-a1/owasp-a4, bug corrigé) +
+        // a3 (2021, classée par la facette officielle) nécessite désormais 1 appel
+        // ciblé supplémentaire pour sa répartition par sévérité.
+        $this->client->expects($this->exactly(4))
             ->method('httpSonarQube')
             ->willReturnCallback(function (string $url) {
                 if ($url === self::BUILT_URL_2017) {
@@ -488,13 +578,22 @@ class BatchCollecteOwaspControllerTest extends TestCase
                         facets: [['val' => 'a3', 'count' => 5]]
                     )];
                 }
-                // secours par tag (owasp-a01/owasp-a04, zéro-paddés)
+                if ($url === $this->singleCategoryUrl(2021, 3)) {
+                    return $this->categorySeverityResponse([
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                    ]);
+                }
+                // secours par tag (owasp-a1/owasp-a4, sans zéro-padding)
                 return ['code' => 200, 'json' => [
                     'total' => 2,
                     'effortTotal' => 20,
                     'issues' => [
-                        ['status' => 'OPEN', 'severity' => 'BLOCKER', 'tags' => ['owasp-a01']],
-                        ['status' => 'OPEN', 'severity' => 'MAJOR', 'tags' => ['owasp-a04']],
+                        ['status' => 'OPEN', 'severity' => 'BLOCKER', 'tags' => ['owasp-a1']],
+                        ['status' => 'OPEN', 'severity' => 'MAJOR', 'tags' => ['owasp-a4']],
                     ],
                 ]];
             });
@@ -524,10 +623,103 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->assertSame(1, $capturedList[0]['a1_blocker']);
         $this->assertSame(1, $capturedList[0]['a4_major']);
 
-        // 2021 : facette officielle non vide, pas de secours
-        $this->assertSame(5, $result['owasp2021']);
-        $this->assertSame('facet', $capturedList[1]['source']);
+        // 2021 : a3 classée par la facette officielle (pas de secours nécessaire
+        // pour cette catégorie) — MAIS a1/a4 restent classées par le secours par
+        // tag, qui n'est pas spécifique à un référentiel (même donnée partagée que
+        // pour 2017, cf. testTagFallbackIsMemoizedAcrossBothReferentials) : la
+        // facette 2021 ne les couvrant pas, le secours s'applique aussi à elles.
+        // MODIF 26/10/2026 : source 'mixed' (a3 = facette, a1/a4 = tag), pas 'facet'
+        // pur comme avant la fusion par catégorie.
+        $this->assertSame(7, $result['owasp2021']);
+        $this->assertSame('mixed', $capturedList[1]['source']);
         $this->assertSame(5, $capturedList[1]['a3']);
+        $this->assertSame(1, $capturedList[1]['a1']);
+        $this->assertSame(1, $capturedList[1]['a4']);
+        // MODIF 26/10/2026 : sévérité via l'appel ciblé par catégorie (bug corrigé —
+        // ne vaut plus structurellement 0 pour les catégories classées par la facette).
+        $this->assertSame(5, $capturedList[1]['a3_major']);
+    }
+
+    // ─── 10bis. Fusion par catégorie : facette ET tag contribuent au même référentiel (MODIF 26/10/2026) ─
+    // Cas réel rencontré sur SonarQube Community 26.10 : la
+    // facette officielle owaspTop10-2021 classe A5/A7 (règles cœur SonarQube), mais
+    // ignore A6 — pourtant réellement détecté par un plugin tiers (findsecbugs) qui
+    // pose son propre tag `owasp-a6`. Comme le total de la facette n'est pas nul
+    // (A5+A7 = 3), l'ancienne logique prenait la branche "officielle" pour tout le
+    // référentiel et ne regardait jamais le secours par tag : les 9 anomalies A6
+    // restaient invisibles, et la répartition par sévérité de A5/A7 restait à 0
+    // (cf. bug corrigé dans fetchCategorySeverityBreakdown()).
+    public function testMergesFacetAndTagPerCategoryWhenBothContributeToSameReferential(): void
+    {
+        $this->parameterBag->method('get')->willReturnMap([
+            ['sonar.url', self::SONAR_URL],
+            ['sonar.version', '8'],
+        ]);
+
+        $this->client->expects($this->exactly(4))
+            ->method('httpSonarQube')
+            ->willReturnCallback(function (string $url) {
+                if ($url === self::BUILT_URL_2017) {
+                    return ['code' => 200, 'json' => $this->buildOwaspPayload(
+                        total: 3,
+                        facets: [['val' => 'a5', 'count' => 2], ['val' => 'a7', 'count' => 1]]
+                    )];
+                }
+                if ($url === self::BUILT_URL_TAG_FALLBACK) {
+                    return ['code' => 200, 'json' => [
+                        'total' => 9,
+                        'effortTotal' => 90,
+                        'issues' => array_fill(0, 9, ['status' => 'OPEN', 'severity' => 'MAJOR', 'tags' => ['cwe', 'cryptography', 'owasp-a6']]),
+                    ]];
+                }
+                if ($url === $this->singleCategoryUrl(2017, 5)) {
+                    return $this->categorySeverityResponse([
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                        ['status' => 'OPEN', 'severity' => 'MAJOR'],
+                    ]);
+                }
+                if ($url === $this->singleCategoryUrl(2017, 7)) {
+                    return $this->categorySeverityResponse([
+                        ['status' => 'OPEN', 'severity' => 'BLOCKER'],
+                    ]);
+                }
+                throw new \LogicException("URL inattendue dans ce test : {$url}");
+            });
+
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
+            'date' => '2026-04-22', 'version' => '1.0',
+        ]]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+
+        $capturedList = [];
+        $this->owaspRepo->expects($this->once())
+            ->method('insertOwasp')
+            ->with($this->callback(function (array $list) use (&$capturedList) {
+                $capturedList = $list;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        $this->assertSame(200, $result['code']);
+        // Total = 2 (a5, facette) + 1 (a7, facette) + 9 (a6, tag) = 12.
+        $this->assertSame(12, $result['owasp2017']);
+        $this->assertSame('mixed', $capturedList[0]['source']);
+
+        // A5/A7 : facette, avec leur vraie répartition par sévérité (plus 0 partout).
+        $this->assertSame(2, $capturedList[0]['a5']);
+        $this->assertSame(2, $capturedList[0]['a5_major']);
+        $this->assertSame(1, $capturedList[0]['a7']);
+        $this->assertSame(1, $capturedList[0]['a7_blocker']);
+
+        // A6 : secours par tag, jamais classé par la facette.
+        $this->assertSame(9, $capturedList[0]['a6']);
+        $this->assertSame(9, $capturedList[0]['a6_major']);
+
+        // Les autres catégories restent à 0.
+        $this->assertSame(0, $capturedList[0]['a1']);
+        $this->assertSame(0, $capturedList[0]['a3']);
     }
 
     public function testTagFallbackIsMemoizedAcrossBothReferentials(): void
@@ -732,6 +924,29 @@ class BatchCollecteOwaspControllerTest extends TestCase
             ],
             'issues' => $issues,
         ];
+    }
+
+    /**
+     * URL mockée d'un appel ciblé "une seule catégorie" (fetchCategorySeverityBreakdown()).
+     */
+    private function singleCategoryUrl(int $referentialYear, int $category): string
+    {
+        $base = $referentialYear === 2021 ? self::BUILT_URL_2021 : self::BUILT_URL_2017;
+        return "{$base}&single=a{$category}";
+    }
+
+    /**
+     * Réponse HTTP minimale pour un appel ciblé "une seule catégorie" — juste une
+     * liste d'issues (status/issueStatus + severity), comme lu par
+     * fetchCategorySeverityBreakdown().
+     *
+     * @param array<int, array{status?: string, issueStatus?: string, severity: string}> $issues
+     *
+     * @return array{code: int, json: array{issues: array<int, array<string, string>>}}
+     */
+    private function categorySeverityResponse(array $issues): array
+    {
+        return ['code' => 200, 'json' => ['issues' => $issues]];
     }
 
     /**

@@ -22,6 +22,8 @@ use App\Exception\Zap\{ZapEmptyPayloadException,
 use App\Repository\{ZapRuleRepository, ZapScanRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
 /**
  * [Description ZapIngester]
@@ -36,7 +38,10 @@ use Psr\Log\LoggerInterface;
  *      la queue, PAS du payload — contrairement a Dependency-Check)
  *   4. pour chaque alerte :
  *        - findOrCreate ZapRule (cle alert_ref, pluginid regroupe plusieurs
- *          alertes distinctes — voir ZapRule)
+ *          alertes distinctes — voir ZapRule) ; description/solution/reference
+ *          passées par le sanitizer `app.zap_rule_text` (config/packages/
+ *          html_sanitizer.yaml) une seule fois, à la création — texte externe
+ *          (catalogue de règles ZAP), jamais stocké brut
  *        - crée ZapFinding (snapshot riskcode/confidence)
  *   5. construit owasp_dast (2017 + 2021) en parcourant les tags
  *      OWASP_<année>_AXX de chaque finding
@@ -63,6 +68,8 @@ class ZapIngester
         private readonly ZapRuleRepository $ruleRepository,
         private readonly ZapScanRepository $scanRepository,
         private readonly LoggerInterface $logger,
+        #[Autowire(service: 'html_sanitizer.sanitizer.app.zap_rule_text')]
+        private readonly HtmlSanitizerInterface $ruleTextSanitizer,
     ) {}
 
     /**
@@ -327,9 +334,9 @@ class ZapIngester
             ->setName((string) ($alertRaw['name'] ?? $alertRaw['alert'] ?? 'Alerte ZAP sans nom'))
             ->setCweid(isset($alertRaw['cweid']) ? (int) $alertRaw['cweid'] : null)
             ->setWascid(isset($alertRaw['wascid']) ? (int) $alertRaw['wascid'] : null)
-            ->setDescription((string) ($alertRaw['desc'] ?? ''))
-            ->setSolution((string) ($alertRaw['solution'] ?? ''))
-            ->setReference((string) ($alertRaw['reference'] ?? ''));
+            ->setDescription($this->ruleTextSanitizer->sanitize((string) ($alertRaw['desc'] ?? '')))
+            ->setSolution($this->ruleTextSanitizer->sanitize((string) ($alertRaw['solution'] ?? '')))
+            ->setReference($this->ruleTextSanitizer->sanitize((string) ($alertRaw['reference'] ?? '')));
 
         $this->em->persist($entity);
         $this->ruleCache[$alertRef] = $entity;

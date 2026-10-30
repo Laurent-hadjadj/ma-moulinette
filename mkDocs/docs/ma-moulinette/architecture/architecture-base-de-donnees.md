@@ -12,14 +12,17 @@ Décompte réel des objets déclarés dans `migrations/POSTGRESQL/` (un fichier 
 
 | Type d'objet | Nombre | Source |
 | --- | :---: | --- |
-| Tables | 45 (44 *logged* + 1 *UNLOGGED*, voir ci-dessous) | `20_tables/*.sql` |
+| Tables | 52 (51 *logged* + 1 *UNLOGGED*, voir ci-dessous) | `20_tables/*.sql` |
 | Vues | 5 | `30_views/*.sql` |
-| Index | 142 | `40_indexes/indexes.sql` |
-| Fonctions PL/pgSQL | 1 (`purge_batch_profiling`) | `50_functions/*.sql` |
-| Commentaires (`COMMENT ON`) | 869 | `60_comments/comments.sql` |
-| Contraintes (`ADD CONSTRAINT`, dont clés étrangères) | 41 | `70_constraints/constraints.sql` |
+| Index | 157 | `40_indexes/indexes.sql` |
+| Fonctions PL/pgSQL | 2 (`purge_batch_profiling`, `get_pg_stat_activity`) | `50_functions/*.sql` |
+| Commentaires (`COMMENT ON`) | 991 | `60_comments/comments.sql` |
+| Contraintes (`ADD CONSTRAINT`, dont clés étrangères) | 51 | `70_constraints/constraints.sql` |
 | Séquences explicites | 0 (colonnes `GENERATED ... AS IDENTITY`, séquences implicites) | — |
 | Triggers | 0 | — |
+
+!!! note "🔄 Relevé du 26/10/2026"
+    Les évolutions depuis le dernier relevé (45 → 52 tables) sont les 5 tables ZAP/DAST (`zap_processing_queue`, `zap_scan`, `zap_rule`, `zap_finding`, `owasp_dast`) et la table `eco_conception` (Empreinte Écologique, plugins Creedengo) — voir [Tables par domaine](#-tables-par-domaine) plus bas.
 
 ## 📂 Organisation des scripts de migration
 
@@ -29,7 +32,7 @@ Le schéma est défini par des scripts SQL bruts dans `migrations/POSTGRESQL/`, 
 | --- | --- | :---: |
 | `00_init/` | Drop/création rôle, base, extensions (`pg_stat_statements`), search path | 1 |
 | `10_schema/` | Création du schéma `ma_moulinette` | 2 |
-| `20_tables/` | 45 tables (un fichier par table) | 3 |
+| `20_tables/` | 52 tables (un fichier par table) | 3 |
 | `30_views/` | 5 vues (statistiques `batch_profiling`) | 4 |
 | `40_indexes/` | Les indexes | 5 |
 | `50_functions/` | Fonctions PL/pgSQL (ex. purge `batch_profiling`) | 6 |
@@ -82,7 +85,7 @@ flowchart LR
 
 Les flèches en pointillés indiquent une **référence par valeur** (chaîne stockée, comparée par `LIKE prefix%` ou recherche dans un tableau JSON), pas une contrainte `FOREIGN KEY` — l'intégrité référentielle de ce périmètre est garantie côté applicatif (services/repository), pas par PostgreSQL.
 
-À l'inverse, le domaine **DependencyCheck** est un modèle relationnel classique avec clés étrangères réelles :
+À l'inverse, les domaines **DependencyCheck** et **ZAP (DAST)** sont des modèles relationnels classiques avec clés étrangères réelles :
 
 ```mermaid
 erDiagram
@@ -128,6 +131,54 @@ erDiagram
     }
 ```
 
+Même principe côté **ZAP (DAST)** — `owasp_dast` rattache un scan à sa classification par catégorie OWASP (2017/2021), sur le même modèle que `hotspot_owasp` pour l'analyse statique :
+
+```mermaid
+erDiagram
+    zap_processing_queue ||--o{ zap_scan : "ingéré vers"
+    zap_scan ||--o{ zap_finding : "a"
+    zap_rule ||--o{ zap_finding : "référencée par"
+    zap_scan ||--o{ owasp_dast : "classifié par"
+
+    zap_processing_queue {
+        bigint id PK
+        string ulid
+        string status
+        bytea payload_gz
+        string payload_sha256
+    }
+    zap_scan {
+        bigint id PK
+        bigint queue_id FK
+        string maven_key
+        string project_version
+        string target_url
+        timestamptz generated_at
+        int alert_count_total
+    }
+    zap_rule {
+        bigint id PK
+        string pluginid
+        string alert_ref
+        string name
+        int cweid
+        int wascid
+    }
+    zap_finding {
+        bigint id PK
+        bigint scan_id FK
+        bigint rule_id FK
+        int instance_count
+        jsonb tags
+    }
+    owasp_dast {
+        bigint id PK
+        bigint scan_id FK
+        int referential_owasp
+        string maven_key
+    }
+```
+
 ## 📋 Tables par domaine
 
 ### 🔐 Identité et sécurité
@@ -165,6 +216,7 @@ erDiagram
 | `repartition_temp` | Tampon de collecte détaillée — table `UNLOGGED`, vidée automatiquement au redémarrage (voir [🧊 Tables simples vs `UNLOGGED`](#-tables-logged-vs-tables-unlogged)) |
 | `clean_code` | Indicateurs Clean Code (nouveau modèle SonarQube) |
 | `rci` | Détail par module (frontend/backend/autre/inconnu) du RCI (Risk Criticality Index, plugin `sonar-rci`) — snapshot courant, une ligne par projet. |
+| `eco_conception` | Empreinte Écologique (plugins SonarQube Creedengo `creedengo-java/javascript/php/python`, activable via `CREEDENGO_ENABLED`) — snapshot courant, une ligne par `maven_key`. |
 
 ### 📈 Activité SonarQube
 
@@ -192,6 +244,16 @@ erDiagram
 | `dc_dependency` | Référentiel dédupliqué des dépendances (par sha1) |
 | `dc_cve` | Référentiel des CVE |
 | `dc_finding` | Association scan × dépendance × CVE |
+
+### 🕷️ ZAP (DAST)
+
+| Table | Rôle |
+| --- | --- |
+| `zap_processing_queue` | File d'ingestion des rapports ZAP uploadés par la CI (`POST /api/secure/zap/upload`) |
+| `zap_scan` | Un scan = un rapport ZAP pour (maven_key, project_version, target_url, generated_at) |
+| `zap_rule` | Référentiel dédupliqué des règles ZAP déclenchées (par pluginid + alert_ref) |
+| `zap_finding` | Association scan × règle, avec instances et tags OWASP bruts (JSONB) |
+| `owasp_dast` | Classification d'un scan par catégorie OWASP (2017/2021), construite à partir des tags `OWASP_<année>_AXX` des findings — vide si aucun tag présent dans le rapport source |
 
 ### 🌱 Actuator (Spring Boot)
 

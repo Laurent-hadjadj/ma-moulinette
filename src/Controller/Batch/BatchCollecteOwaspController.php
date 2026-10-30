@@ -30,11 +30,19 @@ class BatchCollecteOwaspController extends AbstractController
     private static string $erreur404 = "Je n'ai pas trouvé le projet dans l'application (Erreur 404).";
     // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
     private static string $owaspCategories = 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10';
-    /* MODIF 2026-07-18 : liste des tags de secours (owasp-aXX, zéro-paddés —
-     * cf. mkDocs/docs/ma-moulinette/application/owasp.md) utilisée quand la
-     * facette officielle owaspTop10/owaspTop10-2021 ne classe aucune issue. */
+    /* MODIF 2026-07-18 : liste des tags de secours (owasp-aXX) utilisée en
+     * complément de la facette officielle owaspTop10/owaspTop10-2021, catégorie
+     * par catégorie (cf. mkDocs/docs/ma-moulinette/application/owasp.md).
+     * MODIF 26/10/2026 : BUG CORRIGÉ — zéro-padding retiré (`owasp-a01` →
+     * `owasp-a1`). Vérifié en direct sur une vraie instance SonarQube (26.10,
+     * Community) : le tag réellement posé par les règles (ex. plugin
+     * findsecbugs) est `owasp-a6`, jamais `owasp-a06`. Avec le zéro-padding,
+     * `tags=owasp-a06` ne matchait STRICTEMENT AUCUNE issue (confirmé :
+     * total=0), alors que `tags=owasp-a6` en trouvait 9 — le secours par tag
+     * était donc silencieusement aveugle pour A1 à A9 depuis son introduction,
+     * seul A10 pouvait fonctionner par coïncidence de format. */
     private static string $owaspTagCategories =
-        'owasp-a01,owasp-a02,owasp-a03,owasp-a04,owasp-a05,owasp-a06,owasp-a07,owasp-a08,owasp-a09,owasp-a10';
+        'owasp-a1,owasp-a2,owasp-a3,owasp-a4,owasp-a5,owasp-a6,owasp-a7,owasp-a8,owasp-a9,owasp-a10';
 
     /**
      * [Description for __construct]
@@ -50,6 +58,64 @@ class BatchCollecteOwaspController extends AbstractController
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
         ) {
+    }
+
+    /**
+     * [Description for fetchCategorySeverityBreakdown]
+     * Répartition par sévérité d'une seule catégorie OWASP, classée via la
+     * facette officielle SonarQube — un appel ciblé (`owaspTop10`/
+     * `owaspTop10-2021=aN` seul, pas la liste des 10) isole exactement les
+     * issues de cette catégorie, confirmé en direct (SonarQube 26.10) :
+     * contrairement à la requête combinée sur les 10 catégories, on peut
+     * alors lire la vraie sévérité de chaque issue sans avoir besoin d'un tag.
+     *
+     * @param string $facetParam 'owaspTop10' (2017) ou 'owaspTop10-2021' (2021)
+     * @param string $maven_key
+     * @param int $category 1 à 10
+     * @param string $componentKeyParam
+     * @param string $statusField
+     * @param string[] $allowedStatuses
+     *
+     * @return array<string, int>
+     *
+     * Created at: 26/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function fetchCategorySeverityBreakdown(
+        string $facetParam,
+        string $maven_key,
+        int $category,
+        string $componentKeyParam,
+        string $statusField,
+        array $allowedStatuses
+    ): array {
+        $severities = ['blocker' => 0, 'critical' => 0, 'major' => 0, 'info' => 0, 'minor' => 0];
+
+        $url = $this->urlBuilder->build(
+            $this->getParameter(self::$sonarUrl),
+            '/api/issues/search',
+            [$componentKeyParam => $maven_key, $facetParam => "a{$category}", 'ps' => 500]
+        );
+        $this->logger->debug("[Batch OWASP] 🛠️ Appel sévérité catégorie officielle A{$category} → {$url}");
+        $response = $this->client->httpSonarQube($url);
+
+        if (isset($response['code']) && in_array($response['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
+            $this->logger->warning("[Batch OWASP] ⚠️ Échec de l'appel sévérité catégorie officielle A{$category} : {$response['code']}");
+            return $severities;
+        }
+
+        foreach ($response['json']['issues'] ?? [] as $issue) {
+            if (!in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
+                continue;
+            }
+            $severity = strtolower($issue['severity'] ?? '');
+            if (isset($severities[$severity])) {
+                $severities[$severity]++;
+            }
+        }
+
+        return $severities;
     }
 
     /**
@@ -194,7 +260,7 @@ class BatchCollecteOwaspController extends AbstractController
             return $tagFallback;
         };
 
-        $prepareOwaspData = function ($referential) use (
+        $prepareOwaspData = function ($referential, $facetParam) use (
             $maven_key,
             $date_version,
             $date,
@@ -203,70 +269,117 @@ class BatchCollecteOwaspController extends AbstractController
             $utilisateur_collecte,
             $fetchTagFallback,
             $statusField,
-            $allowedStatuses
+            $allowedStatuses,
+            $componentKeyParam
         ) {
-            $source = 'facet';
             $nombre = array_fill(1, 10, 0);
             $owaspIssues = array_fill_keys(range(1, 10), array_fill_keys(
                 ['blocker', 'critical', 'major', 'info', 'minor'], 0));
-            $effort_total = (int) ($referential['effortTotal'] ?? 0);
 
+            /** Comptage par catégorie via la facette officielle SonarQube. */
+            $facetCounts = array_fill(1, 10, 0);
             $facetValues = $referential['facets'][0]['values'] ?? null;
-
-            if ($facetValues !== null && (int) ($referential['total'] ?? 0) !== 0) {
-                /** Classification officielle SonarQube (facette owaspTop10/owaspTop10-2021) */
+            if ($facetValues !== null) {
                 foreach ($facetValues as $value) {
-                    $index = substr($value['val'], 1);
-                    $nombre[$index] = $value['count'];
-                }
-                foreach ($referential['issues'] as $issue) {
-                    if (in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
-                        foreach ($issue['tags'] as $tag) {
-                            if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
-                                $owaspIndex = (int)$matches[1];
-                                $severity = strtolower($issue['severity']);
-                                if (isset($owaspIssues[$owaspIndex][$severity])) {
-                                    $owaspIssues[$owaspIndex][$severity]++;
-                                }
-                            }
-                        }
+                    $index = (int) substr($value['val'], 1);
+                    if ($index >= 1 && $index <= 10) {
+                        $facetCounts[$index] = (int) $value['count'];
                     }
-                }
-            } else {
-                /* MODIF 2026-07-18 : la facette officielle ne classe aucune
-                 * issue pour ce référentiel — secours par tag `owasp-aXX`
-                 * (cf. owasp.md, note "Pourquoi le tableau de synthèse peut
-                 * sembler incohérent..."). Le tag n'étant pas spécifique à
-                 * une année de référentiel, le comptage obtenu ici vaudra
-                 * aussi bien pour 2017 que pour 2021.
-                 * MODIF 2026-07-26 : la classification officielle peut aussi
-                 * être structurellement absente (facets vide alors que total
-                 * > 0 — cas réel observé, pas seulement en test) ; on bascule
-                 * alors sur le même secours plutôt que de planter sur un accès
-                 * facets[0] inexistant. */
-                $fallback = $fetchTagFallback();
-                $effort_total = (int) ($fallback['effortTotal'] ?? $effort_total);
-                foreach ($fallback['issues'] ?? [] as $issue) {
-                    if (in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
-                        foreach ($issue['tags'] ?? [] as $tag) {
-                            if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
-                                $owaspIndex = (int)$matches[1];
-                                if ($owaspIndex < 1 || $owaspIndex > 10) {
-                                    continue;
-                                }
-                                $nombre[$owaspIndex]++;
-                                $severity = strtolower($issue['severity']);
-                                if (isset($owaspIssues[$owaspIndex][$severity])) {
-                                    $owaspIssues[$owaspIndex][$severity]++;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (array_sum($nombre) > 0) {
-                    $source = 'tag';
                 }
             }
+
+            /* MODIF 26/10/2026 : BUG CORRIGÉ — le secours par tag `owasp-aXX`
+             * était auparavant utilisé seulement quand la facette officielle
+             * était ENTIÈREMENT vide pour tout le référentiel. Cas réel
+             * vérifié en direct (SonarQube 26.10 Community) :
+             * la facette owaspTop10-2021 classe correctement A5/A7 (2 règles
+             * cœur SonarQube qui portent la taxonomie officielle, même en
+             * Community) mais ignore totalement A6 — pourtant réellement
+             * détecté par le plugin tiers findsecbugs, qui pose son propre tag
+             * `owasp-a6` sans jamais être repris dans la taxonomie officielle.
+             * Comme le total de la facette n'était pas nul (A5+A7 = 3),
+             * l'ancienne logique prenait la branche "officielle" pour TOUT le
+             * référentiel et ne regardait jamais le secours par tag — les 9
+             * anomalies A6 restaient invisibles. Le secours par tag est donc
+             * désormais calculé systématiquement (même appel HTTP mémorisé
+             * qu'avant, un seul pour 2017 ET 2021), et la fusion se fait
+             * catégorie par catégorie plus bas : facette si elle a classé
+             * quelque chose pour CETTE catégorie, tag sinon. */
+            $fallback = $fetchTagFallback();
+            $tagCounts = array_fill(1, 10, 0);
+            $tagSeverities = array_fill_keys(range(1, 10), array_fill_keys(
+                ['blocker', 'critical', 'major', 'info', 'minor'], 0));
+            foreach ($fallback['issues'] ?? [] as $issue) {
+                if (!in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
+                    continue;
+                }
+                foreach ($issue['tags'] ?? [] as $tag) {
+                    if (preg_match('/^owasp-a(\d{1,2})$/', $tag, $matches)) {
+                        $owaspIndex = (int) $matches[1];
+                        if ($owaspIndex < 1 || $owaspIndex > 10) {
+                            continue;
+                        }
+                        $tagCounts[$owaspIndex]++;
+                        $severity = strtolower($issue['severity']);
+                        if (isset($tagSeverities[$owaspIndex][$severity])) {
+                            $tagSeverities[$owaspIndex][$severity]++;
+                        }
+                    }
+                }
+            }
+
+            $hasFacetCategory = false;
+            $hasTagCategory = false;
+            for ($i = 1; $i <= 10; $i++) {
+                if ($facetCounts[$i] > 0) {
+                    $nombre[$i] = $facetCounts[$i];
+                    $hasFacetCategory = true;
+                    /* MODIF 26/10/2026 : BUG CORRIGÉ — la répartition par
+                     * sévérité était construite en cherchant un tag `owasp-aX`
+                     * sur les issues renvoyées par la facette officielle, alors
+                     * que ces issues n'en portent jamais (vérifié en direct :
+                     * tags réels `cwe,secret` / `cwe,former-hotspot`, aucun
+                     * `owasp-aX`) — la répartition restait donc structurellement
+                     * à 0 partout dès que la branche officielle était prise.
+                     * La facette officielle ne dit jamais à quelle(s) issue(s)
+                     * précise(s) correspond son compte agrégé (combiné sur les
+                     * 10 catégories demandées en une seule requête) : seul un
+                     * appel ciblé sur cette seule catégorie permet de retrouver
+                     * la vraie répartition par sévérité. */
+                    $owaspIssues[$i] = $this->fetchCategorySeverityBreakdown(
+                        $facetParam,
+                        $maven_key,
+                        $i,
+                        $componentKeyParam,
+                        $statusField,
+                        $allowedStatuses
+                    );
+                } elseif ($tagCounts[$i] > 0) {
+                    $nombre[$i] = $tagCounts[$i];
+                    $owaspIssues[$i] = $tagSeverities[$i];
+                    $hasTagCategory = true;
+                }
+            }
+
+            /* Une seule colonne `source` par référentiel (pas par catégorie,
+             * schéma non prévu pour ça) : 'mixed' documente honnêtement le cas
+             * où certaines catégories viennent de la facette et d'autres du
+             * tag — cf. owasp.md. */
+            $source = match (true) {
+                $hasFacetCategory && $hasTagCategory => 'mixed',
+                $hasTagCategory => 'tag',
+                default => 'facet',
+            };
+
+            /* MODIF 26/10/2026 : effort_total reste une simplification
+             * assumée (pas de recalcul par catégorie, qui demanderait de
+             * parser la durée `debt` de chaque issue individuellement) — il
+             * ne reflète que la source principale (facette si au moins une
+             * catégorie en vient, tag sinon), pas la somme exacte des deux en
+             * cas de 'mixed'. Documenté ici plutôt que laissé silencieux. */
+            $effort_total = $hasFacetCategory
+                ? (int) ($referential['effortTotal'] ?? 0)
+                : (int) ($fallback['effortTotal'] ?? 0);
 
             $map = [
                     'total' => array_sum($nombre),
@@ -299,7 +412,7 @@ class BatchCollecteOwaspController extends AbstractController
         $total_2017 = 'NC';
         /* pour chaque référentiel 2017/2021 */
         if (array_key_exists('total', $owasp2017['json'])) {
-            $owaspDataList[] = $prepareOwaspData($owasp2017['json']);
+            $owaspDataList[] = $prepareOwaspData($owasp2017['json'], 'owaspTop10');
             $owaspDataList[0]['referential_owasp'] = 2017;
             $total_2017 = $owaspDataList[0]['total'];
         }
@@ -308,7 +421,7 @@ class BatchCollecteOwaspController extends AbstractController
         /** $owasp2021 = ['NC'] on a pas de données pour le référentiel 2021 */
         if (isset($owasp2021['json']) && array_key_exists('total', $owasp2021['json'])) {
             /* MODIF 2026-05-07 : index dynamique + lecture sous-clé 'json' (cohérent avec 2017). */
-            $owaspDataList[] = $prepareOwaspData($owasp2021['json']);
+            $owaspDataList[] = $prepareOwaspData($owasp2021['json'], 'owaspTop10-2021');
             $idx2021 = array_key_last($owaspDataList);
             $owaspDataList[$idx2021]['referential_owasp'] = 2021;
             $total_2021 = $owaspDataList[$idx2021]['total'];

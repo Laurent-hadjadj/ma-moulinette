@@ -1,6 +1,5 @@
 {% set title = "Statistiques — Environnement technique" %}
-{% set description = "Ma Moulinette - Tableau de bord technique" %}
-{% set type_content = "Application Ma-Moulinette, informations techniques sur l'environnement." %}
+{% set description = app_name ~ ' - Tableau de bord technique' %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -81,7 +80,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </div>
 
         {# ===== Section Application ===== #}
-        <h3 class="section-title open-sans"><i class="fas fa-cubes" aria-hidden="true"></i> Ma Moulinette</h3>
+        <h3 class="section-title open-sans"><i class="fas fa-cubes" aria-hidden="true"></i> {{ app_name }}</h3>
         <div class="grid-x grid-padding-x small-up-2 medium-up-3 large-up-5">
             <div class="cell">
                 <div class="card metric-card accent-app">

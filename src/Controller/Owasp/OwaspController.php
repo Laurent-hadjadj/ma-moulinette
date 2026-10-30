@@ -342,8 +342,10 @@ class OwaspController extends AbstractController
             $render['dc_link_version']  = $latestDcScan->getProjectVersion();
         }
 
-        /* MODIF 2026-10-13 : ZapScan n'a qu'un maven_key composé : ZapPageController décode exactement le même format de token. */
-        if ($this->zapScanRepository->findLatestByMavenKey($maven_key) !== null) {
+        /* MODIF 2026-10-13 : ZapScan n'a qu'un maven_key composé : ZapPageController décode exactement le même format de token.
+         * MODIF 26/10/2026 : un maven_key peut recouvrir plusieurs cibles DAST (lanes) — on vérifie juste qu'au moins une
+         * existe, la page /zap elle-même se charge de les restituer toutes. */
+        if ($this->zapScanRepository->listDistinctTargetUrlsByMavenKey($maven_key) !== []) {
             $render['has_zap_scan']   = true;
             $render['zap_link_token'] = $token;
         }

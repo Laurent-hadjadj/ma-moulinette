@@ -145,6 +145,42 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertArrayHasKey('sqale_rating', $result);
     }
 
+    public function testMetricsRebuildNormalizesNullLanguageKeyToInconnu(): void
+    {
+        // MODIF 26/10/2026 : SonarQube renvoie parfois une clé "<null>" dans
+        // ncloc_language_distribution quand il ne détermine pas le langage d'une
+        // partie du code (sa propre page affiche "UNKNOWN" pour ce même cas).
+        $result = $this->service->metricsRebuild(
+            ['ncloc_language_distribution' => '<null>=71;css=79;java=1948'],
+            ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
+            'fr.ma-moulinette:ma-moulinette'
+        );
+
+        $this->assertSame('Inconnu=71;css=79;java=1948', $result['ncloc_language_distribution']);
+    }
+
+    public function testMetricsRebuildLeavesLanguageDistributionUntouchedWithoutNullKey(): void
+    {
+        $result = $this->service->metricsRebuild(
+            ['ncloc_language_distribution' => 'java=1948;css=79'],
+            ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
+            'fr.ma-moulinette:ma-moulinette'
+        );
+
+        $this->assertSame('java=1948;css=79', $result['ncloc_language_distribution']);
+    }
+
+    public function testMetricsRebuildLanguageDistributionNullWhenAbsent(): void
+    {
+        $result = $this->service->metricsRebuild(
+            [],
+            ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
+            'fr.ma-moulinette:ma-moulinette'
+        );
+
+        $this->assertNull($result['ncloc_language_distribution']);
+    }
+
     public function testMetricsRebuildAnalyticsCollectIncludesCustomBlockAndProjectInfo(): void
     {
         // setUp a déjà stubé extractNameFromMavenKey → 'my-project' ; on s'appuie dessus
