@@ -70,6 +70,10 @@ parameters:
     # à surcharger via LDAP_UPN_SUFFIX en .env.local sur une instance réelle.
     env(LDAP_UPN_SUFFIX): '@ma-moulinette.fr'
 
+    # MODIF 27/10/2026 : nom affiché de l'application (title, description, meta, alt des logos...), à
+    # surcharger via MA_MOULINETTE_NAME en .env.local. Valeur par défaut inchangée pour ne rien casser sur une instance qui ne le définit pas.
+    env(MA_MOULINETTE_NAME): 'Ma-Moulinette'
+
     # Gestion des projets et profils
     maj.projet: '%env(MAJ_PROJET)%'
     maj.profil: '%env(MAJ_PROFIL)%'
@@ -100,6 +104,11 @@ parameters:
     marque.entreprise.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
     marque.entreprise.long: '%env(MARQUE_ENTREPRISE_LONG)%'
     logo.entreprise: '%env(LOGO_ENTREPRISE)%'
+    # MODIF 27/10/2026 : nom affiché de l'application — distinct de marque.entreprise.*
+    # ci-dessus (qui désigne l'auteur/éditeur, pas le produit). Exposé aux templates
+    # via la globale Twig app_name (config/packages/twig.yaml), pas besoin de
+    # l'injecter contrôleur par contrôleur.
+    app.name: '%env(MA_MOULINETTE_NAME)%'
 
     # RGAA et CGU
     rgaa: '%env(RGAA)%'

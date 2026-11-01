@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.0 - 18/07/2026                  ##
+##           V3.0.0 - 27/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -10,7 +10,11 @@
 --- 2026-06-28 : On passe le script en automatique avec l'utilisateur postgres, puis on applique le script grants.sql.
 ---              On supprime l'utilisateur db_user pour éviter de passer le mot de passe une seconde fois.
 --- 2026-07-18 : Ajout de la colonne source pour distinguer les facettes des tags.
-
+--- 2026-10-27 : Remplacement des 60 colonnes a1..a10/aN_blocker..minor + source par
+---              une colonne JSONB `categories` (classification désormais faite
+---              localement par OwaspRuleClassifierService, cf. BatchCollecteOwaspController) +
+---              ajout de module_frontend/backend/autre (répartition par module des
+---              vulnérabilités OWASP, remplace l'ancienne répartition basée sur les hotspots).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -28,81 +32,20 @@ CREATE TABLE ma_moulinette.owasp
 
   effort_total INT NOT NULL,
 
-  -- 'facet' (classification officielle SonarQube owaspTop10/owaspTop10-2021)
-  -- ou 'tag' (secours par tag owasp-aXX quand la facette ne renvoie rien) :
-  -- cf. mkDocs/docs/ma-moulinette/application/owasp.md.
-  source VARCHAR(10) NOT NULL DEFAULT 'facet',
+  -- Compteurs par catégorie A1..A10 : {"a1": {"total":int,"blocker":int,"critical":int,
+  -- "major":int,"minor":int,"info":int,"source":"core|findsecbugs|mixed"}, ...} —
+  -- uniquement les catégories touchées (sparse), forme produite par
+  -- OwaspRuleClassifierService::classify(). "source" documente, par catégorie, si
+  -- la classification vient d'une règle SonarSource ("core"), d'une règle
+  -- FindSecBugs ("findsecbugs", tag owasp-aXX, jamais indexée par la facette
+  -- officielle SonarQube) ou des deux ("mixed").
+  categories JSONB NOT NULL DEFAULT '{}'::jsonb,
 
-  a1 INT NOT NULL,
-  a2 INT NOT NULL,
-  a3 INT NOT NULL,
-  a4 INT NOT NULL,
-  a5 INT NOT NULL,
-  a6 INT NOT NULL,
-  a7 INT NOT NULL,
-  a8 INT NOT NULL,
-  a9 INT NOT NULL,
-  a10 INT NOT NULL,
-
-  a1_blocker INT NOT NULL,
-  a1_critical INT NOT NULL,
-  a1_major INT NOT NULL,
-  a1_info INT NOT NULL,
-  a1_minor INT NOT NULL,
-
-  a2_blocker INT NOT NULL,
-  a2_critical INT NOT NULL,
-  a2_major INT NOT NULL,
-  a2_info INT NOT NULL,
-  a2_minor INT NOT NULL,
-
-  a3_blocker INT NOT NULL,
-  a3_critical INT NOT NULL,
-  a3_major INT NOT NULL,
-  a3_info INT NOT NULL,
-  a3_minor INT NOT NULL,
-
-  a4_blocker INT NOT NULL,
-  a4_critical INT NOT NULL,
-  a4_major INT NOT NULL,
-  a4_info INT NOT NULL,
-  a4_minor INT NOT NULL,
-
-  a5_blocker INT NOT NULL,
-  a5_critical INT NOT NULL,
-  a5_major INT NOT NULL,
-  a5_info INT NOT NULL,
-  a5_minor INT NOT NULL,
-
-  a6_blocker INT NOT NULL,
-  a6_critical INT NOT NULL,
-  a6_major INT NOT NULL,
-  a6_info INT NOT NULL,
-  a6_minor INT NOT NULL,
-
-  a7_blocker INT NOT NULL,
-  a7_critical INT NOT NULL,
-  a7_major INT NOT NULL,
-  a7_info INT NOT NULL,
-  a7_minor INT NOT NULL,
-
-  a8_blocker INT NOT NULL,
-  a8_critical INT NOT NULL,
-  a8_major INT NOT NULL,
-  a8_info INT NOT NULL,
-  a8_minor INT NOT NULL,
-
-  a9_blocker INT NOT NULL,
-  a9_critical INT NOT NULL,
-  a9_major INT NOT NULL,
-  a9_info INT NOT NULL,
-  a9_minor INT NOT NULL,
-
-  a10_blocker INT NOT NULL,
-  a10_critical INT NOT NULL,
-  a10_major INT NOT NULL,
-  a10_info INT NOT NULL,
-  a10_minor INT NOT NULL,
+  -- Répartition par module des vulnérabilités OWASP (toutes catégories confondues),
+  -- même classification par regex de chemin que RCI (module.frontend/backend/autre).
+  module_frontend INT,
+  module_backend INT,
+  module_autre INT,
 
   mode_collecte VARCHAR(32),
   utilisateur_collecte VARCHAR(320),

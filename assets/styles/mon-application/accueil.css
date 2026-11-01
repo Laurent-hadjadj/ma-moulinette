@@ -276,8 +276,20 @@
 /*************************          Global     *********************************/
 
 /* callout de message */
-.plus, .couleur-rouge { color: #971c09!important; }
-.moins, .couleur-vert { color: #187e3d!important; }
+/**
+ * MODIF 30/10/2026 : BUG CORRIGÉ — `.plus`/`.moins` étaient couplées à
+ * `.couleur-rouge`/`.couleur-vert` dans le même sélecteur, avec des valeurs
+ * différentes de celles de ces mêmes classes dans common.css (#971c09 ici
+ * vs #bf0815, #187e3d vs #048404), les deux en !important : `.couleur-vert`/
+ * `.couleur-rouge` rendaient différemment selon qu'une page chargeait aussi
+ * accueil.css ou pas. Classes découplées, `.plus`/`.moins` gardent leurs
+ * propres couleurs, `.couleur-vert`/`.couleur-rouge` restent définies une
+ * seule fois (common.css). */
+/* MODIF 30/10/2026 : BUG CORRIGÉ (Sonar) — !important retiré, aucune autre
+ * règle ne cible `#js-plus`/`#profil-en-plus`/`#js-moins`/`#profil-en-moins`,
+   rien à surcharger. */
+.plus { color: #971c09; }
+.moins { color: #187e3d; }
 
 /* ==== Référentiel ==== */
 .referential-container {

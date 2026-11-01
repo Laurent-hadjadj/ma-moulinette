@@ -38,18 +38,6 @@ class OwaspRepositoryHandlerTest extends TestCase
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
     private static int $effortTotal = 0;
-    /** @var array<int, int> */
-    private static array $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @var array<int, int> */
-    private static array $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @var array<int, int> */
-    private static array $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @var array<int, int> */
-    private static array $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @var array<int, int> */
-    private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    /** @var array<int, int> */
-    private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     /* MODIF 2026-05-10 : test exception SQL pour la nouvelle
      * méthode selectOwaspVersion (utilisée dans le breadcrumb OWASP). */
@@ -175,27 +163,20 @@ class OwaspRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [];
-
-        // Ajouter les propriétés de l'objet $owasp au tableau $map
-        $map['referential_owasp'] = 2017;
-        $map['maven_key'] = self::$mavenKey;
-        $map['version'] = self::$version;
-        $map['date_version'] = self::$dateVersion;
-        $map['effort_total'] = self::$effortTotal;
-
-        for ($i = 0; $i < 10; $i++) {
-            $map["a" . ($i + 1)] = self::$a[$i];
-            $map["a" . ($i + 1) . "_blocker"] = self::$aBlocker[$i];
-            $map["a" . ($i + 1) . "_critical"] = self::$aCritical[$i];
-            $map["a" . ($i + 1) . "_major"] = self::$aMajor[$i];
-            $map["a" . ($i + 1) . "_info"] = self::$aInfo[$i];
-            $map["a" . ($i + 1) . "_minor"] = self::$aMinor[$i];
-        }
-
-        $map['mode_collecte'] = 'COLLECTE';
-        $map['utilisateur_collecte'] = 'laurent.hadjadj@ma-moulinette.fr';
-        $map['date_enregistrement'] = new \DateTimeImmutable('2024-03-26 14:46:38');
+        $map = [
+            'referential_owasp' => 2017,
+            'maven_key' => self::$mavenKey,
+            'version' => self::$version,
+            'date_version' => self::$dateVersion,
+            'effort_total' => self::$effortTotal,
+            'categories' => [],
+            'module_frontend' => 0,
+            'module_backend' => 0,
+            'module_autre' => 0,
+            'mode_collecte' => 'COLLECTE',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38'),
+        ];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->insertOwasp([$map]);

@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Service\Zap;
 
-use App\Entity\{OwaspDast, ZapProcessingQueue, ZapScan};
+use App\Entity\{OwaspDast, ZapProcessingQueue, ZapRule, ZapScan};
 use App\Service\Zap\ZapIngester;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -98,6 +98,60 @@ class ZapIngesterIntegrationTest extends KernelTestCase
                 $this->assertSame(1, $owaspDast->getCategoryCount(1));
             }
         }
+    }
+
+    public function testIngestSanitizesRuleTextThroughRealContainerService(): void
+    {
+        // MODIF 26/10/2026 : description/solution/reference sont du HTML
+        // externe (catalogue de règles ZAP) — vérifie, via le vrai service
+        // câblé par le container (`html_sanitizer.sanitizer.app.zap_rule_text`,
+        // cf. config/packages/html_sanitizer.yaml), qu'un payload malveillant
+        // (balise <script>, attribut on* injecté via un faux <p onclick=...>)
+        // est bien neutralisé avant persistance en base.
+        $samplePath = __DIR__ . '/../../../Fixtures/zap-json/report-ok.json';
+        $sampleContent = file_get_contents($samplePath);
+        self::assertNotFalse($sampleContent);
+        $report = json_decode($sampleContent, true, 512, JSON_THROW_ON_ERROR);
+        $report['site'][0]['alerts'][0]['desc'] = '<p onclick="alert(1)">CSP <script>alert(1)</script>texte</p>';
+        $report['site'][0]['alerts'][0]['solution'] = '<img src=x onerror=alert(1)>Solution';
+        $report['site'][0]['alerts'][0]['reference'] = '<a href="javascript:alert(1)">lien</a><p>https://exemple.org</p>';
+        $json = json_encode($report, JSON_THROW_ON_ERROR);
+
+        $payloadGz = gzencode($json, 6);
+        self::assertNotFalse($payloadGz);
+        $queue = (new ZapProcessingQueue())
+            ->setUlid((new Ulid())->toBase32())
+            ->setPayloadGz($payloadGz)
+            ->setPayloadSha256(hash('sha256', $json))
+            ->setPayloadSize(strlen($json))
+            ->setContentType(ZapProcessingQueue::CONTENT_JSON)
+            ->setMavenKey('fr.ma-moulinette:ma-moulinette')
+            ->setProjectVersion('1.0')
+            ->setStatus(ZapProcessingQueue::STATUS_PROCESSING);
+        $this->em->persist($queue);
+        $this->em->flush();
+
+        $scan = $this->ingester->ingest($queue);
+        $this->em->clear();
+
+        $rule = $this->em->getRepository(ZapRule::class)->findOneBy(['alertRef' => '10038-1']);
+        $this->assertNotNull($rule);
+
+        $this->assertStringNotContainsString('<script', $rule->getDescription());
+        $this->assertStringNotContainsString('onclick', $rule->getDescription());
+        $this->assertStringContainsString('<p>', $rule->getDescription());
+        $this->assertStringContainsString('CSP', $rule->getDescription());
+        $this->assertStringContainsString('texte', $rule->getDescription());
+
+        $this->assertStringNotContainsString('<img', $rule->getSolution());
+        $this->assertStringNotContainsString('onerror', $rule->getSolution());
+        $this->assertStringContainsString('Solution', $rule->getSolution());
+
+        $this->assertStringNotContainsString('<a', $rule->getReference());
+        $this->assertStringNotContainsString('javascript:', $rule->getReference());
+        $this->assertStringContainsString('https://exemple.org', $rule->getReference());
+
+        $this->assertNotNull($this->em->getRepository(ZapScan::class)->find($scan->getId()));
     }
 
     public function testIngestSampleTwiceIsIdempotent(): void

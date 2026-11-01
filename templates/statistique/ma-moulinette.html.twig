@@ -1,6 +1,5 @@
-{% set title = "Statistiques — Ma-Moulinette" %}
-{% set description = "Ma Moulinette - Statistiques fonctionnelles SonarQube" %}
-{% set type_content = "Application Ma-Moulinette, statistiques fonctionnelles SonarQube." %}
+{% set title = "Statistiques — " ~ app_name %}
+{% set description = app_name ~ ' - Statistiques fonctionnelles SonarQube' %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -51,7 +50,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             <ol class="claire-hand breadcrumbs">
                 <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
                 <li><a href="{{ path('statistiques', {}) }}">Statistiques</a></li>
-                <li aria-current="page">Ma-Moulinette</li>
+                <li aria-current="page">{{ app_name }}</li>
             </ol>
         </nav>
     </header>
@@ -190,7 +189,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             </div>
         </div>
 
-        <div aria-hidden="true" style="margin-bottom:3rem;"></div>
+        <div aria-hidden="true" class="margin-bottom-3"></div>
     </main>
 
     {{ include('footer.html.twig') }}

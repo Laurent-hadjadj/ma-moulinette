@@ -2,13 +2,7 @@
 
 !!! note "📌 Statut : ZAP retenu, ingestion + indicateurs implémentés (13/10/2026)"
     Ce document a démarré comme une veille (11/10/2026) sur les outils capables d'alimenter un futur
-    tableau de bord **OWASP API Security Top 10 (2023)** dans Ma-Moulinette. À l'issue de cette veille,
-    **ZAP a été retenu** comme scanner DAST et l'angle d'exploitation a changé : plutôt qu'un hypothétique
-    mapping API Top 10 2023 (confirmé introuvable, voir plus bas), les alertes ZAP portent nativement des
-    tags **OWASP Top 10 web 2017/2021**, exactement les deux référentiels déjà utilisés par le module
-    OWASP SAST (SonarQube) existant. Le chantier d'implémentation (ingestion de rapport + table
-    d'agrégation `owasp_dast`, complément DAST du module SAST) est **terminé et vert** pour ce premier
-    incrément (voir section dédiée plus bas) — reste hors périmètre : la page de restitution visuelle.
+    tableau de bord **OWASP API Security Top 10 (2023)** dans Ma-Moulinette. À l'issue de cette veille, **ZAP a été retenu** comme scanner DAST et l'angle d'exploitation a changé : plutôt qu'un hypothétique mapping API Top 10 2023 (confirmé introuvable, voir plus bas), les alertes ZAP portent nativement des tags **OWASP Top 10 web 2017/2021**, exactement les deux référentiels déjà utilisés par le module OWASP SAST (SonarQube) existant. Le chantier d'implémentation (ingestion de rapport + table d'agrégation `owasp_dast`, complément DAST du module SAST) est **terminé et vert** pour ce premier incrément (voir section dédiée plus bas) — reste hors périmètre : la page de restitution visuelle.
 
 ## 🎯 Objectif de la veille
 
@@ -84,13 +78,11 @@ Les deux outils tournent sans spec (aucune n'existe encore côté ma-moulinette)
 
     ZAP ne mappe tout simplement pas vers *ce* référentiel-là — l'OWASP Top 10 web et l'OWASP API Security Top 10 sont deux projets OWASP distincts, à ne pas confondre malgré le nom « OWASP » partagé dans les deux. Toute mention de « support OWASP API Security » autour de ZAP (documentation tierce, marketing) renvoie en réalité à ce Top 10 web générique ou à un alignement CWE générique — jamais à un vrai mapping vers API1:2023...API10:2023.
 
-    **Nuance importante** : ce n'est pas que la liste [OWASP API Security Tools](https://community.owasp.org/api_security_tools) source de ce document ait tort de citer ZAP/Nuclei — **plusieurs outils *commerciaux* de cette même liste revendiquent un classement par catégorie 2023** (42Crunch, Salt Security, Akto, Escape.tech) — mais vérifié en détail sur la page publique [42Crunch](https://42crunch.com/owasp-api-top-10.fr.html) (11/10/2026), ce classement reste **largement marketing** : les sections « Approche 42Crunch » reformulent les descriptions OWASP et les remplacent par des affirmations produit (« testé
-    automatiquement dans API Scan ») **sans dire comment** — sur 5 des 10 catégories (API1, API6, API7, API8, API10), c'est même *moins* prescriptif techniquement que la page OWASP officielle elle-même. Seules API2 (validation JWT selon la RFC 8725) et API4 (limites de débit définies dans le contrat OpenAPI) apportent un détail un peu plus concret que le générique OWASP. Aucune requête d'exemple, aucun test généré, aucune description du contenu réel des contrôles revendiqués.
+    **Nuance importante** : ce n'est pas que la liste [OWASP API Security Tools](https://community.owasp.org/api_security_tools) source de ce document ait tort de citer ZAP/Nuclei — **plusieurs outils *commerciaux* de cette même liste revendiquent un classement par catégorie 2023** (42Crunch, Salt Security, Akto, Escape.tech) — mais vérifié en détail sur la page publique [42Crunch](https://42crunch.com/owasp-api-top-10.fr.html) (11/10/2026), ce classement reste **largement marketing** : les sections « Approche 42Crunch » reformulent les descriptions OWASP et les remplacent par des affirmations produit (« testé automatiquement dans API Scan ») **sans dire comment** — sur 5 des 10 catégories (API1, API6, API7, API8, API10), c'est même *moins* prescriptif techniquement que la page OWASP officielle elle-même. Seules API2 (validation JWT selon la RFC 8725) et API4 (limites de débit définies dans le contrat OpenAPI) apportent un détail un peu plus concret que le générique OWASP. Aucune requête d'exemple, aucun test généré, aucune description du contenu réel des contrôles revendiqués.
 
     La page OWASP officielle elle-même (API1:2023, vérifiée le 11/10/2026) n'est pas plus avancée sur ce point : sa section « How to Prevent » se limite à 4 recommandations génériques (autorisation par politique/hiérarchie, vérification de propriété par fonction, identifiants aléatoires, « écrire des tests ») — aucune procédure de test pas à pas, aucun exemple de requête, aucun outil cité au-delà d'une référence externe (*Authorization Testing Automation Cheat Sheet*) non développée sur la page.
 
-    **Conclusion revue à la baisse** : aucune source consultée à ce stade — ni outil gratuit, ni page marketing commerciale, ni documentation OWASP officielle elle-même — ne fournit une méthodologie de détection suffisamment concrète pour être transposée directement en règle de classification côté Ma-Moulinette. Le travail de mapping `cweid`/`pluginid` → `API1:2023`...`API10:2023` resterait à
-    construire manuellement, catégorie par catégorie, par expertise interne plutôt que par copie d'une source existante.
+    **Conclusion revue à la baisse** : aucune source consultée à ce stade — ni outil gratuit, ni page marketing commerciale, ni documentation OWASP officielle elle-même — ne fournit une méthodologie de détection suffisamment concrète pour être transposée directement en règle de classification côté Ma-Moulinette. Le travail de mapping `cweid`/`pluginid` → `API1:2023`...`API10:2023` resterait à construire manuellement, catégorie par catégorie, par expertise interne plutôt que par copie d'une source existante.
 
 ## 🔍 Vérification des 5 outils ⚠️ (dépôt GitHub, 11/10/2026)
 
@@ -209,29 +201,18 @@ automatisées**, contrairement à d'autres très bien couvertes (A03 Injection n
 - **A10 (SSRF)** : repose uniquement sur l'add-on **OAST Support** (test hors bande), pas sur le socle de
   règles actives/passives déjà installées.
 
-**Implication directe pour `owasp_dast`** : un compteur à `0` sur les catégories A07/A09/A10 ne signifie
-**pas** « rien trouvé, projet sain » mais plutôt « ZAP ne teste quasiment pas cette catégorie en mode
-automatisé » — une nuance d'interprétation à ne pas perdre lors de la conception de la future page de
-restitution (ne pas afficher ces catégories comme s'il s'agissait d'un signal de qualité au même titre
-que A01/A03/A05, qui sont elles réellement bien couvertes).
+**Implication directe pour `owasp_dast`** : un compteur à `0` sur les catégories A07/A09/A10 ne signifie **pas** « rien trouvé, projet sain » mais plutôt « ZAP ne teste quasiment pas cette catégorie en mode automatisé » — une nuance d'interprétation à ne pas perdre lors de la conception de la future page de restitution (ne pas afficher ces catégories comme s'il s'agissait d'un signal de qualité au même titre que A01/A03/A05, qui sont elles réellement bien couvertes).
 
 ## ❓ Questions encore ouvertes
 
-1. ~~Décision ZAP vs Nuclei~~ — **tranchée** : ZAP retenu (voir section Implémentation ci-dessus), pour
-   les raisons déjà documentées (Swagger 2 refusé par Nuclei, SOAP non supporté).
+1. ~~Décision ZAP vs Nuclei~~ — **tranchée** : ZAP retenu (voir section Implémentation ci-dessus), pour les raisons déjà documentées (Swagger 2 refusé par Nuclei, SOAP non supporté).
 2. ~~Mapping `cweid`/`pluginid` ZAP → catégories OWASP API Top 10 2023~~ — confirmé à 4 reprises
-   maintenant (outils gratuits, pages marketing, doc OWASP officielle, registre `scanners.md`) qu'aucune
-   source ne le fournit ; non poursuivi, hors périmètre (le module implémenté se limite au Top 10 **web**
-   2017/2021, réellement tagué par ZAP).
-3. Vérifier la robustesse du parseur WSDL de ZAP sur un WSDL d'application Java réelle du périmètre (pas
-   une image de démo) avant de considérer le support SOAP comme acquis en production — toujours ouvert,
-   indépendant du chantier d'ingestion.
+   maintenant (outils gratuits, pages marketing, doc OWASP officielle, registre `scanners.md`) qu'aucune source ne le fournit ; non poursuivi, hors périmètre (le module implémenté se limite au Top 10 **web** 2017/2021, réellement tagué par ZAP).
+3. Vérifier la robustesse du parseur WSDL de ZAP sur un WSDL d'application Java réelle du périmètre (pas une image de démo) avant de considérer le support SOAP comme acquis en production — toujours ouvert, indépendant du chantier d'ingestion.
 4. Concevoir l'équivalent d'un `zap-rules.tsv` côté Ma-Moulinette (acquittement de findings connus) et
-   décider du compte de test à utiliser pour scanner les routes authentifiées — pertinent seulement si un
-   besoin de scan actif authentifié se présente ; non fait, non requis par le périmètre v1.
+   décider du compte de test à utiliser pour scanner les routes authentifiées — pertinent seulement si un besoin de scan actif authentifié se présente ; non fait, non requis par le périmètre v1.
 5. Add-ons alpha non testés (`JWT Support`, `Access Control Testing`, `Attack Surface Detector`, `MCP
-   Integration`) — à évaluer en pratique si le besoin qu'ils couvrent devient concret, pas à installer par
-   anticipation. `Access Control Testing` prend un relief nouveau vu le constat ci-dessus sur A07.
+   Integration`) — à évaluer en pratique si le besoin qu'ils couvrent devient concret, pas à installer par anticipation. `Access Control Testing` prend un relief nouveau vu le constat ci-dessus sur A07.
 6. ~~Format de rapport~~ — **tranché** : `traditional-json` (léger), cf. section Implémentation.
 7. Page de restitution visuelle (liste des scans, tableau A1-A10, lien depuis la page OWASP comme le
    bouton Dependency-Check) — chantier suivant explicitement différé, à concevoir en tenant compte du

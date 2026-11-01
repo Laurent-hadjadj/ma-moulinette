@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{Owasp, HotspotOwasp, HotspotDetails};
+use App\Entity\{Owasp, OwaspDetails, HotspotOwasp, HotspotDetails};
 
 /**
  * [Description ApiOwaspPeintureController]
@@ -73,9 +73,16 @@ class ApiOwaspPeintureController extends AbstractController
 
     /**
      * [Description for total]
+     * Somme un champ (total/blocker/critical/major/minor) à travers toutes les
+     * catégories A1..A10 présentes dans `categories` (JSON, sparse — une
+     * catégorie absente compte pour 0).
      *
-     * @param array<int|string, mixed> $liste
-     * @param string $severity
+     * MODIF 27/10/2026 : lit désormais la colonne JSON `categories`
+     * (OwaspRuleClassifierService::classify()) au lieu des colonnes à plat
+     * `a1`..`a10`/`aN_blocker`..`aN_minor`, supprimées (cf. owasp.md).
+     *
+     * @param array<string, array{total: int, blocker: int, critical: int, major: int, minor: int, info: int, source: string}> $categories
+     * @param string $field 'total', 'blocker', 'critical', 'major' ou 'minor'
      *
      * @return int
      *
@@ -83,17 +90,29 @@ class ApiOwaspPeintureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private static function somme(array $liste, string|null $severity): int
+    private static function somme(array $categories, string $field): int
     {
         $total = 0;
-        for ($i = 1; $i < 11; $i++) {
-            if ($severity !== null) {
-                $total += $liste["a{$i}{$severity}"];
-            } else {
-                $total += $liste["a{$i}"];
-            }
+        foreach ($categories as $data) {
+            $total += $data[$field] ?? 0;
         }
         return $total;
+    }
+
+    /**
+     * Dérive une source globale (core/findsecbugs/mixed) à partir des sources
+     * par catégorie — pour l'affichage actuel (payload à plat), en attendant
+     * que le front expose la source par catégorie individuellement.
+     *
+     * @param array<string, array{source: string}> $categories
+     */
+    private static function deriveSource(array $categories): string
+    {
+        $sources = array_values(array_unique(array_column($categories, 'source')));
+        if (count($sources) === 0) {
+            return 'core';
+        }
+        return count($sources) === 1 ? $sources[0] : 'mixed';
     }
 
     /**
@@ -176,21 +195,24 @@ class ApiOwaspPeintureController extends AbstractController
         /** Informations */
         $ligne = $result['liste'][0];
         $referential_owasp = $ligne['referential_owasp'];
+        /* MODIF 27/10/2026 : `categories` (JSON, sparse) remplace les 60 colonnes
+         * à plat a1..a10/aN_blocker..minor — cf. owasp.md. */
+        $categories = json_decode((string) ($ligne['categories'] ?? '{}'), true) ?? [];
 
-        $total = self::somme($ligne, null);
-        $bloquant = self::somme($ligne, '_blocker');
-        $critique = self::somme($ligne, '_critical');
-        $majeur = self::somme($ligne, '_major');
-        $mineur = self::somme($ligne, '_minor');
+        $total = self::somme($categories, 'total');
+        $bloquant = self::somme($categories, 'blocker');
+        $critique = self::somme($categories, 'critical');
+        $majeur = self::somme($categories, 'major');
+        $mineur = self::somme($categories, 'minor');
 
         /** On factorise les dictionnaires a1..a10 par sévérité */
         $payload = [
             'code' => 200,
             'referential_owasp' => $referential_owasp,
-            /* MODIF 2026-07-18 : 'facet' (classification officielle SonarQube)
-             * ou 'tag' (secours par tag owasp-aXX, cf. BatchCollecteOwaspController
-             * et owasp.md) — permet au front d'afficher la source des données. */
-            'source' => $ligne['source'] ?? 'facet',
+            /* MODIF 27/10/2026 : 'core' (règle SonarSource), 'findsecbugs' (règle
+             * FindSecBugs, tag owasp-aXX jamais indexé par la facette officielle)
+             * ou 'mixed' — dérivé des sources par catégorie (cf. owasp.md). */
+            'source' => self::deriveSource($categories),
             'total' => $total,
             'version' => $ligne['version'],
             'date_version' => $ligne['date_version'],
@@ -198,11 +220,15 @@ class ApiOwaspPeintureController extends AbstractController
             'critique' => $critique,
             'majeur' => $majeur,
             'mineur' => $mineur,
+            'module_frontend' => $ligne['module_frontend'] ?? null,
+            'module_backend' => $ligne['module_backend'] ?? null,
+            'module_autre' => $ligne['module_autre'] ?? null,
         ];
-        $severities = ['' => '', 'Blocker' => '_blocker', 'Critical' => '_critical', 'Major' => '_major', 'Minor' => '_minor'];
+        $severities = ['' => 'total', 'Blocker' => 'blocker', 'Critical' => 'critical', 'Major' => 'major', 'Minor' => 'minor'];
         for ($i = 1; $i <= 10; $i++) {
-            foreach ($severities as $suffix => $colSuffix) {
-                $payload["a{$i}{$suffix}"] = $ligne["a{$i}{$colSuffix}"];
+            $cat = $categories["a{$i}"] ?? null;
+            foreach ($severities as $suffix => $field) {
+                $payload["a{$i}{$suffix}"] = $cat[$field] ?? 0;
             }
         }
 
@@ -210,6 +236,102 @@ class ApiOwaspPeintureController extends AbstractController
             'data' => $payload
         ]);
         return new JsonResponse($payload, Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for peintureOwaspDetails]
+     * Les 10 vulnérabilités OWASP les plus critiques du projet (triées par
+     * sévérité), plus le nombre total de vulnérabilités classées.
+     *
+     * MODIF 28/10/2026 : nouveau — le tableau de détail de la page n'avait
+     * jusqu'ici jamais couvert que les Security Hotspots (table
+     * hotspot_details), jamais les vulnérabilités OWASP elles-mêmes.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 28/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/peinture/owasp/details', name: 'peinture_owasp_details', methods: ['POST'])]
+    public function peintureOwaspDetails(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/details");
+
+        /** On instancie l'entityRepository */
+        $owaspDetailsRepos = $this->em->getRepository(OwaspDetails::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On teste si la clé est valide */
+        if (
+            $data === null
+            || !property_exists($data, 'maven_key') || !is_string($data->maven_key)
+            || !property_exists($data, 'referential_owasp')
+        ) {
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'referential_owasp' manquante ou JSON mal formé.", [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400
+            ], Response::HTTP_OK);
+        }
+
+        $guard = $this->checkPerimetre($data->maven_key);
+        if ($guard !== null) {
+            return $guard;
+        }
+
+        $map = [
+            'maven_key' => $data->maven_key,
+            'referential_owasp' => $data->referential_owasp
+        ];
+
+        $details = $owaspDetailsRepos->selectOwaspDetailsTop10BySeverity($map);
+        if ($details['code'] !== 200) {
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectOwaspDetailsTop10BySeverity.', [
+                'code' => $details['code'],
+                'erreur' => $details['erreur'] ?? self::$noData,
+                'maven_key' => $data->maven_key,
+                'referential_owasp' => $data->referential_owasp
+            ]);
+
+            return new JsonResponse([
+                'code' => $details['code'],
+                'type' => 'error',
+                'message' => "Une Erreur est survenue lors de la récupération du détail des vulnérabilités ({$details['code']}).",
+                'trace' => $details['erreur'] ?? self::$noData
+            ], Response::HTTP_OK);
+        }
+
+        $total = $owaspDetailsRepos->countOwaspDetails($map);
+        if ($total['code'] !== 200) {
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countOwaspDetails.', [
+                'code' => $total['code'],
+                'erreur' => $total['erreur'] ?? self::$noData,
+                'maven_key' => $data->maven_key,
+                'referential_owasp' => $data->referential_owasp
+            ]);
+
+            return new JsonResponse([
+                'code' => $total['code'],
+                'type' => 'error',
+                'message' => "Une Erreur est survenue lors du comptage des vulnérabilités ({$total['code']}).",
+                'trace' => $total['erreur'] ?? self::$noData
+            ], Response::HTTP_OK);
+        }
+
+        return new JsonResponse([
+            'code' => 200,
+            'details' => $details['details'],
+            'total' => $total['total'],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -510,8 +632,9 @@ class ApiOwaspPeintureController extends AbstractController
             $data === null
             || !property_exists($data, 'maven_key') || !is_string($data->maven_key)
             || !property_exists($data, 'menace') || !is_string($data->menace)
+            || !property_exists($data, 'referential_owasp')
         ) {
-            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'menace' manquante ou JSON mal formé.", [
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'menace' ou 'referential_owasp' manquante, ou JSON mal formé.", [
                 'payload' => $data ?? self::$noData
             ]);
 
@@ -527,10 +650,13 @@ class ApiOwaspPeintureController extends AbstractController
             return $guard;
         }
 
-        /** On compte le nombre de faille OWASP au statut HIGH */
+        /** On compte le nombre de faille OWASP au statut HIGH
+         *  MODIF 26/10/2026 : referential_owasp ajouté — sans lui, les 2
+         *  référentiels étaient comptés ensemble (voir countHotspotOwaspMenaceByStatus()). */
         $map = [
             'maven_key' => $data->maven_key,
             'menace' => $data->menace,
+            'referential_owasp' => $data->referential_owasp,
             'probability' => 'HIGH'
         ];
         $high = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
@@ -556,6 +682,7 @@ class ApiOwaspPeintureController extends AbstractController
         $map = [
             'maven_key' => $data->maven_key,
             'menace' => $data->menace,
+            'referential_owasp' => $data->referential_owasp,
             'probability' => 'MEDIUM'
         ];
         $medium = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
@@ -581,6 +708,7 @@ class ApiOwaspPeintureController extends AbstractController
         $map = [
             'maven_key' => $data->maven_key,
             'menace' => $data->menace,
+            'referential_owasp' => $data->referential_owasp,
             'probability' => 'LOW'
         ];
         $low = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);

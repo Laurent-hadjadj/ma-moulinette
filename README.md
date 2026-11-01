@@ -1,12 +1,12 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.1.0-blue)](CHANGELOG.md)
-[![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![Symfony](https://img.shields.io/badge/Symfony-8.1.6-000000?logo=symfony&logoColor=white)](https://symfony.com/)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue)](CHANGELOG.md)
+[![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Symfony](https://img.shields.io/badge/Symfony-8.1.9-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-4115%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-11093-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-80.85%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-4217%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11368-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-80.94%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.3.0 Release on October 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.5.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -87,27 +87,27 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 18/10/2026)
+> [!NOTE] Information sur le projet (relevé du 30/10/2026)
 >
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-|  PHP      |  315      | 55058  | 24004        | 10126 | 89188 |
-|  HTML    |  154      | 27637  | 1068         | 1992  | 30697 |
-|  JS      |  93       | 10875  | 4394         | 1757  | 17026 |
-|  CSS     |  39       | 6392   | 1166         | 1364  | 8922 |
-|  SQL     |  82       | 3350   | 1694         | 757   | 5801 |
-|  MIGRATION |  12     | 701    | 200          | 139   | 1040 |
+|  PHP      |  322      | 56018  | 24709        | 10183 | 90910 |
+|  HTML    |  157      | 28574  | 1147         | 2043  | 31764 |
+|  JS      |  93       | 11209  | 4611         | 1823  | 17643 |
+|  CSS     |  39       | 6594   | 1332         | 1394  | 9320 |
+|  SQL     |  84       | 3343   | 1758         | 772   | 5873 |
+|  MIGRATION |  17     | 1014   | 286          | 200   | 1500 |
 
-### 📊 Qualité du code (relevé du 25/10/2026)
+### 📊 Qualité du code (relevé du 30/10/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 437** tests / 9 461 assertions |
-| Tests d'intégration (`tests/Integration`) | **678** tests / 1 632 assertions |
-| **Total** | **4 115** tests / **11 093** assertions |
+| Tests unitaires (`tests/Unit`) | **3 517** tests / 9 612 assertions |
+| Tests d'intégration (`tests/Integration`) | **700** tests / 1 756 assertions |
+| **Total** | **4 217** tests / **11 368** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **80,85 %** |
+| Couverture — lignes | **80,94 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
@@ -116,7 +116,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
+La **version 2.5.0** est publiée et apporte de nombreuses améliorations.
 
 ### ✅ Fonctionnalités disponibles
 
@@ -137,7 +137,7 @@ La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 115 tests, 11 093 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 194 tests, 11 320 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 
 ### 🧱 Fonctionnalités en cours de finalisation
@@ -146,13 +146,7 @@ La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
 
 Liste des évolutions restantes :
 
-- [x] ~~Finalisation de la refonte des **tests unitaires** et de la couverture ;~~
-- [x] ~~Alignement et complétion de la documentation sur a version 2.0.0 ;~~
-- [x] ~~Polissage de la **gestion des préférences utilisateurs** ;~~
 - [ ] Finalisation de la récupération "j'ai oublié mon mot de passe" ;
-- [x] ~~Ajout de nouveaux **indicateurs SonarQube 2026** ;~~
-- [x] ~~Développement du support multi-projet filtré par groupe fonctionnel ;~~
-- [x] ~~Améliorer la couverture des tests e2e;~~
 
 ## 🔐 Compte administrateur
 

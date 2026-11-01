@@ -309,6 +309,17 @@ class HistoriqueRepositoryTest extends KernelTestCase
             'hotspot_high' => 0,
             'hotspot_medium' => 0,
             'hotspot_low' => 0,
+            /* MODIF 2026-10-27 : accessibility_* ajoutées pour prouver que ces 15 colonnes,
+             * ajoutées à self::$historiqueColumns/$historiqueRatingColumns pour le nouvel
+             * indicateur Accessibilité, sont réellement persistées par l'INSERT dynamique.
+             * web/javascript/typescript laissés absents du map : vérifie aussi le repli sur
+             * null pour une colonne de la whitelist non fournie. */
+            'accessibility_anomalies' => 9,
+            'accessibility_dette_minute' => 27,
+            'accessibility_rating' => 'C',
+            'accessibility_css_anomalies' => 9,
+            'accessibility_css_dette_minute' => 27,
+            'accessibility_css_rating' => 'C',
             'initial' => true,
             'mode_collecte' => 'COLLECTE',
             'utilisateur_collecte' => 'admin@ma-moulinette.fr',
@@ -330,6 +341,26 @@ class HistoriqueRepositoryTest extends KernelTestCase
 
         $r = $historiqueRepository->insertHistoriqueAjoutProjet($map, $json);
         $this->assertEquals(23505, $r['code'], 'Doublon détecté');
+
+        // Vérification : les colonnes accessibility_* ont bien été persistées, y compris le repli sur null pour web/javascript/typescript.
+        $row = $entityManager->getConnection()->fetchAssociative(
+            'SELECT accessibility_anomalies, accessibility_dette_minute, accessibility_rating,
+                    accessibility_css_anomalies, accessibility_css_dette_minute, accessibility_css_rating,
+                    accessibility_web_anomalies, accessibility_javascript_anomalies, accessibility_typescript_rating
+            FROM ma_moulinette.historique
+            WHERE maven_key = :maven_key AND version = :version',
+            ['maven_key' => self::$mavenKey, 'version' => '1.5.0-RELEASE']
+        );
+        $this->assertIsArray($row, 'La ligne insérée par insertHistoriqueAjoutProjet() doit être relisible.');
+        $this->assertSame(9, $row['accessibility_anomalies']);
+        $this->assertSame(27, $row['accessibility_dette_minute']);
+        $this->assertSame('C', $row['accessibility_rating']);
+        $this->assertSame(9, $row['accessibility_css_anomalies']);
+        $this->assertSame(27, $row['accessibility_css_dette_minute']);
+        $this->assertSame('C', $row['accessibility_css_rating']);
+        $this->assertNull($row['accessibility_web_anomalies'], 'Colonne de la whitelist non fournie dans $map : doit retomber sur null, pas être ignorée par le INSERT.');
+        $this->assertNull($row['accessibility_javascript_anomalies']);
+        $this->assertNull($row['accessibility_typescript_rating']);
     }
 
     public function testSelectHistoriqueProjetByDate(): void

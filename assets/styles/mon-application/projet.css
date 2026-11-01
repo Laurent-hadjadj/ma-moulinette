@@ -10,10 +10,8 @@
  *
  */
 
-/* stylelint-disable selector-class-pattern */
 /**
   * Propriétés pour les class en fonction des medias type
-  *
   */
 
 /* Media Small */
@@ -29,10 +27,12 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
+
   .separate-ligne { margin-bottom: 0.6rem; }
-  /* MODIF : marge réduite pour gagner en largeur dans les tuiles (débordement
-     sur Répartition/Dette résolu en libérant cette largeur). */
+  /* MODIF : marge réduite pour gagner en largeur dans les tuiles
+    (débordement sur Répartition/Dette résolu en libérant cette largeur). */
   main.margin-left-2 { margin-left: 0.2rem; }
   main.margin-right-2 { margin-right: 0.2rem; }
 }
@@ -50,6 +50,7 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
   main.margin-left-2 { margin-left: 0.2rem; }
@@ -69,6 +70,7 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
   main.margin-left-2 { margin-left: 0.3rem; }
@@ -88,14 +90,16 @@
   .logger-svg,
   .details-svg,
   .scope-svg,
+  .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
   main.margin-left-2 { margin-left: 0.5rem; }
   main.margin-right-2 { margin-right: 0.5rem; }
 }
 
-/* MODIF 2026-05-17 : empilement vertical scoped au seul
- * bloc information-générale (valeurs longues : UUID, nom de projet, clé Maven).
+/**
+ * MODIF 2026-05-17 : empilement vertical scoped au seul bloc information-générale
+ * (valeurs longues : UUID, nom de projet, clé Maven).
  * Les autres blocs gardent flex-direction:row en small (label gauche, valeur droite).
  * Spécificité supérieure (.callout-information-general .container-ligne) → pas de
  * problème de cascade même si la règle vient avant les breakpoints medium+. */
@@ -120,8 +124,10 @@
   .stat-projet { font-size: 1.6rem; }
   .stat-note { font-size: 1.2rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.6rem; }
+
   .todo-svg,
   .scope-svg,
+  .accessibility-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 28px; }
@@ -137,8 +143,10 @@
   .stat-projet { font-size: 1.8rem; }
   .stat-note { font-size: 1.4rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+
   .todo-svg,
   .scope-svg,
+  .accessibility-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
@@ -154,8 +162,10 @@
   .stat-projet { font-size: 1.8rem; }
   .stat-note { font-size: 1.5rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+
   .todo-svg,
   .scope-svg,
+  .accessibility-svg,
   .logger-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
@@ -171,9 +181,11 @@
   .stat-projet { font-size: 2rem; }
   .stat-note { font-size: 1.5rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+
   .todo-svg,
   .logger-svg,
   .scope-svg,
+  .accessibility-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
   .separate-ligne { margin-bottom: 1rem; }
@@ -187,15 +199,55 @@
   .stat-projet { font-size: 2rem; }
   .stat-note { font-size: 1.5rem; }
   .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+
   .todo-svg,
   .logger-svg,
   .scope-svg,
+  .accessibility-svg,
   .details-svg,
   .projet-graphique-svg { max-width: 32px; }
   .separate-ligne { margin-bottom: 1rem; }
 }
 
 /*************************          Global     *********************************/
+
+/* MODIF 29/10/2026 : pastille "déjà collecté" sur le sélecteur de projet */
+.select2-option-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'Open Sans', sans-serif;
+  padding: 0.1rem 0.6rem;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot-collected { background-color: #077e07; }
+.status-dot-not-collected { background-color: #9e9e9e; }
+
+.option-text {
+  flex-grow: 1;
+  color: #00445b;
+}
+
+.option-status {
+  font-size: 0.8rem;
+  color: #00445b;
+  font-style: italic;
+}
+
+.selected-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 
 /* ===== Gestion des logs ====== */
 .label-log { padding-left: 1rem; }
@@ -242,7 +294,8 @@ textarea[readonly] {
 
 .container-ligne {
   display: flex;
-  /* flex-direction et align-items sont gérés par les media queries :
+  /**
+   * flex-direction et align-items sont gérés par les media queries :
    * - small  → column (empilé) via les @media ≤ 40em ci-dessus
    * - medium+ → row   (côte à côte) via les @media 40+em ci-dessus
    * Ne PAS les déclarer ici : la base viendrait après les @media dans le fichier
@@ -269,6 +322,12 @@ textarea[readonly] {
   align-items: baseline;
   gap: 0.4rem;
   flex-shrink: 0;
+}
+
+/* Ligne de détail imbriquée sous une ligne de synthèse (ex : Accessibilité par langage) */
+.ligne-sous-detail {
+  padding-left: 1rem;
+  font-size: 0.9em;
 }
 
 /* Valeur textuelle dans container-ligne (texte long, UUID, nom de projet…) */
@@ -317,6 +376,7 @@ textarea[readonly] {
 .todo-svg,
 .logger-svg,
 .scope-svg,
+.accessibility-svg,
 .favori-liste-svg { cursor: none; }
 
 /* Images SVG dynamiques Bleu */
@@ -328,6 +388,12 @@ textarea[readonly] {
     width: 100%;
     height: auto;
     fill: #00445b;
+}
+
+.accessibility-svg {
+  fill:none;
+  stroke:#00445b;
+  stroke-miterlimit:10
 }
 
 /* Images SVG 32px Bleu */
@@ -470,8 +536,8 @@ textarea[readonly] {
 #bouton-fermer-mesures-rci:hover,
 #bouton-fermer-scope:hover { background-color: #006182; }
 
-/* select2 custom
- *  placeholder
+/** 
+ * select2 custom placeholder
  *  Ici on surcharge les class de l'api select2
  */
 
@@ -519,10 +585,7 @@ textarea[readonly] {
 }
 
 /* Affichage de : Proposition trouvé */
-.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-  background-color: #006a8e;
-  color: #fff;
-}
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable { background-color: #ddd; }
 
 /*  Couleur des options dans le sélecteur */
 .select2-results__option { color: #00445b; }
@@ -616,9 +679,12 @@ textarea[readonly] {
 }
 
 /* Couleur pour la note D */
+/**
+* MODIF 30/10/2026 : #ba5705 (brun, 4.67:1 avec du blanc) -> #ed7d20 + texte
+* noir (7.55:1), même correctif que .note-d dans common.css. */
 .note-orange {
-  background-color: #ba5705;
-  color: #fff;
+  background-color: #ed7d20;
+  color: #000;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
 }
@@ -627,6 +693,14 @@ textarea[readonly] {
 .note-rouge {
   background-color: #d4333f;
   color: #fff;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+}
+
+/* Note non calculable (ex : langage absent du projet, ratio dette/ncloc non calculable) */
+.note-gris {
+  background-color: #e0e0e0;
+  color: #5f5e5e;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
 }
@@ -722,7 +796,8 @@ textarea[readonly] {
   margin: 20px auto;
 }
 
-/* MODIF 2026-09-29 : graphique RCI (modale _modal_mesures_rci.html.twig).
+/*
+  MODIF 2026-09-29 : graphique RCI (modale _modal_mesures_rci.html.twig).
   Hauteur fixe + position: relative, requis par Chart.js pour dimensionner
   correctement le canvas (sinon héritage de "canvas { height: auto !important }".
  */
@@ -733,9 +808,7 @@ textarea[readonly] {
   margin-top: 1rem;
 }
 
-#rci-bar-chart {
-  height: 300px !important;
-}
+#rci-bar-chart { height: 300px !important; }
 
 /* MODIF 2026-10-08 : graphique Scopes (modale _modal_repartition_scope.html.twig),
   même contrainte de dimensionnement que le graphique RCI ci-dessus. */
@@ -746,9 +819,7 @@ textarea[readonly] {
   margin-top: 1rem;
 }
 
-#scope-bar-chart {
-  height: 300px !important;
-}
+#scope-bar-chart { height: 300px !important; }
 
 canvas {
   width: 100% !important;

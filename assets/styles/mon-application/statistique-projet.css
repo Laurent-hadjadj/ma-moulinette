@@ -11,10 +11,7 @@
  *
  */
 
-/**
-  * Propriétés pour les class en fonction des medias type
-  *
-  */
+/*  Propriétés pour les class en fonction des medias type */
 
 /* Media Small */
 @media (width <= 20em) { /** */
@@ -65,16 +62,25 @@
   color: #fff;
 }
 
-.note-A { background: #3adb76; color: #0a0a0a; }
-.note-B { background: #88c057; color: #0a0a0a; }
-.note-C { background: #ffae00; color: #0a0a0a; }
-.note-D { background: #ec5840; }
-.note-E { background: #cc4b37; }
-.note-na { background: #cacaca; color: #0a0a0a; }
+/**
+ * MODIF 30/10/2026 : couleurs Foundation par défaut (jamais alignées sur la
+ * palette A-E du reste de l'application : .note-vert1/.note-orange/
+ * .note-rouge de projet.css/owasp.css/mes-projets.css, correctif #ba5705 ->
+ * #ed7d20 + texte noir du 30/10/2026). */
+.note-A { background: #077e07; }
+.note-B { background: #a3c50b; color: #0a0a0a; }
+.note-C { background: #edbf05; color: #0a0a0a; }
+.note-D { background: #ed7d20; color: #0a0a0a; }
+.note-E { background: #d4333f; }
+.note-na { background: #e0e0e0; color: #5f5e5e; }
 
-.qg-ok  { background: #3adb76; color: #0a0a0a; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
-.qg-ko  { background: #cc4b37; color:#fff; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
-.qg-na  { background: #cacaca; color: #0a0a0a; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
+/**
+ * MODIF 30/10/2026 : même unification que .note-A/B/C/D/E ci-dessus. Pas
+ * d'équivalent pour "orange" ici : la Quality Gate SonarQube n'a que 3 états
+ * réels (OK/ERROR/absent), pas de palier intermédiaire. */
+.qg-ok  { background: #077e07; color: #fff; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
+.qg-ko  { background: #d4333f; color:#fff; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
+.qg-na  { background: #e0e0e0; color: #5f5e5e; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
 
 .tbl-projets { font-size: .8rem; }
 .tbl-projets thead th {
@@ -89,5 +95,13 @@
 .col-projet { min-width: 13rem; white-space: normal; }
 .projet-nom { font-weight: 600; }
 .projet-key { font-size: .72rem; color: #666; }
-.num-warn { color: #cc4b37; font-weight: 700; }
-.section-sep th { background: #c8d0e0 !important; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+/**
+ * MODIF 30/10/2026 : #cc4b37 (Foundation) -> #bf0815, aligné sur `.couleur-rouge`
+ * de common.css (même rôle : texte rouge sur fond clair, pas un badge). */
+.num-warn { color: #bf0815; font-weight: 700; }
+/* MODIF 30/10/2026 : BUG CORRIGÉ (Sonar) — !important retiré. `.section-sep`
+ * n'est actuellement posée nulle part (ni templates/ ni JS, vérifié) : classe
+ * non utilisée pour l'instant. Si réutilisée un jour dans `.tbl-projets
+ * thead` (seule règle de fond concurrente, spécificité 0,0,1,2), qualifier
+ * avec `.tbl-projets` (0,0,2,1) suffit à gagner sans !important. */
+.tbl-projets .section-sep th { background: #c8d0e0; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }

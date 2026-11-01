@@ -104,6 +104,11 @@
 .card-font-size { font-size: 1.2rem; }
 .card-text-font-size { font-size: 2.4rem; }
 
-.couleur-vert { color: #048404 !important; }
-.couleur-orange { color: #c75e08 !important; }
-.couleur-rouge { color: #bf0815 !important; }
+/**
+ * MODIF 30/10/2026 : #c75e08 -> #ba5705, cf. common.css (unification des 2 oranges foncés incohérents,
+ * même usage texte-sur-fond-clair).
+ * "!important" retiré (BUG CORRIGÉ Sonar) — sélecteur doublé à la place, même correctif que common.css
+ * (gain de spécificité garanti sans dépendre de l'ordre de chargement des feuilles de style). */
+.couleur-vert.couleur-vert { color: #048404; }
+.couleur-orange.couleur-orange { color: #ba5705; }
+.couleur-rouge.couleur-rouge { color: #bf0815; }

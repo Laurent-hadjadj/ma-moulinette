@@ -234,7 +234,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
     </table>
 
     {# ========== T3 - Tests & Couverture ========== #}
-    <h2 style="page-break-before: always;">Tests &amp; Couverture</h2>
+    <h2 class="page-break-before">Tests &amp; Couverture</h2>
     <table class="versions-table">
         {{ helpers.thead_versions(rapport.suivi) }}
         <tbody>
@@ -333,7 +333,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
     </table>
 
     {# ========== Complexité cyclomatique ========== #}
-    <h2 style="page-break-before: always;">Complexité cyclomatique</h2>
+    <h2 class="page-break-before">Complexité cyclomatique</h2>
     <table class="versions-table">
         {{ helpers.thead_versions(rapport.suivi) }}
         <tbody>
@@ -413,7 +413,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
     </table>
 
     {# ========== RCI (Risk Criticality Index) ========== #}
-    <h2 style="page-break-before: always;">RCI (Risk Criticality Index)</h2>
+    <h2 class="page-break-before">RCI (Risk Criticality Index)</h2>
     <table class="versions-table">
         {{ helpers.thead_versions(rapport.suivi, true) }}
         <tbody>
@@ -457,7 +457,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
     </table>
 
     {# ========== Distribution langage ========== #}
-    <h2 style="page-break-before: always;">Distribution par langage</h2>
+    <h2 class="page-break-before">Distribution par langage</h2>
     <table class="versions-table">
         {{ helpers.thead_versions(rapport.suivi) }}
         <tbody>
@@ -479,7 +479,7 @@ par langage. Le format paysage accueille confortablement jusqu'a
                     {% if value is not null and value > 0 %}
                     {{value|format_number(locale='fr')}}
                     {% if row.ncloc and row.ncloc > 0 %}
-                    <br><span style="white-space: nowrap;">(
+                    <br><span class="white-space-nowrap">(
                         {{((value / row.ncloc) * 100)|number_format(1, ',', ' ')}}
                         &nbsp;%)</span>
                     {% endif %}

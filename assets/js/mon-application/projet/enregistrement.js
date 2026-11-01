@@ -14,12 +14,12 @@
 import $ from 'jquery';
 
 /** On importe les paramètres serveur */
-import {serveur} from '../../common/properties.js';
+import { serveur } from '../../common/properties.js';
 
 /** On importe les constantes */
-import {dateOptions, content_type, http_200, http_400, http_401, http_403, http_404, http_500, http_502, http_504} from '../../common/constante.js';
+import { dateOptions, content_type, http_200, http_400, http_401, http_403, http_404, http_500, http_502, http_504 } from '../../common/constante.js';
 
-import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /**
  * [Description for log]
@@ -32,11 +32,11 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
  * Created at: 13/12/2022, 12:58:45 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const log = function(txt) {
+const log = function (txt) {
   const textarea = document.getElementById('log');
   textarea.scrollTop = textarea.scrollHeight;
   textarea.value += `${new Intl.DateTimeFormat('default',
-  dateOptions).format(new Date())} ${txt}\n`;
+    dateOptions).format(new Date())} ${txt}\n`;
 };
 
 /**
@@ -50,7 +50,7 @@ const log = function(txt) {
 * Created at: 13/12/2022, 12:59:18 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-export const enregistrement = async function(maven_key) {
+export const enregistrement = async function (maven_key) {
   /** On récupère les informations sur les versions */
   const project_name = $('#js-nom-projet').text().trim();
 
@@ -63,6 +63,22 @@ export const enregistrement = async function(maven_key) {
   const t1 = document.getElementById('js-version-release');
   const t2a = document.getElementById('js-version-snapshot');
   const t2b = document.getElementById('js-version-autre');
+
+  /* MODIF 26/10/2026 : si Peinture n'a jamais été lancée après une collecte,
+   * aucun des éléments posés dynamiquement par peinture.js (ex. #js-menace-
+   * potentielle-to-review-high, créé par injection HTML, absent du gabarit
+   * Twig) n'existe dans le DOM -> les lectures .dataset plus bas plantaient
+   * avec "Cannot read properties of null" en plein milieu de la fonction.
+   * #js-key-analyse est toujours présent dans le gabarit, mais son
+   * dataset.analyseKey n'est rempli QUE par peinture.js (jamais vide pour un
+   * vrai projet peint). */
+  if (!t0.dataset.analyseKey) {
+    const message = "Aucune donnée à enregistrer : lance une Peinture avant d'enregistrer.";
+    log(` - ⚠️ [Enregistrement] ${message}`);
+    showMessage('warning', message);
+    return;
+  }
+
   const analyseKey = t0.dataset.analyseKey;
   const versionRelease = t1.dataset.release;
   const versionSnapshot = t2a.dataset.snapshot;
@@ -79,16 +95,16 @@ export const enregistrement = async function(maven_key) {
    *  par peinture.js. Lecture défensive ( ?? 0 ) au cas où le bloc n'est
    *  pas affiché sur cette page. */
   const t4 = document.getElementById('js-no-sonar-total');
-  const suppressWarning = t4 ? (t4.dataset.s1309         ?? 0) : 0;
-  const noSonar         = t4 ? (t4.dataset.nosonar       ?? 0) : 0;
+  const suppressWarning = t4 ? (t4.dataset.s1309 ?? 0) : 0;
+  const noSonar = t4 ? (t4.dataset.nosonar ?? 0) : 0;
   /* MODIF 2026-05-15 : 5 sous-catégories alimentées par peinture.js
    * sur le même élément #no-sonar-total. Sans ces lignes, les colonnes
    * historique.no_pmd, check_style, java/python/php_no_sonar restent null. */
-  const noPmd         = t4 ? (t4.dataset.noPmd         ?? 0) : 0;
-  const checkStyle    = t4 ? (t4.dataset.checkStyle    ?? 0) : 0;
-  const javaNoSonar   = t4 ? (t4.dataset.javaNoSonar   ?? 0) : 0;
+  const noPmd = t4 ? (t4.dataset.noPmd ?? 0) : 0;
+  const checkStyle = t4 ? (t4.dataset.checkStyle ?? 0) : 0;
+  const javaNoSonar = t4 ? (t4.dataset.javaNoSonar ?? 0) : 0;
   const pythonNoSonar = t4 ? (t4.dataset.pythonNoSonar ?? 0) : 0;
-  const phpNoSonar    = t4 ? (t4.dataset.phpNoSonar    ?? 0) : 0;
+  const phpNoSonar = t4 ? (t4.dataset.phpNoSonar ?? 0) : 0;
 
   /** On récupère le nombre des to..do */
   const t5a = document.getElementById('js-todo-liste');
@@ -99,12 +115,12 @@ export const enregistrement = async function(maven_key) {
    *  éléments DOM #js-logger-* n'existe pas (template modifié, page
    *  partielle, etc.), on retombe sur 0 plutôt que de crasher avec
    *  "Cannot read properties of null (reading 'dataset')". */
-  const jsLoggerInfo  = document.getElementById('js-logger-info');
-  const jsLoggerWarn  = document.getElementById('js-logger-warn');
+  const jsLoggerInfo = document.getElementById('js-logger-info');
+  const jsLoggerWarn = document.getElementById('js-logger-warn');
   const jsLoggerError = document.getElementById('js-logger-error');
   const jsLoggerDebug = document.getElementById('js-logger-debug');
-  const loggerInfo  = jsLoggerInfo  ? jsLoggerInfo.dataset.loggerInfo   : 0;
-  const loggerWarn  = jsLoggerWarn  ? jsLoggerWarn.dataset.loggerWarn   : 0;
+  const loggerInfo = jsLoggerInfo ? jsLoggerInfo.dataset.loggerInfo : 0;
+  const loggerWarn = jsLoggerWarn ? jsLoggerWarn.dataset.loggerWarn : 0;
   const loggerError = jsLoggerError ? jsLoggerError.dataset.loggerError : 0;
   const loggerDebug = jsLoggerDebug ? jsLoggerDebug.dataset.loggerDebug : 0;
 
@@ -155,6 +171,19 @@ export const enregistrement = async function(maven_key) {
     }
   }
 
+  /* MODIF 26/10/2026 : récupération de l'Accessibilité (global + par langage)
+   * déposée sur le dataset de #js-accessibility-anomalies — par peinture.js,
+   * même pattern que rciMesures.*/
+  let accessibilityMesures = {};
+  const jsAccessibilityAnomalies = document.getElementById('js-accessibility-anomalies');
+  if (jsAccessibilityAnomalies && jsAccessibilityAnomalies.dataset.accessibilityMesuresJson) {
+    try {
+      accessibilityMesures = JSON.parse(jsAccessibilityAnomalies.dataset.accessibilityMesuresJson) || {};
+    } catch (e) {
+      accessibilityMesures = {};
+    }
+  }
+
   /**
    * On récupère les informations du projet :
    * lignes, coverage fonctionnelle, duplication, tests unitaires et
@@ -185,9 +214,9 @@ export const enregistrement = async function(maven_key) {
   /** On récupère les informations sur la dette technique et les anomalies. */
   /* Dette technique */
   const t12 = document.getElementById('js-dette');
-  const dette=t12.dataset.detteMinute;
+  const dette = t12.dataset.detteMinute;
   /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
-   * posée par peinture.js sur le même élément que detteMinute ci-dessus. */
+   * posée par peinture.js sur le même élément que detteMinute. */
   const scopeMain = t12.dataset.scopeMain;
   const scopeTest = t12.dataset.scopeTest;
 
@@ -229,9 +258,9 @@ export const enregistrement = async function(maven_key) {
   const nombreViolationsMineur = t23.dataset.nombreViolationsMineur;
 
   /** On récupère les notes SonarQube pour la version courante */
-  const noteReliability=$('#js-note-reliability').text().trim();
-  const noteSecurity=$('#js-note-security').text().trim();
-  const noteSqale=$('#js-note-sqale').text().trim();
+  const noteReliability = $('#js-note-reliability').text().trim();
+  const noteSecurity = $('#js-note-security').text().trim();
+  const noteSqale = $('#js-note-sqale').text().trim();
 
   /** On récupère les hotspots. */
   const noteHotspot = $('#js-note-menace-potentielle').text().trim();
@@ -275,10 +304,10 @@ export const enregistrement = async function(maven_key) {
   const bugMinor = t31.dataset.bugMinor;
   const bugInfo = t32.dataset.bugInfo;
   const vulnerabilityBlocker = t33.dataset.vulnerabilityBlocker;
-  const vulnerabilityCritical=t34.dataset.vulnerabilityCritical;
+  const vulnerabilityCritical = t34.dataset.vulnerabilityCritical;
   const vulnerabilityMajor = t35.dataset.vulnerabilityMajor;
   const vulnerabilityMinor = t36.dataset.vulnerabilityMinor;
-  const vulnerabilityInfo  = t37.dataset.vulnerabilityInfo;
+  const vulnerabilityInfo = t37.dataset.vulnerabilityInfo;
 
   const codeSmellBlocker = t38.dataset.codeSmellBlocker;
   const codeSmellCritical = t39.dataset.codeSmellCritical;
@@ -296,11 +325,11 @@ export const enregistrement = async function(maven_key) {
     'version_release': versionRelease, 'version_snapshot': versionSnapshot,
     'version_autre': versionAutre, version, 'date_version': dateVersion,
     'suppress_warning': suppressWarning, 'no_sonar': noSonar, todo,
-    'no_pmd':           noPmd,
-    'check_style':      checkStyle,
-    'java_no_sonar':    javaNoSonar,
-    'python_no_sonar':  pythonNoSonar,
-    'php_no_sonar':     phpNoSonar,
+    'no_pmd': noPmd,
+    'check_style': checkStyle,
+    'java_no_sonar': javaNoSonar,
+    'python_no_sonar': pythonNoSonar,
+    'php_no_sonar': phpNoSonar,
     'logger_info': loggerInfo, 'logger_warn': loggerWarn, 'logger_error': loggerError,
     'logger_debug': loggerDebug,
     // MODIF 2026-05-15  : breakdown level × framework
@@ -328,6 +357,24 @@ export const enregistrement = async function(maven_key) {
     'rci_inconnu_rating': rciMesures.inconnu_rating ?? null,
     'rci_inconnu_ncloc': rciMesures.inconnu_ncloc ?? null,
     'rci_inconnu_weight': rciMesures.inconnu_weight ?? null,
+    // MODIF 26/10/2026 : Accessibilité (voir lecture dataset ci-dessus) — les
+    // clés de accessibilityMesures correspondent déjà 1:1 aux colonnes
+    // historique.accessibility_* (contrairement à rciMesures ci-dessus).
+    'accessibility_anomalies': accessibilityMesures.accessibility_anomalies ?? null,
+    'accessibility_dette_minute': accessibilityMesures.accessibility_dette_minute ?? null,
+    'accessibility_rating': accessibilityMesures.accessibility_rating ?? null,
+    'accessibility_css_anomalies': accessibilityMesures.accessibility_css_anomalies ?? null,
+    'accessibility_css_dette_minute': accessibilityMesures.accessibility_css_dette_minute ?? null,
+    'accessibility_css_rating': accessibilityMesures.accessibility_css_rating ?? null,
+    'accessibility_web_anomalies': accessibilityMesures.accessibility_web_anomalies ?? null,
+    'accessibility_web_dette_minute': accessibilityMesures.accessibility_web_dette_minute ?? null,
+    'accessibility_web_rating': accessibilityMesures.accessibility_web_rating ?? null,
+    'accessibility_javascript_anomalies': accessibilityMesures.accessibility_javascript_anomalies ?? null,
+    'accessibility_javascript_dette_minute': accessibilityMesures.accessibility_javascript_dette_minute ?? null,
+    'accessibility_javascript_rating': accessibilityMesures.accessibility_javascript_rating ?? null,
+    'accessibility_typescript_anomalies': accessibilityMesures.accessibility_typescript_anomalies ?? null,
+    'accessibility_typescript_dette_minute': accessibilityMesures.accessibility_typescript_dette_minute ?? null,
+    'accessibility_typescript_rating': accessibilityMesures.accessibility_typescript_rating ?? null,
     'ncloc': nombreLigneDeCode, 'lines': nombreLigne,
     'files': nombreFichier, 'classes': nombreClasse, 'functions': nombreFonction,
     coverage, duplicated_lines_density,
@@ -347,18 +394,18 @@ export const enregistrement = async function(maven_key) {
     'info_violations': nombreViolationsInfo,
     'major_violations': nombreViolationsMajeur,
     'minor_violations': nombreViolationsMineur,
-    'reliability_rating': noteReliability, 'security_rating':  noteSecurity,
+    'reliability_rating': noteReliability, 'security_rating': noteSecurity,
     'sqale_rating': noteSqale, 'security_review_rating': noteHotspot,
-    'menace_potentielle_to_review_high':  menacePotentielleToReviewHigh,
+    'menace_potentielle_to_review_high': menacePotentielleToReviewHigh,
     'menace_potentielle_to_review_medium': menacePotentielleToReviewMedium,
     'menace_potentielle_to_review_low': menacePotentielleToReviewLow,
-    'menace_potentielle_reviewed_high':  menacePotentielleReviewedHigh,
+    'menace_potentielle_reviewed_high': menacePotentielleReviewedHigh,
     'menace_potentielle_reviewed_medium': menacePotentielleReviewedMedium,
     'menace_potentielle_reviewed_low': menacePotentielleReviewedLow,
     'menace_potentielle_totale': menacePotentielleTotale,
     'bug_blocker': bugBlocker, 'bug_critical': bugCritical, 'bug_major': bugMajor,
     'bug_minor': bugMinor, 'bug_info': bugInfo,
-    'vulnerability_blocker': vulnerabilityBlocker, 'vulnerability_critical':  vulnerabilityCritical,
+    'vulnerability_blocker': vulnerabilityBlocker, 'vulnerability_critical': vulnerabilityCritical,
     'vulnerability_major': vulnerabilityMajor, 'vulnerability_minor': vulnerabilityMinor,
     'vulnerability_info': vulnerabilityInfo,
     'code_smell_blocker': codeSmellBlocker, 'code_smell_critical': codeSmellCritical,
@@ -380,34 +427,34 @@ export const enregistrement = async function(maven_key) {
   }
 
   try {
-        const t = await $.ajax(options);
-        // 📌 Vérification des erreurs
-        const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_502, http_504];
-        if (errorCodes.includes(t.code)){
-          const hasTrace = !!t.trace;
-            const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-            showMessage(t.type, t.message, trace);
-            return;
-          }
-        if (t.code === http_200) {
-          const message='Enregistrement des informations effectué.';
-          log(` - 💾 [Enregistrement] ${message}`);
-          showMessage('success', `${message}`);
-          setTimeout(() => { hideMessage(); }, 5000);
-          return;
-        }
-
-      if (t.code === 23505) {
-        const message=`Cette version existe déjà dans l'historique.`;
-        showMessage('warning', `${message}`);
-        }
-  } catch (error) {
-      console.error('[Enregistrement] Catch 502/5xx :', error.status, error.statusText, error.responseText?.substring(0, 500));
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors de l'enregistrement des données (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_enregistrement', 'Erreur lors de la sauvegarde des données.');
-      log(` - 🔴 Enregistrement des données en échec.`);
+    const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_502, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
       return;
     }
+    if (t.code === http_200) {
+      const message = 'Enregistrement des informations effectué.';
+      log(` - 💾 [Enregistrement] ${message}`);
+      showMessage('success', `${message}`);
+      setTimeout(() => { hideMessage(); }, 5000);
+      return;
+    }
+
+    if (t.code === 23505) {
+      const message = `Cette version existe déjà dans l'historique.`;
+      showMessage('warning', `${message}`);
+    }
+  } catch (error) {
+    console.error('[Enregistrement] Catch 502/5xx :', error.status, error.statusText, error.responseText?.substring(0, 500));
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de l'enregistrement des données (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_enregistrement', 'Erreur lors de la sauvegarde des données.');
+    log(` - 🔴 Enregistrement des données en échec.`);
+    return;
+  }
 }

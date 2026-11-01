@@ -14,32 +14,23 @@
 namespace App\Tests\Unit\Entity\Validator;
 
 use App\Entity\Owasp;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
 /**
  * [Description OwaspValidatorTest]
+ *
+ * MODIF 27/10/2026 : les 60 attributs a1..a10/aN_blocker..minor + source sont
+ * remplacés par categories (JSON) + module_frontend/backend/autre.
  */
 class OwaspValidatorTest extends KernelTestCase
 {
-
   private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static int $referentialOwasp = 2017;
   private static string $version = '1.2.0-RELEASE';
   private static string $dateVersion = '2024-07-10 15:26:07+02';
   private static int $effortTotal = 0;
-  /** @var array<int, int> */
-  private static array $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  /** @var array<int, int> */
-  private static array $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  /** @var array<int, int> */
-  private static array $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  /** @var array<int, int> */
-  private static array $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  /** @var array<int, int> */
-  private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  /** @var array<int, int> */
-  private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
   private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
@@ -52,16 +43,10 @@ class OwaspValidatorTest extends KernelTestCase
     $owasp->setVersion(self::$version);
     $owasp->setDateVersion(new \DateTimeImmutable(self::$dateVersion));
     $owasp->setEffortTotal(self::$effortTotal);
-
-    for ($i = 0; $i < 10; $i++) {
-      $owasp->{"setA" . ($i + 1)}(self::$a[$i]);
-      $owasp->{"setA" . ($i + 1) . "Blocker"}(self::$aBlocker[$i]);
-      $owasp->{"setA" . ($i + 1) . "Critical"}(self::$aCritical[$i]);
-      $owasp->{"setA" . ($i + 1) . "Major"}(self::$aMajor[$i]);
-      $owasp->{"setA" . ($i + 1) . "Info"}(self::$aInfo[$i]);
-      $owasp->{"setA" . ($i + 1) . "Minor"}(self::$aMinor[$i]);
-    }
-
+    $owasp->setCategories([]);
+    $owasp->setModuleFrontend(0);
+    $owasp->setModuleBackend(0);
+    $owasp->setModuleAutre(0);
     $owasp->setModeCollecte(self::$modeCollecte);
     $owasp->setUtilisateurCollecte(self::$utilisateurCollecte);
     $owasp->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
@@ -94,101 +79,64 @@ class OwaspValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
   }
 
-  // v2.0.0 : `effortTotal`, `aN`, `aNBlocker`, `aNCritical`, `aNMajor`, `aNMinor`, `aNInfo`
-  // sont contraints par Assert\PositiveOrZero (>= 0) — 0 valide, -1 rejeté.
+  public function testValidEntityWithEmptyCategories(): void
+  {
+    // Projet sans vulnérabilité OWASP détectée : categories reste à [], valide.
+    $this->assertHasErrors($this->getEntity()->setCategories([]), 0);
+  }
 
-  public function testValidIntegerAEntity(): void
+  public function testValidEntityWithModuleCountsNull(): void
+  {
+    // Nullable : un projet jamais collecté n'a pas encore de répartition par module.
+    $this->assertHasErrors(
+      $this->getEntity()->setModuleFrontend(null)->setModuleBackend(null)->setModuleAutre(null),
+      0
+    );
+  }
+
+  // `effortTotal`, `moduleFrontend/backend/autre` contraints par Assert\PositiveOrZero (>= 0).
+
+  public function testValidIntegerEffortTotalEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setEffortTotal(0), 0);
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1)}(0), 0);
-    }
   }
 
-  public function testInvalidIntegerAEntity(): void
+  public function testInvalidIntegerEffortTotalEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setEffortTotal(-1), 1);
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1)}(-1), 1);
-    }
   }
 
-  public function testValidIntegerABlockerEntity(): void
+  /**
+   * @return iterable<string, array{0: string}>
+   */
+  public static function moduleFieldsProvider(): iterable
   {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Blocker"}(0), 0);
-    }
+    yield 'moduleFrontend' => ['ModuleFrontend'];
+    yield 'moduleBackend' => ['ModuleBackend'];
+    yield 'moduleAutre' => ['ModuleAutre'];
   }
 
-  public function testInvalidIntegerABlockerEntity(): void
+  #[DataProvider('moduleFieldsProvider')]
+  public function testValidModuleCount(string $suffix): void
   {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Blocker"}(-1), 1);
-    }
+    $this->assertHasErrors($this->getEntity()->{'set' . $suffix}(0), 0);
   }
 
-  public function testValidIntegerACriticalEntity(): void
+  #[DataProvider('moduleFieldsProvider')]
+  public function testInvalidModuleCount(string $suffix): void
   {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Critical"}(0), 0);
-    }
+    $this->assertHasErrors($this->getEntity()->{'set' . $suffix}(-1), 1);
   }
 
-  public function testInvalidIntegerACriticalEntity(): void
-  {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Critical"}(-1), 1);
-    }
-  }
-
-  public function testValidIntegerAMajorEntity(): void
-  {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Major"}(0), 0);
-    }
-  }
-
-  public function testInvalidIntegerAMajorEntity(): void
-  {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Major"}(-1), 1);
-    }
-  }
-
-  public function testValidIntegerAMinorEntity(): void
-  {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Minor"}(0), 0);
-    }
-  }
-
-  public function testInvalidIntegerAMinorEntity(): void
-  {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Minor"}(-1), 1);
-    }
-  }
-
-  public function testValidIntegerAInfoEntity(): void
-  {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Info"}(0), 0);
-    }
-  }
-
-  public function testInvalidIntegerAInfoEntity(): void
-  {
-    for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Info"}(-1), 1);
-    }
-  }
-
+  /**
+   * MODIF 27/10/2026 : 70 → 13 (suppression des 60 attributs a1..a10/aN_blocker..minor
+   * + source, remplacés par categories + module_frontend/backend/autre).
+   */
   public function testCountAttribut(): void
   {
     $entity = $this->getEntity();
     $reflectionClass = new \ReflectionClass($entity);
     $nbAttributs = count($reflectionClass->getProperties());
-    // MODIF 2026-07-18 : +1 (nouveau champ `source` : 'facet'|'tag').
-    $this->assertEquals($nbAttributs, 70);
+    $this->assertEquals(13, $nbAttributs);
   }
 }

@@ -1,6 +1,6 @@
 {% set title = 'RGPD' %}
-{% set description = 'Ma Moulinette - données personnelles.' %}
-{% set bottom="footer-fixed" %}
+{% set description = app_name ~ ' - données personnelles.' %}
+{% set bottom = "footer-fixed" %}
 <!DOCTYPE html>
 <!--
 .__  __             __  __             _ _            _   _
@@ -14,165 +14,156 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr" dir="ltr">
+
 {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement du code javascript #}
+        {% block importmap %}
+        {{ importmap('footer-donnees-personnelles') }}
+        {% endblock %}
+    </head>
 
-<head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block importmap %}
-    {{ importmap('footer-donnees-personnelles') }}
-    {% endblock %}
-</head>
+    <body>
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
+        <br>
 
-<body>
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    <br>
-
-    <header class="grid-container margin-top-1">
-        <nav aria-label="Fil d'Ariane, vous êtes ici">
-            <ol class="claire-hand breadcrumbs">
-                <li>
-                    <a href="{{ path('accueil') }}">Accueil</a>
-                </li>
-                <li aria-current="page">Données personnelles</li>
-            </ol>
-        </nav>
-    </header>
-    <main id="main-content" class="grid-container grid-x">
-        <h2 class="h2 claire-hand">Informations sur vos données personnelles</h2>
-        <hr>
-        <p class="open-sans text-justify">
-            Ma-Moulinette est l'outil qui collecte, historise et restitue les indicateurs de qualité et de
-            sécurité logicielle (SonarQube, OWASP Dependency-Check, ZAP, Actuator) d'un portefeuille de
-            projets, avec traçabilité des actions d'administration.
-        </p>
-
-        <section class="cell">
-            <h3 class="h4 claire-hand">Responsable du traitement</h3>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li>
+                        <a href="{{ path('accueil') }}">Accueil</a>
+                    </li>
+                    <li aria-current="page">Données personnelles</li>
+                </ol>
+            </nav>
+        </header>
+        <main id="main-content" class="grid-container grid-x">
+            <h2 class="h2 claire-hand">Informations sur vos données personnelles</h2>
+            <hr>
             <p class="open-sans text-justify">
-                {{ editeur|default("L'organisation qui exploite cette application (voir son registre des traitements).") }}
-                {% if dpoContact %}
-                    Délégué à la protection des données : <strong>{{ dpoContact }}</strong>.
-                {% else %}
-                    Pour toute question, contactez le délégué à la protection des données de votre organisation.
-                {% endif %}
+                {{ app_name }} est l'outil qui collecte, historise et restitue les indicateurs de qualité et de sécurité logicielle (SonarQube, OWASP Dependency-Check, ZAP, Actuator) d'un portefeuille de projets, avec traçabilité des actions d'administration.
             </p>
-        </section>
 
-        <section class="cell">
-            <h3 class="h4 claire-hand">Personnes concernées et données traitées</h3>
-            <ul class="open-sans">
-                <li><strong>Les utilisateurs de l'application</strong> : identité (nom, prénom, courriel), mot de passe (haché, jamais en clair, ou authentification déléguée à l'annuaire de l'organisme sans aucun stockage), rôles et groupe fonctionnel, préférences d'affichage.</li>
-                <li><strong>Les auteurs d'analyses SonarQube</strong> : leur identifiant de connexion SonarQube apparaît dans l'historique d'activité, qu'ils soient ou non eux-mêmes utilisateurs de Ma-Moulinette.</li>
-                <li><strong>Tout visiteur des pages de connexion</strong> : informations techniques de navigation (type de navigateur, système, détection de robot), à des fins statistiques uniquement — l'adresse IP n'est jamais conservée en clair, seule une empreinte (hachage) l'est.</li>
-            </ul>
-            <p class="open-sans text-justify">
-                Toute modification des rôles d'un utilisateur est enregistrée dans un journal dédié (qui a
-                modifié quoi, quand, pour qui), consultable par les administrateurs habilités.
-            </p>
-        </section>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Responsable du traitement</h3>
+                <p class="open-sans text-justify">
+                    {{ editeur|default("L'organisation qui exploite cette application (voir son registre des traitements).") }}
+                    {% if dpoContact %}
+                        Délégué à la protection des données : <strong>{{ dpoContact }}</strong>.
+                    {% else %}
+                        Pour toute question, contactez le délégué à la protection des données de votre organisation.
+                    {% endif %}
+                </p>
+            </section>
 
-        <section class="cell">
-            <h3 class="h4 claire-hand">Finalité et base légale</h3>
-            <p class="open-sans text-justify">
-                Authentifier et habiliter les utilisateurs, assurer le suivi de la qualité et de la sécurité
-                des projets, et pouvoir attribuer chaque action d'administration à son auteur.
-                {% if legalBasis %}
-                    Base légale : {{ legalBasis }}.
-                {% else %}
-                    La base légale figure au registre des traitements de l'organisation.
-                {% endif %}
-                Aucune décision automatisée n'est prise à partir de ces données.
-            </p>
-        </section>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Personnes concernées et données traitées</h3>
+                <ul class="open-sans">
+                    <li><strong>Les utilisateurs de l'application</strong> : identité (nom, prénom, courriel), mot de passe (haché, jamais en clair, ou authentification déléguée à l'annuaire de l'organisme sans aucun stockage), rôles et groupe fonctionnel, préférences d'affichage.</li>
+                    <li><strong>Les auteurs d'analyses SonarQube</strong> : leur identifiant de connexion SonarQube apparaît dans l'historique d'activité, qu'ils soient ou non eux-mêmes utilisateurs de {{ app_name }}.</li>
+                    <li><strong>Tout visiteur des pages de connexion</strong> : informations techniques de navigation (type de navigateur, système, détection de robot), à des fins statistiques uniquement — l'adresse IP n'est jamais conservée en clair, seule une empreinte (hachage) l'est.</li>
+                </ul>
+                <p class="open-sans text-justify">
+                    Toute modification des rôles d'un utilisateur est enregistrée dans un journal dédié (qui a modifié quoi, quand, pour qui), consultable par les administrateurs habilités.
+                </p>
+            </section>
 
-        <section class="cell">
-            <h3 class="h4 claire-hand">Durée de conservation</h3>
-            <ul class="open-sans">
-                <li>Le compte utilisateur est conservé tant qu'il reste actif.</li>
-                <li>La session de connexion est effacée à la fermeture du navigateur ; aucune case « se souvenir de moi » n'existe.</li>
-                <li>Le cookie de mesure d'audience (voir ci-dessous) est conservé 13 mois.</li>
-                <li>Les journaux d'administration et d'activité (modifications de rôles, historique de collecte, statistiques d'usage) ne sont, à ce jour, soumis à aucune purge automatique — une politique de conservation est en cours de définition.</li>
-            </ul>
-        </section>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Finalité et base légale</h3>
+                <p class="open-sans text-justify">
+                    Authentifier et habiliter les utilisateurs, assurer le suivi de la qualité et de la sécurité des projets, et pouvoir attribuer chaque action d'administration à son auteur.
+                    {% if legalBasis %}
+                        Base légale : {{ legalBasis }}.
+                    {% else %}
+                        La base légale figure au registre des traitements de l'organisation.
+                    {% endif %}
+                    Aucune décision automatisée n'est prise à partir de ces données.
+                </p>
+            </section>
 
-        <section class="cell">
-            <h3 class="h4 claire-hand">Destinataires</h3>
-            <p class="open-sans text-justify">
-                Les utilisateurs habilités de l'application, les administrateurs pour le journal des rôles,
-                et le délégué à la protection des données. {{marque_entreprise_long}} ne s'appuie sur aucun
-                service tiers (analyse d'audience externe, publicité, réseau social) : aucune donnée n'est
-                transmise hors de l'application, ni hors de l'Union européenne.
-            </p>
-        </section>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Durée de conservation</h3>
+                <ul class="open-sans">
+                    <li>Le compte utilisateur est conservé tant qu'il reste actif.</li>
+                    <li>La session de connexion est effacée à la fermeture du navigateur ; aucune case « se souvenir de moi » n'existe.</li>
+                    <li>Le cookie de mesure d'audience (voir ci-dessous) est conservé 13 mois.</li>
+                    <li>Les journaux d'administration et d'activité (modifications de rôles, historique de collecte, statistiques d'usage) ne sont, à ce jour, soumis à aucune purge automatique — une politique de conservation est en cours de définition.</li>
+                </ul>
+            </section>
 
-        <section class="cell">
-            <h3 class="h4 claire-hand">Vos droits</h3>
-            <p class="open-sans text-justify">
-                Vous pouvez demander l'accès aux données qui vous concernent, leur rectification, ou vous
-                opposer à leur traitement pour des raisons tenant à votre situation particulière. Les
-                journaux d'administration étant une trace de sécurité, leur effacement peut être limité
-                pendant leur durée de conservation.
-                Adressez votre demande
-                {% if dpoContact %}
-                    à <strong>{{ dpoContact }}</strong>
-                {% else %}
-                    au délégué à la protection des données de votre organisation
-                {% endif %}
-                ; en cas de difficulté, vous pouvez saisir la <a class="source-link" href="https://www.cnil.fr">CNIL</a>.
-            </p>
-        </section>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Destinataires</h3>
+                <p class="open-sans text-justify">
+                    Les utilisateurs habilités de l'application, les administrateurs pour le journal des rôles, et le délégué à la protection des données. {{marque_entreprise_long}} ne s'appuie sur aucun
+                    service tiers (analyse d'audience externe, publicité, réseau social) : aucune donnée n'est transmise hors de l'application, ni hors de l'Union européenne.
+                </p>
+            </section>
 
-        <section class="cell">
-            <h3 class="h4 claire-hand">Cookies utilisés sur {{urlSite}}</h3>
-            <table>
-                <caption class="h5 open-sans">Cookies déposés par Ma-Moulinette</caption>
-                <thead>
-                    <tr>
-                        <th scope="col" id="data1">Nom technique</th>
-                        <th scope="col" id="data2">Finalité</th>
-                        <th scope="col" id="data3">Durée</th>
-                        <th scope="col" id="data4">Régime</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td headers="data1">Cookie de session</td>
-                        <td headers="data2">Maintenir votre connexion</td>
-                        <td headers="data3">Fermeture du navigateur</td>
-                        <td headers="data4">Strictement nécessaire, exempté de consentement</td>
-                    </tr>
-                    <tr>
-                        <td headers="data1"><code>visitor_id</code></td>
-                        <td headers="data2">Mesure d'audience anonymisée (page Statistiques)</td>
-                        <td headers="data3">13 mois</td>
-                        <td headers="data4">Pas de profilage ni de finalité publicitaire</td>
-                    </tr>
-                    <tr>
-                        <td headers="data1"><code>browserupdateorg</code></td>
-                        <td headers="data2">Mémorise votre choix sur l'alerte de navigateur obsolète (bibliothèque auto-hébergée, aucun appel à un service tiers)</td>
-                        <td headers="data3">7 jours</td>
-                        <td headers="data4">Préférence d'interface, exemptée</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="open-sans text-justify">
-                Vous pouvez à tout moment désactiver les cookies depuis les paramètres de votre navigateur,
-                au risque de dégrader votre expérience :
-            </p>
-            <ul class="open-sans">
-                <li><a class="source-link" href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies" title="Firefox - Lien externe">Firefox</a></li>
-                <li><a class="source-link" href="https://support.google.com/chrome/answer/95647?hl=fr" title="Chrome - Lien externe">Chrome</a></li>
-                <li><a class="source-link" href="http://windows.microsoft.com/fr-FR/internet-explorer/delete-manage-cookies" title="Edge - Lien externe">Edge</a></li>
-                <li><a class="source-link" href="http://support.apple.com/kb/PH17191?viewlocale=fr_FR" title="Safari - Lien externe">Safari</a></li>
-            </ul>
-        </section>
-    </main>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Vos droits</h3>
+                <p class="open-sans text-justify">
+                    Vous pouvez demander l'accès aux données qui vous concernent, leur rectification, ou vous opposer à leur traitement pour des raisons tenant à votre situation particulière. Les journaux d'administration étant une trace de sécurité, leur effacement peut être limité pendant leur durée de conservation.
+                    Adressez votre demande
+                    {% if dpoContact %}
+                        à <strong>{{ dpoContact }}</strong>
+                    {% else %}
+                        au délégué à la protection des données de votre organisation
+                    {% endif %}
+                    ; en cas de difficulté, vous pouvez saisir la <a class="source-link" href="https://www.cnil.fr">CNIL</a>.
+                </p>
+            </section>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-</body>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Cookies utilisés sur {{urlSite}}</h3>
+                <table>
+                    <caption class="h5 open-sans">Cookies déposés par {{ app_name }}</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" id="data1">Nom technique</th>
+                            <th scope="col" id="data2">Finalité</th>
+                            <th scope="col" id="data3">Durée</th>
+                            <th scope="col" id="data4">Régime</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td headers="data1">Cookie de session</td>
+                            <td headers="data2">Maintenir votre connexion</td>
+                            <td headers="data3">Fermeture du navigateur</td>
+                            <td headers="data4">Strictement nécessaire, exempté de consentement</td>
+                        </tr>
+                        <tr>
+                            <td headers="data1"><code>visitor_id</code></td>
+                            <td headers="data2">Mesure d'audience anonymisée (page Statistiques)</td>
+                            <td headers="data3">13 mois</td>
+                            <td headers="data4">Pas de profilage ni de finalité publicitaire</td>
+                        </tr>
+                        <tr>
+                            <td headers="data1"><code>browserupdateorg</code></td>
+                            <td headers="data2">Mémorise votre choix sur l'alerte de navigateur obsolète (bibliothèque auto-hébergée, aucun appel à un service tiers)</td>
+                            <td headers="data3">7 jours</td>
+                            <td headers="data4">Préférence d'interface, exemptée</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="open-sans text-justify">
+                    Vous pouvez à tout moment désactiver les cookies depuis les paramètres de votre navigateur,
+                    au risque de dégrader votre expérience :
+                </p>
+                <ul class="open-sans">
+                    <li><a class="source-link" href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies" title="Firefox - Lien externe">Firefox</a></li>
+                    <li><a class="source-link" href="https://support.google.com/chrome/answer/95647?hl=fr" title="Chrome - Lien externe">Chrome</a></li>
+                    <li><a class="source-link" href="http://windows.microsoft.com/fr-FR/internet-explorer/delete-manage-cookies" title="Edge - Lien externe">Edge</a></li>
+                    <li><a class="source-link" href="http://support.apple.com/kb/PH17191?viewlocale=fr_FR" title="Safari - Lien externe">Safari</a></li>
+                </ul>
+            </section>
+        </main>
+
+        {# Chargement de la section footer #}
+        {{ include('footer.html.twig') }}
+    </body>
 
 </html>

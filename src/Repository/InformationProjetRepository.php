@@ -129,6 +129,33 @@ class InformationProjetRepository extends ServiceEntityRepository
   }
 
   /**
+   * [Description for selectAllMavenKeys]
+   * Liste des maven_key ayant au moins une ligne dans information_projet —
+   * table toujours peuplée en premier par n'importe quelle collecte
+   * (interactive ou batch), avant tout autre indicateur. Sert de signal
+   * "projet déjà collecté au moins une fois" pour le sélecteur de la page
+   * Projet (pastille) : une seule requête groupée, pas de N+1 par projet.
+   *
+   * @return array<int|string, mixed>
+   *
+   * Created at: 29/10/2026 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectAllMavenKeys(): array
+  {
+    $sql = "SELECT DISTINCT maven_key
+            FROM ma_moulinette.information_projet";
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $data = $stmt->executeQuery()->fetchFirstColumn();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'liste' => $data, 'erreur' => ''];
+  }
+
+  /**
    * [Description for TestDeleteInformationProjetMavenKey]
    * On supprime les informations sur le projet
    *

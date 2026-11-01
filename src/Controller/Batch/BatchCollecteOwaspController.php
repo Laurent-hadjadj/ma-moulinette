@@ -16,11 +16,24 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{Owasp, InformationProjet};
+use App\Entity\{Owasp, OwaspDetails, InformationProjet};
 use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
+use App\Service\Owasp\OwaspRuleClassifierService;
 
 /**
  * [Description BatchCollecteOwaspController]
+ *
+ * MODIF 27/10/2026 : remplace la boucle par catégorie (facette officielle
+ * owaspTop10/owaspTop10-2021) + le secours par tag (owasp-aXX) par UN SEUL
+ * appel paginé /api/issues/search?rules=<~126 clés core+findsecbugs>, classé
+ * localement par OwaspRuleClassifierService. Raison (vérifiée en direct sur
+ * une instance SonarQube 26.10 réelle, cf. mkDocs/.../application/owasp.md) :
+ * la facette officielle n'indexe jamais les règles FindSecBugs (tag texte
+ * libre owasp-aXX, jamais le bloc structuré securityStandards) — le secours
+ * par tag comblait les comptages mais jamais le détail par sévérité d'une
+ * catégorie classée uniquement par tag (tableau de détail vide côté front).
+ * Les Security Hotspots ne sont pas concernés par ce changement (cf.
+ * BatchCollecteHotspotOwaspController, inchangé).
  */
 class BatchCollecteOwaspController extends AbstractController
 {
@@ -28,28 +41,80 @@ class BatchCollecteOwaspController extends AbstractController
     private static string $sonarUrl = "sonar.url";
     private static string $europeParis = "Europe/Paris";
     private static string $erreur404 = "Je n'ai pas trouvé le projet dans l'application (Erreur 404).";
-    // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
-    private static string $owaspCategories = 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10';
-    /* MODIF 2026-07-18 : liste des tags de secours (owasp-aXX, zéro-paddés —
-     * cf. mkDocs/docs/ma-moulinette/application/owasp.md) utilisée quand la
-     * facette officielle owaspTop10/owaspTop10-2021 ne classe aucune issue. */
-    private static string $owaspTagCategories =
-        'owasp-a01,owasp-a02,owasp-a03,owasp-a04,owasp-a05,owasp-a06,owasp-a07,owasp-a08,owasp-a09,owasp-a10';
+    private static int $pageSize = 500;
+    /** @var list<400|401|403|404|407|414|418|422|429|500|502|503|504|505> */
+    private static array $httpErrorCodes = [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505];
 
-    /**
-     * [Description for __construct]
-     * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
-     *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     */
     public function __construct(
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
+        private OwaspRuleClassifierService $ruleClassifier,
         private LoggerInterface $logger
-        ) {
+    ) {
+    }
+
+    /**
+     * [Description for fetchAllOwaspIssues]
+     * Récupère, paginée (p/ps, pattern SonarAnalysisFetcherService::fetchAnalyses()),
+     * la totalité des issues SonarQube pour les règles couvrant OWASP
+     * (core + findsecbugs, cf. OwaspRuleClassifierService::allRuleKeys()).
+     *
+     * @return array{code: 200, issues: array<int, array{rule: string, component: string, severity: string, line: ?int, message: string}>, effortTotal: int}|array{code: 400|401|403|404|407|414|418|422|429|500|502|503|504|505, erreur: string}
+     *
+     * Created at: 27/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function fetchAllOwaspIssues(string $maven_key, string $componentKeyParam, string $statusParam, string $statusValue): array
+    {
+        $rules = implode(',', $this->ruleClassifier->allRuleKeys());
+        $issues = [];
+        $effortTotal = 0;
+        $page = 1;
+        $total = 0;
+
+        do {
+            $url = $this->urlBuilder->build(
+                $this->getParameter(self::$sonarUrl),
+                '/api/issues/search',
+                [
+                    $componentKeyParam => $maven_key,
+                    'rules' => $rules,
+                    $statusParam => $statusValue,
+                    'ps' => self::$pageSize,
+                    'p' => $page,
+                ]
+            );
+            $this->logger->debug("[Batch OWASP] 🛠️ Appel issues OWASP (page {$page}) → {$url}");
+            $response = $this->client->httpSonarQube($url);
+
+            if (isset($response['code']) && in_array($response['code'], self::$httpErrorCodes, true)) {
+                $this->logger->error("[Batch OWASP] ❌ Erreur appel issues OWASP (page {$page}) pour {$maven_key} : {$response['code']}");
+                return ['code' => $response['code'], 'erreur' => (string) ($response['erreur'] ?? '')];
+            }
+
+            foreach ($response['json']['issues'] ?? [] as $issue) {
+                $issues[] = [
+                    'rule' => (string) ($issue['rule'] ?? ''),
+                    'component' => (string) ($issue['component'] ?? ''),
+                    'severity' => (string) ($issue['severity'] ?? ''),
+                    /* MODIF 28/10/2026 : line/message déjà présents dans la réponse
+                     * SonarQube, jusqu'ici jamais capturés — nécessaires au détail
+                     * individuel des vulnérabilités (table owasp_details). */
+                    'line' => isset($issue['line']) ? (int) $issue['line'] : null,
+                    'message' => (string) ($issue['message'] ?? ''),
+                ];
+            }
+            if ($page === 1) {
+                $effortTotal = (int) ($response['json']['effortTotal'] ?? 0);
+            }
+            $total = (int) ($response['json']['paging']['total'] ?? 0);
+            $page++;
+        } while (($page - 1) * self::$pageSize < $total);
+
+        return ['code' => 200, 'issues' => $issues, 'effortTotal' => $effortTotal];
     }
 
     /**
@@ -72,84 +137,35 @@ class BatchCollecteOwaspController extends AbstractController
         /** On instancie l'EntityRepository */
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
         $owaspRepos = $this->em->getRepository(Owasp::class);
+        $owaspDetailsRepos = $this->em->getRepository(OwaspDetails::class);
 
-        /** On récupère la version du serveur SonarQube (propriété applicative, choix du référentiel OWASP) */
+        /** On récupère la version du serveur SonarQube (propriété applicative) : seul usage restant,
+         *  décider si une ligne OWASP 2021 doit être construite (même seuil que le bouton front,
+         *  cf. templates/owasp/index.html.twig) — les deux référentiels sont désormais classés depuis
+         *  le même appel HTTP, plus besoin de ce paramètre pour choisir quel appel lancer. */
         $sonar_version = $this->getParameter('sonar.version');
 
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 —
-         * résolu séparément, à partir de la vraie version serveur (GetSonarVersionService),
-         * pas de la propriété sonar.version ci-dessus qui reste réservée au choix OWASP. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
-
-        /* MODIF 2026-10-11 : ce controller ne passe pas 'statuses'/'issueStatuses' en
-         * paramètre de requête (il filtre côté client sur le statut de chaque issue
-         * retournée, pas via l'API) — mais le champ à lire sur l'issue ('status' vs
-         * 'issueStatus') et les valeurs considérées comme « anomalie active » suivent
-         * la même règle que partout ailleurs (cf. GetSonarVersionService::issueStatusParam()
-         * et projet.md). Les deux champs coexistent sur chaque issue quelle que soit la
-         * version du serveur (vérifié en live sur 26.9.0), donc l'un des deux est toujours
-         * fiable selon le modèle résolu. */
         $issueStatus = $this->sonarVersion->issueStatusParam();
-        $statusField = $issueStatus['param'] === 'statuses' ? 'status' : 'issueStatus';
-        $allowedStatuses = explode(',', $issueStatus['value']);
 
-        /** Tableau des paramètres pour la requête HTTP */
-        $queryParamsList = [
-            'owasp2017' => [$componentKeyParam => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => self::$owaspCategories],
-            'owasp2021' => [$componentKeyParam => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => self::$owaspCategories],
-            'owasp2025' => [$componentKeyParam => $maven_key, 'facets' => 'owaspTop10-2025', 'owaspTop10-2025' => self::$owaspCategories]
-        ];
-
-        /** Sécurisation de l'URL */
-        $url = $this->urlBuilder->build(
-            $this->getParameter(self::$sonarUrl),
-            '/api/issues/search',
-            $queryParamsList['owasp2017']
-        );
-
-        $this->logger->debug("[Batch OWASP] 🛠️ Appel OWASP 2017 → {$url}");
-        /** On appelle les requêtes HTTP pour chaque référentiel */
-        $owasp2017 = $this->client->httpSonarQube($url);
-
-        /** Il ne peut pas y avoir de 404, l'API renvoie toujours une response 200*/
-        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
-            $this->logger->error("[Batch OWASP] ❌ Erreur OWASP 2017 pour {$maven_key} : {$owasp2017['code']}");
+        $fetchResult = $this->fetchAllOwaspIssues($maven_key, $componentKeyParam, $issueStatus['param'], $issueStatus['value']);
+        if ($fetchResult['code'] !== 200) {
             return [
-                    'code' => $owasp2017['code'],
-                    'erreur' => $owasp2017['erreur']
-                ];
-        }
-
-        /** On execute si la version de SonarQube est >= 9 */
-        $owasp2021 = ['NC'];
-        if ((int) $sonar_version > 8){
-            $url = $this->urlBuilder->build(
-            $this->getParameter(self::$sonarUrl),
-            '/api/issues/search',
-            $queryParamsList['owasp2021']
-            );
-
-            $this->logger->debug("[Batch OWASP] 🛠️ Appel OWASP 2021 → {$url}");
-            $owasp2021 = $this->client->httpSonarQube($url);
-            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
-                $this->logger->error("[Batch OWASP] ❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
-                return [
-                    'code' => $owasp2021['code'],
-                    'erreur' => $owasp2021['erreur']
-                ];
-            }
+                'code' => $fetchResult['code'],
+                'erreur' => $fetchResult['erreur']
+            ];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = [ 'maven_key' => $maven_key ];
         $select_information = $informationProjetRepos->selectInformationProjetVersion($map);
-            if ($select_information['code'] != 200) {
-                /* MODIF 2026-05-07 : log libellé corrigé (selectInformationProjetVersion, pas OWASP 2021). */
-                $this->logger->error("[Batch OWASP] ❌ Erreur selectInformationProjetVersion pour {$maven_key} : {$select_information['code']}");
-                return [
-                    'code' => $select_information['code'],
-                    'erreur' => $select_information['erreur']
-                ];
+        if ($select_information['code'] != 200) {
+            $this->logger->error("[Batch OWASP] ❌ Erreur selectInformationProjetVersion pour {$maven_key} : {$select_information['code']}");
+            return [
+                'code' => $select_information['code'],
+                'erreur' => $select_information['erreur']
+            ];
         }
 
         /** Il n'y a pas de projet dans la table ou la collecte des informations du projet a planté ! */
@@ -157,7 +173,7 @@ class BatchCollecteOwaspController extends AbstractController
             $this->logger->warning("[Batch OWASP] ⚠️ Aucun projet trouvé pour {$maven_key}");
             return [
                 'code' => 404,
-                'erreur' => self::$erreur404 // 'message' ?
+                'erreur' => self::$erreur404
             ];
         }
 
@@ -165,153 +181,82 @@ class BatchCollecteOwaspController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
         $date_version = new \DateTimeImmutable($select_information['info']['date'], new \DateTimeZone(self::$europeParis));
 
-        /* MODIF 2026-07-18 : appel de secours (mémoïsé, un seul appel HTTP
-         * même si 2017 ET 2021 en ont besoin) quand la facette officielle ne
-         * classe aucune issue. Le tag `owasp-aXX` n'étant pas spécifique à un
-         * référentiel (contrairement à la facette owaspTop10 vs
-         * owaspTop10-2021), le même résultat sert aux deux. */
-        $tagFallback = null;
-        $fetchTagFallback = function () use (&$tagFallback, $maven_key, $componentKeyParam) {
-            if ($tagFallback !== null) {
-                return $tagFallback;
-            }
-            $url = $this->urlBuilder->build(
-                $this->getParameter(self::$sonarUrl),
-                '/api/issues/search',
-                [$componentKeyParam => $maven_key, 'tags' => self::$owaspTagCategories, 'ps' => 500]
-            );
-            $this->logger->debug("[Batch OWASP] 🛠️ Appel de secours par tag (owasp-aXX) → {$url}");
-            $response = $this->client->httpSonarQube($url);
-            if (
-                isset($response['code'])
-                && in_array($response['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])
-            ) {
-                $this->logger->warning("[Batch OWASP] ⚠️ Échec de l'appel de secours par tag : {$response['code']}");
-                $tagFallback = ['issues' => [], 'total' => 0, 'effortTotal' => 0];
-                return $tagFallback;
-            }
-            $tagFallback = $response['json'] ?? ['issues' => [], 'total' => 0, 'effortTotal' => 0];
-            return $tagFallback;
+        /** Classification locale (core + findsecbugs) par catégorie/sévérité/module. */
+        $classified = $this->ruleClassifier->classify($fetchResult['issues']);
+
+        $buildRow = function (int $referential) use ($classified, $maven_key, $select_information, $date_version, $fetchResult, $mode_collecte, $utilisateur_collecte, $date): array {
+            return [
+                'referential_owasp' => $referential,
+                'maven_key' => $maven_key,
+                'version' => $select_information['info']['version'] ?? 'N.C',
+                'date_version' => $date_version,
+                /* MODIF 27/10/2026 : effort_total reste une simplification assumée (cf. historique du
+                 * fichier) — l'appel étant désormais unique pour les deux référentiels, la même valeur
+                 * globale (toutes règles OWASP confondues) est reportée sur chaque ligne construite,
+                 * plutôt qu'un effort recalculé règle par règle et séparé par référentiel. */
+                'effort_total' => $fetchResult['effortTotal'],
+                'categories' => $classified[$referential],
+                'module_frontend' => $classified['module'][$referential]['frontend'],
+                'module_backend' => $classified['module'][$referential]['backend'],
+                'module_autre' => $classified['module'][$referential]['autre'],
+                'mode_collecte' => $mode_collecte,
+                'utilisateur_collecte' => $utilisateur_collecte,
+                'date_enregistrement' => $date,
+            ];
         };
 
-        $prepareOwaspData = function ($referential) use (
-            $maven_key,
-            $date_version,
-            $date,
-            $select_information,
-            $mode_collecte,
-            $utilisateur_collecte,
-            $fetchTagFallback,
-            $statusField,
-            $allowedStatuses
-        ) {
-            $source = 'facet';
-            $nombre = array_fill(1, 10, 0);
-            $owaspIssues = array_fill_keys(range(1, 10), array_fill_keys(
-                ['blocker', 'critical', 'major', 'info', 'minor'], 0));
-            $effort_total = (int) ($referential['effortTotal'] ?? 0);
+        /* 2017 : toujours construite (même comportement que l'ancienne facette owaspTop10, toujours
+         * disponible quelle que soit la version du serveur). 2021 : seulement si le serveur la supporte
+         * (même seuil que le bouton front) — une ligne « tout à zéro » est construite même sans aucune
+         * catégorie touchée, pour que la page affiche un vrai 0 plutôt qu'un 406 "aucune donnée". */
+        $owaspDataList = [$buildRow(2017)];
+        $total_2017 = array_sum(array_column($classified[2017], 'total'));
 
-            $facetValues = $referential['facets'][0]['values'] ?? null;
+        $total_2021 = 'NC';
+        if ((int) $sonar_version > 8) {
+            $owaspDataList[] = $buildRow(2021);
+            $total_2021 = array_sum(array_column($classified[2021], 'total'));
+        }
 
-            if ($facetValues !== null && (int) ($referential['total'] ?? 0) !== 0) {
-                /** Classification officielle SonarQube (facette owaspTop10/owaspTop10-2021) */
-                foreach ($facetValues as $value) {
-                    $index = substr($value['val'], 1);
-                    $nombre[$index] = $value['count'];
-                }
-                foreach ($referential['issues'] as $issue) {
-                    if (in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
-                        foreach ($issue['tags'] as $tag) {
-                            if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
-                                $owaspIndex = (int)$matches[1];
-                                $severity = strtolower($issue['severity']);
-                                if (isset($owaspIssues[$owaspIndex][$severity])) {
-                                    $owaspIssues[$owaspIndex][$severity]++;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                /* MODIF 2026-07-18 : la facette officielle ne classe aucune
-                 * issue pour ce référentiel — secours par tag `owasp-aXX`
-                 * (cf. owasp.md, note "Pourquoi le tableau de synthèse peut
-                 * sembler incohérent..."). Le tag n'étant pas spécifique à
-                 * une année de référentiel, le comptage obtenu ici vaudra
-                 * aussi bien pour 2017 que pour 2021.
-                 * MODIF 2026-07-26 : la classification officielle peut aussi
-                 * être structurellement absente (facets vide alors que total
-                 * > 0 — cas réel observé, pas seulement en test) ; on bascule
-                 * alors sur le même secours plutôt que de planter sur un accès
-                 * facets[0] inexistant. */
-                $fallback = $fetchTagFallback();
-                $effort_total = (int) ($fallback['effortTotal'] ?? $effort_total);
-                foreach ($fallback['issues'] ?? [] as $issue) {
-                    if (in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
-                        foreach ($issue['tags'] ?? [] as $tag) {
-                            if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
-                                $owaspIndex = (int)$matches[1];
-                                if ($owaspIndex < 1 || $owaspIndex > 10) {
-                                    continue;
-                                }
-                                $nombre[$owaspIndex]++;
-                                $severity = strtolower($issue['severity']);
-                                if (isset($owaspIssues[$owaspIndex][$severity])) {
-                                    $owaspIssues[$owaspIndex][$severity]++;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (array_sum($nombre) > 0) {
-                    $source = 'tag';
-                }
-            }
-
-            $map = [
-                    'total' => array_sum($nombre),
+        /* MODIF 28/10/2026 : détail individuel de chaque vulnérabilité classée
+         * (table owasp_details) — mêmes gardes 2017/2021 que $owaspDataList
+         * ci-dessus, construit à partir de $classified['details'] (déjà
+         * calculé par OwaspRuleClassifierService::classify(), aucun appel
+         * SonarQube supplémentaire). */
+        /* MODIF 28/10/2026 : BUG CORRIGÉ — le message d'une issue SonarQube (texte
+         * libre, parfois long sur FindSecBugs) n'était jamais borné avant
+         * l'insertion, alors que owasp_details.message est VARCHAR(255) : une
+         * collecte réelle sur un projet avec des messages longs faisait échouer
+         * tout l'INSERT (transaction annulée) avec "valeur trop longue pour le
+         * type character varying(255)". file_path potentiellement concerné pour
+         * la même raison (chemin de fichier arbitraire) — tronqué par prudence. */
+        $buildDetailRows = function (int $referential) use ($classified, $maven_key, $select_information, $date_version, $mode_collecte, $utilisateur_collecte, $date): array {
+            $rows = [];
+            foreach ($classified['details'][$referential] as $issue) {
+                $rows[] = [
+                    'referential_owasp' => $referential,
                     'maven_key' => $maven_key,
                     'version' => $select_information['info']['version'] ?? 'N.C',
                     'date_version' => $date_version,
-                    'effort_total' => $effort_total,
-                    'source' => $source,
+                    'rule_key' => $issue['rule'],
+                    'categories' => $issue['categories'],
+                    'severity' => $issue['severity'],
+                    'source' => $issue['source'],
+                    'module' => $issue['module'],
+                    'file_path' => mb_substr(str_replace($maven_key . ':', '', $issue['component']), 0, 255),
+                    'line' => $issue['line'],
+                    'message' => mb_substr($issue['message'], 0, 255),
                     'mode_collecte' => $mode_collecte,
                     'utilisateur_collecte' => $utilisateur_collecte,
-                    'date_enregistrement' => $date
-            ];
-
-            /** On ajoute les valeurs de a1 à a10 */
-            for ($i = 1; $i <= 10; $i++) {
-                $map["a$i"] = $nombre[$i];
+                    'date_enregistrement' => $date,
+                ];
             }
-
-            /** Ajoute le nombre de cas par gravité pour chaque catégorie OWASP */
-            foreach ($owaspIssues as $index => $severities) {
-                foreach ($severities as $severity => $count) {
-                    $map["a{$index}_{$severity}"] = $count;
-                }
-            }
-            /** On renvoi la collection pour le référentiel OWASP */
-            return $map;
+            return $rows;
         };
 
-        $owaspDataList = [];
-        $total_2017 = 'NC';
-        /* pour chaque référentiel 2017/2021 */
-        if (array_key_exists('total', $owasp2017['json'])) {
-            $owaspDataList[] = $prepareOwaspData($owasp2017['json']);
-            $owaspDataList[0]['referential_owasp'] = 2017;
-            $total_2017 = $owaspDataList[0]['total'];
-        }
-
-        $total_2021 = 'NC';
-        /** $owasp2021 = ['NC'] on a pas de données pour le référentiel 2021 */
-        if (isset($owasp2021['json']) && array_key_exists('total', $owasp2021['json'])) {
-            /* MODIF 2026-05-07 : index dynamique + lecture sous-clé 'json' (cohérent avec 2017). */
-            $owaspDataList[] = $prepareOwaspData($owasp2021['json']);
-            $idx2021 = array_key_last($owaspDataList);
-            $owaspDataList[$idx2021]['referential_owasp'] = 2021;
-            $total_2021 = $owaspDataList[$idx2021]['total'];
+        $owaspDetailsDataList = $buildDetailRows(2017);
+        if ((int) $sonar_version > 8) {
+            $owaspDetailsDataList = array_merge($owaspDetailsDataList, $buildDetailRows(2021));
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
@@ -334,6 +279,27 @@ class BatchCollecteOwaspController extends AbstractController
             return [
                 'code' => $insert['code'],
                 'erreur' => $insert['erreur']
+            ];
+        }
+
+        /** On supprime puis on enregistre le détail des vulnérabilités (table owasp_details). */
+        $this->logger->debug("[Batch OWASP] 🛠️ Suppression owasp_details existant pour {$maven_key}");
+        $deleteDetails = $owaspDetailsRepos->deleteOwaspDetailsMavenKey($map);
+        if ($deleteDetails['code'] != 200) {
+            $this->logger->error("[Batch OWASP] ❌ Échec de la requête suppression owasp_details : {$deleteDetails['erreur']}");
+            return [
+                'code' => $deleteDetails['code'],
+                'erreur' => $deleteDetails['erreur']
+            ];
+        }
+
+        $this->logger->debug("[Batch OWASP] 💾 Insertion du détail owasp_details pour {$maven_key}");
+        $insertDetails = $owaspDetailsRepos->insertOwaspDetails($owaspDetailsDataList);
+        if ($insertDetails['code'] != 200) {
+            $this->logger->error("[Batch OWASP] ❌ Échec de la requête insertOwaspDetails : {$insertDetails['erreur']}");
+            return [
+                'code' => $insertDetails['code'],
+                'erreur' => $insertDetails['erreur']
             ];
         }
 

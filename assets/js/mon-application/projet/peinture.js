@@ -13,16 +13,18 @@
 import $ from 'jquery';
 
 // On importe les paramètres serveur
-import {serveur} from '../../common/properties.js';
+import { serveur } from '../../common/properties.js';
 
-import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe le fonction de journalisation */
 import { log } from '../../common/log.js';
 
 /** On importe les constantes */
-import {content_type, dateOptions, http_400, http_401, http_403, http_404, http_500,
-http_503, http_504, dix, cent, dixMille} from '../../common/constante.js';
+import {
+  content_type, dateOptions, http_400, http_401, http_403, http_404, http_500,
+  http_503, http_504, cent, dixMille
+} from '../../common/constante.js';
 
 /** Helpers d'affichage null-safe (null/undefined/NaN -> "-") */
 import { displayNumber, displayPercent, displayValue } from '../../common/displayHelper.js';
@@ -31,12 +33,11 @@ let token;
 import("../../common/secrets.local.js").then((module) => {
   token = module.token;
 }).catch((error) => {
-      const trace = prepareTechnicalDetails(error);
-      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
-    return;
-  });
+  const trace = prepareTechnicalDetails(error);
+  const message = "Le module n'a pas été chargé correctement (Erreur 500).";
+  showMessage('critical', message, trace);
+  sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
+});
 
 /**
  * [Description for enableButtonAnalyse]
@@ -47,7 +48,7 @@ import("../../common/secrets.local.js").then((module) => {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const enableButtonAnalyse = function(){
+const enableButtonAnalyse = function () {
   const $buttonAfficheResult = $('.js-affiche-result');
 
   // ✅ Réactivation propre du bouton
@@ -65,7 +66,7 @@ const enableButtonAnalyse = function(){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const disableButtonAffiche = function(){
+const disableButtonAffiche = function () {
   const $buttonAfficheResult = $('.js-affiche-result');
 
   /** Réinitialisation préalable de toutes les classes liées à l'état */
@@ -86,7 +87,7 @@ const disableButtonAffiche = function(){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const ErrorButtonAffiche = function(){
+const ErrorButtonAffiche = function () {
   const $buttonAfficheResult = $('.js-affiche-result');
 
   $buttonAfficheResult.removeClass('clicked-true').addClass('clicked-false');
@@ -103,7 +104,7 @@ const ErrorButtonAffiche = function(){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const extraireNomProjet = function(maven_key) {
+const extraireNomProjet = function (maven_key) {
   if (maven_key.includes(':')) {
     const parts = maven_key.split(':');
     return parts[1] || parts[0]; // fallback si rien après :
@@ -128,7 +129,7 @@ const extraireNomProjet = function(maven_key) {
  * Created at: 13/12/2022, 10:08:02 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-export const remplissage = async function(maven_key) {
+export const remplissage = async function (maven_key) {
   const data = { maven_key };
 
   /** On bloque le bouton */
@@ -150,162 +151,162 @@ export const remplissage = async function(maven_key) {
   };
 
   try {
-        const t = await $.ajax(optionsInfo);
-        const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-        if (errorCodes.includes(t.code)){
-            const hasTrace = !!t.trace;
-            const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-            showMessage(t.type, t.message, trace);
-            sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations de la version.');
-            if (t.code === http_404){
-              log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-              enableButtonAnalyse();
-            } else {
-              log(' - ❌ [Peinture] Affichage des informations sur les versions en échec.');
-            }
-            return;
-          }
-
-        /** On affiche les informations du projet */
-        const nom = extraireNomProjet(maven_key);
-
-        $('#js-nom-projet').html(nom);
-        $('#js-key-analyse').html(t.analyse_key);
-        $('#js-clef-projet').html(maven_key);
-        $('#js-version-release').html(t.release);
-        $('#js-version-snapshot').html(t.snapshot);
-        $('#js-version-autre').html(t.autre);
-
-        const version = document.getElementById('js-version-autre');
-        version.dataset.label = JSON.stringify(t.label);
-        version.dataset.dataset = JSON.stringify(t.dataset);
-        $('#js-version').html(t.version);
-        $('#js-date-version').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date)));
-
-        /** Historique */
-        const t0 = document.getElementById('js-key-analyse');
-        const t1 = document.getElementById('js-version-release');
-        const t2 = document.getElementById('js-version-snapshot');
-        const t3 = document.getElementById('js-version-autre');
-        const t4 = document.getElementById('js-date-version');
-        t0.dataset.analyseKey=(t.analyse_key);
-        t1.dataset.release=(t.release);
-        t2.dataset.snapshot=(t.snapshot);
-        t3.dataset.autre=(t.autre);
-        t4.dataset.dateVersion=(t.date);
-        log(' - 🎨 [Peinture] Affichage des informations sur les versions.');
-      } catch(error) {
-            ErrorButtonAffiche();
-            const trace = prepareTechnicalDetails(error);
-            const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les versions (Erreur 500).";
-              showMessage('critical', message, trace);
-              sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Informations.');
-              log(' - 🔴 [Peinture] Affichage des informations sur les versions en échec.');
-              return;
+    const t = await $.ajax(optionsInfo);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations de la version.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations sur les versions en échec.');
       }
-
-    /***
-     * On récupère les exclusions noSonar
-     */
-    const optionsNoSonar = {
-      url: `${serveur()}/api/secure/peinture/projet/nosonar`,
-      type: 'POST',
-      dataType: 'json',
-      data: JSON.stringify(data),
-      contentType: content_type,
-      headers: {
-        'X-API-Custom-403': 'true',
-        'X-Internal-Front': 'front-app'
-      },
-    };
-
-    try {
-      const t = await $.ajax(optionsNoSonar);
-      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-      if (errorCodes.includes(t.code)){
-          const hasTrace = !!t.trace;
-          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-          showMessage(t.type, t.message, trace);
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations noSonar.');
-          if (t.code === http_404){
-              log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-              enableButtonAnalyse();
-          } else {
-              log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
-          }
-          return;
-        }
-
-      /* MODIF 2026-05-06 :
-       * Le bloc info n'affiche plus que le Total agrégé. La repartition par
-       * sous-category à étè déplacée dans la modale (#js-*-modale).
-       * Anciens selectors #suppress-warning, #no-pmd, #check-style, #no-sonar,
-       * #no-sonar-python, #no-sonar-php retires. */
-      $('#js-no-sonar-total').html(displayNumber(t.total));
-
-      /* MODIF 2026-05-15 : on stocke
-       * sur le dataset de #no-sonar-total (élément stable) les valeurs que
-       * enregistrement.js lisait auparavant sur #suppress-warning et #no-sonar
-       * (ids retirés par MODIF 2026-05-06). Pattern data-attribute → lecture
-       * propre côté enregistrement.js, pas de parsing fragile sur innerHTML. */
-      const noSonarTotalEl = document.getElementById('js-no-sonar-total');
-      if (noSonarTotalEl) {
-        noSonarTotalEl.dataset.s1309         = String(t.suppress_warning ?? 0);
-        noSonarTotalEl.dataset.nosonar       = String(
-          (parseInt(t.java_no_sonar   ?? 0, 10) || 0)
-        + (parseInt(t.python_no_sonar ?? 0, 10) || 0)
-        + (parseInt(t.php_no_sonar    ?? 0, 10) || 0)
-        );
-        /* MODIF 2026-05-15 : 5 sous-catégories supplémentaires nécessaires
-         * pour l'enregistrement (colonnes historique.no_pmd, check_style,
-         * java_no_sonar, python_no_sonar, php_no_sonar). Sans ces datasets,
-         * le payload JS ne les envoie pas et le controller persiste null. */
-        noSonarTotalEl.dataset.noPmd         = String(t.no_pmd         ?? 0);
-        noSonarTotalEl.dataset.checkStyle    = String(t.check_style    ?? 0);
-        noSonarTotalEl.dataset.javaNoSonar   = String(t.java_no_sonar   ?? 0);
-        noSonarTotalEl.dataset.pythonNoSonar = String(t.python_no_sonar ?? 0);
-        noSonarTotalEl.dataset.phpNoSonar    = String(t.php_no_sonar    ?? 0);
-      }
-
-      /* MODIF 2026-05-06 : remplissage modale Detail NoSonar
-       * (6 sous-categories + 10 premieres occurrences fichier/ligne). */
-      $('#js-suppress-warning-modale').html(displayNumber(t.suppress_warning));
-      $('#js-no-pmd-modale').html(displayNumber(t.no_pmd));
-      $('#js-check-style-modale').html(displayNumber(t.check_style));
-      $('#js-no-sonar-java-modale').html(displayNumber(t.java_no_sonar));
-      $('#js-no-sonar-python-modale').html(displayNumber(t.python_no_sonar));
-      $('#js-no-sonar-php-modale').html(displayNumber(t.php_no_sonar));
-
-      $('#tableau-liste-nosonar-detail').html('');
-      const nsListe = (t.details && t.details.liste) ? t.details.liste : [];
-      const nsMaxOccurrences = 10;
-      const nsMaxLength = 80;
-      let nsLimit = 0;
-      for (let i = 0; i < nsListe.length && nsLimit < nsMaxOccurrences; i++) {
-        const el = nsListe[i];
-        const cutRule = (el.rule || '').split(':')[0] || el.rule || '';
-        const cutComponentArray = (el.component || '').split(':');
-        const cutComponent = (cutComponentArray.length === 1)
-          ? cutComponentArray[0]
-          : (cutComponentArray[2] || cutComponentArray[1] || cutComponentArray[0]);
-        const truncatedLine = cutComponent.length > nsMaxLength
-          ? '...' + cutComponent.substring(cutComponent.length - nsMaxLength)
-          : cutComponent;
-        const ligne = `<tr><td><strong>${el.rule || cutRule}</strong></td><td>${truncatedLine}</td><td class="text-center">${el.line ?? '–'}</td></tr>`;
-        $('#tableau-liste-nosonar-detail').append(ligne);
-        nsLimit++;
-      }
-
-      log(' - 🎨 [Peinture] Affichage des informations NoSonar.');
-    } catch(error) {
-          ErrorButtonAffiche();
-          const trace = prepareTechnicalDetails(error);
-          const message = "Une erreur inattendue s'est produite lors l'affichage des informations noSonar (Erreur 500).";
-            showMessage('critical', message, trace);
-            sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc NoSonar.');
-            log(' - 🔴 [Peinture] Affichage des informations NoSonar en échec.');
-            return;
+      return;
     }
+
+    /** On affiche les informations du projet */
+    const nom = extraireNomProjet(maven_key);
+
+    $('#js-nom-projet').html(nom);
+    $('#js-key-analyse').html(t.analyse_key);
+    $('#js-clef-projet').html(maven_key);
+    $('#js-version-release').html(t.release);
+    $('#js-version-snapshot').html(t.snapshot);
+    $('#js-version-autre').html(t.autre);
+
+    const version = document.getElementById('js-version-autre');
+    version.dataset.label = JSON.stringify(t.label);
+    version.dataset.dataset = JSON.stringify(t.dataset);
+    $('#js-version').html(t.version);
+    $('#js-date-version').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date)));
+
+    /** Historique */
+    const t0 = document.getElementById('js-key-analyse');
+    const t1 = document.getElementById('js-version-release');
+    const t2 = document.getElementById('js-version-snapshot');
+    const t3 = document.getElementById('js-version-autre');
+    const t4 = document.getElementById('js-date-version');
+    t0.dataset.analyseKey = (t.analyse_key);
+    t1.dataset.release = (t.release);
+    t2.dataset.snapshot = (t.snapshot);
+    t3.dataset.autre = (t.autre);
+    t4.dataset.dateVersion = (t.date);
+    log(' - 🎨 [Peinture] Affichage des informations sur les versions.');
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les versions (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Informations.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les versions en échec.');
+    return;
+  }
+
+  /***
+   * On récupère les exclusions noSonar
+   */
+  const optionsNoSonar = {
+    url: `${serveur()}/api/secure/peinture/projet/nosonar`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(optionsNoSonar);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations noSonar.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
+      }
+      return;
+    }
+
+    /* MODIF 2026-05-06 :
+     * Le bloc info n'affiche plus que le Total agrégé. La repartition par
+     * sous-category à étè déplacée dans la modale (#js-*-modale).
+     * Anciens selectors #suppress-warning, #no-pmd, #check-style, #no-sonar,
+     * #no-sonar-python, #no-sonar-php retires. */
+    $('#js-no-sonar-total').html(displayNumber(t.total));
+
+    /* MODIF 2026-05-15 : on stocke
+     * sur le dataset de #no-sonar-total (élément stable) les valeurs que
+     * enregistrement.js lisait auparavant sur #suppress-warning et #no-sonar
+     * (ids retirés par MODIF 2026-05-06). Pattern data-attribute → lecture
+     * propre côté enregistrement.js, pas de parsing fragile sur innerHTML. */
+    const noSonarTotalEl = document.getElementById('js-no-sonar-total');
+    if (noSonarTotalEl) {
+      noSonarTotalEl.dataset.s1309 = String(t.suppress_warning ?? 0);
+      noSonarTotalEl.dataset.nosonar = String(
+        (Number(t.java_no_sonar ?? 0) || 0)
+        + (Number(t.python_no_sonar ?? 0) || 0)
+        + (Number(t.php_no_sonar ?? 0) || 0)
+      );
+      /* MODIF 2026-05-15 : 5 sous-catégories supplémentaires nécessaires
+       * pour l'enregistrement (colonnes historique.no_pmd, check_style,
+       * java_no_sonar, python_no_sonar, php_no_sonar). Sans ces datasets,
+       * le payload JS ne les envoie pas et le controller persiste null. */
+      noSonarTotalEl.dataset.noPmd = String(t.no_pmd ?? 0);
+      noSonarTotalEl.dataset.checkStyle = String(t.check_style ?? 0);
+      noSonarTotalEl.dataset.javaNoSonar = String(t.java_no_sonar ?? 0);
+      noSonarTotalEl.dataset.pythonNoSonar = String(t.python_no_sonar ?? 0);
+      noSonarTotalEl.dataset.phpNoSonar = String(t.php_no_sonar ?? 0);
+    }
+
+    /* MODIF 2026-05-06 : remplissage modale Detail NoSonar
+     * (6 sous-categories + 10 premieres occurrences fichier/ligne). */
+    $('#js-suppress-warning-modale').html(displayNumber(t.suppress_warning));
+    $('#js-no-pmd-modale').html(displayNumber(t.no_pmd));
+    $('#js-check-style-modale').html(displayNumber(t.check_style));
+    $('#js-no-sonar-java-modale').html(displayNumber(t.java_no_sonar));
+    $('#js-no-sonar-python-modale').html(displayNumber(t.python_no_sonar));
+    $('#js-no-sonar-php-modale').html(displayNumber(t.php_no_sonar));
+
+    $('#tableau-liste-nosonar-detail').html('');
+    const nsListe = (t.details && t.details.liste) ? t.details.liste : [];
+    const nsMaxOccurrences = 10;
+    const nsMaxLength = 80;
+    let nsLimit = 0;
+    for (let i = 0; i < nsListe.length && nsLimit < nsMaxOccurrences; i++) {
+      const el = nsListe[i];
+      const cutRule = (el.rule || '').split(':')[0] || el.rule || '';
+      const cutComponentArray = (el.component || '').split(':');
+      const cutComponent = (cutComponentArray.length === 1)
+        ? cutComponentArray[0]
+        : (cutComponentArray[2] || cutComponentArray[1] || cutComponentArray[0]);
+      const truncatedLine = cutComponent.length > nsMaxLength
+        ? '...' + cutComponent.substring(cutComponent.length - nsMaxLength)
+        : cutComponent;
+      const ligne = `<tr><td><strong>${el.rule || cutRule}</strong></td><td>${truncatedLine}</td><td class="text-center">${el.line ?? '–'}</td></tr>`;
+      $('#tableau-liste-nosonar-detail').append(ligne);
+      nsLimit++;
+    }
+
+    log(' - 🎨 [Peinture] Affichage des informations NoSonar.');
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations noSonar (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc NoSonar.');
+    log(' - 🔴 [Peinture] Affichage des informations NoSonar en échec.');
+    return;
+  }
 
   /** On récupère les to.do tags */
   const optionsTodo = {
@@ -323,19 +324,19 @@ export const remplissage = async function(maven_key) {
   try {
     const t = await $.ajax(optionsTodo);
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations todo.');
-        if (t.code === http_404){
-            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-            enableButtonAnalyse();
-          } else {
-            log(' - ❌ [Peinture] Affichage des informations ToDO en échec.');
-          }
-        return;
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations todo.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations ToDO en échec.');
       }
+      return;
+    }
 
     /** On injecte dans la fenêtre modale les résultats */
     /* MODIF 2026-05-06 : ajout php / python / ruby. */
@@ -363,7 +364,7 @@ export const remplissage = async function(maven_key) {
       let cutRule = element.rule.split(':');
       let cutComponentArray = element.component.split(':');
 
-       /** On raccourci la ligne à l’élément qui nous intéresse. */
+      /** On raccourci la ligne à l’élément qui nous intéresse. */
       cutComponent = (cutComponentArray.length == 1) ? cutComponentArray[0] : (cutComponentArray[2] || cutComponentArray[1]);
 
       // Tronquer le début pour conserver les 30 derniers caractères
@@ -385,25 +386,25 @@ export const remplissage = async function(maven_key) {
     const t57 = document.getElementById('js-php');
     const t58 = document.getElementById('js-python');
     const t59 = document.getElementById('js-ruby');
-    t50.dataset.todo=(t.todo);
-    t51.dataset.java=(t.java);
-    t52.dataset.javascript=(t.javascript);
-    t53.dataset.typescript=(t.typescript);
-    t54.dataset.html=(t.html);
-    t55.dataset.xml=(t.xml);
-    t56.dataset.listeFichier=(t.details);
-    if (t57) t57.dataset.php=(t.php);
-    if (t58) t58.dataset.python=(t.python);
-    if (t59) t59.dataset.ruby=(t.ruby);
+    t50.dataset.todo = (t.todo);
+    t51.dataset.java = (t.java);
+    t52.dataset.javascript = (t.javascript);
+    t53.dataset.typescript = (t.typescript);
+    t54.dataset.html = (t.html);
+    t55.dataset.xml = (t.xml);
+    t56.dataset.listeFichier = (t.details);
+    if (t57) t57.dataset.php = (t.php);
+    if (t58) t58.dataset.python = (t.python);
+    if (t59) t59.dataset.ruby = (t.ruby);
     log(' - 🎨 [Peinture] Affichage des informations sur les todo.');
-  } catch(error) {
-      ErrorButtonAffiche();
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les todo (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc todo.');
-      log(' - 🔴 [Peinture] Affichage des informations sur les todo en échec.');
-      return;
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les todo (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc todo.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les todo en échec.');
+    return;
   }
 
   /***
@@ -424,19 +425,19 @@ export const remplissage = async function(maven_key) {
   try {
     const t = await $.ajax(optionsLogger);
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les loggers JAVA.');
-        if (t.code === http_404){
-            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-            enableButtonAnalyse();
-        } else {
-          log(' - ❌ [Peinture] Affichage des informations sur les loggers JAVA en échec.');
-        }
-        return;
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les loggers JAVA.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations sur les loggers JAVA en échec.');
       }
+      return;
+    }
 
     //Historique
     const logger1 = document.getElementById('js-logger-info');
@@ -473,72 +474,72 @@ export const remplissage = async function(maven_key) {
     $('#js-logger-debug-bar').css('--percent', t.logger_debug_pct ?? 0);
 
     log(' - 🎨 [Peinture] Affichage des informations sur les loggers JAVA.');
-  } catch(error) {
-      ErrorButtonAffiche();
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Loggers.');
-      log(' - 🔴 [Peinture] Affichage des informations sur les loggers JAVA en échec.');
-      return;
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Loggers.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les loggers JAVA en échec.');
+    return;
   }
 
-    /** On récupère les détails des loggers pour alimenter le tableau et les données pour la table historique */
-    const optionsLoggerDetails =  {
-      url: `${serveur()}/api/secure/peinture/projet/logger-details`,
-      type: 'POST',
-      dataType: 'json',
-      data: JSON.stringify(data),
-      contentType: content_type,
-      headers: {
-          'X-API-Custom-403': 'true',
-          'X-Internal-Front': 'front-app'
-        },
-    };
+  /** On récupère les détails des loggers pour alimenter le tableau et les données pour la table historique */
+  const optionsLoggerDetails = {
+    url: `${serveur()}/api/secure/peinture/projet/logger-details`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
-    try {
-      const t = await $.ajax(optionsLoggerDetails);
-      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-      if (errorCodes.includes(t.code)){
-          const hasTrace = !!t.trace;
-          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-          showMessage(t.type, t.message, trace);
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les loggers JAVA.');
-          if (t.code === http_404){
-              log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-              enableButtonAnalyse();
-          } else {
-            log(' - ❌ [Peinture] Affichage du détail des informations sur les loggers JAVA en échec.');
-          }
-          return;
-        }
-
-      // Reconstruit le format { info: {SLF4J: N, ...}, warn: {...}, ... }
-      // à partir de breakdown_matrix : [{level, framework, nb}, ...]
-      const breakdown = { info: {}, warn: {}, error: {}, debug: {} };
-      for (const row of (t.breakdown_matrix || [])) {
-          const lvl = row.level;
-          const fw  = row.framework === null ? '—' : row.framework;
-          if (!breakdown[lvl]) { breakdown[lvl] = {}; }
-          breakdown[lvl][fw] = parseInt(row.nb, 10);
-        }
-        // MODIF 2026-05-15 : on récupère l'élément dans CE scope (le bloc try
-        // précédent qui définissait `logger1` est désormais fermé).
-        const loggerInfoEl = document.getElementById('js-affiche-logger-detail');
-        if (loggerInfoEl) {
-          loggerInfoEl.dataset.loggerBreakdown = JSON.stringify(breakdown);
-          loggerInfoEl.dataset.loggerDetails   = JSON.stringify(t.details || []);
-        }
-
-        log(` - 🎨 [Peinture] Breakdown loggers (level × framework) récupéré : ${t.breakdown_matrix?.length ?? 0} combinaisons.`);
-    } catch(error) {
-      ErrorButtonAffiche();
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Loggers.');
-      log(' - 🔴 [Peinture] Affichage des informations sur les loggers JAVA en échec.');
+  try {
+    const t = await $.ajax(optionsLoggerDetails);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les loggers JAVA.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage du détail des informations sur les loggers JAVA en échec.');
+      }
       return;
+    }
+
+    // Reconstruit le format { info: {SLF4J: N, ...}, warn: {...}, ... }
+    // à partir de breakdown_matrix : [{level, framework, nb}, ...]
+    const breakdown = { info: {}, warn: {}, error: {}, debug: {} };
+    for (const row of (t.breakdown_matrix || [])) {
+      const lvl = row.level;
+      const fw = row.framework === null ? '—' : row.framework;
+      if (!breakdown[lvl]) { breakdown[lvl] = {}; }
+      breakdown[lvl][fw] = Number(row.nb);
+    }
+    // MODIF 2026-05-15 : on récupère l'élément dans CE scope (le bloc try
+    // précédent qui définissait `logger1` est désormais fermé).
+    const loggerInfoEl = document.getElementById('js-affiche-logger-detail');
+    if (loggerInfoEl) {
+      loggerInfoEl.dataset.loggerBreakdown = JSON.stringify(breakdown);
+      loggerInfoEl.dataset.loggerDetails = JSON.stringify(t.details || []);
+    }
+
+    log(` - 🎨 [Peinture] Breakdown loggers (level × framework) récupéré : ${t.breakdown_matrix?.length ?? 0} combinaisons.`);
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Loggers.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les loggers JAVA en échec.');
+    return;
   }
 
   /**
@@ -646,10 +647,10 @@ export const remplissage = async function(maven_key) {
     $actuatorTableau.append('<tr><td colspan="2" class="text-center">Aucune donnée.</td></tr>');
   }
 
-    /**
-   * On récupère les mesures RCI :
-   * ncloc, weight, indicator, rating + les mesures pour frontend, backend, autre et inconnu.
-   */
+  /**
+ * On récupère les mesures RCI :
+ * ncloc, weight, indicator, rating + les mesures pour frontend, backend, autre et inconnu.
+ */
   const optionsMesuresRci = {
     url: `${serveur()}/api/secure/peinture/projet/rci`,
     type: 'POST',
@@ -665,65 +666,65 @@ export const remplissage = async function(maven_key) {
   try {
     const t = await $.ajax(optionsMesuresRci);
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures RCI.');
-        if (t.code === http_404){
-            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-            enableButtonAnalyse();
-        } else {
-            log(' - ❌ [Peinture] Affichage des informations sur les mesures RCI en échec.');
-        }
-        return;
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures RCI.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations sur les mesures RCI en échec.');
       }
-
-      const colorByRating = {
-        'A': 'note-vert1',
-        'B': 'note-vert2',
-        'C': 'note-jaune',
-        'D': 'note-orange',
-        'E': 'note-rouge'
-      };
-      const rciClass = colorByRating[t.alert_status] ?? '';
-      $('#js-rci-alert-status').html(`<span class="stat-note stat-note-width ${rciClass}">${displayValue(t.alert_status)}</span>`);
-
-      const rci_mesures = document.getElementById('js-rci-alert-status');
-      rci_mesures.dataset.rciMavenKey = maven_key;
-      rci_mesures.dataset.rciMesuresJson = JSON.stringify(t.rci_mesures_json || []);
-
-      /**
-       * Tableau détaillé de la modale (#modal-affiche-mesures-rci) : RCI, taux
-       * de dette (100 - RCI) et note, pour le global et chaque module.
-       */
-      const rciMesures = t.rci_mesures_json ?? {};
-      const remplitColonneRci = (suffixe, prefixe) => {
-        const indicator = rciMesures[`${prefixe}indicator`];
-        const dette = (indicator === null || indicator === undefined) ? null : 100 - indicator;
-        const rating = rciMesures[`${prefixe}rating`];
-
-        $(`#js-rci-${suffixe}-indicator`).text(displayPercent(indicator));
-        $(`#js-rci-${suffixe}-dette`).text(displayPercent(dette));
-        $(`#js-rci-${suffixe}-rating`).html(
-          `<span class="stat-note ${colorByRating[rating] ?? ''}">${displayValue(rating)}</span>`
-        );
-      };
-      remplitColonneRci('global', '');
-      remplitColonneRci('frontend', 'frontend_');
-      remplitColonneRci('backend', 'backend_');
-      remplitColonneRci('autre', 'autre_');
-      remplitColonneRci('inconnu', 'inconnu_');
-
-      log(' - 🎨 [Peinture] Affichage des informations sur les mesures RCI.');
-  } catch(error) {
-      ErrorButtonAffiche();
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures RCI (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures RCI.');
-      log(' - 🔴 [Peinture] Affichage des informations sur les Mesures RCI en échec.');
       return;
+    }
+
+    const colorByRating = {
+      'A': 'note-vert1',
+      'B': 'note-vert2',
+      'C': 'note-jaune',
+      'D': 'note-orange',
+      'E': 'note-rouge'
+    };
+    const rciClass = colorByRating[t.alert_status] ?? '';
+    $('#js-rci-alert-status').html(`<span class="stat-note stat-note-width ${rciClass}">${displayValue(t.alert_status)}</span>`);
+
+    const rci_mesures = document.getElementById('js-rci-alert-status');
+    rci_mesures.dataset.rciMavenKey = maven_key;
+    rci_mesures.dataset.rciMesuresJson = JSON.stringify(t.rci_mesures_json || []);
+
+    /**
+     * Tableau détaillé de la modale (#modal-affiche-mesures-rci) : RCI, taux
+     * de dette (100 - RCI) et note, pour le global et chaque module.
+     */
+    const rciMesures = t.rci_mesures_json ?? {};
+    const remplitColonneRci = (suffixe, prefixe) => {
+      const indicator = rciMesures[`${prefixe}indicator`];
+      const dette = (indicator === null || indicator === undefined) ? null : 100 - indicator;
+      const rating = rciMesures[`${prefixe}rating`];
+
+      $(`#js-rci-${suffixe}-indicator`).text(displayPercent(indicator));
+      $(`#js-rci-${suffixe}-dette`).text(displayPercent(dette));
+      $(`#js-rci-${suffixe}-rating`).html(
+        `<span class="stat-note ${colorByRating[rating] ?? ''}">${displayValue(rating)}</span>`
+      );
+    };
+    remplitColonneRci('global', '');
+    remplitColonneRci('frontend', 'frontend_');
+    remplitColonneRci('backend', 'backend_');
+    remplitColonneRci('autre', 'autre_');
+    remplitColonneRci('inconnu', 'inconnu_');
+
+    log(' - 🎨 [Peinture] Affichage des informations sur les mesures RCI.');
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures RCI (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures RCI.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les Mesures RCI en échec.');
+    return;
   }
 
   /**
@@ -746,43 +747,115 @@ export const remplissage = async function(maven_key) {
   try {
     const t = await $.ajax(optionsEcoConception);
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération de l\'Empreinte Écologique.');
-        if (t.code === http_404){
-            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-            enableButtonAnalyse();
-        } else {
-            log(' - ❌ [Peinture] Affichage de l\'Empreinte Écologique en échec.');
-        }
-        return;
-      }
-
-      $('#js-eco-anomalies').html(displayNumber(t.eco_anomalies));
-      const colorByRatingEco = {
-        'A': 'note-vert1',
-        'B': 'note-vert2',
-        'C': 'note-jaune',
-        'D': 'note-orange',
-        'E': 'note-rouge'
-      };
-      if (t.eco_rating) {
-        $('#js-eco-rating').html(`<span class="stat-note stat-note-width ${colorByRatingEco[t.eco_rating] ?? ''}">${displayValue(t.eco_rating)}</span>`);
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération de l\'Empreinte Écologique.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
       } else {
-        $('#js-eco-rating').html('');
+        log(' - ❌ [Peinture] Affichage de l\'Empreinte Écologique en échec.');
       }
-
-      log(` - 🎨 [Peinture] Affichage de l'Empreinte Écologique.`);
-  } catch(error) {
-      ErrorButtonAffiche();
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors l'affichage de l'Empreinte Écologique (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Empreinte Écologique.');
-      log(` - 🔴 [Peinture] Affichage de l'Empreinte Écologique en échec.`);
       return;
+    }
+
+    $('#js-eco-anomalies').html(displayNumber(t.eco_anomalies));
+    const colorByRatingEco = {
+      'A': 'note-vert1',
+      'B': 'note-vert2',
+      'C': 'note-jaune',
+      'D': 'note-orange',
+      'E': 'note-rouge'
+    };
+    if (t.eco_rating) {
+      $('#js-eco-rating').html(`<span class="stat-note stat-note-width ${colorByRatingEco[t.eco_rating] ?? ''}">${displayValue(t.eco_rating)}</span>`);
+    } else {
+      $('#js-eco-rating').html('');
+    }
+
+    log(` - 🎨 [Peinture] Affichage de l'Empreinte Écologique.`);
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage de l'Empreinte Écologique (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Empreinte Écologique.');
+    log(` - 🔴 [Peinture] Affichage de l'Empreinte Écologique en échec.`);
+    return;
+  }
+
+  /**
+   * On récupère l'Accessibilité (tag SonarQube `accessibility`) : null si
+   * jamais collectée, affiché "-" via displayNumber().
+   * On pose le détail complet (réponse API) sur le dataset de #js-accessibility-anomalies pour qu'enregistrement.js puisse le relire et alimenter
+   * historique.accessibility_* via le pipeline interactif (Collecte → Peinture → Enregistrer).
+   */
+  const optionsAccessibility = {
+    url: `${serveur()}/api/secure/peinture/projet/accessibility`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(optionsAccessibility);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération de l\'Accessibilité.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(` - ❌ [Peinture] Affichage de l'Accessibilité en échec.`);
+      }
+      return;
+    }
+
+    const colorByRatingAccessibility = {
+      'A': 'note-vert1',
+      'B': 'note-vert2',
+      'C': 'note-jaune',
+      'D': 'note-orange',
+      'E': 'note-rouge'
+    };
+    // Note grisée ('-') quand le ratio n'est pas calculable (ex : langage absent du
+    // projet) — à distinguer visuellement d'une vraie note A-E.
+    const renderAccessibilityRating = (selector, rating) => {
+      const cssClass = rating ? (colorByRatingAccessibility[rating] ?? '') : 'note-gris';
+      $(selector).html(`<span class="stat-note stat-note-width ${cssClass}">${displayValue(rating)}</span>`);
+    };
+
+    $('#js-accessibility-anomalies').html(displayNumber(t.accessibility_anomalies));
+    renderAccessibilityRating('#js-accessibility-rating', t.accessibility_rating);
+
+    // Détail par langage, affiché directement (pas de modale) — mêmes conventions que le total.
+    ['css', 'web', 'javascript', 'typescript'].forEach((langue) => {
+      $(`#js-accessibility-${langue}-anomalies`).html(displayNumber(t[`accessibility_${langue}_anomalies`]));
+      renderAccessibilityRating(`#js-accessibility-${langue}-rating`, t[`accessibility_${langue}_rating`]);
+    });
+
+    const accessibilityEl = document.getElementById('js-accessibility-anomalies');
+    accessibilityEl.dataset.accessibilityMesuresJson = JSON.stringify(t);
+
+    log(` - 🎨 [Peinture] Affichage de l'Accessibilité.`);
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage de l'Accessibilité (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Accessibilité.');
+    log(` - 🔴 [Peinture] Affichage de l'Accessibilité en échec.`);
+    return;
   }
 
   /**
@@ -804,19 +877,19 @@ export const remplissage = async function(maven_key) {
   try {
     const t = await $.ajax(optionsMesures);
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures.');
-        if (t.code === http_404){
-            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-            enableButtonAnalyse();
-        } else {
-            log(` - ❌ [Peinture] Affichage des informations sur les mesures en échec.`);
-        }
-        return;
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(` - ❌ [Peinture] Affichage des informations sur les mesures en échec.`);
       }
+      return;
+    }
 
     /* MODIF 2026-05-06 : on expose la totalité du payload
      * (~80 champs renvoyés par ApiPeintureController::peintureProjetMesures) dans un
@@ -826,13 +899,13 @@ export const remplissage = async function(maven_key) {
 
     /** On affiche les langages supportés */
     const jsonObject = t.ncloc_language_distribution;
-    let i=0;
-    let total=0;
+    let i = 0;
+    let total = 0;
 
     /** Calcule la somme des valeurs */
     for (const key in jsonObject) {
       if (jsonObject.hasOwnProperty(key)) {
-          total += parseFloat(jsonObject[key]);
+        total += parseFloat(jsonObject[key]);
       }
     }
 
@@ -842,15 +915,15 @@ export const remplissage = async function(maven_key) {
     /** On ajoute les langages */
     for (const key in jsonObject) {
       if (jsonObject.hasOwnProperty(key)) {
-          i++;
-          const value = parseFloat(jsonObject[key]);
-          const percentage = (value / total) * 100;
-          const ligne = new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(jsonObject[key])
-          const item=`<span tabindex="${i}" class="nasa label-langage tool-tip-langage">
+        i++;
+        const value = parseFloat(jsonObject[key]);
+        const percentage = (value / total) * 100;
+        const ligne = new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(jsonObject[key])
+        const item = `<span tabindex="${i}" class="nasa label-langage tool-tip-langage">
                       ${key}&nbsp;
                       <span class="tool-tip-text-langage">${ligne} (${percentage.toFixed(2)}%)</span>
                       </span>`;
-          $('#js-distribution-langage').append(item);
+        $('#js-distribution-langage').append(item);
       }
     }
 
@@ -876,19 +949,19 @@ export const remplissage = async function(maven_key) {
     $('#js-ratio-dette-technique').html(displayPercent(t.sqale_debt_ratio));
 
     /** On colorise le résultat */
-    if (t.sqale_debt_ratio <= 30){
+    if (t.sqale_debt_ratio <= 30) {
       /** La dette technique est soutenable */
       $('#js-ratio-dette-technique').addClass('couleur-vert');
     }
-    if (t.sqale_debt_ratio > 30 && t.sqale_debt_ratio <= 60){
+    if (t.sqale_debt_ratio > 30 && t.sqale_debt_ratio <= 60) {
       /** La dette technique est importante, il faut absolument commencer à la réduire */
       $('#js-ratio-dette-technique').addClass('couleur-orange');
     }
-    if (t.sqale_debt_ratio > 60 && t.sqale_debt_ratio <= 100){
+    if (t.sqale_debt_ratio > 60 && t.sqale_debt_ratio <= 100) {
       /** La dette technique n'est plus soutenable, il faut envisager de réécrire l'application ! */
       $('#js-ratio-dette-technique').addClass('couleur-rouge');
     }
-    if (t.sqale_debt_ratio >60 && t.sqale_debt_ratio > 100){
+    if (t.sqale_debt_ratio > 60 && t.sqale_debt_ratio > 100) {
       /** l'application est mauvaise, le ration est > à 100% */
       $('#js-ratio-dette-technique').addClass('couleur-bordeaux');
     }
@@ -973,7 +1046,7 @@ export const remplissage = async function(maven_key) {
 
     t7.dataset.nombreLigne = t.lines;
     t8.dataset.nombreLigneDeCode = t.ncloc;
-    t8a.dataset.nombreFichier= t.files;
+    t8a.dataset.nombreFichier = t.files;
     t8b.dataset.nombreClasse = t.classes;
     t8c.dataset.nombreFonction = t.functions;
     t9.dataset.coverage = t.coverage;
@@ -982,14 +1055,14 @@ export const remplissage = async function(maven_key) {
     t11.dataset.tests = t.tests;
     t12.dataset.violations = t.violations;
     log(' - 🎨 [Peinture] Affichage des informations sur les mesures.');
-  } catch(error) {
-      ErrorButtonAffiche();
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures.');
-      log(' - 🔴 [Peinture] Affichage des informations sur les Mesures en échec.');
-      return;
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les Mesures en échec.');
+    return;
   }
 
   /**
@@ -1007,253 +1080,253 @@ export const remplissage = async function(maven_key) {
     },
   };
 
-    try {
-      const t = await $.ajax(optionsAnomalie);
-      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-      if (errorCodes.includes(t.code)){
-          const hasTrace = !!t.trace;
-          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-          showMessage(t.type, t.message, trace);
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les anomalies.');
-          if (t.code === http_404){
-              log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-              enableButtonAnalyse();
-          } else {
-              log(' - ❌ [Peinture] Affichage des informations sur les anomalies en échec.');
-          }
-          return;
-        }
-
-      /* Dette technique */
-      $('#js-dette').html(t.dette);
-      $('#js-dette-reliability').html(t.detteReliability);
-      $('#js-dette-vulnerability').html(t.detteVulnerability);
-      $('#js-dette-code-smell').html(t.detteCodeSmell);
-
-      /* MODIF 2026-10-11 : pose un data-attribute, ou le SUPPRIME si value est
-       * null/undefined (frontend/backend/autre/inconnu + scope désormais
-       * nullables, cf. ApiPeintureController). Un dataset JS ne peut pas
-       * stocker `null` : `element.dataset.x = null` le convertit en la chaîne
-       * littérale "null", qu'enregistrement.js relirait tel quel et enverrait
-       * au backend — cassant l'INSERT sur une colonne INT. Supprimer
-       * l'attribut fait lire `undefined` par enregistrement.js, omis du JSON
-       * envoyé, donc traité comme absent côté backend (`?? null`). */
-      const setDataOrOmit = (element, key, value) => {
-        if (value === null || value === undefined) {
-          delete element.dataset[key];
-        } else {
-          element.dataset[key] = value;
-        }
-      };
-
-      /** Historique */
-      const t13 = document.getElementById('js-dette');
-      t13.dataset.detteMinute=t.detteMinute;
-      /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
-       * relue par enregistrement.js — même pattern que detteMinute ci-dessus. */
-      setDataOrOmit(t13, 'scopeMain', t.scope_main);
-      setDataOrOmit(t13, 'scopeTest', t.scope_test);
-
-      /* MODIF 2026-10-08 : résumé "Scope Main/Test" affiché sur la page Projet —
-       * part respective du code source (MAIN) et du code de test (TEST) parmi
-       * les anomalies. Les deux pourcentages sont affichés côte à côte pour
-       * éviter qu'un "0 %" isolé ne soit lu comme une erreur plutôt qu'une
-       * vraie absence d'anomalie côté test. */
-      const scopeTotal = Number(t.scope_main) + Number(t.scope_test);
-      const scopeMainPercent = scopeTotal > 0 ? (Number(t.scope_main) / scopeTotal) * cent : null;
-      const scopeTestPercent = scopeTotal > 0 ? (Number(t.scope_test) / scopeTotal) * cent : null;
-      $('#js-scope-main-percent').html(displayPercent(scopeMainPercent));
-      $('#js-scope-separator').html('/');
-      $('#js-scope-test-percent').html(displayPercent(scopeTestPercent));
-
-      /* MODIF 2026-10-08 : tableau détaillé de la modale (#modal-affiche-scope) —
-       * nombre d'anomalies MAIN/TEST et part du scope TEST, global et par
-       * catégorie. Même pattern que remplitColonneRci (lignes ~701 plus haut). */
-      const remplitColonneScope = (suffixe, main, test) => {
-        const total = Number(main) + Number(test);
-        const testPercent = total > 0 ? (Number(test) / total) * cent : null;
-        $(`#js-scope-${suffixe}-main`).text(displayNumber(main));
-        $(`#js-scope-${suffixe}-test`).text(displayNumber(test));
-        $(`#js-scope-${suffixe}-test-percent`).text(displayPercent(testPercent));
-      };
-      remplitColonneScope('global', t.scope_main, t.scope_test);
-      remplitColonneScope('bug', t.bug_scope_main, t.bug_scope_test);
-      remplitColonneScope('vulnerability', t.vulnerability_scope_main, t.vulnerability_scope_test);
-      remplitColonneScope('code-smell', t.code_smell_scope_main, t.code_smell_scope_test);
-
-      /* MODIF 2026-10-08 : JSON brut relu par index-projet.js pour construire
-       * le graphique de la modale (même pattern que dataset.rciMesuresJson). */
-      t13.dataset.scopeMesuresJson = JSON.stringify({
-        global_main: t.scope_main, global_test: t.scope_test,
-        bug_main: t.bug_scope_main, bug_test: t.bug_scope_test,
-        vulnerability_main: t.vulnerability_scope_main, vulnerability_test: t.vulnerability_scope_test,
-        code_smell_main: t.code_smell_scope_main, code_smell_test: t.code_smell_scope_test,
-      });
-
-      /* Nombre d'anomalie */
-      $('#js-nombre-bug-total').html(displayNumber(t.bug_total));
-      $('#js-separator-bug').html('|');
-
-      $('#js-nombre-vulnerability').html(displayNumber(t.vulnerability));
-      $('#js-nombre-mauvaise-pratique').html(displayNumber(t.code_smell_total));
-      /** 10000 = le nombre max des retours possibles */
-      if (Number(t.code_smell_total) === dixMille) {
-        $('#js-nombre-mauvaise-pratique').addClass('couleur-rouge');
+  try {
+    const t = await $.ajax(optionsAnomalie);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les anomalies.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations sur les anomalies en échec.');
       }
-
-      /** Historique */
-      const t14 = document.getElementById('js-nombre-bug-total');
-      const t15 = document.getElementById('js-nombre-vulnerability');
-      const t16 = document.getElementById('js-nombre-mauvaise-pratique');
-      t14.dataset.nombreBug = (t.bug_total);
-      t15.dataset.nombreVulnerability = (t.vulnerability);
-      t16.dataset.nombreCodeSmell = (t.code_smell_total);
-      /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) par catégorie. */
-      setDataOrOmit(t14, 'bugScopeMain', t.bug_scope_main);
-      setDataOrOmit(t14, 'bugScopeTest', t.bug_scope_test);
-      setDataOrOmit(t15, 'vulnerabilityScopeMain', t.vulnerability_scope_main);
-      setDataOrOmit(t15, 'vulnerabilityScopeTest', t.vulnerability_scope_test);
-      setDataOrOmit(t16, 'codeSmellScopeMain', t.code_smell_scope_main);
-      setDataOrOmit(t16, 'codeSmellScopeTest', t.code_smell_scope_test);
-
-      /* Répartition modules */
-      /* MODIF 2026-10-11 : frontend/backend/autre/inconnu peuvent désormais être
-       * null (aucune collecte d'anomalies pour ce projet) — à distinguer de
-       * "collecté, zéro anomalie par module". Les 4 champs viennent de la même
-       * ligne en base, donc soit tous numériques, soit tous null ensemble. */
-      const categories = [
-        { key: 'frontend', elCount: '#js-nombre-frontend', elPercent: '#js-nombre-frontend-percent', dataAttr: 'nombreFrontend' },
-        { key: 'backend',  elCount: '#js-nombre-backend', elPercent: '#js-nombre-backend-percent',  dataAttr: 'nombreBackend'  },
-        { key: 'autre',    elCount: '#js-nombre-autre', elPercent: '#js-nombre-autre-percent',    dataAttr: 'nombreAutre'    },
-        { key: 'inconnu',  elCount: '#js-nombre-inconnu', elPercent: '#js-nombre-inconnu-percent',  dataAttr: 'nombreInconnu'  },
-      ];
-
-      const modulesCollected = categories.every(({ key }) => t[key] !== null && t[key] !== undefined);
-      const totalModule = modulesCollected
-        ? Number(t.frontend) + Number(t.backend) + Number(t.autre) + Number(t.inconnu)
-        : 0;
-
-      const fmtPercent  = new Intl.NumberFormat('fr-FR', { style: 'percent' });
-      const htmlPad1    = '<span style="color:#fff;">0</span>';
-      const htmlPad2    = '<span style="color:#fff;">00</span>';
-
-      /**
-       * Retourne le padding invisible pour aligner les pourcentages
-       * (<10% → "00", 10-99% → "0", 100% → "")
-       */
-      const percentPadding = function(ratio) {
-        const pct = ratio * 100;
-        if (pct < 10)  return htmlPad2;
-        if (pct < 100) return htmlPad1;
-        return '';
-      }
-
-      categories.forEach(({ key, elCount, elPercent, dataAttr }) => {
-        if (!modulesCollected) {
-          $(elCount).html(displayNumber(null));
-          $(elPercent).html(displayPercent(null));
-          setDataOrOmit($(elCount)[0], dataAttr, null);
-          return;
-        }
-
-        const value  = Number(t[key]);
-        const ratio  = totalModule > 0 ? value / totalModule : 0;
-        const pad    = totalModule > 0 ? percentPadding(ratio) : '';
-
-        $(elCount).html(displayNumber(value));
-        $(elPercent).html(pad + fmtPercent.format(ratio));
-
-        // Historique via data-attribute
-        $(elCount)[0].dataset[dataAttr] = value;
-      });
-
-      /** Historique */
-      const t17 = document.getElementById('js-nombre-frontend');
-      const t18 = document.getElementById('js-nombre-backend');
-      const t19 = document.getElementById('js-nombre-autre');
-      const t19a = document.getElementById('js-nombre-inconnu');
-      setDataOrOmit(t17, 'nombreFrontend', t.frontend);
-      setDataOrOmit(t18, 'nombreBackend', t.backend);
-      setDataOrOmit(t19, 'nombreAutre', t.autre);
-      setDataOrOmit(t19a, 'nombreInconnu', t.inconnu);
-
-      /* Répartition des violations par sévérité */
-      $('#js-nombre-violation-bloquant').html(displayNumber(t.blocker));
-      $('#js-nombre-violation-critique').html(displayNumber(t.critical));
-      $('#js-nombre-violation-info').html(displayNumber(t.info));
-      $('#js-nombre-violation-majeur').html(displayNumber(t.major));
-      $('#js-nombre-violation-mineur').html(displayNumber(t.minor));
-      const totalCodeSmellReal = Number(t.blocker + t.critical + t.major + t.minor);
-
-      // On ajoute un séparateur entre les deux résultats
-      $('#js-separator-code-smell').html('|');
-      $('#js-nombre-mauvaise-pratique-real').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(totalCodeSmellReal));
-
-      const t23 = document.getElementById('js-nombre-violation-bloquant');
-      const t24 = document.getElementById('js-nombre-violation-critique');
-      const t25 = document.getElementById('js-nombre-violation-info');
-      const t26 = document.getElementById('js-nombre-violation-majeur');
-      const t27 = document.getElementById('js-nombre-violation-mineur');
-      t23.dataset.nombreViolationsBloquant = t.blocker;
-      t24.dataset.nombreViolationsCritique = t.critical;
-      t25.dataset.nombreViolationsInfo = t.info;
-      t26.dataset.nombreViolationsMajeur = t.major;
-      t27.dataset.nombreViolationsMineur = t.minor;
-
-      log(' - 🎨 [Peinture] Affichage des informations sur les violations.');
-    } catch(error) {
-          ErrorButtonAffiche();
-          const trace = prepareTechnicalDetails(error);
-          const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les violations (Erreur 500).";
-          showMessage('critical', message, trace);
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Violation.');
-          log(' - 🔴 [Peinture] Affichage des informations sur les Violations en échec.');
-          return;
+      return;
     }
 
+    /* Dette technique */
+    $('#js-dette').html(t.dette);
+    $('#js-dette-reliability').html(t.detteReliability);
+    $('#js-dette-vulnerability').html(t.detteVulnerability);
+    $('#js-dette-code-smell').html(t.detteCodeSmell);
 
-    /**
-     * On récupère les hotspot.
-     */
-    const optionsHotspots = {
-      url: `${serveur()}/api/secure/peinture/projet/hotspots`,
-      type: 'POST',
-      dataType: 'json',
-      data: JSON.stringify(data),
-      contentType: content_type,
-      headers: {
-        'X-API-Custom-403': 'true',
-        'X-Internal-Front': 'front-app'
-      },
+    /* MODIF 2026-10-11 : pose un data-attribute, ou le SUPPRIME si value est
+     * null/undefined (frontend/backend/autre/inconnu + scope désormais
+     * nullables, cf. ApiPeintureController). Un dataset JS ne peut pas
+     * stocker `null` : `element.dataset.x = null` le convertit en la chaîne
+     * littérale "null", qu'enregistrement.js relirait tel quel et enverrait
+     * au backend — cassant l'INSERT sur une colonne INT. Supprimer
+     * l'attribut fait lire `undefined` par enregistrement.js, omis du JSON
+     * envoyé, donc traité comme absent côté backend (`?? null`). */
+    const setDataOrOmit = (element, key, value) => {
+      if (value === null || value === undefined) {
+        delete element.dataset[key];
+      } else {
+        element.dataset[key] = value;
+      }
     };
 
-    try {
-      const t = await $.ajax(optionsHotspots);
-      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-      if (errorCodes.includes(t.code)){
-          const hasTrace = !!t.trace;
-          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-          showMessage(t.type, t.message, trace);
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les menaces potentielles.');
-          if (t.code === http_404){
-              log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-              enableButtonAnalyse();
-          } else {
-            log(' - ❌ [Peinture] Affichage des informations sur les menaces potentielles en échec.');
-          }
-          return;
+    /** Historique */
+    const t13 = document.getElementById('js-dette');
+    t13.dataset.detteMinute = t.detteMinute;
+    /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
+     * relue par enregistrement.js — même pattern que detteMinute ci-dessus. */
+    setDataOrOmit(t13, 'scopeMain', t.scope_main);
+    setDataOrOmit(t13, 'scopeTest', t.scope_test);
+
+    /* MODIF 2026-10-08 : résumé "Scope Main/Test" affiché sur la page Projet —
+     * part respective du code source (MAIN) et du code de test (TEST) parmi
+     * les anomalies. Les deux pourcentages sont affichés côte à côte pour
+     * éviter qu'un "0 %" isolé ne soit lu comme une erreur plutôt qu'une
+     * vraie absence d'anomalie côté test. */
+    const scopeTotal = Number(t.scope_main) + Number(t.scope_test);
+    const scopeMainPercent = scopeTotal > 0 ? (Number(t.scope_main) / scopeTotal) * cent : null;
+    const scopeTestPercent = scopeTotal > 0 ? (Number(t.scope_test) / scopeTotal) * cent : null;
+    $('#js-scope-main-percent').html(displayPercent(scopeMainPercent));
+    $('#js-scope-separator').html('/');
+    $('#js-scope-test-percent').html(displayPercent(scopeTestPercent));
+
+    /* MODIF 2026-10-08 : tableau détaillé de la modale (#modal-affiche-scope) —
+     * nombre d'anomalies MAIN/TEST et part du scope TEST, global et par
+     * catégorie. Même pattern que remplitColonneRci (lignes ~701 plus haut). */
+    const remplitColonneScope = (suffixe, main, test) => {
+      const total = Number(main) + Number(test);
+      const testPercent = total > 0 ? (Number(test) / total) * cent : null;
+      $(`#js-scope-${suffixe}-main`).text(displayNumber(main));
+      $(`#js-scope-${suffixe}-test`).text(displayNumber(test));
+      $(`#js-scope-${suffixe}-test-percent`).text(displayPercent(testPercent));
+    };
+    remplitColonneScope('global', t.scope_main, t.scope_test);
+    remplitColonneScope('bug', t.bug_scope_main, t.bug_scope_test);
+    remplitColonneScope('vulnerability', t.vulnerability_scope_main, t.vulnerability_scope_test);
+    remplitColonneScope('code-smell', t.code_smell_scope_main, t.code_smell_scope_test);
+
+    /* MODIF 2026-10-08 : JSON brut relu par index-projet.js pour construire
+     * le graphique de la modale (même pattern que dataset.rciMesuresJson). */
+    t13.dataset.scopeMesuresJson = JSON.stringify({
+      global_main: t.scope_main, global_test: t.scope_test,
+      bug_main: t.bug_scope_main, bug_test: t.bug_scope_test,
+      vulnerability_main: t.vulnerability_scope_main, vulnerability_test: t.vulnerability_scope_test,
+      code_smell_main: t.code_smell_scope_main, code_smell_test: t.code_smell_scope_test,
+    });
+
+    /* Nombre d'anomalie */
+    $('#js-nombre-bug-total').html(displayNumber(t.bug_total));
+    $('#js-separator-bug').html('|');
+
+    $('#js-nombre-vulnerability').html(displayNumber(t.vulnerability));
+    $('#js-nombre-mauvaise-pratique').html(displayNumber(t.code_smell_total));
+    /** 10000 = le nombre max des retours possibles */
+    if (Number(t.code_smell_total) === dixMille) {
+      $('#js-nombre-mauvaise-pratique').addClass('couleur-rouge');
+    }
+
+    /** Historique */
+    const t14 = document.getElementById('js-nombre-bug-total');
+    const t15 = document.getElementById('js-nombre-vulnerability');
+    const t16 = document.getElementById('js-nombre-mauvaise-pratique');
+    t14.dataset.nombreBug = (t.bug_total);
+    t15.dataset.nombreVulnerability = (t.vulnerability);
+    t16.dataset.nombreCodeSmell = (t.code_smell_total);
+    /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) par catégorie. */
+    setDataOrOmit(t14, 'bugScopeMain', t.bug_scope_main);
+    setDataOrOmit(t14, 'bugScopeTest', t.bug_scope_test);
+    setDataOrOmit(t15, 'vulnerabilityScopeMain', t.vulnerability_scope_main);
+    setDataOrOmit(t15, 'vulnerabilityScopeTest', t.vulnerability_scope_test);
+    setDataOrOmit(t16, 'codeSmellScopeMain', t.code_smell_scope_main);
+    setDataOrOmit(t16, 'codeSmellScopeTest', t.code_smell_scope_test);
+
+    /* Répartition modules */
+    /* MODIF 2026-10-11 : frontend/backend/autre/inconnu peuvent désormais être
+     * null (aucune collecte d'anomalies pour ce projet) — à distinguer de
+     * "collecté, zéro anomalie par module". Les 4 champs viennent de la même
+     * ligne en base, donc soit tous numériques, soit tous null ensemble. */
+    const categories = [
+      { key: 'frontend', elCount: '#js-nombre-frontend', elPercent: '#js-nombre-frontend-percent', dataAttr: 'nombreFrontend' },
+      { key: 'backend', elCount: '#js-nombre-backend', elPercent: '#js-nombre-backend-percent', dataAttr: 'nombreBackend' },
+      { key: 'autre', elCount: '#js-nombre-autre', elPercent: '#js-nombre-autre-percent', dataAttr: 'nombreAutre' },
+      { key: 'inconnu', elCount: '#js-nombre-inconnu', elPercent: '#js-nombre-inconnu-percent', dataAttr: 'nombreInconnu' },
+    ];
+
+    const modulesCollected = categories.every(({ key }) => t[key] !== null && t[key] !== undefined);
+    const totalModule = modulesCollected
+      ? Number(t.frontend) + Number(t.backend) + Number(t.autre) + Number(t.inconnu)
+      : 0;
+
+    const fmtPercent = new Intl.NumberFormat('fr-FR', { style: 'percent' });
+    const htmlPad1 = '<span style="color:#fff;">0</span>';
+    const htmlPad2 = '<span style="color:#fff;">00</span>';
+
+    /**
+     * Retourne le padding invisible pour aligner les pourcentages
+     * (<10% → "00", 10-99% → "0", 100% → "")
+     */
+    const percentPadding = function (ratio) {
+      const pct = ratio * 100;
+      if (pct < 10) return htmlPad2;
+      if (pct < 100) return htmlPad1;
+      return '';
+    }
+
+    categories.forEach(({ key, elCount, elPercent, dataAttr }) => {
+      if (!modulesCollected) {
+        $(elCount).html(displayNumber(null));
+        $(elPercent).html(displayPercent(null));
+        setDataOrOmit($(elCount)[0], dataAttr, null);
+        return;
       }
 
-      log(' - 🎨 [Peinture] Affichage des informations sur les menaces potentielles.');
-    } catch(error) {
-          ErrorButtonAffiche();
-          const trace = prepareTechnicalDetails(error);
-          const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les menaces potentielles (Erreur 500).";
-          showMessage('critical', message, trace);
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
-          log(' - 🔴 [Peinture] Affichage des informations sur les menaces potentielles en échec.');
-          return;
+      const value = Number(t[key]);
+      const ratio = totalModule > 0 ? value / totalModule : 0;
+      const pad = totalModule > 0 ? percentPadding(ratio) : '';
+
+      $(elCount).html(displayNumber(value));
+      $(elPercent).html(pad + fmtPercent.format(ratio));
+
+      // Historique via data-attribute
+      $(elCount)[0].dataset[dataAttr] = value;
+    });
+
+    /** Historique */
+    const t17 = document.getElementById('js-nombre-frontend');
+    const t18 = document.getElementById('js-nombre-backend');
+    const t19 = document.getElementById('js-nombre-autre');
+    const t19a = document.getElementById('js-nombre-inconnu');
+    setDataOrOmit(t17, 'nombreFrontend', t.frontend);
+    setDataOrOmit(t18, 'nombreBackend', t.backend);
+    setDataOrOmit(t19, 'nombreAutre', t.autre);
+    setDataOrOmit(t19a, 'nombreInconnu', t.inconnu);
+
+    /* Répartition des violations par sévérité */
+    $('#js-nombre-violation-bloquant').html(displayNumber(t.blocker));
+    $('#js-nombre-violation-critique').html(displayNumber(t.critical));
+    $('#js-nombre-violation-info').html(displayNumber(t.info));
+    $('#js-nombre-violation-majeur').html(displayNumber(t.major));
+    $('#js-nombre-violation-mineur').html(displayNumber(t.minor));
+    const totalCodeSmellReal = Number(t.blocker + t.critical + t.major + t.minor);
+
+    // On ajoute un séparateur entre les deux résultats
+    $('#js-separator-code-smell').html('|');
+    $('#js-nombre-mauvaise-pratique-real').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(totalCodeSmellReal));
+
+    const t23 = document.getElementById('js-nombre-violation-bloquant');
+    const t24 = document.getElementById('js-nombre-violation-critique');
+    const t25 = document.getElementById('js-nombre-violation-info');
+    const t26 = document.getElementById('js-nombre-violation-majeur');
+    const t27 = document.getElementById('js-nombre-violation-mineur');
+    t23.dataset.nombreViolationsBloquant = t.blocker;
+    t24.dataset.nombreViolationsCritique = t.critical;
+    t25.dataset.nombreViolationsInfo = t.info;
+    t26.dataset.nombreViolationsMajeur = t.major;
+    t27.dataset.nombreViolationsMineur = t.minor;
+
+    log(' - 🎨 [Peinture] Affichage des informations sur les violations.');
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les violations (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Violation.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les Violations en échec.');
+    return;
+  }
+
+
+  /**
+   * On récupère les hotspot.
+   */
+  const optionsHotspots = {
+    url: `${serveur()}/api/secure/peinture/projet/hotspots`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(optionsHotspots);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les menaces potentielles.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations sur les menaces potentielles en échec.');
+      }
+      return;
     }
+
+    log(' - 🎨 [Peinture] Affichage des informations sur les menaces potentielles.');
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les menaces potentielles (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
+    log(' - 🔴 [Peinture] Affichage des informations sur les menaces potentielles en échec.');
+    return;
+  }
 
   /**
    * On récupère la sévérité par type.
@@ -1273,19 +1346,19 @@ export const remplissage = async function(maven_key) {
   try {
     const t = await $.ajax(optionsAnomaliesDetails);
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur le détail des anomalies.');
-        if (t.code === http_404){
-              log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-              enableButtonAnalyse();
-          } else {
-            log(' - ❌ [Peinture] Affichage des informations sur le détail des anomalies en échec.');
-          }
-        return;
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur le détail des anomalies.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations sur le détail des anomalies en échec.');
       }
+      return;
+    }
 
 
     $('#js-bug-blocker').html(displayNumber(t.bugBlocker));
@@ -1295,12 +1368,12 @@ export const remplissage = async function(maven_key) {
     $('#js-bug-info').html(displayNumber(t.bugInfo));
 
     if (t.bug_real > 0) {
-        //bug_real = bug_total - bug_info
-        $('#js-nombre-bug-real').html(`( ${displayNumber(t.bug_real)})`);
-      }
-      else {
-        $('#js-nombre-bug-real').html('-');
-      }
+      //bug_real = bug_total - bug_info
+      $('#js-nombre-bug-real').html(`( ${displayNumber(t.bug_real)})`);
+    }
+    else {
+      $('#js-nombre-bug-real').html('-');
+    }
 
     const t28 = document.getElementById('js-bug-blocker');
     const t29 = document.getElementById('js-bug-critical');
@@ -1337,12 +1410,12 @@ export const remplissage = async function(maven_key) {
     $('#js-code-smell-info').html(displayNumber(t.codeSmellInfo));
 
     if (t.CodeSmellRealTotal > 0) {
-        //codeSmell_real = codeSmell_total - codeSmell_info
-        $('#js-nombre-mauvaise-pratique-real').html(`${displayNumber(t.CodeSmellRealTotal)}`);
-      }
-      else {
-        $('#js-nombre-mauvaise-pratique-real').html('--');
-      }
+      //codeSmell_real = codeSmell_total - codeSmell_info
+      $('#js-nombre-mauvaise-pratique-real').html(`${displayNumber(t.CodeSmellRealTotal)}`);
+    }
+    else {
+      $('#js-nombre-mauvaise-pratique-real').html('--');
+    }
     const t38 = document.getElementById('js-code-smell-blocker');
     const t39 = document.getElementById('js-code-smell-critical');
     const t40 = document.getElementById('js-code-smell-major');
@@ -1355,14 +1428,14 @@ export const remplissage = async function(maven_key) {
     t42.dataset.codeSmellInfo = t.codeSmellInfo;
 
     log(' - 🎨 [Peinture] Affichage des informations sur le détail des anomalies.');
-  } catch(error) {
-      ErrorButtonAffiche();
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des anomalies (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
-      log(' - 🔴 [Peinture] Affichage des informations sur le détail des anomalies en échec.');
-      return;
+  } catch (error) {
+    ErrorButtonAffiche();
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des anomalies (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
+    log(' - 🔴 [Peinture] Affichage des informations sur le détail des anomalies en échec.');
+    return;
   }
 
   log(' - ✅ [Peinture] Affichage des informations terminé.');
@@ -1381,7 +1454,7 @@ export const remplissage = async function(maven_key) {
  * Created at: 19/12/2022, 22:25:28 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-export const afficheHotspotDetails = async function (maven_key){
+export const afficheHotspotDetails = async function (maven_key) {
   /* On récupère la répartition des hotspot. */
   const data = { maven_key };
   const options = {
@@ -1399,23 +1472,23 @@ export const afficheHotspotDetails = async function (maven_key){
   try {
     const t = await $.ajax(options);
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les menaces potentielles.');
-        if (t.code === http_404){
-            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
-            enableButtonAnalyse();
-        } else {
-          log(' - ❌ [Peinture] Affichage des informations sur le détail des menaces potentielles en échec.');
-        }
-        return;
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les menaces potentielles.');
+      if (t.code === http_404) {
+        log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+        enableButtonAnalyse();
+      } else {
+        log(' - ❌ [Peinture] Affichage des informations sur le détail des menaces potentielles en échec.');
+      }
+      return;
     }
 
     /* On efface les données.*/
     $('#js-tableau-menace-potentielle').html('');
-    const str =`
+    const str = `
       <tr id="to-review">
         <td class="open-sans text-left">Review</td>
         <td id="js-menace-potentielle-to-review-high" class="text-center stat" data-menace-potentielle-to-review-high="${t.to_review_high}">
@@ -1437,7 +1510,7 @@ export const afficheHotspotDetails = async function (maven_key){
 
     $('#js-tableau-menace-potentielle').append(str);
     //calcul du nombre de menace à examiner
-    const reviewed_total = Number(t.reviewed_high +t.reviewed_medium + t.reviewed_low);
+    const reviewed_total = Number(t.reviewed_high + t.reviewed_medium + t.reviewed_low);
     const total = Number(t.to_review_total - t.reviewed_total);
     let calcul = 0;
     if (total > 0) {
@@ -1446,14 +1519,14 @@ export const afficheHotspotDetails = async function (maven_key){
     const repartition = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calcul);
 
     $('#js-menace-potentielle-totale').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total)}</span> <span>(${repartition})`);
-    if (parseInt(t.to_review_total, 10) > 0) {
+    if (Number(t.to_review_total) > 0) {
       $('.menace-potentielle-s').html('s');
     }
 
     const t1 = document.getElementById('js-menace-potentielle-totale');
     t1.dataset.menacePotentielleTotale = (total);
     log(' - 🎨 [Peinture] Mise à jour du tableau du détail des menaces potentielles.');
-  } catch(error) {
+  } catch (error) {
     ErrorButtonAffiche();
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des menaces potentielles (Erreur 500).";

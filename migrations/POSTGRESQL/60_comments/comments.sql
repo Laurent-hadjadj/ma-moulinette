@@ -30,6 +30,8 @@
 -- 2026-10-08 : Ajout des commentaires pour les attributs de la table eco_conception.
 --- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
 --- 2026-10-13 : Ajout des commentaires pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
+--- 2026-10-26 : Ajout des commentaires pour les attributs de la table accessibility.
+--- 2026-10-27 : Remplacement des commentaires des 60 colonnes a1..a10/aN_blocker..minor + source de la table owasp par categories/module_frontend/backend/autre.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -795,70 +797,35 @@ COMMENT ON COLUMN ma_moulinette.owasp.maven_key IS 'Clé unique du projet';
 COMMENT ON COLUMN ma_moulinette.owasp.version IS 'Version du projet';
 COMMENT ON COLUMN ma_moulinette.owasp.date_version IS 'Date de publication du projet';
 COMMENT ON COLUMN ma_moulinette.owasp.effort_total IS 'Effort total pour corriger les anomalies';
-COMMENT ON COLUMN ma_moulinette.owasp.source IS 'Origine du comptage : facet (classification officielle SonarQube owaspTop10/owaspTop10-2021) ou tag (secours par tag owasp-aXX quand la facette ne renvoie rien)';
-COMMENT ON COLUMN ma_moulinette.owasp.a1 IS 'OWASP Top 10 - A1';
-COMMENT ON COLUMN ma_moulinette.owasp.a2 IS 'OWASP Top 10 - A2';
-COMMENT ON COLUMN ma_moulinette.owasp.a3 IS 'OWASP Top 10 - A3';
-COMMENT ON COLUMN ma_moulinette.owasp.a4 IS 'OWASP Top 10 - A4';
-COMMENT ON COLUMN ma_moulinette.owasp.a5 IS 'OWASP Top 10 - A5';
-COMMENT ON COLUMN ma_moulinette.owasp.a6 IS 'OWASP Top 10 - A6';
-COMMENT ON COLUMN ma_moulinette.owasp.a7 IS 'OWASP Top 10 - A7';
-COMMENT ON COLUMN ma_moulinette.owasp.a8 IS 'OWASP Top 10 - A8';
-COMMENT ON COLUMN ma_moulinette.owasp.a9 IS 'OWASP Top 10 - A9';
-COMMENT ON COLUMN ma_moulinette.owasp.a10 IS 'OWASP Top 10 - A10';
-COMMENT ON COLUMN ma_moulinette.owasp.a1_blocker IS 'Nombre d’anomalies bloquantes pour A1';
-COMMENT ON COLUMN ma_moulinette.owasp.a1_critical IS 'Nombre d’anomalies critiques pour A1';
-COMMENT ON COLUMN ma_moulinette.owasp.a1_major IS 'Nombre d’anomalies majeures pour A1';
-COMMENT ON COLUMN ma_moulinette.owasp.a1_info IS 'Nombre d’informations pour A1';
-COMMENT ON COLUMN ma_moulinette.owasp.a1_minor IS 'Nombre d’anomalies mineures pour A1';
-COMMENT ON COLUMN ma_moulinette.owasp.a2_blocker IS 'Nombre d’anomalies bloquantes pour A2';
-COMMENT ON COLUMN ma_moulinette.owasp.a2_critical IS 'Nombre d’anomalies critiques pour A2';
-COMMENT ON COLUMN ma_moulinette.owasp.a2_major IS 'Nombre d’anomalies majeures pour A2';
-COMMENT ON COLUMN ma_moulinette.owasp.a2_info IS 'Nombre d’informations pour A2';
-COMMENT ON COLUMN ma_moulinette.owasp.a2_minor IS 'Nombre d’anomalies mineures pour A2';
-COMMENT ON COLUMN ma_moulinette.owasp.a3_blocker IS 'Nombre d’anomalies bloquantes pour A3';
-COMMENT ON COLUMN ma_moulinette.owasp.a3_critical IS 'Nombre d’anomalies critiques pour A3';
-COMMENT ON COLUMN ma_moulinette.owasp.a3_major IS 'Nombre d’anomalies majeures pour A3';
-COMMENT ON COLUMN ma_moulinette.owasp.a3_info IS 'Nombre d’informations pour A3';
-COMMENT ON COLUMN ma_moulinette.owasp.a3_minor IS 'Nombre d’anomalies mineures pour A3';
-COMMENT ON COLUMN ma_moulinette.owasp.a4_blocker IS 'Nombre d’anomalies bloquantes pour A4';
-COMMENT ON COLUMN ma_moulinette.owasp.a4_critical IS 'Nombre d’anomalies critiques pour A4';
-COMMENT ON COLUMN ma_moulinette.owasp.a4_major IS 'Nombre d’anomalies majeures pour A4';
-COMMENT ON COLUMN ma_moulinette.owasp.a4_info IS 'Nombre d’informations pour A4';
-COMMENT ON COLUMN ma_moulinette.owasp.a4_minor IS 'Nombre d’anomalies mineures pour A4';
-COMMENT ON COLUMN ma_moulinette.owasp.a5_blocker IS 'Nombre d’anomalies bloquantes pour A5';
-COMMENT ON COLUMN ma_moulinette.owasp.a5_critical IS 'Nombre d’anomalies critiques pour A5';
-COMMENT ON COLUMN ma_moulinette.owasp.a5_major IS 'Nombre d’anomalies majeures pour A5';
-COMMENT ON COLUMN ma_moulinette.owasp.a5_info IS 'Nombre d’informations pour A5';
-COMMENT ON COLUMN ma_moulinette.owasp.a5_minor IS 'Nombre d’anomalies mineures pour A5';
-COMMENT ON COLUMN ma_moulinette.owasp.a6_blocker IS 'Nombre d’anomalies bloquantes pour A6';
-COMMENT ON COLUMN ma_moulinette.owasp.a6_critical IS 'Nombre d’anomalies critiques pour A6';
-COMMENT ON COLUMN ma_moulinette.owasp.a6_major IS 'Nombre d’anomalies majeures pour A6';
-COMMENT ON COLUMN ma_moulinette.owasp.a6_info IS 'Nombre d’informations pour A6';
-COMMENT ON COLUMN ma_moulinette.owasp.a6_minor IS 'Nombre d’anomalies mineures pour A6';
-COMMENT ON COLUMN ma_moulinette.owasp.a7_blocker IS 'Nombre d’anomalies bloquantes pour A7';
-COMMENT ON COLUMN ma_moulinette.owasp.a7_critical IS 'Nombre d’anomalies critiques pour A7';
-COMMENT ON COLUMN ma_moulinette.owasp.a7_major IS 'Nombre d’anomalies majeures pour A7';
-COMMENT ON COLUMN ma_moulinette.owasp.a7_info IS 'Nombre d’informations pour A7';
-COMMENT ON COLUMN ma_moulinette.owasp.a7_minor IS 'Nombre d’anomalies mineures pour A7';
-COMMENT ON COLUMN ma_moulinette.owasp.a8_blocker IS 'Nombre d’anomalies bloquantes pour A8';
-COMMENT ON COLUMN ma_moulinette.owasp.a8_critical IS 'Nombre d’anomalies critiques pour A8';
-COMMENT ON COLUMN ma_moulinette.owasp.a8_major IS 'Nombre d’anomalies majeures pour A8';
-COMMENT ON COLUMN ma_moulinette.owasp.a8_info IS 'Nombre d’informations pour A8';
-COMMENT ON COLUMN ma_moulinette.owasp.a8_minor IS 'Nombre d’anomalies mineures pour A8';
-COMMENT ON COLUMN ma_moulinette.owasp.a9_blocker IS 'Nombre d’anomalies bloquantes pour A9';
-COMMENT ON COLUMN ma_moulinette.owasp.a9_critical IS 'Nombre d’anomalies critiques pour A9';
-COMMENT ON COLUMN ma_moulinette.owasp.a9_major IS 'Nombre d’anomalies majeures pour A9';
-COMMENT ON COLUMN ma_moulinette.owasp.a9_info IS 'Nombre d’informations pour A9';
-COMMENT ON COLUMN ma_moulinette.owasp.a9_minor IS 'Nombre d’anomalies mineures pour A9';
-COMMENT ON COLUMN ma_moulinette.owasp.a10_blocker IS 'Nombre d’anomalies bloquantes pour A10';
-COMMENT ON COLUMN ma_moulinette.owasp.a10_critical IS 'Nombre d’anomalies critiques pour A10';
-COMMENT ON COLUMN ma_moulinette.owasp.a10_major IS 'Nombre d’anomalies majeures pour A10';
-COMMENT ON COLUMN ma_moulinette.owasp.a10_info IS 'Nombre d’informations pour A10';
-COMMENT ON COLUMN ma_moulinette.owasp.a10_minor IS 'Nombre d’anomalies mineures pour A10';
+COMMENT ON COLUMN ma_moulinette.owasp.categories IS 'Compteurs par catégorie A1..A10 (JSON, sparse) : total/blocker/critical/major/minor/info/source (core|findsecbugs|mixed) — cf. OwaspRuleClassifierService::classify().';
+COMMENT ON COLUMN ma_moulinette.owasp.module_frontend IS 'Nombre de vulnérabilités OWASP classées module frontend.';
+COMMENT ON COLUMN ma_moulinette.owasp.module_backend IS 'Nombre de vulnérabilités OWASP classées module backend.';
+COMMENT ON COLUMN ma_moulinette.owasp.module_autre IS 'Nombre de vulnérabilités OWASP classées module autre (ou non classées).';
 COMMENT ON COLUMN ma_moulinette.owasp.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.owasp.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.owasp.date_enregistrement IS 'Date d’enregistrement des données';
+
+-- ============================================
+-- TABLE owasp_details
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.owasp_details IS 'Détail individuel de chaque vulnérabilité OWASP classée — snapshot courant, réécrit en entier à chaque collecte, une ligne par (maven_key, referential_owasp, issue).';
+COMMENT ON COLUMN ma_moulinette.owasp_details.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.maven_key IS 'Clé Maven du projet.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.referential_owasp IS 'Référentiel version (2017, 2021).';
+COMMENT ON COLUMN ma_moulinette.owasp_details.version IS 'Version du projet.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.date_version IS 'Date de publication du projet.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.rule_key IS 'Règle SonarQube ou FindSecBugs à l’origine de la vulnérabilité.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.categories IS 'Catégories A1..A10 du référentiel concernées par cette règle, concaténées (ex. "A4, A5").';
+COMMENT ON COLUMN ma_moulinette.owasp_details.severity IS 'Sévérité SonarQube (BLOCKER, CRITICAL, MAJOR, MINOR, INFO).';
+COMMENT ON COLUMN ma_moulinette.owasp_details.source IS 'Origine de la règle : core (SonarSource) ou findsecbugs.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.module IS 'Module du fichier concerné : frontend, backend, autre ou inconnu.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.file_path IS 'Chemin du fichier concerné (clé Maven du projet retirée).';
+COMMENT ON COLUMN ma_moulinette.owasp_details.line IS 'Ligne du fichier où se situe la vulnérabilité (absente pour certaines règles au niveau fichier/architecture).';
+COMMENT ON COLUMN ma_moulinette.owasp_details.message IS 'Message descriptif de la vulnérabilité.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.owasp_details.date_enregistrement IS 'Date d’enregistrement de la ligne.';
 
 -- ============================================
 -- TABLE portefeuille
@@ -943,6 +910,32 @@ COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_rating IS 'Note A-E po
 COMMENT ON COLUMN ma_moulinette.eco_conception.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.eco_conception.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
 COMMENT ON COLUMN ma_moulinette.eco_conception.date_enregistrement IS 'Date d''enregistrement de la ligne.';
+
+-- ============================================
+-- TABLE accessibility
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.accessibility IS 'Accessibilité (tag SonarQube accessibility, css/web/javascript/typescript) — snapshot courant, une ligne par maven_key.';
+COMMENT ON COLUMN ma_moulinette.accessibility.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.accessibility.maven_key IS 'Clé unique du projet SonarQube.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_anomalies IS 'Nombre d''anomalies accessibilité (OPEN, tag SonarQube accessibility), tous langages confondus.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_dette_minute IS 'Dette estimée en minutes (effortTotal SonarQube), tous langages confondus.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_rating IS 'Note A-E dérivée du ratio accessibility_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_css_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage CSS. Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_css_dette_minute IS 'Dette estimée en minutes pour le langage CSS. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_css_rating IS 'Note A-E pour le langage CSS. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_web_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage Web (HTML). Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_web_dette_minute IS 'Dette estimée en minutes pour le langage Web (HTML). Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_web_rating IS 'Note A-E pour le langage Web (HTML). Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_javascript_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage JavaScript. Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_javascript_dette_minute IS 'Dette estimée en minutes pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_javascript_rating IS 'Note A-E pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_typescript_anomalies IS 'Nombre d''anomalies accessibilité (OPEN) pour le langage TypeScript. Null si le langage est absent du projet.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_typescript_dette_minute IS 'Dette estimée en minutes pour le langage TypeScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.accessibility_typescript_rating IS 'Note A-E pour le langage TypeScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.accessibility.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.accessibility.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.accessibility.date_enregistrement IS 'Date d''enregistrement de la ligne.';
 
 -- ============================================
 -- TABLE repartition_temp

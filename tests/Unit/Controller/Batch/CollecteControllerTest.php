@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
-use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController,BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController, BatchCollecteTodoController, CollecteController};
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController, BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController, BatchCollecteAccessibilityController, BatchCollecteTodoController, CollecteController};
 use App\Entity\Historique;
 use App\Repository\HistoriqueRepository;
 use App\Service\GetSonarVersionService;
@@ -70,6 +70,8 @@ class CollecteControllerTest extends TestCase
     private MockObject $batchRci;
     /** @var BatchCollecteEmpreinteEcologiqueController&MockObject */
     private MockObject $batchEmpreinteEcologique;
+    /** @var BatchCollecteAccessibilityController&MockObject */
+    private MockObject $batchAccessibility;
     /** @var GetSonarVersionService&MockObject */
     private MockObject $getSonarVersionService;
 
@@ -105,6 +107,12 @@ class CollecteControllerTest extends TestCase
             'message' => "La collecte de l'Empreinte Écologique n'a pas été lancée. (CREEDENGO_ENABLED=false).",
             'historique' => ['eco_anomalies' => null, 'eco_dette_minute' => null],
         ]);
+        $this->batchAccessibility = $this->createMock(BatchCollecteAccessibilityController::class);
+        $this->batchAccessibility->method('BatchCollecteAccessibility')->willReturn([
+            'code' => 200,
+            'message' => 'Accessibilité collectée.',
+            'historique' => ['accessibility_anomalies' => null, 'accessibility_dette_minute' => null, 'accessibility_rating' => null],
+        ]);
         $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
         $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn('10.4.1');
 
@@ -125,6 +133,7 @@ class CollecteControllerTest extends TestCase
             $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
     }
@@ -165,15 +174,27 @@ class CollecteControllerTest extends TestCase
         $this->stubAllBatchesHappy();
         $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
         $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn([
-            'code' => 503, 'erreur' => 'Service indisponible',
+            'code' => 503,
+            'erreur' => 'Service indisponible',
         ]);
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -203,11 +224,26 @@ class CollecteControllerTest extends TestCase
         $rciResult = [
             'code' => 200,
             'historique' => [
-                'ncloc' => 28188, 'weight' => 16732, 'indicator' => 40.6, 'rating' => 'E',
-                'frontend_ncloc' => 16590, 'frontend_weight' => 3725, 'frontend_indicator' => 77.55, 'frontend_rating' => 'D',
-                'backend_ncloc' => 11330, 'backend_weight' => 12995, 'backend_indicator' => 0.0, 'backend_rating' => 'E',
-                'autre_ncloc' => 0, 'autre_weight' => 0, 'autre_indicator' => null, 'autre_rating' => null,
-                'inconnu_ncloc' => 268, 'inconnu_weight' => 12, 'inconnu_indicator' => 95.52, 'inconnu_rating' => 'A',
+                'ncloc' => 28188,
+                'weight' => 16732,
+                'indicator' => 40.6,
+                'rating' => 'E',
+                'frontend_ncloc' => 16590,
+                'frontend_weight' => 3725,
+                'frontend_indicator' => 77.55,
+                'frontend_rating' => 'D',
+                'backend_ncloc' => 11330,
+                'backend_weight' => 12995,
+                'backend_indicator' => 0.0,
+                'backend_rating' => 'E',
+                'autre_ncloc' => 0,
+                'autre_weight' => 0,
+                'autre_indicator' => null,
+                'autre_rating' => null,
+                'inconnu_ncloc' => 268,
+                'inconnu_weight' => 12,
+                'inconnu_indicator' => 95.52,
+                'inconnu_rating' => 'A',
                 'maven_key' => self::MAVEN_KEY,
             ],
         ];
@@ -216,12 +252,23 @@ class CollecteControllerTest extends TestCase
             ->with(self::MAVEN_KEY, 'collecte', self::USER)
             ->willReturn($rciResult);
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -256,18 +303,29 @@ class CollecteControllerTest extends TestCase
         $this->batchRci = $this->createMock(BatchCollecteRciController::class);
         $this->batchRci->method('buildRciMeasures')->willReturn(['code' => 500, 'erreur' => 'Erreur SonarQube']);
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
         $this->historiqueRepo->expects($this->once())
             ->method('insertHistoriqueAjoutProjet')
-            ->with($this->callback(fn (array $map): bool => !array_key_exists('rci_indicator', $map)))
+            ->with($this->callback(fn(array $map): bool => !array_key_exists('rci_indicator', $map)))
             ->willReturn(['code' => 200]);
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, 'collecte', self::USER);
@@ -464,12 +522,23 @@ class CollecteControllerTest extends TestCase
 
         // rebuild controller with new batchOwasp
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -487,12 +556,23 @@ class CollecteControllerTest extends TestCase
             ->willReturn(['code' => 500, 'message' => 'nosonar fail', 'erreur' => 'e']);
 
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -509,12 +589,23 @@ class CollecteControllerTest extends TestCase
             ->willReturn(['code' => 500, 'message' => 'todo fail', 'erreur' => 'e']);
 
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -535,12 +626,23 @@ class CollecteControllerTest extends TestCase
             ->willReturn(['code' => 500, 'message' => 'actuator fail', 'erreur' => 'e', 'json' => [], 'fatal' => true]);
 
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -569,12 +671,23 @@ class CollecteControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -591,12 +704,23 @@ class CollecteControllerTest extends TestCase
             ->willReturn(['code' => 500, 'message' => 'logger fail', 'erreur' => 'e']);
 
         $this->controller = new CollecteController(
-            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
-            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
-            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
-            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->em,
+            $this->logger,
+            $this->batchInfo,
+            $this->batchMesure,
+            $this->batchOwasp,
+            $this->batchHotspot,
+            $this->batchAnomalie,
+            $this->batchAnomalieDetail,
+            $this->batchHotspotOwasp,
+            $this->batchHotspotDetail,
+            $this->batchNoSonar,
+            $this->batchTodo,
+            $this->batchActuator,
+            $this->batchLogger,
             $this->batchRci,
             $this->batchEmpreinteEcologique,
+            $this->batchAccessibility,
             $this->getSonarVersionService,
         );
 
@@ -637,42 +761,63 @@ class CollecteControllerTest extends TestCase
         $this->batchHotspot->method('batchCollecteHotspot')->willReturn($this->stubHotspotHappy());
         $this->batchHotspotDetail->method('batchCollecteHotspotDetail')->willReturn($this->stubHotspotDetailHappy());
         $this->batchOwasp->method('batchCollecteOwasp')->willReturn([
-            'code' => 200, 'message' => 'owasp ok',
-            'owasp2017' => 3, 'owasp2021' => 5,
+            'code' => 200,
+            'message' => 'owasp ok',
+            'owasp2017' => 3,
+            'owasp2021' => 5,
         ]);
         $this->batchHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn([
-            'code' => 200, 'message' => 'hotspot owasp ok',
+            'code' => 200,
+            'message' => 'hotspot owasp ok',
             'data' => [], // empty → html non généré
-            'info' => 'mode', 'owasp_2017' => 0, 'owasp_2021' => 0,
+            'info' => 'mode',
+            'owasp_2017' => 0,
+            'owasp_2021' => 0,
         ]);
         // MODIF 2026-06-07 : clés no_sonar par langage (CollecteController:762-768)
         $this->batchNoSonar->method('batchCollecteNoSonar')->willReturn([
-            'code' => 200, 'message' => 'nosonar ok',
+            'code' => 200,
+            'message' => 'nosonar ok',
             'historique' => [
-                'java_no_sonar' => 1, 'python_no_sonar' => 0, 'php_no_sonar' => 0,
-                'check_style' => 0, 'no_pmd' => 0, 'suppress_warning' => 2,
+                'java_no_sonar' => 1,
+                'python_no_sonar' => 0,
+                'php_no_sonar' => 0,
+                'check_style' => 0,
+                'no_pmd' => 0,
+                'suppress_warning' => 2,
                 'total_no_sonar' => 1,
             ],
         ]);
         // MODIF 2026-06-07 : clés to do par langage (CollecteController:813-821)
         $this->batchTodo->method('batchCollecteTodo')->willReturn([
-            'code' => 200, 'message' => 'todo ok',
+            'code' => 200,
+            'message' => 'todo ok',
             'historique' => [
-                'java_todo' => 5, 'python_todo' => 0, 'php_todo' => 1,
-                'xml_todo' => 0, 'web_todo' => 0, 'javascript_todo' => 1,
-                'typescript_todo' => 0, 'ruby_todo' => 0, 'total_todo' => 7,
+                'java_todo' => 5,
+                'python_todo' => 0,
+                'php_todo' => 1,
+                'xml_todo' => 0,
+                'web_todo' => 0,
+                'javascript_todo' => 1,
+                'typescript_todo' => 0,
+                'ruby_todo' => 0,
+                'total_todo' => 7,
             ],
         ]);
         $this->batchActuator->method('BatchCollecteActuatorInfo')->willReturn([
-            'code' => 200, 'message' => 'actuator ok',
+            'code' => 200,
+            'message' => 'actuator ok',
             'dataJson' => ['build' => []],
             'json' => ['date_extraction' => '2026-07-23 00:00:00', 'code' => 200, 'message' => 'actuator ok'],
         ]);
         $this->batchLogger->method('BatchCollecteLogger')->willReturn([
-            'code' => 200, 'message' => 'logger ok',
+            'code' => 200,
+            'message' => 'logger ok',
             'historique' => [
-                'logger_info' => 1, 'logger_warn' => 2,
-                'logger_error' => 3, 'logger_debug' => 4,
+                'logger_info' => 1,
+                'logger_warn' => 2,
+                'logger_error' => 3,
+                'logger_debug' => 4,
             ],
         ]);
     }
@@ -686,8 +831,10 @@ class CollecteControllerTest extends TestCase
         $this->batchHotspot->method('batchCollecteHotspot')->willReturn($this->stubHotspotHappy());
         $this->batchHotspotDetail->method('batchCollecteHotspotDetail')->willReturn($this->stubHotspotDetailHappy());
         $this->batchOwasp->method('batchCollecteOwasp')->willReturn([
-            'code' => 200, 'message' => 'owasp ok',
-            'owasp2017' => 0, 'owasp2021' => 0,
+            'code' => 200,
+            'message' => 'owasp ok',
+            'owasp2017' => 0,
+            'owasp2021' => 0,
         ]);
     }
 
@@ -714,9 +861,13 @@ class CollecteControllerTest extends TestCase
                 'analyse_key' => 'AY1',
                 'version' => '1.0.0',
                 'date_version' => '2026-04-22',
-                'version_release' => 1, 'version_snapshot' => 0, 'version_autre' => 0,
-                'version_release_sonar' => 1, 'version_snapshot_sonar' => 0,
-                'version_autre_sonar' => 0, 'version_sonar' => 1,
+                'version_release' => 1,
+                'version_snapshot' => 0,
+                'version_autre' => 0,
+                'version_release_sonar' => 1,
+                'version_snapshot_sonar' => 0,
+                'version_autre_sonar' => 0,
+                'version_sonar' => 1,
             ],
         ];
     }
@@ -733,57 +884,102 @@ class CollecteControllerTest extends TestCase
     private function stubMesureHappy(): array
     {
         return [
-            'code' => 200, 'message' => 'mesure ok',
+            'code' => 200,
+            'message' => 'mesure ok',
             'data' => ['maven_key' => self::MAVEN_KEY],
             'historique' => [
                 // volume
-                'lines' => 1000, 'ncloc' => 800, 'ncloc_language_distribution' => 'java=800',
-                'files' => 30, 'classes' => 50, 'functions' => 200,
+                'lines' => 1000,
+                'ncloc' => 800,
+                'ncloc_language_distribution' => 'java=800',
+                'files' => 30,
+                'classes' => 50,
+                'functions' => 200,
                 // commentaires
-                'comment_lines' => 100, 'comment_lines_density' => 12.5, 'comment_lines_rating' => 'A',
+                'comment_lines' => 100,
+                'comment_lines_density' => 12.5,
+                'comment_lines_rating' => 'A',
                 // couverture
-                'coverage' => 80.0, 'branch_coverage' => 75.0, 'line_coverage' => 82.0,
-                'lines_to_cover' => 600, 'conditions_to_cover' => 200, 'uncovered_conditions' => 50,
+                'coverage' => 80.0,
+                'branch_coverage' => 75.0,
+                'line_coverage' => 82.0,
+                'lines_to_cover' => 600,
+                'conditions_to_cover' => 200,
+                'uncovered_conditions' => 50,
                 'coverage_rating' => 'B',
                 // tests
-                'tests' => 150, 'test_execution_time' => 3200, 'test_errors' => 0,
-                'test_failures' => 0, 'skipped_tests' => 2, 'test_success_density' => 98.7,
+                'tests' => 150,
+                'test_execution_time' => 3200,
+                'test_errors' => 0,
+                'test_failures' => 0,
+                'skipped_tests' => 2,
+                'test_success_density' => 98.7,
                 // duplication
-                'duplicated_blocks' => 3, 'duplicated_files' => 2, 'duplicated_lines' => 40,
-                'duplicated_lines_density' => 2.0, 'duplicated_lines_rating' => 'A',
+                'duplicated_blocks' => 3,
+                'duplicated_files' => 2,
+                'duplicated_lines' => 40,
+                'duplicated_lines_density' => 2.0,
+                'duplicated_lines_rating' => 'A',
                 // issues
-                'open_issues' => 10, 'reopened_issues' => 1, 'confirmed_issues' => 2,
-                'false_positive_issues' => 0, 'high_impact_accepted_issues' => 0, 'accepted_issues' => 0,
-                'violations' => 10, 'blocker_violations' => 0, 'critical_violations' => 1,
-                'major_violations' => 5, 'minor_violations' => 3, 'info_violations' => 1,
-                'software_quality_blocker_issues' => 0, 'software_quality_high_issues' => 1,
-                'software_quality_info_issues' => 0, 'software_quality_low_issues' => 2,
+                'open_issues' => 10,
+                'reopened_issues' => 1,
+                'confirmed_issues' => 2,
+                'false_positive_issues' => 0,
+                'high_impact_accepted_issues' => 0,
+                'accepted_issues' => 0,
+                'violations' => 10,
+                'blocker_violations' => 0,
+                'critical_violations' => 1,
+                'major_violations' => 5,
+                'minor_violations' => 3,
+                'info_violations' => 1,
+                'software_quality_blocker_issues' => 0,
+                'software_quality_high_issues' => 1,
+                'software_quality_info_issues' => 0,
+                'software_quality_low_issues' => 2,
                 'software_quality_medium_issues' => 3,
                 // complexité
-                'complexity' => 42, 'cognitive_complexity' => 38, 'complexity_ratio' => 5.2,
-                'cognitive_complexity_ratio' => 4.7, 'complexity_rating' => 'A', 'cognitive_complexity_rating' => 'A',
+                'complexity' => 42,
+                'cognitive_complexity' => 38,
+                'complexity_ratio' => 5.2,
+                'cognitive_complexity_ratio' => 4.7,
+                'complexity_rating' => 'A',
+                'cognitive_complexity_rating' => 'A',
                 // maintenabilité
-                'code_smells' => 5, 'sqale_index' => 120, 'sqale_rating' => 'A', 'sqale_debt_ratio' => 1.5,
-                'maintainability_issues' => 5, 'software_quality_maintainability_rating' => 'A',
+                'code_smells' => 5,
+                'sqale_index' => 120,
+                'sqale_rating' => 'A',
+                'sqale_debt_ratio' => 1.5,
+                'maintainability_issues' => 5,
+                'software_quality_maintainability_rating' => 'A',
                 'software_quality_maintainability_debt_ratio' => 1.2,
                 'effort_to_reach_maintainability_rating_a' => 0,
                 'software_quality_maintainability_remediation_effort' => 60,
                 'software_quality_maintainability_issues' => 4,
                 'effort_to_reach_software_quality_maintainability_rating_a' => 0,
                 // fiabilité
-                'bugs' => 2, 'reliability_rating' => 'B', 'reliability_remediation_effort' => 30,
-                'reliability_issues' => 2, 'software_quality_reliability_rating' => 'B',
+                'bugs' => 2,
+                'reliability_rating' => 'B',
+                'reliability_remediation_effort' => 30,
+                'reliability_issues' => 2,
+                'software_quality_reliability_rating' => 'B',
                 'software_quality_reliability_remediation_effort' => 30,
                 'software_quality_reliability_issues' => 2,
                 // sécurité
-                'vulnerabilities' => 1, 'security_rating' => 'A', 'security_remediation_effort' => 10,
+                'vulnerabilities' => 1,
+                'security_rating' => 'A',
+                'security_remediation_effort' => 10,
                 'software_quality_security_rating' => 'A',
                 'software_quality_security_remediation_effort' => 10,
                 'software_quality_security_issues' => 1,
-                'security_hotspots' => 0, 'security_hotspots_reviewed' => 0, 'security_review_rating' => 'A',
+                'security_hotspots' => 0,
+                'security_hotspots_reviewed' => 0,
+                'security_review_rating' => 'A',
                 // identité
-                'maven_key' => self::MAVEN_KEY, 'project_name' => 'App',
-                'mode_collecte' => 'collecte', 'utilisateur_collecte' => 'u',
+                'maven_key' => self::MAVEN_KEY,
+                'project_name' => 'App',
+                'mode_collecte' => 'collecte',
+                'utilisateur_collecte' => 'u',
             ],
         ];
     }
@@ -799,15 +995,30 @@ class CollecteControllerTest extends TestCase
     private function stubAnomalieHappy(): array
     {
         return [
-            'code' => 200, 'message' => 'anomalie ok',
+            'code' => 200,
+            'message' => 'anomalie ok',
             'data' => [
-                'anomalie_total' => 10, 'dette' => '1h', 'dette_minute' => 60,
-                'dette_reliability' => '15m', 'dette_reliability_minute' => 15,
-                'dette_vulnerability' => '15m', 'dette_vulnerability_minute' => 15,
-                'dette_code_smell' => '30m', 'dette_code_smell_minute' => 30,
-                'bug' => 2, 'vulnerability' => 3, 'code_smell' => 5,
-                'frontend' => 1, 'backend' => 2, 'autre' => 3, 'inconnu' => 4,
-                'blocker' => 1, 'critical' => 2, 'major' => 3, 'info' => 2, 'minor' => 2,
+                'anomalie_total' => 10,
+                'dette' => '1h',
+                'dette_minute' => 60,
+                'dette_reliability' => '15m',
+                'dette_reliability_minute' => 15,
+                'dette_vulnerability' => '15m',
+                'dette_vulnerability_minute' => 15,
+                'dette_code_smell' => '30m',
+                'dette_code_smell_minute' => 30,
+                'bug' => 2,
+                'vulnerability' => 3,
+                'code_smell' => 5,
+                'frontend' => 1,
+                'backend' => 2,
+                'autre' => 3,
+                'inconnu' => 4,
+                'blocker' => 1,
+                'critical' => 2,
+                'major' => 3,
+                'info' => 2,
+                'minor' => 2,
             ],
             'historique' => ['bug' => 2, 'vulnerability' => 3],
         ];
@@ -825,7 +1036,8 @@ class CollecteControllerTest extends TestCase
             }
         }
         return [
-            'code' => 200, 'message' => 'detail ok',
+            'code' => 200,
+            'message' => 'detail ok',
             'historique' => $historique,
         ];
     }
@@ -836,10 +1048,13 @@ class CollecteControllerTest extends TestCase
     private function stubHotspotHappy(): array
     {
         return [
-            'code' => 200, 'message' => 'hotspot ok',
+            'code' => 200,
+            'message' => 'hotspot ok',
             'historique' => [
-                'hotspot_high' => 1, 'hotspot_medium' => 2,
-                'hotspot_low' => 3, 'nombre_hotspot' => 6,
+                'hotspot_high' => 1,
+                'hotspot_medium' => 2,
+                'hotspot_low' => 3,
+                'nombre_hotspot' => 6,
             ],
         ];
     }
@@ -864,7 +1079,8 @@ class CollecteControllerTest extends TestCase
     private function stubHotspotDetailHappy(): array
     {
         return [
-            'code' => 200, 'message' => 'hotspot detail ok',
+            'code' => 200,
+            'message' => 'hotspot detail ok',
             'nombre' => 6,
             'historique' => [
                 'menace_potentielle_totale' => 6,

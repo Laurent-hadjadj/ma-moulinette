@@ -52,6 +52,11 @@ final class LanguageDistributionService
         'swift'  => 'Swift',
         'dart'   => 'Dart',
         'vbnet'  => 'VB.NET',
+        // MODIF 26/10/2026 : SonarQube renvoie parfois une clé "<null>" quand il ne
+        // détermine pas le langage d'une partie du code — normalisée en "Inconnu" dès la
+        // collecte (BuildMapHistoryService::normalizeLanguageDistribution()), explicite ici
+        // pour ne pas dépendre implicitement du fallback ucfirst() de getLabel().
+        'inconnu' => 'Inconnu',
     ];
 
     /**

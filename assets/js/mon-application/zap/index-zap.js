@@ -5,16 +5,17 @@
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *
- *  MODIF 2026-10-13 : entré JS pour la page /zap (DAST), centrée sur un
- *  seul projet. Lit le dataset injecte dans
- *  <script type="application/json" id="zap-chart-data"> et construit :
+ *  MODIF 2026-10-13 : entré JS pour la page /zap (DAST). Lit le dataset
+ *  injecte dans <script type="application/json" id="zap-chart-data"> et
+ *  construit, pour chaque "lane" (1 par target_url distinct détecté pour
+ *  le maven_key du token — MODIF 26/10/2026, voir ZapPageController) :
  *   - 1 bar chart par référentiel OWASP présent (alertes par catégorie,
  *     dernier scan) ;
  *   - 1 line chart (évolution du risque par niveau au fil des scans).
  *
  *  Aligne sur le pattern de index-dependency-check-dashboard.js — rendu
  *  100% côté serveur pour les tableaux, JS limité à la construction des
- *  2 graphiques (pas d'AJAX, pas d'injection case par case).
+ *  graphiques (pas d'AJAX, pas d'injection case par case).
  *
  *  ---
  *  Vous pouvez obtenir une copie de la licence a l'adresse suivante :
@@ -69,24 +70,28 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  buildCategoryCharts(data.categories || []);
-  buildHistoryChart(data.history || []);
+  (data.lanes || []).forEach((lane) => {
+    buildCategoryCharts(lane.index, lane.categories || []);
+    buildHistoryChart(lane.index, lane.history || []);
+  });
 });
 
 /**
  * [Description for buildCategoryCharts]
  * Un bar chart par référentiel OWASP présent : 10 catégories en X, nombre
- * d'alertes (règles distinctes) en Y, sur le dernier scan uniquement.
+ * d'alertes (règles distinctes) en Y, sur le dernier scan uniquement d'une
+ * lane (target_url) donnée.
  *
+ * @param mixed laneIndex
  * @param mixed categories
  *
  * Created at: 13/10/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const buildCategoryCharts = function(categories) {
+const buildCategoryCharts = function(laneIndex, categories) {
   categories.forEach((dataset) => {
-    const ctx = document.getElementById(`zap-chart-categories-${dataset.referential}`);
+    const ctx = document.getElementById(`zap-chart-categories-${laneIndex}-${dataset.referential}`);
     if (!ctx) { return; }
 
     const labels = dataset.categories.map((c) => `A${c.n}`);
@@ -127,16 +132,18 @@ const buildCategoryCharts = function(categories) {
 /**
  * [Description for buildHistoryChart]
  * Line chart : évolution du nombre d'alertes par niveau de risque au fil
- * des scans successifs. 1 point = 1 scan ingéré (pas un jour calendaire).
+ * des scans successifs d'une lane (target_url) donnée. 1 point = 1 scan
+ * ingéré (pas un jour calendaire).
  *
+ * @param mixed laneIndex
  * @param mixed history
  *
  * Created at: 13/10/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const buildHistoryChart = function(history) {
-  const ctx = document.getElementById('zap-chart-history');
+const buildHistoryChart = function(laneIndex, history) {
+  const ctx = document.getElementById(`zap-chart-history-${laneIndex}`);
   if (!ctx) { return; }
   if (!history.length) {
     ctx.getContext('2d').fillText('Pas assez de scans pour tracer une évolution', 10, 20);

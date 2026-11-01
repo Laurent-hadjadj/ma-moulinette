@@ -16,8 +16,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Owasp;
 
 use App\Controller\Owasp\ApiOwaspPeintureController;
-use App\Entity\{HotspotDetails, HotspotOwasp, ListeProjet, Owasp, Utilisateur};
-use App\Repository\{HotspotDetailsRepository, HotspotOwaspRepository, ListeProjetRepository, OwaspRepository};
+use App\Entity\{HotspotDetails, HotspotOwasp, ListeProjet, Owasp, OwaspDetails, Utilisateur};
+use App\Repository\{HotspotDetailsRepository, HotspotOwaspRepository, ListeProjetRepository, OwaspDetailsRepository, OwaspRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -38,6 +38,9 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     /** @var OwaspRepository&MockObject */
     private MockObject $owaspRepo;
+
+    /** @var OwaspDetailsRepository&MockObject */
+    private MockObject $owaspDetailsRepo;
 
     /** @var HotspotOwaspRepository&MockObject */
     private MockObject $hotspotOwaspRepo;
@@ -63,6 +66,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->owaspRepo = $this->createMock(OwaspRepository::class);
+        $this->owaspDetailsRepo = $this->createMock(OwaspDetailsRepository::class);
         $this->hotspotOwaspRepo = $this->createMock(HotspotOwaspRepository::class);
         $this->hotspotDetailsRepo = $this->createMock(HotspotDetailsRepository::class);
         $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
@@ -73,6 +77,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
         $this->em->method('getRepository')->willReturnMap([
             [Owasp::class, $this->owaspRepo],
+            [OwaspDetails::class, $this->owaspDetailsRepo],
             [HotspotOwasp::class, $this->hotspotOwaspRepo],
             [HotspotDetails::class, $this->hotspotDetailsRepo],
             [ListeProjet::class, $this->listeProjetRepo],
@@ -182,22 +187,39 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $this->assertSame(20, $payload['critique']);
         $this->assertSame(30, $payload['majeur']);
         $this->assertSame(40, $payload['mineur']);
-        $this->assertSame('facet', $payload['source']);
+        $this->assertSame('core', $payload['source']);
 
         // Valeurs exposées individuellement
         $this->assertSame(1, $payload['a1']);
         $this->assertSame(10, $payload['a10']);
         $this->assertSame(1, $payload['a1Blocker']);
         $this->assertSame(2, $payload['a1Critical']);
+
+        // MODIF 27/10/2026 : répartition par module des vulnérabilités OWASP.
+        $this->assertSame(3, $payload['module_frontend']);
+        $this->assertSame(4, $payload['module_backend']);
+        $this->assertSame(5, $payload['module_autre']);
     }
 
-    public function testPeintureOwaspListeExposesTagSourceWhenSetInRow(): void
+    /**
+     * MODIF 27/10/2026 : `source` est désormais dérivée des sources par
+     * catégorie dans `categories` (core/findsecbugs/mixed), plus la colonne
+     * `owasp.source` (supprimée) — cf. OwaspRuleClassifierService.
+     */
+    public function testPeintureOwaspListeDerivesFindsecbugsSourceWhenAllCategoriesAreFindsecbugs(): void
     {
-        // MODIF 2026-07-18 : la ligne persistée par le secours par tag
-        // (BatchCollecteOwaspController) porte source='tag' — vérifie que
-        // l'API de peinture la relaie telle quelle au front.
         $this->authorizeMavenKey();
-        $row = array_merge($this->buildOwaspRow(), ['source' => 'tag']);
+        $row = [
+            'referential_owasp' => 2017,
+            'version' => '1.0.0',
+            'date_version' => '2026-04-22',
+            'categories' => json_encode([
+                'a1' => ['total' => 5, 'blocker' => 0, 'critical' => 0, 'major' => 5, 'minor' => 0, 'info' => 0, 'source' => 'findsecbugs'],
+            ]),
+            'module_frontend' => 0,
+            'module_backend' => 0,
+            'module_autre' => 0,
+        ];
         $this->owaspRepo->method('selectOwaspOrderByDateEnregistrement')
             ->willReturn(['code' => 200, 'liste' => [$row]]);
 
@@ -206,7 +228,155 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'referential_owasp' => 2017,
         ])));
 
-        $this->assertSame('tag', $payload['source']);
+        $this->assertSame('findsecbugs', $payload['source']);
+    }
+
+    public function testPeintureOwaspListeDerivesMixedSourceWhenCategoriesComeFromBothOrigins(): void
+    {
+        $this->authorizeMavenKey();
+        $row = [
+            'referential_owasp' => 2017,
+            'version' => '1.0.0',
+            'date_version' => '2026-04-22',
+            'categories' => json_encode([
+                'a1' => ['total' => 5, 'blocker' => 0, 'critical' => 0, 'major' => 5, 'minor' => 0, 'info' => 0, 'source' => 'core'],
+                'a6' => ['total' => 9, 'blocker' => 0, 'critical' => 0, 'major' => 9, 'minor' => 0, 'info' => 0, 'source' => 'findsecbugs'],
+            ]),
+            'module_frontend' => 0,
+            'module_backend' => 0,
+            'module_autre' => 0,
+        ];
+        $this->owaspRepo->method('selectOwaspOrderByDateEnregistrement')
+            ->willReturn(['code' => 200, 'liste' => [$row]]);
+
+        $payload = $this->decode($this->controller->peintureOwaspListe($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2017,
+        ])));
+
+        $this->assertSame('mixed', $payload['source']);
+    }
+
+    public function testPeintureOwaspListeHandlesEmptyCategoriesWithoutError(): void
+    {
+        // Projet jamais collecté pour ce référentiel : categories = {} (sparse, vide).
+        $this->authorizeMavenKey();
+        $row = [
+            'referential_owasp' => 2017,
+            'version' => '1.0.0',
+            'date_version' => '2026-04-22',
+            'categories' => json_encode([]),
+            'module_frontend' => null,
+            'module_backend' => null,
+            'module_autre' => null,
+        ];
+        $this->owaspRepo->method('selectOwaspOrderByDateEnregistrement')
+            ->willReturn(['code' => 200, 'liste' => [$row]]);
+
+        $payload = $this->decode($this->controller->peintureOwaspListe($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2017,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame(0, $payload['total']);
+        $this->assertSame('core', $payload['source'], 'Repli par défaut quand categories est vide.');
+        $this->assertSame(0, $payload['a1']);
+        $this->assertNull($payload['module_frontend']);
+    }
+
+    // ═══════════════════════ peintureOwaspDetails ═══════════════════════════
+
+    public function testPeintureOwaspDetailsReturns400WhenMavenKeyOrReferentialMissing(): void
+    {
+        $response = $this->controller->peintureOwaspDetails(
+            $this->jsonRequest(['referential_owasp' => 2021]) // pas de maven_key
+        );
+
+        $this->assertJsonStatus($response, 400, 'error');
+    }
+
+    public function testPeintureOwaspDetailsPropagatesErrorFromSelectQuery(): void
+    {
+        $this->authorizeMavenKey();
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('selectOwaspDetailsTop10BySeverity')
+            ->with(['maven_key' => self::MAVEN_KEY, 'referential_owasp' => 2021])
+            ->willReturn(['code' => 500, 'erreur' => 'boom']);
+
+        $this->owaspDetailsRepo->expects($this->never())->method('countOwaspDetails');
+
+        $response = $this->controller->peintureOwaspDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2021,
+        ]));
+
+        $this->assertJsonStatus($response, 500, 'error');
+    }
+
+    public function testPeintureOwaspDetailsPropagatesErrorFromCountQuery(): void
+    {
+        $this->authorizeMavenKey();
+        $this->owaspDetailsRepo->method('selectOwaspDetailsTop10BySeverity')
+            ->willReturn(['code' => 200, 'details' => []]);
+
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('countOwaspDetails')
+            ->willReturn(['code' => 500, 'erreur' => 'count failed']);
+
+        $response = $this->controller->peintureOwaspDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2021,
+        ]));
+
+        $this->assertJsonStatus($response, 500, 'error');
+    }
+
+    public function testPeintureOwaspDetailsReturnsDetailsAndTotalOnSuccess(): void
+    {
+        $this->authorizeMavenKey();
+        $rows = [
+            ['rule_key' => 'java:S2077', 'severity' => 'CRITICAL', 'categories' => 'A1', 'file_path' => 'Foo.java', 'line' => 10, 'message' => 'msg'],
+        ];
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('selectOwaspDetailsTop10BySeverity')
+            ->with(['maven_key' => self::MAVEN_KEY, 'referential_owasp' => 2021])
+            ->willReturn(['code' => 200, 'details' => $rows]);
+
+        $this->owaspDetailsRepo->expects($this->once())
+            ->method('countOwaspDetails')
+            ->with(['maven_key' => self::MAVEN_KEY, 'referential_owasp' => 2021])
+            ->willReturn(['code' => 200, 'total' => 78]);
+
+        $payload = $this->decode($this->controller->peintureOwaspDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2021,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame($rows, $payload['details']);
+        $this->assertSame(78, $payload['total']);
+    }
+
+    public function testPeintureOwaspDetailsReturns406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->owaspDetailsRepo->expects($this->never())->method('selectOwaspDetailsTop10BySeverity');
+
+        $response = $this->controller->peintureOwaspDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2021,
+        ]));
+
+        $this->assertJsonStatus($response, 406, 'warning');
     }
 
     // ═══════════════════════ peintureOwaspHotspotInfo ══════════════════════
@@ -366,6 +536,18 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $this->assertJsonStatus($response, 400, 'error');
     }
 
+    // MODIF 26/10/2026 : referential_owasp est désormais requis (bug corrigé —
+    // voir testPeintureOwaspSeverityPropagatesReferentialOwaspToQuery).
+    public function testPeintureOwaspSeverityReturns400WhenReferentialOwaspMissing(): void
+    {
+        $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'menace' => 'a1', // pas de 'referential_owasp'
+        ]));
+
+        $this->assertJsonStatus($response, 400, 'error');
+    }
+
     public function testPeintureOwaspSeverityReturnsAllThreeProbabilityBuckets(): void
     {
         $this->authorizeMavenKey();
@@ -382,12 +564,33 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $payload = $this->decode($this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ])));
 
         $this->assertSame(200, $payload['code']);
         $this->assertSame(4, $payload['high']);
         $this->assertSame(2, $payload['medium']);
         $this->assertSame(1, $payload['low']);
+    }
+
+    // MODIF 26/10/2026 : BUG CORRIGÉ — referential_owasp n'était jamais transmis
+    // à countHotspotOwaspMenaceByStatus(), qui sommait silencieusement 2017 et
+    // 2021. Vérifie qu'il est bien propagé jusqu'à la requête.
+    public function testPeintureOwaspSeverityPropagatesReferentialOwaspToQuery(): void
+    {
+        $this->authorizeMavenKey();
+        $this->hotspotOwaspRepo->expects($this->exactly(3))
+            ->method('countHotspotOwaspMenaceByStatus')
+            ->with($this->callback(fn (array $map) => $map['referential_owasp'] === 2021))
+            ->willReturn(['code' => 200, 'nombre' => ['total' => 0]]);
+
+        $payload = $this->decode($this->controller->peintureOwaspSeverity($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'menace' => 'a6',
+            'referential_owasp' => 2021,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
     }
 
     public function testPeintureOwaspSeverityPropagatesErrorFromHighQuery(): void
@@ -400,6 +603,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 500, 'error');
@@ -418,6 +622,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 500);
@@ -436,6 +641,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 500);
@@ -596,6 +802,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
             'menace' => 'a1',
+            'referential_owasp' => 2021,
         ]));
 
         $this->assertJsonStatus($response, 406, 'warning');
@@ -636,20 +843,36 @@ class ApiOwaspPeintureControllerTest extends TestCase
      *
      * @return array<string, int|string>
      */
+    /**
+     * MODIF 27/10/2026 : `categories` (JSON, sparse) remplace les 60 colonnes
+     * à plat a1..a10/aN_blocker..minor + `source` — cf. owasp.md. Toutes les
+     * catégories ont ici `source: 'core'` (cf. testPeintureOwaspListeDerives*
+     * pour les cas 'findsecbugs'/'mixed').
+     *
+     * @return array<string, mixed>
+     */
     private function buildOwaspRow(): array
     {
-        $row = [
+        $categories = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $categories["a{$i}"] = [
+                'total' => $i,
+                'blocker' => 1,
+                'critical' => 2,
+                'major' => 3,
+                'minor' => 4,
+                'info' => 0,
+                'source' => 'core',
+            ];
+        }
+        return [
             'referential_owasp' => 2021,
             'version' => '1.0.0',
             'date_version' => '2026-04-22',
+            'categories' => json_encode($categories),
+            'module_frontend' => 3,
+            'module_backend' => 4,
+            'module_autre' => 5,
         ];
-        for ($i = 1; $i <= 10; $i++) {
-            $row["a{$i}"] = $i;
-            $row["a{$i}_blocker"] = 1;
-            $row["a{$i}_critical"] = 2;
-            $row["a{$i}_major"] = 3;
-            $row["a{$i}_minor"] = 4;
-        }
-        return $row;
     }
 }

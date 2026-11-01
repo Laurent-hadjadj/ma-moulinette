@@ -35,6 +35,9 @@ Compteurs globaux : utilisateurs, projets, profils, règles actives, entrées d'
 
 Un tableau (22 colonnes, tri/recherche/pagination 100% côté navigateur) : une ligne par projet, dernière synthèse connue dans `historique` — version, Quality Gate, les 8 notes A-E, volumétrie, anomalies, couverture.
 
+!!! note "✅ Couleurs des badges normalisées (30/10/2026)"
+    Les badges de note A-E (`.note-A`..`.note-E`/`.note-na`), de Quality Gate (`.qg-ok`/`.qg-ko`/`.qg-na`) et le texte des compteurs de violations dépassant un seuil (`.num-warn`) utilisaient les couleurs **par défaut de Foundation**, jamais alignées sur la palette du reste de l'application — recolorés sur `#077e07`/`#a3c50b`/`#edbf05`/`#ed7d20`/`#d4333f` pour les notes (pairage noir/blanc du texte corrigé au passage sur D, auparavant en blanc sur un fond devenu trop clair), `#e0e0e0`/`#5f5e5e` pour l'état « non disponible » (aligné sur `.note-gris` du reste de l'application) et `#bf0815` pour `.num-warn` (aligné sur `.couleur-rouge`, même rôle texte-sur-fond-clair). La Quality Gate n'a pas d'équivalent « orange » : seulement 3 états réels (OK/ERROR/absent), pas de palier intermédiaire.
+
 ## 👤 Statistiques utilisateur
 
 Basée sur le suivi anonymisé de navigation (`user_agent_analysis`, alimentée par un pipeline événement → analyse — voir ci-dessous), **pas** sur une hypothétique table « events ».

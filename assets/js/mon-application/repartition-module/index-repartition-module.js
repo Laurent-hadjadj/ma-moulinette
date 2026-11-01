@@ -340,7 +340,13 @@ const historique = async function (maven_key) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'true');
+        /* MODIF 29/10/2026 : BUG CORRIGÉ — le verrou de session
+         * se posait aussi sur un 404 "pas encore de données historisées", un état normal et * récupérable. Une fois posé, le clic suivant sur « Historique » ne rappelait plus
+        * jamais l'API : il affichait le message générique « Erreur 500 » indéfiniment, même * après une Collecte Analyse + Enregistrement réussis entre-temps — seul un
+        * rechargement de page en sortait. Seule une vraie erreur serveur verrouille désormais. */
+        if ((t.code ? t.code : null) !== http_404) {
+          sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'true');
+        }
         return Number(t.code);
   }
 

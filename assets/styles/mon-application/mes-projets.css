@@ -90,9 +90,11 @@
 }
 
 /* Couleur pour la note D */
+/* MODIF 30/10/2026 : #ba5705 (brun, 4.67:1 avec du blanc) -> #ed7d20 + texte
+ * noir (7.55:1), même correctif que .note-d dans common.css. */
 .note-d {
-  background-color: #ba5705;
-  color: #fff;
+  background-color: #ed7d20;
+  color: #000;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 19px;
@@ -109,14 +111,33 @@
   padding-right: 22px;
 }
 
-/*
+/**
+ * MODIF 30/10/2026 : .label.success/.warning/.alert utilisent par défaut les
+ * couleurs Foundation (succès #3adb76, warning #ffae00, alert #cc4b37) -
+ * jamais surchargées sur cette page jusqu'ici, donc incohérentes avec la
+ * palette vert/orange/rouge du reste de l'appli (.note-vert1/.note-orange/
+ * .note-rouge). Portée limitée au tableau de cette page (#mon-bo-tableau) :
+ * élargir à .label.alert globalement toucherait aussi le message d'erreur de
+ * templates/auth/login.html.twig, hors périmètre de cette demande. */
+#mon-bo-tableau .label.success { background-color: #077e07; color: #fff; }
+#mon-bo-tableau .label.warning { background-color: #ed7d20; color: #000; }
+#mon-bo-tableau .label.alert   { background-color: #d4333f; color: #fff; }
+
+/* MODIF 30/10/2026 : largeur fixe par colonne - Fiabilité/Sécurité
+ * restent des colonnes étroites (violations corrigées en priorité, rarement
+ * >10 000) ; Maintenabilité est large (10 000 à 100 000 courant côté
+ * maintenabilité, jamais de valeur à 1 000 000). */
+.label-fixed-width-sm { display: inline-block; min-width: 3.5rem; text-align: center; }
+.label-fixed-width-lg { display: inline-block; min-width: 5rem; text-align: center; }
+
+/**
  * Centrage des en-têtes de colonne du tableau DataTables.
  *
  * `datatables.net-zf` impose `table.dataTable thead th { text-align: left; }`
  * (voir assets/vendor/datatables.net-zf/css/dataTables.foundation.min.css).
  * Cette règle a 3 sélecteurs de type (table/thead/th) + 1 classe (.dataTable),
- * ce qui bat la classe `.text-center` de Foundation (1 classe seule) même si
- * `.text-center` est posée directement sur chaque <th> dans le Twig — la
+ * ce qui surcharge la classe `.text-center` de Foundation (1 classe seule) même si
+ * `.text-center` est ajouté directement sur chaque <th> dans le Twig — la
  * colonne semble alors "non centrée" quel que soit le réglage DataTables
  * (columnDefs/className ne corrige que la ligne d'en-tête "feuille", pas la
  * ligne groupée avec colspan). On rajoute l'ID de la table pour dépasser

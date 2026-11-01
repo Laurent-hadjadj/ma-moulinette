@@ -276,6 +276,23 @@ class HistoriqueCaseTest extends TestCase
         yield 'ecoPythonDetteMinute' => ['EcoPythonDetteMinute', 30];
         yield 'ecoPythonRating' => ['EcoPythonRating', 'A'];
 
+        // Accessibilité (tag SonarQube accessibility) — global + par langage
+        yield 'accessibilityAnomalies' => ['AccessibilityAnomalies', 9];
+        yield 'accessibilityDetteMinute' => ['AccessibilityDetteMinute', 27];
+        yield 'accessibilityRating' => ['AccessibilityRating', 'C'];
+        yield 'accessibilityCssAnomalies' => ['AccessibilityCssAnomalies', 9];
+        yield 'accessibilityCssDetteMinute' => ['AccessibilityCssDetteMinute', 27];
+        yield 'accessibilityCssRating' => ['AccessibilityCssRating', 'C'];
+        yield 'accessibilityWebAnomalies' => ['AccessibilityWebAnomalies', 3];
+        yield 'accessibilityWebDetteMinute' => ['AccessibilityWebDetteMinute', 9];
+        yield 'accessibilityWebRating' => ['AccessibilityWebRating', 'A'];
+        yield 'accessibilityJavascriptAnomalies' => ['AccessibilityJavascriptAnomalies', 4];
+        yield 'accessibilityJavascriptDetteMinute' => ['AccessibilityJavascriptDetteMinute', 12];
+        yield 'accessibilityJavascriptRating' => ['AccessibilityJavascriptRating', 'B'];
+        yield 'accessibilityTypescriptAnomalies' => ['AccessibilityTypescriptAnomalies', 0];
+        yield 'accessibilityTypescriptDetteMinute' => ['AccessibilityTypescriptDetteMinute', 0];
+        yield 'accessibilityTypescriptRating' => ['AccessibilityTypescriptRating', 'A'];
+
         // Répartition par portée SonarQube (MAIN/TEST), globale et par catégorie
         yield 'scopeMain' => ['ScopeMain', 80];
         yield 'scopeTest' => ['ScopeTest', 20];
@@ -344,10 +361,14 @@ class HistoriqueCaseTest extends TestCase
      * par langage java/javascript/php/python, 3 colonnes chacun).
      * MODIF 2026-10-11 : 197 → 200 (+3 colonnes maintainability/reliability/
      * security_issue_severity, métriques optionnelles pas encore LTS).
+     * MODIF 2026-10-27 : 200 → 215 (+15 colonnes accessibility_*, indicateur
+     * Accessibilité — oubliées de l'entité lors de l'ajout initial, cf.
+     * tests/Integration/Repository/HistoriqueRepositoryTest.php pour la preuve
+     * que l'INSERT dynamique les persiste réellement).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(200, count($reflectionClass->getProperties()));
+        $this->assertEquals(215, count($reflectionClass->getProperties()));
     }
 }

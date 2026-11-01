@@ -292,6 +292,11 @@ class HistoriqueValidatorTest extends KernelTestCase
             'SoftwareQualityReliabilityRating',
             'SecurityRating',
             'SoftwareQualitySecurityRating',
+            'AccessibilityRating',
+            'AccessibilityCssRating',
+            'AccessibilityWebRating',
+            'AccessibilityJavascriptRating',
+            'AccessibilityTypescriptRating',
         ];
         foreach ($names as $n) {
             yield $n => [$n];
@@ -340,8 +345,12 @@ class HistoriqueValidatorTest extends KernelTestCase
          * MODIF 2026-10-09 : 184 → 197 (+13 colonnes : eco_rating global +
          * détail par langage java/javascript/php/python, 3 colonnes chacun).
          * MODIF 2026-10-11 : 197 → 200 (+3 colonnes maintainability/reliability/
-         * security_issue_severity, métriques optionnelles pas encore LTS). */
+         * security_issue_severity, métriques optionnelles pas encore LTS).
+         * MODIF 2026-10-27 : 200 → 215 (+15 colonnes accessibility_*, oubliées de
+         * l'entité lors de l'ajout initial — les 5 ratings sont désormais exercées
+         * par choiceRatingProvider ; anomalies/dette_minute n'ont pas de contrainte
+         * Assert dans l'entité, comme leurs équivalents eco_*). */
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(200, count($reflectionClass->getProperties()));
+        $this->assertEquals(215, count($reflectionClass->getProperties()));
     }
 }

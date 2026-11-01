@@ -42,7 +42,7 @@
     {% if scan %}
 
     {# === Executive summary (nouvelle page) === #}
-    <div style="page-break-before: always;">
+    <div class="page-break-before">
         <header class="header">
             <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
             <div class="header-title">
@@ -134,7 +134,7 @@
 
         {% if top_deps|length > 0 %}
         <h2>Top {{ top_deps|length }} des dépendances vulnérables</h2>
-        <p style="font-size: 10px; color: #666;">Classement par nombre de CVE détectées sur ce scan.</p>
+        <p class="footnote">Classement par nombre de CVE détectées sur ce scan.</p>
         <table class="top-table">
             <thead>
                 <tr>
@@ -158,8 +158,8 @@
         {% endif %}
 
         {% if top_cwes|length > 0 %}
-        <h2 style="page-break-before: always;">Top {{ top_cwes|length }} des familles CWE</h2>
-        <p style="font-size: 10px; color: #666;">CWE = catégorie type de faiblesse logicielle (cf. glossaire).</p>
+        <h2 class="page-break-before">Top {{ top_cwes|length }} des familles CWE</h2>
+        <p class="footnote">CWE = catégorie type de faiblesse logicielle (cf. glossaire).</p>
         <table class="top-table">
             <thead>
                 <tr>

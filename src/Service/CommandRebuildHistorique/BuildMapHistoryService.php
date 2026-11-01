@@ -315,6 +315,29 @@ class BuildMapHistoryService
     }
 
     /**
+     * [Description for normalizeLanguageDistribution]
+     * SonarQube peut renvoyer une clé "<null>" dans ncloc_language_distribution
+     * quand il ne parvient pas à déterminer le langage d'une partie du code
+     * (ex. "<null>=71;css=79;java=1948;..." — sa propre page affiche "UNKNOWN"
+     * pour ce même cas). Normalisé en "Inconnu" une seule fois ici, à la
+     * collecte (seul point d'entrée en base pour ce champ, voir metricsRebuild()
+     * ci-dessous), pour ne pas avoir à refaire cette normalisation à chaque
+     * peinture/affichage.
+     *
+     * @param string $raw
+     *
+     * @return string
+     *
+     * Created at: 26/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function normalizeLanguageDistribution(string $raw): string
+    {
+        return str_replace('<null>=', 'Inconnu=', $raw);
+    }
+
+    /**
      * [Description for getComplexityRating]
      *
      * @param float $ratio
@@ -495,7 +518,9 @@ class BuildMapHistoryService
         $size_core = [
             'lines' => isset($measures['lines']) ? (int) $measures['lines'] : null,
             'ncloc' => isset($measures['ncloc']) ? (int) $measures['ncloc'] : null,
-            'ncloc_language_distribution' => isset($measures['ncloc_language_distribution']) ? $measures['ncloc_language_distribution'] : null,
+            'ncloc_language_distribution' => isset($measures['ncloc_language_distribution'])
+                ? self::normalizeLanguageDistribution((string) $measures['ncloc_language_distribution'])
+                : null,
             'files' => isset($measures['files']) ? (int) $measures['files'] : null,
             'classes' => isset($measures['classes']) ? (int) $measures['classes'] : null,
             'functions' => isset($measures['functions']) ? (int) $measures['functions'] : null,

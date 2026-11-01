@@ -1,5 +1,5 @@
 {% set title = 'OWASP Dependency-Check - Comparer' %}
-{% set description = 'Ma Moulinette - comparaison side-by-side de plusieurs applications.' %}
+{% set description = app_name ~ ' - comparaison side-by-side de plusieurs applications.' %}
 {% set bottom = 'footer-fixed' %}
 
 {# MODIF 2026-05-13 : page comparateur multi-apps. #}
@@ -150,7 +150,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                     {% for c in comparison %}
                                         <td>
                                             <strong
-                                        style="color: {{ c.score_secu >= 80 ? '#1a5f3f' : (c.score_secu >= 50 ? '#f08a24' : '#cc4b37') }};">{{ c.score_secu|number_format(1, ',', ' ') }}</strong>
+                                        class="{{ c.score_secu >= 80 ? 'dc-score-good' : (c.score_secu >= 50 ? 'dc-score-warn' : 'dc-score-bad') }}">{{ c.score_secu|number_format(1, ',', ' ') }}</strong>
                                     </td>
                                 {% endfor %}
                             </tr>
@@ -342,7 +342,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                         {% for c in comparison %}
                                             <td class="text-center">
                                                 {% if c.scan_id in cve.scan_ids %}
-                                                    <span style="color: #cc4b37; font-weight: 700;"
+                                                    <span class="dc-score-bad font-weight-700"
                                                         title="Présente dans cette application">✓</span>
                                                     {% else %}
                                                         <span class="text-muted">—</span>

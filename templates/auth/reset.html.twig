@@ -1,7 +1,6 @@
 {# MODIF 2026-09-14 : </span> -> </p>, suppression de 4 </div> en fin de formulaire #}
 {% set title = 'Réinitialisation' %}
-{% set description = 'Ma-Moulinette - Changer son mot de passe.' %}
-{% set type_content = "Application Ma-Moulinette, changer son mot de passe très compliqué." %}
+{% set description = app_name ~ ' - Changer son mot de passe.' %}
 {% set bottom = "footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -39,7 +38,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         <header class="grid-container margin-top-1">
             <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
                 <ol class="claire-hand breadcrumbs">
-                    <li><a href="{{ path('accueil', {}) }}">Ma-Moulinette</a></li>
+                    <li><a href="{{ path('accueil', {}) }}">{{ app_name }}</a></li>
                     <li aria-current="page">Changer mon mot de passe</li>
                 </ol>
             </nav>

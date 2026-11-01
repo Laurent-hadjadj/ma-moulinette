@@ -1,6 +1,6 @@
 {# MODIF 2026-09-14 : Suppression de 2 </div> (spinner) #}
 {% set title = 'Activité' %}
-{% set description = 'Ma Moulinette - Suivi des analyses SonarQube.' %}
+{% set description = app_name ~ ' - Suivi des analyses SonarQube.' %}
 {% set bottom = "footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -73,7 +73,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     </button>
                 </div>
             </div>
-            <div class="spinner js-spinner" style="display: none;"></div>
+            <div class="spinner js-spinner display-none"></div>
 
             <table class="hover">
                 <thead>

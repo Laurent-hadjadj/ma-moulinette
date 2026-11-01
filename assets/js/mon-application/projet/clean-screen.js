@@ -177,6 +177,14 @@
   $('#js-eco-anomalies').text('');
   $('#js-eco-rating').html('');
 
+  /* MODIF 2026-10-27 : Accessibilité (tag SonarQube `accessibility`, plugins css/web/js/ts). */
+  $('#js-accessibility-anomalies').text('').removeAttr('data-accessibility-mesures-json');
+  $('#js-accessibility-rating').html('');
+  ['css', 'web', 'javascript', 'typescript'].forEach((langue) => {
+    $(`#js-accessibility-${langue}-anomalies`).text('');
+    $(`#js-accessibility-${langue}-rating`).html('');
+  });
+
   $('#js-nombre-frontend').text('').removeAttr('data-nombre-frontend');
   $('#js-nombre-frontend-percent').text('');
   $('#js-nombre-backend').text('').removeAttr('data-nombre-backend');

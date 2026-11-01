@@ -477,11 +477,18 @@ tbody tr:nth-child(even) {
   color: #000;
 }
 
-
 #modal-journal .journal-content p {
   color: #00445b;
   font-size: 1.1rem;
   font-family: "open sans", Arial, Helvetica, sans-serif;
   margin-bottom: 0.5rem;
   line-height: 1.4;
+}
+
+.journal-content-section {
+  max-height: 70vh;
+  overflow-y : auto;
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 1rem;
 }

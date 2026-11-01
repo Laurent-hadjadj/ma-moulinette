@@ -1610,6 +1610,60 @@ class Historique
     #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $ecoPythonRating = null;
 
+    // MODIF 2026-10-27 : accessibility_* (indicateur Accessibilité, tag SonarQube
+    // `accessibility`), global + détail par langage css/web/javascript/typescript —
+    // oublié lors de l'ajout initial de l'indicateur (colonnes présentes dans
+    // historique.sql/la whitelist du repository, mais jamais mappées ici).
+    #[ORM\Column(name: 'accessibility_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Accessibilité : nombre d'anomalies (OPEN, tag SonarQube accessibility), tous langages confondus"])]
+    private ?int $accessibilityAnomalies = null;
+
+    #[ORM\Column(name: 'accessibility_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Accessibilité : dette estimée en minutes (effortTotal SonarQube), tous langages confondus'])]
+    private ?int $accessibilityDetteMinute = null;
+
+    #[ORM\Column(name: 'accessibility_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Accessibilité : note A-E dérivée du ratio accessibility_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $accessibilityRating = null;
+
+    #[ORM\Column(name: 'accessibility_css_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Accessibilité : nombre d'anomalies (OPEN) pour le langage CSS"])]
+    private ?int $accessibilityCssAnomalies = null;
+
+    #[ORM\Column(name: 'accessibility_css_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Accessibilité : dette estimée en minutes pour le langage CSS'])]
+    private ?int $accessibilityCssDetteMinute = null;
+
+    #[ORM\Column(name: 'accessibility_css_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Accessibilité : note A-E pour le langage CSS'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $accessibilityCssRating = null;
+
+    #[ORM\Column(name: 'accessibility_web_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Accessibilité : nombre d'anomalies (OPEN) pour le langage Web (HTML)"])]
+    private ?int $accessibilityWebAnomalies = null;
+
+    #[ORM\Column(name: 'accessibility_web_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Accessibilité : dette estimée en minutes pour le langage Web (HTML)'])]
+    private ?int $accessibilityWebDetteMinute = null;
+
+    #[ORM\Column(name: 'accessibility_web_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Accessibilité : note A-E pour le langage Web (HTML)'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $accessibilityWebRating = null;
+
+    #[ORM\Column(name: 'accessibility_javascript_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Accessibilité : nombre d'anomalies (OPEN) pour le langage JavaScript"])]
+    private ?int $accessibilityJavascriptAnomalies = null;
+
+    #[ORM\Column(name: 'accessibility_javascript_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Accessibilité : dette estimée en minutes pour le langage JavaScript'])]
+    private ?int $accessibilityJavascriptDetteMinute = null;
+
+    #[ORM\Column(name: 'accessibility_javascript_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Accessibilité : note A-E pour le langage JavaScript'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $accessibilityJavascriptRating = null;
+
+    #[ORM\Column(name: 'accessibility_typescript_anomalies', type: Types::INTEGER, nullable: true, options: ['comment' => "Accessibilité : nombre d'anomalies (OPEN) pour le langage TypeScript"])]
+    private ?int $accessibilityTypescriptAnomalies = null;
+
+    #[ORM\Column(name: 'accessibility_typescript_dette_minute', type: Types::INTEGER, nullable: true, options: ['comment' => 'Accessibilité : dette estimée en minutes pour le langage TypeScript'])]
+    private ?int $accessibilityTypescriptDetteMinute = null;
+
+    #[ORM\Column(name: 'accessibility_typescript_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Accessibilité : note A-E pour le langage TypeScript'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $accessibilityTypescriptRating = null;
+
     // -------------------------
     // Initialisation du projet
     // -------------------------
@@ -1768,6 +1822,36 @@ class Historique
     public function setEcoPythonDetteMinute(?int $v): static { $this->ecoPythonDetteMinute = $v; return $this; }
     public function getEcoPythonRating(): ?string { return $this->ecoPythonRating; }
     public function setEcoPythonRating(?string $v): static { $this->ecoPythonRating = $v; return $this; }
+    public function getAccessibilityAnomalies(): ?int { return $this->accessibilityAnomalies; }
+    public function setAccessibilityAnomalies(?int $v): static { $this->accessibilityAnomalies = $v; return $this; }
+    public function getAccessibilityDetteMinute(): ?int { return $this->accessibilityDetteMinute; }
+    public function setAccessibilityDetteMinute(?int $v): static { $this->accessibilityDetteMinute = $v; return $this; }
+    public function getAccessibilityRating(): ?string { return $this->accessibilityRating; }
+    public function setAccessibilityRating(?string $v): static { $this->accessibilityRating = $v; return $this; }
+    public function getAccessibilityCssAnomalies(): ?int { return $this->accessibilityCssAnomalies; }
+    public function setAccessibilityCssAnomalies(?int $v): static { $this->accessibilityCssAnomalies = $v; return $this; }
+    public function getAccessibilityCssDetteMinute(): ?int { return $this->accessibilityCssDetteMinute; }
+    public function setAccessibilityCssDetteMinute(?int $v): static { $this->accessibilityCssDetteMinute = $v; return $this; }
+    public function getAccessibilityCssRating(): ?string { return $this->accessibilityCssRating; }
+    public function setAccessibilityCssRating(?string $v): static { $this->accessibilityCssRating = $v; return $this; }
+    public function getAccessibilityWebAnomalies(): ?int { return $this->accessibilityWebAnomalies; }
+    public function setAccessibilityWebAnomalies(?int $v): static { $this->accessibilityWebAnomalies = $v; return $this; }
+    public function getAccessibilityWebDetteMinute(): ?int { return $this->accessibilityWebDetteMinute; }
+    public function setAccessibilityWebDetteMinute(?int $v): static { $this->accessibilityWebDetteMinute = $v; return $this; }
+    public function getAccessibilityWebRating(): ?string { return $this->accessibilityWebRating; }
+    public function setAccessibilityWebRating(?string $v): static { $this->accessibilityWebRating = $v; return $this; }
+    public function getAccessibilityJavascriptAnomalies(): ?int { return $this->accessibilityJavascriptAnomalies; }
+    public function setAccessibilityJavascriptAnomalies(?int $v): static { $this->accessibilityJavascriptAnomalies = $v; return $this; }
+    public function getAccessibilityJavascriptDetteMinute(): ?int { return $this->accessibilityJavascriptDetteMinute; }
+    public function setAccessibilityJavascriptDetteMinute(?int $v): static { $this->accessibilityJavascriptDetteMinute = $v; return $this; }
+    public function getAccessibilityJavascriptRating(): ?string { return $this->accessibilityJavascriptRating; }
+    public function setAccessibilityJavascriptRating(?string $v): static { $this->accessibilityJavascriptRating = $v; return $this; }
+    public function getAccessibilityTypescriptAnomalies(): ?int { return $this->accessibilityTypescriptAnomalies; }
+    public function setAccessibilityTypescriptAnomalies(?int $v): static { $this->accessibilityTypescriptAnomalies = $v; return $this; }
+    public function getAccessibilityTypescriptDetteMinute(): ?int { return $this->accessibilityTypescriptDetteMinute; }
+    public function setAccessibilityTypescriptDetteMinute(?int $v): static { $this->accessibilityTypescriptDetteMinute = $v; return $this; }
+    public function getAccessibilityTypescriptRating(): ?string { return $this->accessibilityTypescriptRating; }
+    public function setAccessibilityTypescriptRating(?string $v): static { $this->accessibilityTypescriptRating = $v; return $this; }
 
     public function __construct()
     {

@@ -24,6 +24,7 @@
 --- 2026-09-25 : Ajout des indexes pour la table RCI.
 --- 2026-10-08 : Ajout des indexes pour la table eco_conception.
 --- 2026-10-13 : Ajout des indexes pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
+--- 2026-10-26 : Ajout des indexes pour la table accessibility.
 
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
@@ -101,6 +102,10 @@ CREATE INDEX IF NOT EXISTS idx_rci_date ON ma_moulinette.rci (date_enregistremen
 CREATE INDEX IF NOT EXISTS idx_eco_conception_maven_key ON ma_moulinette.eco_conception (maven_key);
 CREATE INDEX IF NOT EXISTS idx_eco_conception_date ON ma_moulinette.eco_conception (date_enregistrement);
 
+-- accessibility — MODIF 2026-10-26
+CREATE INDEX IF NOT EXISTS idx_accessibility_maven_key ON ma_moulinette.accessibility (maven_key);
+CREATE INDEX IF NOT EXISTS idx_accessibility_date ON ma_moulinette.accessibility (date_enregistrement);
+
 -- groupe utilisateur
 CREATE INDEX IF NOT EXISTS idx_groupe_groupe_utilisateur ON ma_moulinette.groupe_utilisateur (groupe_utilisateur);
 CREATE INDEX IF NOT EXISTS idx_groupe_id ON ma_moulinette.groupe_utilisateur (groupe_id);
@@ -174,6 +179,10 @@ CREATE INDEX IF NOT EXISTS idx_owasp_top10_category ON ma_moulinette.owasp_top10
 CREATE INDEX IF NOT EXISTS idx_owasp_maven_key ON ma_moulinette.owasp (maven_key);
 CREATE INDEX IF NOT EXISTS idx_owasp_date_version ON ma_moulinette.owasp (date_version);
 CREATE INDEX IF NOT EXISTS idx_owasp_key_ver_date ON ma_moulinette.owasp (maven_key, version, date_version);
+
+-- owasp_details
+CREATE INDEX IF NOT EXISTS idx_owasp_details_maven_key_referential ON ma_moulinette.owasp_details (maven_key, referential_owasp);
+CREATE INDEX IF NOT EXISTS idx_owasp_details_date ON ma_moulinette.owasp_details (date_enregistrement);
 
 -- portefeuille_historique
 CREATE INDEX IF NOT EXISTS idx_portefeuille_historique_action ON ma_moulinette.portefeuille_historique (action);

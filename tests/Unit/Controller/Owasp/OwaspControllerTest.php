@@ -19,6 +19,7 @@ use App\Controller\Owasp\OwaspController;
 use App\Entity\{HotspotDetails, HotspotOwasp, Historique, ListeProjet, Owasp, OwaspTop10, Utilisateur};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Repository\{DcScanRepository, HistoriqueRepository, HotspotDetailsRepository, HotspotOwaspRepository, ListeProjetRepository, OwaspRepository, OwaspTop10Repository, ZapScanRepository};
+use App\Service\Owasp\OwaspRuleClassifierService;
 use App\Service\PdfExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -48,6 +49,7 @@ class OwaspControllerTest extends TestCase
     /** @var PdfExportService&MockObject */        private MockObject $pdfExport;
     /** @var DcScanRepository&MockObject */        private MockObject $dcScanRepository;
     /** @var ZapScanRepository&MockObject */       private MockObject $zapScanRepository;
+    /** @var OwaspRuleClassifierService&MockObject */ private MockObject $ruleClassifier;
     /** @var OwaspTop10Repository&MockObject */      private MockObject $repoTop10;
     /** @var OwaspRepository&MockObject */           private MockObject $repoOwasp;
     /** @var HotspotOwaspRepository&MockObject */   private MockObject $repoHotspotOwasp;
@@ -74,6 +76,7 @@ class OwaspControllerTest extends TestCase
         $this->pdfExport = $this->createMock(PdfExportService::class);
         $this->dcScanRepository = $this->createMock(DcScanRepository::class);
         $this->zapScanRepository = $this->createMock(ZapScanRepository::class);
+        $this->ruleClassifier    = $this->createMock(OwaspRuleClassifierService::class);
         $this->repoTop10          = $this->createMock(OwaspTop10Repository::class);
         $this->repoOwasp          = $this->createMock(OwaspRepository::class);
         $this->repoHotspotOwasp   = $this->createMock(HotspotOwaspRepository::class);
@@ -137,6 +140,7 @@ class OwaspControllerTest extends TestCase
             $this->pdfExport,
             $this->dcScanRepository,
             $this->zapScanRepository,
+            $this->ruleClassifier,
             $this->tracking,
         );
         $this->controller->setContainer($container);
@@ -364,6 +368,7 @@ class OwaspControllerTest extends TestCase
     public function testIndexHappyPathInjectsReferentialsAndApplicationVersion(): void
     {
         $this->authorizeMavenKey();
+        $this->ruleClassifier->method('ruleCount')->willReturnMap([[2017, 117], [2021, 62]]);
         $owasp2017 = ['code' => 200, 'liste' => [['menace' => 1]]];
         $owasp2021 = ['code' => 200, 'liste' => [['menace' => 2]]];
         $owasp2025 = ['code' => 200, 'liste' => [['menace' => 3]]];
@@ -415,6 +420,9 @@ class OwaspControllerTest extends TestCase
         $this->assertNull($capturedCtx['dc_link_group']);
         $this->assertNull($capturedCtx['dc_link_artifact']);
         $this->assertNull($capturedCtx['dc_link_version']);
+        // MODIF 27/10/2026 : nombre de règles (core + FindSecBugs) couvrant chaque référentiel.
+        $this->assertSame(117, $capturedCtx['owasp_rule_count_2017']);
+        $this->assertSame(62, $capturedCtx['owasp_rule_count_2021']);
     }
 
     /* MODIF 2026-05-11 : quand un scan DC existe pour
@@ -819,14 +827,15 @@ class OwaspControllerTest extends TestCase
     public function testRapportPdfBuildsTenCategoriesWithRatings(): void
     {
         $this->authorizeMavenKey();
-        $ligne = ['version' => '1.0', 'date_version' => '2026-01-01'];
-        for ($i = 1; $i <= 10; $i++) {
-            $ligne["a{$i}"]          = ($i === 1) ? 5 : 0;
-            $ligne["a{$i}_blocker"]  = ($i === 1) ? 2 : 0;  // A1 : blocker=2 → E
-            $ligne["a{$i}_critical"] = 0;
-            $ligne["a{$i}_major"]    = 0;
-            $ligne["a{$i}_minor"]    = 0;
-        }
+        // MODIF 27/10/2026 : `categories` (JSON, sparse) remplace les colonnes à plat.
+        $ligne = [
+            'version' => '1.0',
+            'date_version' => '2026-01-01',
+            'categories' => json_encode([
+                // A1 : blocker=2 → E ; seule catégorie présente (les autres sont sparse → 0).
+                'a1' => ['total' => 5, 'blocker' => 2, 'critical' => 0, 'major' => 0, 'minor' => 0, 'info' => 0, 'source' => 'core'],
+            ]),
+        ];
         $this->repoOwasp->method('selectOwaspOrderByDateEnregistrement')
             ->willReturn(['code' => 200, 'liste' => [$ligne]]);
         $this->repoHotspotOwasp->method('countHotspotOwaspStatus')

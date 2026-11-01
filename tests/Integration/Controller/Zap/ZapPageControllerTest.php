@@ -124,13 +124,40 @@ class ZapPageControllerTest extends WebTestCase
         $this->assertStringContainsString('data-open="zap-finding-', $body);
         $this->assertStringContainsString('Do not trust client side input', $body); // solution de la règle SQL Injection
 
-        // Dataset JSON pour les graphiques : catégories + historique à 2 points.
+        // Dataset JSON pour les graphiques : 1 lane (aucun target_url distinct
+        // dans ce test), catégories + historique à 2 points dans cette lane.
         preg_match('/<script type="application\/json" id="zap-chart-data">(.*?)<\/script>/s', $body, $matches);
         $this->assertArrayHasKey(1, $matches, 'Le dataset JSON zap-chart-data doit être présent dans la page.');
         $chartData = json_decode($matches[1], true);
         $this->assertIsArray($chartData);
-        $this->assertCount(2, $chartData['categories']); // 2017 + 2021
-        $this->assertCount(2, $chartData['history']); // 2 scans ingérés
+        $this->assertCount(1, $chartData['lanes']);
+        $this->assertCount(2, $chartData['lanes'][0]['categories']); // 2017 + 2021
+        $this->assertCount(2, $chartData['lanes'][0]['history']); // 2 scans ingérés
+    }
+
+    public function testReturns200WithOneLanePerTargetUrlWhenMultipleTargetsExist(): void
+    {
+        // MODIF 26/10/2026 : un maven_key peut recouvrir plusieurs cibles DAST
+        // réelles (ex. tier présentation + tier métier d'une même application)
+        // — 1 "lane" par target_url distinct, chacune avec son propre bloc
+        // KPI/historique, plutôt qu'un historique mélangé entre les deux.
+        $this->seedListeProjet();
+        $this->ingestFixture('2026-10-01 10:00:00', 'report-ok.json', 'https://presentation.example/app');
+        $this->ingestFixture('2026-10-13 10:00:00', 'report-no-owasp-tags.json', 'https://metier.example/app');
+
+        $this->client->request('GET', '/zap?token=' . $this->buildToken(self::MAVEN_KEY));
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $body = (string) $this->client->getResponse()->getContent();
+
+        $this->assertStringContainsString('https://presentation.example/app', $body);
+        $this->assertStringContainsString('https://metier.example/app', $body);
+        $this->assertStringContainsString('bouton-ouvrir-rapport-zap-pdf-0', $body);
+        $this->assertStringContainsString('bouton-ouvrir-rapport-zap-pdf-1', $body);
+
+        preg_match('/<script type="application\/json" id="zap-chart-data">(.*?)<\/script>/s', $body, $matches);
+        $this->assertArrayHasKey(1, $matches);
+        $chartData = json_decode($matches[1], true);
+        $this->assertCount(2, $chartData['lanes']);
     }
 
     public function testRapportPdfReturnsValidPdfWhenScanExists(): void
@@ -199,8 +226,9 @@ class ZapPageControllerTest extends WebTestCase
         preg_match('/<script type="application\/json" id="zap-chart-data">(.*?)<\/script>/s', $body, $matches);
         $this->assertArrayHasKey(1, $matches);
         $chartData = json_decode($matches[1], true);
-        $this->assertSame([], $chartData['categories'], 'Aucun référentiel observé -> tableau de catégories vide');
-        $this->assertCount(1, $chartData['history']);
+        $this->assertCount(1, $chartData['lanes']);
+        $this->assertSame([], $chartData['lanes'][0]['categories'], 'Aucun référentiel observé -> tableau de catégories vide');
+        $this->assertCount(1, $chartData['lanes'][0]['history']);
     }
 
     private function seedListeProjet(): void
@@ -215,8 +243,11 @@ class ZapPageControllerTest extends WebTestCase
         $this->em->flush();
     }
 
-    private function ingestFixture(string $generatedAt, string $fixture = 'report-ok.json'): \App\Entity\ZapScan
-    {
+    private function ingestFixture(
+        string $generatedAt,
+        string $fixture = 'report-ok.json',
+        ?string $targetUrl = null,
+    ): \App\Entity\ZapScan {
         $samplePath = __DIR__ . '/../../../Fixtures/zap-json/' . $fixture;
         $sampleContent = file_get_contents($samplePath);
         self::assertNotFalse($sampleContent);
@@ -234,6 +265,7 @@ class ZapPageControllerTest extends WebTestCase
             ->setContentType(ZapProcessingQueue::CONTENT_JSON)
             ->setMavenKey(self::MAVEN_KEY)
             ->setProjectVersion('1.0')
+            ->setTargetUrl($targetUrl)
             ->setStatus(ZapProcessingQueue::STATUS_PROCESSING);
         $this->em->persist($queue);
         $this->em->flush();

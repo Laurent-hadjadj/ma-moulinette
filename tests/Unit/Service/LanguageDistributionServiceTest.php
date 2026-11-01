@@ -39,6 +39,17 @@ final class LanguageDistributionServiceTest extends TestCase
         self::assertSame([], $this->svc->parse(null));
     }
 
+    public function testParseAndGetLabelHandleAlreadyNormalizedInconnuValue(): void
+    {
+        // MODIF 26/10/2026 : valeur telle que stockée en base après normalisation
+        // côté collecte ("<null>=71;..." -> "Inconnu=71;...") — bout en bout
+        // parse() + getLabel() sur cette forme déjà propre.
+        $parsed = $this->svc->parse('Inconnu=71;css=79;java=1948');
+
+        self::assertSame(['Inconnu' => 71, 'css' => 79, 'java' => 1948], $parsed);
+        self::assertSame('Inconnu', $this->svc->getLabel('Inconnu'));
+    }
+
     public function testParseReturnsEmptyArrayWhenEmptyString(): void
     {
         self::assertSame([], $this->svc->parse(''));
@@ -124,6 +135,9 @@ final class LanguageDistributionServiceTest extends TestCase
             'kotlin' => ['kotlin', 'Kotlin'],
             'scala'  => ['scala',  'Scala'],
             'rust'   => ['rust',   'Rust'],
+            // MODIF 26/10/2026 : langage non déterminé par SonarQube, normalisé en
+            // amont (BuildMapHistoryService::normalizeLanguageDistribution(), "<null>" -> "Inconnu").
+            'inconnu' => ['inconnu', 'Inconnu'],
         ];
     }
 

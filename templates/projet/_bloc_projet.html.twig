@@ -184,37 +184,5 @@
       </div>
     </div>
 
-    {# Statut du cycle de vie des violations (avant tout tri humain) #}
-    <div class="margin-bottom-07" title="Statut des violations dans le workflow SonarQube, avant tout arbitrage utilisateur">
-      <span class="ligne-label">Statut&nbsp;:</span>
-    </div>
-    <div class="container-ligne">
-      <span class="ligne-label" title="Violations ouvertes, en attente de correction">ouvertes
-        <span id="js-open-issues" class="stat-projet color-noir" title="Nombre de violations encore ouvertes"></span>
-      </span>
-      <span class="ligne-label" title="Violations confirmées comme réelles (hors faux positifs)">/ confirmées
-        <span id="js-confirmed-issues" class="stat-projet color-noir" title="Nombre de violations confirmées"></span>
-      </span>
-      <span class="ligne-label" title="Violations réouvertes après un correctif qui n'a pas tenu">/ réouvertes
-        <span id="js-reopened-issues" class="stat-projet color-noir" title="Nombre de violations réouvertes"></span>
-      </span>
-    </div>
-
-    {# Workflow de tri des violations #}
-    <div class="margin-bottom-07" title="Violations triées : acceptées (validées comme acceptables après revue) / faux positifs (marquées comme faux positifs)">
-      <span class="ligne-label">Violations triées&nbsp;:</span>
-    </div>
-    <div class="container-ligne">
-      <span class="ligne-label" title="Violations validées comme acceptables après revue">acceptées
-        <span id="js-accepted-issues" class="stat-projet color-noir" title="Nombre de violations acceptées"></span>
-      </span>
-      <span class="ligne-label" title="Parmi les violations acceptées, celles dont l'impact est fort (blocker/high)">/ dont fort impact
-        <span id="js-high-impact-accepted-issues" class="stat-projet color-noir" title="Nombre de violations acceptées à fort impact"></span>
-      </span>
-      <span class="ligne-label" title="Violations marquées comme faux positifs">/ faux positifs
-        <span id="js-false-positive-issues" class="stat-projet color-noir" title="Nombre de violations faux positifs"></span>
-      </span>
-    </div>
-
   </div>
 </div>

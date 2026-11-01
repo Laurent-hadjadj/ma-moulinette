@@ -10,63 +10,169 @@
  *
  */
 
-@media (width <= 20em) { /* vide */ }
-
-@media (20.025em <= width <= 22em) { /* vide */ }
-
-@media (22.025em <= width <= 30em) { /* vide */ }
-
-@media (30.025em <= width <= 40em) { /* vide */ }
-
-@media (40.025em <= width <= 64em) { /* vide */ }
-
-@media (64.025em <= width <= 90em) { /* vide */ }
-
-@media (90.025em <= width <= 120em) { /* vide */ }
-
-@media (120.025em <= width <= 160em) { /* vide */ }
-
-@media (width >= 160.025em) { /* vide */ }
-
-/*************************          Global     *******************************/
-
-/** Suppression du style in line */
-.owasp-padding-left { padding-left: 2rem; }
-
-.owasp-padding-left-right {
-  padding-left: 1rem;
-  padding-right: 1rem;
+/* Media Small */
+@media (width <= 20em) {
+  .stat-projet { font-size: 1.3rem; }
+  .stat-note { font-size: 1rem; }
+  .container-ligne { height: 1.3rem; }
 }
 
-.container-owasp-description {
+/* Media Small */
+@media (20.025em <= width <= 22em) {
+  .stat-projet { font-size: 1.3rem; }
+  .stat-note { font-size: 1rem; }
+  .container-ligne { height: 1.3rem; }
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) {
+  .stat-projet { font-size: 1.3rem; }
+  .stat-note { font-size: 1rem; }
+  .container-ligne { height: 1.3rem; }
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) {
+  .stat-projet { font-size: 1.4rem; }
+  .stat-note { font-size: 1.2rem; }
+  .container-ligne { height: 1.3rem; }
+}
+/* Media Medium */
+@media (40.025em <= width <= 64em) {
+  .stat-projet { font-size: 1.6rem; }
+  .stat-note { font-size: 1.2rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 1.6rem; }
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) {
+  .stat-projet { font-size: 1.8rem; }
+  .stat-note { font-size: 1.4rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) {
+  .stat-projet { font-size: 1.8rem; }
+  .stat-note { font-size: 1.5rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) {
+  .stat-projet { font-size: 2rem; }
+  .stat-note { font-size: 1.5rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+}
+
+@media (width >= 160.025em) {
+  .stat-projet { font-size: 2rem; }
+  .stat-note { font-size: 1.5rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+}
+
+/*************************          Global     *********************************/
+
+/* === Container flex === */
+.container-description {
   display: flex;
   justify-content: space-around;
 }
 
-/* Affiche la version du référentiel owasp disponible. */
-#owasp-version {
-  margin-top: 1rem;
-  margin-bottom: -1rem;
+.container-ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Bouton SVG */
-.voir-details-svg {
-  fill: #00445b;
-  cursor: pointer;
-  width: 100%;
-  height: auto;
-  max-width: 32px
+/* ===================== Ligne ================ */
+.ligne-projet { margin: 0.1rem; }
+
+/* Label textuel dans container-ligne (ex : "Nom :", "Analyse :") */
+.ligne-label {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.voir-details-svg:hover { fill: #c45d4e; }
+/* Groupe label + bouton sur la gauche d'un container-ligne */
+.ligne-gauche {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
 
-/* Information bug, vulnérabilité et code_smell  */
+.ligne-droite {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* =============== STAT ==================== */
+/* On définit la taille de la note */
+.stat-note-kpi {
+    display: flex;
+    justify-content: space-around;
+}
+.stat-note-width { width: 3.5rem; }
+
+.stat {
+  line-height: 0.9;
+  font-size: 2rem;
+}
+
+/* Affiche les statistiques dans les modales */
+.stat-detail {
+  border-radius: 0.3rem;
+  text-align: center;
+  padding-left: 26px;
+  padding-right: 26px;
+  margin-bottom: 0.8rem;
+}
+
+/**
+ * MODIF 28/10/2026 : BUG CORRIGÉ — le nombre de failles/hotspots du tableau
+ * de synthèse (#a1..#a10/#h1..#h10) n'avait pas de largeur fixe : un nombre
+ * à 2 chiffres (ex. 10) décalait le badge de note juste après vers la droite
+ * par rapport aux lignes à 1 chiffre. Largeur minimale + alignement à droite
+ * pour que le badge reste à une position fixe quel que soit le nombre de
+ * chiffres. */
+.stat-note-value {
+  display: inline-block;
+  min-width: 2rem;
+  text-align: right;
+}
+
+/**
+ * MODIF 28/10/2026 : BUG CORRIGÉ — même défaut que .stat-note-value ci-dessus,
+ * mais sur les pourcentages de la répartition par module (Frontend/Backend/
+ * Autre) : sans largeur fixe, "48%" (2 chiffres) et "0%" (1 chiffre) ne
+ * laissaient pas le même espace avant eux, décalant le nombre de chaque ligne
+ * par rapport aux autres. Largeur minimale + alignement à droite pour que le
+ * nombre qui précède le pourcentage reste à une position fixe d'une ligne à
+ * l'autre. */
+.stat-percent-value {
+  display: inline-block;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+/**
+ * Information bug, vulnérabilité et code_smell
+ * MODIF 28/10/2026 : BUG CORRIGÉ — text-align:center sur les li en display:
+ * inline-block ne les répartit pas en colonnes alignées (décalage visible
+ * entre les lignes Vulnérabilités à 4 colonnes et Hotspots à 3 colonnes de
+ * la modale "Owasp et Points chauds"). display:grid + grid-auto-flow:column
+ * aligne chaque colonne sur sa propre largeur de contenu, à gauche et à
+ * droite. */
 .stat-list {
   list-style-type: none;
   clear: left;
   margin: 0;
   padding: 0;
-  text-align: center;
+  display: grid;
+  grid-auto-flow: column;
   margin-bottom: 30px;
 }
 
@@ -95,21 +201,83 @@
   font-weight: normal;
 }
 
-/* Styles pour le diagramme circulaire */
-#owasp-pie-chart-container {
-  width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 10px;
-  border: 1px solid #ddd;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+/* ============== NOTE ====================*/
+/* MODIF 27/10/2026 : badge de note A-E pour la tuile Hotspot */
+/* Couleur pour la note A */
+.note-vert1 {
+  background-color: #077e07;
+  color: #fff;
+  border: solid 2px #00445b;
+  border-radius: 0.2rem;
 }
 
-#owasp-pie-chart {
-  width: 100% !important;
-  height: auto !important;
+/* Couleur pour la note B */
+.note-vert2 {
+  background-color: #a3c50b;
+  color: #000;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
 }
+
+/* Couleur pour la note C */
+.note-jaune {
+  background-color: #edbf05;
+  color: #000;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+}
+
+/* Couleur pour la note D */
+/* MODIF 30/10/2026 : #ba5705 (brun, 4.67:1 avec du blanc) -> #ed7d20 + texte
+   noir (7.55:1), même correctif que .note-d dans common.css. */
+.note-orange {
+  background-color: #ed7d20;
+  color: #000;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+}
+
+/* Couleur pour la note E */
+.note-rouge {
+  background-color: #d4333f;
+  color: #fff;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+}
+
+/* Note non calculable  */
+.note-gris {
+  background-color: #e0e0e0;
+  color: #5f5e5e;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+}
+
+/** Information projet et statut */
+.information-statut { font-size: 1.2rem; }
+.information-texte { color: #38761d; }
+
+/**
+ * Affiche la version du référentiel owasp disponible.
+ * MODIF 27/10/2026 : margin-bottom négatif retiré — il tirait le bloc
+ * suivant vers le haut, correct quand ce bloc suivant était un fieldset
+ * classique, mais provoquait un chevauchement visible avec les 2 tuiles KPI
+ * (Vulnérabilités OWASP / Hotspot) qui le suivent désormais directement. */
+#owasp-version {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Bouton SVG */
+.voir-details-svg {
+  fill: #00445b;
+  cursor: pointer;
+  width: 100%;
+  height: auto;
+  max-width: 32px
+}
+
+.voir-details-svg:hover { fill: #c45d4e; }
 
 /* Ajuste ka taille des badge */
 .badge { font-size: 1rem; }
@@ -120,53 +288,6 @@
 /* Liste des hotspot */
 .component { word-break: break-all; }
 
-/* Affiche les statistiques dans les modales */
-.stat-detail {
-  border-radius: 0.3rem;
-  text-align: center;
-  padding-left: 26px;
-  padding-right: 26px;
-  margin-bottom: 0.8rem;
-}
-
-.result {
-  padding-left: 0.5rem;
-  color: #333;
-  flex: 1;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.small { font-size: 1rem; }
-
-.ligne {
-  margin: 0.1rem;
-  display: flex;
-}
-
-.stat {
-  line-height: 0.9;
-  font-size: 2rem;
-}
-
-.stat-note { font-size: 1.5rem; }
-
-.stat-owasp {
-  line-height: 0.9;
-  font-size: 1.5rem;
-}
-
-.strong { font-weight: 700; }
-.light { font-weight: 300; }
-
-.box {
-  color: #fff;
-  border: solid 1px;
-  border-radius: 0.3rem;
-  padding-left: 30px;
-  padding-right: 30px;
-}
-
 /* ========= gestion des bouton ============ */
 #bouton-choisir-owasp-2017,
 #bouton-choisir-owasp-2021,
@@ -176,6 +297,7 @@
 #bouton-ouvrir-rapport-zap,
 #bouton-fermer-comparaison-owasp,
 #bouton-ouvrir-details,
+#bouton-fermer-details-owasp,
 #bouton-ouvrir-rapport-dependency-check,
 #bouton-retour-precedent {
   min-width: 9rem;
@@ -204,12 +326,17 @@
 #bouton-ouvrir-comparaison-owasp:hover,
 #bouton-fermer-comparaison-owasp:hover,
 #bouton-ouvrir-details:hover,
+#bouton-fermer-details-owasp:hover,
 #bouton-ouvrir-rapport-dependency-check:hover,
 #bouton-retour-precedent:hover { background-color: #006182; }
 
+/**
+ * MODIF 30/10/2026 : BUG CORRIGÉ (Sonar) — !important retiré : ce sélecteur
+ * (ID + .disable + :hover) est déjà plus spécifique que son voisin ci-dessus
+ * (ID + :hover seul). */
 #bouton-choisir-owasp-2017.disable:hover,
 #bouton-choisir-owasp-2021.disable:hover,
-#bouton-choisir-owasp-2025.disable:hover { background-color: #333!important; }
+#bouton-choisir-owasp-2025.disable:hover { background-color: #333; }
 
 /* ================ Documentation OWASP ================ */
 .accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {

@@ -1,5 +1,5 @@
 {% set title = 'OWASP Dependency-Check - KPIs' %}
-{% set description = 'Ma Moulinette - KPIs et pilotage SLA du module DependencyCheck.' %}
+{% set description = app_name ~ ' - KPIs et pilotage SLA du module DependencyCheck.' %}
 {% set bottom = 'footer-fixed' %}
 
 {# MODIF 2026-05-13 : page KPI niveau DSI/RSSI. Synthèse macro
@@ -103,35 +103,33 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 </div>
 
                 {# === 4 cartes KPI === #}
-                <div class="grid-x grid-margin-x margin-bottom-1" style="align-items: stretch;">
-                    <div class="cell small-12 medium-3" style="display: flex; flex-direction: column;">
-                        <div class="callout alert-callout-border secondary" style="flex: 1 1 auto;">
+                <div class="grid-x grid-margin-x margin-bottom-1 flex-align-items-stretch">
+                    <div class="cell small-12 medium-3 display-flex flex-direction-column">
+                        <div class="callout alert-callout-border secondary flex-1-1-auto">
                             <p class="open-sans"><strong>Score sécu moyen</strong></p>
                             <p class="open-sans font-size-15">{{ score_secu_moyen }} <span class="text-muted">/ 100</span></p>
                             <p class="text-muted font-size-085 margin-bottom-0">Moyenne pondérée sur {{ nb_scans }}
                             app{{ nb_scans > 1 ? 's' }}</p>
                         </div>
                     </div>
-                    <div class="cell small-12 medium-3" style="display: flex; flex-direction: column;">
-                        <div class="callout alert-callout-border {{ pct_zero_critical >= 80 ? 'secondary' : (pct_zero_critical >= 50 ? 'warning' : 'critical') }}"
-                            style="flex: 1 1 auto;">
+                    <div class="cell small-12 medium-3 display-flex flex-direction-column">
+                        <div class="callout alert-callout-border {{ pct_zero_critical >= 80 ? 'secondary' : (pct_zero_critical >= 50 ? 'warning' : 'critical') }} flex-1-1-auto">
                             <p class="open-sans"><strong>% apps « zéro CRITICAL »</strong></p>
                             <p class="open-sans font-size-15">{{ pct_zero_critical }} %</p>
                             <p class="text-muted font-size-085 margin-bottom-0">{{ nb_zero_critical }} / {{ nb_scans }}
                             app{{ nb_scans > 1 ? 's' }}</p>
                         </div>
                     </div>
-                    <div class="cell small-12 medium-3" style="display: flex; flex-direction: column;">
-                        <div class="callout alert-callout-border {{ pct_scans_recent >= 80 ? 'secondary' : (pct_scans_recent >= 50 ? 'warning' : 'error') }}"
-                            style="flex: 1 1 auto;">
+                    <div class="cell small-12 medium-3 display-flex flex-direction-column">
+                        <div class="callout alert-callout-border {{ pct_scans_recent >= 80 ? 'secondary' : (pct_scans_recent >= 50 ? 'warning' : 'error') }} flex-1-1-auto">
                             <p class="open-sans"><strong>% scans &lt; 30 jours</strong></p>
                             <p class="open-sans font-size-15">{{ pct_scans_recent }} %</p>
                             <p class="text-muted font-size-085 margin-bottom-0">{{ nb_scans_recent }} / {{ nb_scans }} fraîcheur
                             </p>
                         </div>
                     </div>
-                    <div class="cell small-12 medium-3" style="display: flex; flex-direction: column;">
-                        <div class="callout alert-callout-border info" style="flex: 1 1 auto;">
+                    <div class="cell small-12 medium-3 display-flex flex-direction-column">
+                        <div class="callout alert-callout-border info flex-1-1-auto">
                             <p class="open-sans"><strong>Apps scannées</strong></p>
                             <p class="open-sans font-size-15">{{ nb_scans }}</p>
                             <p class="text-muted font-size-085 margin-bottom-0">Périmètre actuel</p>
@@ -185,7 +183,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                             <span class="text-muted">v{{ s.project_version }}</span>
                                         </td>
                                         <td class="text-right"><strong
-                                        style="color: #cc4b37;">{{ s.score_secu|number_format(1, ',', ' ') }}</strong>
+                                        class="dc-score-bad">{{ s.score_secu|number_format(1, ',', ' ') }}</strong>
                                     </td>
                                     <td class="text-right">
                                         {% if s.cve_count_critical > 0 %}
@@ -241,7 +239,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                     <span class="text-muted">v{{ s.project_version }}</span>
                                 </td>
                                 <td class="text-right"><strong
-                                style="color: #1a5f3f;">{{ s.score_secu|number_format(1, ',', ' ') }}</strong>
+                                class="dc-score-good">{{ s.score_secu|number_format(1, ',', ' ') }}</strong>
                             </td>
                             <td class="text-right">
                                 {% if s.cve_count_critical > 0 %}

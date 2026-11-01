@@ -214,9 +214,15 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
   color: #fff;
 }
 
+/**
+ * MODIF 30/10/2026 : BUG CORRIGÉ — #ba5705 (luminance 0.175) était trop
+ * proche du bleu de repos #00445b (luminance 0.049, écart 2.27:1) : le hover
+ * passait presque inaperçu. #ed7d20 (luminance 0.328, écart 3.81:1) est
+ * nettement plus visible ; texte noir (pas blanc, 2.78:1 refusé sur ce fond
+ * plus clair) — même correctif que .note-d dans common.css. */
 .accordion-custom:hover {
-  background-color: #ba5705;
-  color: #fff;
+  background-color: #ed7d20;
+  color: #000;
 }
 
 .accordion-custom:focus {

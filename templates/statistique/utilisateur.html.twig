@@ -1,7 +1,6 @@
 {# MODIF 2026-09-14 : </tr> manquant dans la boucle for #}
 {% set title = "Statistiques" %}
-{% set description = "Sonar-Report, statistiques utilisateur" %}
-{% set type_content = "Application Sonar-Report, La page des statistiques utilisateur." %}
+{% set description = app_name ~ ", statistiques utilisateur" %}
 {% set bottom = "footer-fixed footer-fixed-small" %}
 {% if nombre_utilisateur_disponible != 0 %}
     {# MODIF 2026-07-19 : adhesion est une fraction (0-1), pas un pourcentage (0-100) —
@@ -219,9 +218,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             id="week-picker"
                             value="{{ selected_week|default('') }}"
                             min="2025-W01"
-                            class="stats-period-input"
+                            class="stats-period-input {{ period != 'week' ? 'display-none' : '' }}"
                             aria-label="Choisir une semaine"
-                            {% if period != 'week' %}style="display:none"{% endif %}
                         >
                     </div>
 
@@ -232,9 +230,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             id="month-picker"
                             value="{{ selected_month|default('') }}"
                             min="2025-01"
-                            class="stats-period-input"
+                            class="stats-period-input {{ period != 'month' ? 'display-none' : '' }}"
                             aria-label="Choisir un mois"
-                            {% if period != 'month' %}style="display:none"{% endif %}
                         >
                     </div>
 

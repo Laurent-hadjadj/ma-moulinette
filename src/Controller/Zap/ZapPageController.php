@@ -149,7 +149,13 @@ class ZapPageController extends AbstractController
 
     /**
      * [Description for index]
-     * Page web ZAP (DAST) — centrée sur un seul projet.
+     * Page web ZAP (DAST) — centrée sur un projet, mais un maven_key peut
+     * recouvrir plusieurs cibles DAST réelles (ex. tier présentation + tier
+     * métier d'une même application, suivis sous la même clé Maven côté
+     * SonarQube). MODIF 26/10/2026 : une "lane" (KPI + historique propres)
+     * par target_url distinct détecté pour ce maven_key, au lieu de
+     * mélanger leurs scans dans un historique unique — voir
+     * ZapScanRepository::listDistinctTargetUrlsByMavenKey().
      *
      * @param Request $request
      *
@@ -165,12 +171,10 @@ class ZapPageController extends AbstractController
         $this->tracking->track('ZAP_PAGE');
 
         $render = $this->genericRender();
-        $render['scan'] = null;
-        $render['history'] = [];
-        $render['owaspByReferential'] = [];
-        $render['findings'] = [];
+        $render['maven_key'] = null;
+        $render['lanes'] = [];
         $render['categoryLabels'] = self::categoryLabels();
-        $render['zapChartData'] = ['categories' => [], 'history' => []];
+        $render['zapChartData'] = ['lanes' => []];
 
         $token = $request->query->get('token');
         if (empty($token)) {
@@ -190,27 +194,46 @@ class ZapPageController extends AbstractController
             return $this->addFlashAndRender('warning', $message, $render);
         }
 
+        $render['maven_key'] = $maven_key;
+
         $scanRepository = $this->em->getRepository(ZapScan::class);
-        $scan = $scanRepository->findLatestByMavenKey($maven_key);
-        if ($scan === null) {
+        $targetUrls = $scanRepository->listDistinctTargetUrlsByMavenKey($maven_key);
+        if ($targetUrls === []) {
             return $this->render(self::$page, $render);
         }
 
-        $history = $scanRepository->listHistoryByMavenKey($maven_key);
-        $owaspByReferential = $this->em->getRepository(OwaspDast::class)->findBy(['scan' => $scan]);
-        $findings = $this->em->getRepository(ZapFinding::class)->findBy(
-            ['scan' => $scan],
-            ['riskcodeAtScan' => 'DESC']
-        );
+        $lanes = [];
+        $chartLanes = [];
+        foreach ($targetUrls as $laneIndex => $targetUrl) {
+            $scan = $scanRepository->findLatestByMavenKey($maven_key, $targetUrl);
+            if ($scan === null) {
+                continue;
+            }
 
-        $render['scan'] = $scan;
-        $render['history'] = $history;
-        $render['owaspByReferential'] = $owaspByReferential;
-        $render['findings'] = $findings;
-        $render['zapChartData'] = [
-            'categories' => $this->buildCategoryChartData($owaspByReferential),
-            'history' => $this->buildHistoryChartData($history),
-        ];
+            $history = $scanRepository->listHistoryByMavenKey($maven_key, $targetUrl);
+            $owaspByReferential = $this->em->getRepository(OwaspDast::class)->findBy(['scan' => $scan]);
+            $findings = $this->em->getRepository(ZapFinding::class)->findBy(
+                ['scan' => $scan],
+                ['riskcodeAtScan' => 'DESC']
+            );
+
+            $lanes[] = [
+                'index' => $laneIndex,
+                'targetUrl' => $targetUrl,
+                'scan' => $scan,
+                'history' => $history,
+                'owaspByReferential' => $owaspByReferential,
+                'findings' => $findings,
+            ];
+            $chartLanes[] = [
+                'index' => $laneIndex,
+                'categories' => $this->buildCategoryChartData($owaspByReferential),
+                'history' => $this->buildHistoryChartData($history),
+            ];
+        }
+
+        $render['lanes'] = $lanes;
+        $render['zapChartData'] = ['lanes' => $chartLanes];
 
         return $this->render(self::$page, $render);
     }
@@ -368,13 +391,23 @@ class ZapPageController extends AbstractController
             throw $this->createNotFoundException($perimetre['message'] ?? 'Projet hors périmètre.');
         }
 
+        // MODIF 26/10/2026 : un maven_key peut recouvrir plusieurs cibles DAST
+        // (voir index() ci-dessus) — target_url précise la lane à exporter ;
+        // sans ce paramètre (lien historique, ou lien externe), on prend la
+        // cible la plus récemment scannée toutes cibles confondues.
         $scanRepository = $this->em->getRepository(ZapScan::class);
-        $scan = $scanRepository->findLatestByMavenKey($maven_key);
+        $targetUrl = $request->query->get('target_url');
+        if ($targetUrl === null) {
+            $targetUrls = $scanRepository->listDistinctTargetUrlsByMavenKey($maven_key);
+            $targetUrl = $targetUrls[0] ?? null;
+        }
+
+        $scan = $scanRepository->findLatestByMavenKey($maven_key, $targetUrl);
         if ($scan === null) {
             throw $this->createNotFoundException('Aucun scan ZAP disponible pour ce projet.');
         }
 
-        $history = $scanRepository->listHistoryByMavenKey($maven_key);
+        $history = $scanRepository->listHistoryByMavenKey($maven_key, $targetUrl);
         $owaspByReferential = $this->em->getRepository(OwaspDast::class)->findBy(['scan' => $scan]);
         $findings = $this->em->getRepository(ZapFinding::class)->findBy(
             ['scan' => $scan],

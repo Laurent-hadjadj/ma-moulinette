@@ -1,15 +1,13 @@
 {# MODIF 2026-09-14 : </span> manquant + </a> en double #}
 {# Menu Information utilisateur #}
 {% if is_granted('ROLE_UTILISATEUR') %}
-  <dialog
-    id="modal-information-utilisateur"
+  <dialog id="modal-information-utilisateur"
     class="reveal small"
     data-reveal
     data-close-on-click="false"
     data-animation-out="fade-out"
     aria-labelledby="titre-modal-information-utilisateur"
-    aria-describedby="desc-modal-information-utilisateur"
-  >
+    aria-describedby="desc-modal-information-utilisateur">
 
     <p class="show-for-sr">Appuyez sur la touche Échap pour fermer cette fenêtre.</p>
     <header>

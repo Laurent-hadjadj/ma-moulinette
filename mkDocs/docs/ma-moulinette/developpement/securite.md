@@ -5,7 +5,7 @@
 Un compte `admin` (`admin@ma-moulinette.fr`, rôle `ROLE_INTERNAL`) est créé par les fixtures de base (`migrations/POSTGRESQL/90_fixtures/fixtures.sql`). Son mot de passe par défaut est **`eYK8k4[T;99N!em^`** (également documenté dans `README.md`).
 
 !!! warning "🔒 Changement obligatoire avant toute mise en production"
-    Ce mot de passe est un identifiant de démarrage connu et public (documenté ici et dans `README.md` volontairement), pas un secret — il **doit être changé manuellement** avant toute exposition de l'environnement au-delà d'un poste de développement local.
+    Ce mot de passe est un identifiant de démarrage connu et public (documenté ici et dans `README.md` volontairement), ce n'est pas un secret — il **doit être changé manuellement** avant toute exposition de l'environnement au-delà d'un poste de développement local.
     Sur la fixture `admin`, `reset_password` vaut `false` : le changement **n'est pas forcé automatiquement** à la première connexion, contrairement aux autres comptes créés via l'application (où `reset_password = true` par défaut).
     Une fois un gestionnaire applicatif nommé, il est recommandé de désactiver le compte `admin` (attribut `actif`) plutôt que de le laisser actif en permanence.
 
@@ -24,9 +24,7 @@ trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x
 ## 🛡️ En-têtes de sécurité HTTP
 
 Un scan ZAP actif complet (attack strength High, threshold Low, toutes règles) lancé le 16/10/2026 sur
-l'environnement de développement local a confirmé l'absence de tout en-tête de sécurité HTTP applicatif
-(aucune alerte High par ailleurs — voir la note en fin de section). `App\EventSubscriber\SecurityHeadersSubscriber`
-(écoute `kernel.response`) corrige ce point :
+l'environnement de développement local a confirmé l'absence de tout en-tête de sécurité HTTP applicatif (aucune alerte High par ailleurs — voir la note en fin de section). `App\EventSubscriber\SecurityHeadersSubscriber` (écoute `kernel.response`) corrige ce point :
 
 | En-tête | Valeur | Pourquoi |
 | --- | --- | --- |
@@ -38,17 +36,20 @@ l'environnement de développement local a confirmé l'absence de tout en-tête d
 !!! note "SRI (Sub Resource Integrity) non implémenté — volontairement"
     Le scan a aussi signalé l'absence d'attributs `integrity`/`crossorigin` sur les balises `<script>`/`<link>`.
     Le SRI protège contre l'altération d'une ressource chargée depuis un **tiers** (CDN, hébergeur externe) :
-    Ma-Moulinette ne charge aucune ressource tierce (pas de CDN, pas de Google Fonts, tout est bundlé en
-    même origine via asset-mapper/importmap), donc cette protection n'a pas d'objet ici.
+    Ma-Moulinette ne charge aucune ressource tierce (pas de CDN, pas de Google Fonts, tout est bundlé en même origine via asset-mapper/importmap), donc cette protection n'a pas d'objet ici.
 
 !!! note "Résultat complet du scan ZAP du 16/10/2026"
-    Aucune alerte High. Trois catégories relevées (`X-Debug-Token`, commentaires « suspicious » contenant
-    `<!-- START of Symfony Web Debug Toolbar -->`, cookie de session `sf_redirect`) sont des artefacts de la
-    **Web Debug Toolbar en mode dev**, déjà absente en production (blocs `when@prod:` de
-    `config/packages/framework.yaml`) — pas des correctifs de code. L'alerte « Timestamp Disclosure » (un
-    nombre à 10 chiffres coïncidant avec une plage de timestamp Unix plausible) a été triée et confirmée
-    comme faux positif : les chaînes exactes rapportées n'apparaissent dans aucune réponse HTTP réelle
-    (`/sitemap.xml` et `/vendor/autoload_runtime.php`, les deux 404 — aucune route de ce nom dans l'appli).
+    Aucune alerte High. Trois catégories relevées (`X-Debug-Token`, commentaires « suspicious » contenant `<!-- START of Symfony Web Debug Toolbar -->`, cookie de session `sf_redirect`) sont des artefacts de la **Web Debug Toolbar en mode dev**, déjà absente en production (blocs `when@prod:` de `config/packages/framework.yaml`) — pas des correctifs de code. L'alerte « Timestamp Disclosure » (un nombre à 10 chiffres coïncidant avec une plage de timestamp Unix plausible) a été triée et confirmée comme faux positif : les chaînes exactes rapportées n'apparaissent dans aucune réponse HTTP réelle (`/sitemap.xml` et `/vendor/autoload_runtime.php`, les deux 404 — aucune route de ce nom dans l'appli).
+
+## 🧼 Sanitization du HTML externe (rapports ZAP)
+
+La page [ZAP (DAST)](../application/zap.md) affiche la description, la solution et la référence de chaque règle ZAP déclenchée, directement fournies par le catalogue de règles de ZAP sous forme de HTML (`<p>...</p>`). Avant le 26/10/2026, ce HTML était rendu via `|raw` sans aucune neutralisation côté Symfony : un rapport malveillant (déposé via `POST /api/secure/zap/upload`, protégé par jeton mais pas par validation de contenu) aurait pu injecter du JavaScript exécuté dans le navigateur de l'utilisateur consultant la page.
+
+Correctif : `App\Service\Zap\ZapIngester::findOrCreateRule()` passe ces 3 champs au composant [symfony/html-sanitizer](https://symfony.com/doc/current/html_sanitizer.html) (sanitizer nommé`app.zap_rule_text`, défini dans `config/packages/html_sanitizer.yaml`) **une seule fois, à l'ingestion**,
+avant toute persistance en base — jamais au rendu. La liste blanche se limite à la seule balise `<p>`, sans attribut : sur l'ensemble des rapports ZAP réels inspectés (plusieurs scans distincts, plusieurs centaines d'alertes), ces 3 champs n'ont jamais contenu autre chose. Les templates (`zap/index.html.twig`, export PDF) peuvent donc utiliser `|raw` sans risque, le contenu étant déjà neutralisé en amont.
+
+!!! warning "Ne pas réintroduire ces champs ailleurs sans repasser par ce sanitizer"
+    `ZapRule::description`/`solution`/`reference` sont assainis une seule fois, à la création de la ligne — une ré-exposition (API, export, autre vue) doit soit réutiliser la valeur déjà en base (déjà sûre), soit repasser explicitement par `html_sanitizer.sanitizer.app.zap_rule_text` si la source change.
 
 ## 🧩 Rôles et hiérarchie
 
