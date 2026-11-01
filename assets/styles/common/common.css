@@ -589,7 +589,14 @@ body {
   opacity: 0.7;
 }
 
-/* Gestion du click sur un bouton */
+/* Gestion du click sur un bouton.
+ * MODIF 30/10/2026 : !important CONSERVÉ volontairement (audit Sonar) — ces
+ * 2 classes sont posées en JS sur des boutons identifiés par ID
+ * (ex. #bouton-refresh-profil, #bouton-collecte-indicateur, projet.css/
+ * profil.css : `background-color: #00445b;`). Un sélecteur ID (spécificité
+ * 1,0,0,0) bat toujours une classe (0,0,1,0) quel que soit l'ordre de
+ * chargement — sans !important ici, ces 2 classes n'auraient jamais aucun
+ * effet visuel. */
 .clicked-true { background-color: #037505!important; /* Couleur après clic */ }
 .clicked-false { background-color: #a00a14!important; /* Couleur après clic */ }
 
@@ -967,7 +974,10 @@ body {
   transition: all 0.25s ease-in;
   color: #bf1722;
   border-radius: 4px;
-  background-color: #ffc !important;
+  /* MODIF 30/10/2026 : BUG CORRIGÉ (Sonar) — !important retiré, `.source-link`
+   * (règle de base juste au-dessus) ne définit aucun `background-color` à
+   * surcharger, rien ne l'imposait ici. */
+  background-color: #ffc;
   border-color: #ffc;
   padding: 1px 2px;
 }
@@ -1148,7 +1158,10 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
 
 .footer-bottom-links { display: flex; }
 .footer-bottom-links a { color: #fefefe; }
-.footer-bottom-links a:hover { color: #ba5705; }
+/* MODIF 30/10/2026 : #ba5705 (luminance 0.175, trop proche du bleu #00445b
+ * du footer, luminance 0.049 — écart de contraste 2.27:1 seulement, hover
+ * peu visible) remplacé par #ed7d20 (luminance 0.328, écart 3.81:1). */
+.footer-bottom-links a:hover { color: #ed7d20; }
 
 /* Gestion des crédits */
 
@@ -1198,10 +1211,17 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
   color: #fff;
 }
 
+/* MODIF 30/10/2026 : BUG CORRIGÉ — B/C/D héritaient color:#fff du sélecteur
+ * groupé ci-dessus alors que leur fond est trop clair pour un contraste WCAG
+ * AA correct avec du blanc (B #a3c50b : ratio ~2:1 ; C #edbf05 : ~1.7:1 ; D
+ * #ba5705 : 4.67:1, limite) : texte noir, comme le fait déjà la convention
+ * .note-vert2/.note-jaune/.note-orange de projet.css/owasp.css/mes-projets.css. */
+.note-b, .note-c, .note-d { color: #000; }
+
 .note-a { background-color: #077e07; } /* Note de couleur A */
 .note-b { background-color: #a3c50b; } /* Note de couleur B */
 .note-c { background-color: #edbf05; } /* Note de couleur C */
-.note-d { background-color: #ba5705; } /* Note de couleur D */
+.note-d { background-color: #ed7d20; } /* Note de couleur D — MODIF 30/10/2026 : #ba5705 (brun, 4.67:1 avec du blanc) remplacé par un orange franc, 7.55:1 avec le texte noir ci-dessus */
 .note-e { background-color: #d4333f; } /* Note de couleur E */
 .note-z { background-color: #00445b; } /* Note de couleur Z */
 
@@ -1219,13 +1239,29 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
 }
 
 .qg-ok    { background-color: #077e07; } /* Quality Gate OK */
-.qg-warn  { background-color: #ba5705; } /* Quality Gate WARN */
+/* MODIF 30/10/2026 : même correctif que .note-d ci-dessus (même orange de référence, texte noir). */
+.qg-warn  { background-color: #ed7d20; color: #000; } /* Quality Gate WARN */
 .qg-error { background-color: #d4333f; } /* Quality Gate ERROR */
 
-.couleur-vert { color: #048404 !important; }
-.couleur-orange { color: #c75e08 !important; }
-.couleur-rouge { color: #bf0815 !important; }
-.couleur-bordeaux { color: #771404 !important; }
+/* MODIF 30/10/2026 : #c75e08 remplacé par #ba5705 — `.couleur-orange` est du
+ * texte sur fond clair (pas un badge à fond orange) : #ed7d20 (le nouvel
+ * orange clair des badges, pensé pour du texte NOIR dessus) y échouerait le
+ * contraste (2.78:1 sur blanc, refusé) alors que #ba5705 y passe déjà
+ * (4.67:1) — il existait 2 oranges foncés incohérents dans le projet pour ce
+ * même usage (texte sur fond clair), unifiés ici sur le seul qui passe. */
+/* MODIF 30/10/2026 : BUG CORRIGÉ (Sonar) — !important retiré. Ces 4 classes
+ * utilitaires sont posées en JS par-dessus `.color-noir`/`.stat-projet`
+ * (peinture.js) ou `.stat-tag`/`.stat-visibility` (accueil.css, dont le
+ * sélecteur groupé `color:#222` est chargé APRÈS common.css) : même
+ * spécificité (1 classe) dans les 2 cas, donc sans !important c'est la
+ * dernière règle chargée qui gagnerait, pas forcément celle-ci. Sélecteur
+ * doublé (`.couleur-vert.couleur-vert`, technique CSS standard) pour gagner
+ * en spécificité (2 classes) sans `!important`, gain garanti quel que soit
+ * l'ordre de chargement des feuilles de style. */
+.couleur-vert.couleur-vert { color: #048404; }
+.couleur-orange.couleur-orange { color: #ba5705; }
+.couleur-rouge.couleur-rouge { color: #bf0815; }
+.couleur-bordeaux.couleur-bordeaux { color: #771404; }
 
 /* dégradation */
 .down {

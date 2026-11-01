@@ -131,7 +131,8 @@
   margin-bottom: 0.8rem;
 }
 
-/* MODIF 28/10/2026 : BUG CORRIGÉ — le nombre de failles/hotspots du tableau
+/**
+ * MODIF 28/10/2026 : BUG CORRIGÉ — le nombre de failles/hotspots du tableau
  * de synthèse (#a1..#a10/#h1..#h10) n'avait pas de largeur fixe : un nombre
  * à 2 chiffres (ex. 10) décalait le badge de note juste après vers la droite
  * par rapport aux lignes à 1 chiffre. Largeur minimale + alignement à droite
@@ -143,7 +144,8 @@
   text-align: right;
 }
 
-/* MODIF 28/10/2026 : BUG CORRIGÉ — même défaut que .stat-note-value ci-dessus,
+/**
+ * MODIF 28/10/2026 : BUG CORRIGÉ — même défaut que .stat-note-value ci-dessus,
  * mais sur les pourcentages de la répartition par module (Frontend/Backend/
  * Autre) : sans largeur fixe, "48%" (2 chiffres) et "0%" (1 chiffre) ne
  * laissaient pas le même espace avant eux, décalant le nombre de chaque ligne
@@ -156,7 +158,8 @@
   text-align: right;
 }
 
-/* Information bug, vulnérabilité et code_smell
+/**
+ * Information bug, vulnérabilité et code_smell
  * MODIF 28/10/2026 : BUG CORRIGÉ — text-align:center sur les li en display:
  * inline-block ne les répartit pas en colonnes alignées (décalage visible
  * entre les lignes Vulnérabilités à 4 colonnes et Hotspots à 3 colonnes de
@@ -225,9 +228,11 @@
 }
 
 /* Couleur pour la note D */
+/* MODIF 30/10/2026 : #ba5705 (brun, 4.67:1 avec du blanc) -> #ed7d20 + texte
+   noir (7.55:1), même correctif que .note-d dans common.css. */
 .note-orange {
-  background-color: #ba5705;
-  color: #fff;
+  background-color: #ed7d20;
+  color: #000;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
 }
@@ -252,7 +257,8 @@
 .information-statut { font-size: 1.2rem; }
 .information-texte { color: #38761d; }
 
-/* Affiche la version du référentiel owasp disponible.
+/**
+ * Affiche la version du référentiel owasp disponible.
  * MODIF 27/10/2026 : margin-bottom négatif retiré — il tirait le bloc
  * suivant vers le haut, correct quand ce bloc suivant était un fieldset
  * classique, mais provoquait un chevauchement visible avec les 2 tuiles KPI
@@ -324,9 +330,13 @@
 #bouton-ouvrir-rapport-dependency-check:hover,
 #bouton-retour-precedent:hover { background-color: #006182; }
 
+/**
+ * MODIF 30/10/2026 : BUG CORRIGÉ (Sonar) — !important retiré : ce sélecteur
+ * (ID + .disable + :hover) est déjà plus spécifique que son voisin ci-dessus
+ * (ID + :hover seul). */
 #bouton-choisir-owasp-2017.disable:hover,
 #bouton-choisir-owasp-2021.disable:hover,
-#bouton-choisir-owasp-2025.disable:hover { background-color: #333!important; }
+#bouton-choisir-owasp-2025.disable:hover { background-color: #333; }
 
 /* ================ Documentation OWASP ================ */
 .accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {

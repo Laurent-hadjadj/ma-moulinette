@@ -136,7 +136,10 @@
 
 .timeline a:hover {
   transition: all 0.25s ease-in;
-  background-color: #ffc !important;
+  /* MODIF 30/10/2026 : BUG CORRIGÉ (Sonar) — !important retiré, `.timeline a`
+   * (règle de base juste au-dessus) ne définit aucun `background-color` à
+   * surcharger, rien ne l'imposait ici. */
+  background-color: #ffc;
   border-color: #ffc;
   color: #bf1722;
   border-radius: 0.375rem;

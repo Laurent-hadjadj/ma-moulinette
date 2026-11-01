@@ -147,17 +147,18 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                     aria-label="Maintenabilité : note {{ note_labels[projet['note_sqale']] ?? projet['note_sqale'] }}">{{ projet['note_sqale'] }}</span>
                             </td>
 
-                            {# Violations avec formatage en fonction des valeurs #}
+                            {# Violations avec formatage en fonction des valeurs.
+                                MODIF 30/10/2026 : largeur fixe par colonne (label-fixed-width-sm/-lg, cf. mes-projets.css). #}
                             <td class="text-right">
-                                <span class="{{ projet['nombre_bug'] > 0 ? 'label alert' : 'label success' }}"
+                                <span class="label-fixed-width-sm {{ projet['nombre_bug'] > 0 ? 'label alert' : 'label success' }}"
                                     aria-label="{{ projet['nombre_bug'] > 0 ? projet['nombre_bug'] ~ ' bugs détectés' : 'Aucun bug' }}">{{ projet['nombre_bug']|format_number(locale='fr') }}</span>
                             </td>
                             <td class="text-right">
-                                <span class="{{ projet['nombre_vulnerability'] > 0 ? 'label alert' : 'label success' }}"
+                                <span class="label-fixed-width-sm {{ projet['nombre_vulnerability'] > 0 ? 'label alert' : 'label success' }}"
                                     aria-label="{{ projet['nombre_vulnerability'] > 0 ? projet['nombre_vulnerability'] ~ ' vulnérabilités détectées' : 'Aucune vulnérabilité' }}">{{ projet['nombre_vulnerability']|format_number(locale='fr') }}</span>
                             </td>
                             <td class="text-right">
-                                <span class="{{ projet['nombre_code_smell'] > 50 ? 'label warning' : 'label success' }}"
+                                <span class="label-fixed-width-lg {{ projet['nombre_code_smell'] > 50 ? 'label warning' : 'label success' }}"
                                     aria-label="{{ projet['nombre_code_smell'] > 50 ? projet['nombre_code_smell'] ~ ' code smells (au-delà du seuil)' : projet['nombre_code_smell'] ~ ' code smells' }}">{{ projet['nombre_code_smell']|format_number(locale='fr') }}</span>
                             </td>
                             <td class="text-right">

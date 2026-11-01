@@ -10,10 +10,8 @@
  *
  */
 
-/* stylelint-disable selector-class-pattern */
 /**
   * Propriétés pour les class en fonction des medias type
-  *
   */
 
 /* Media Small */
@@ -33,7 +31,8 @@
   .projet-graphique-svg { max-width: 24px; }
 
   .separate-ligne { margin-bottom: 0.6rem; }
-  /* MODIF : marge réduite pour gagner en largeur dans les tuiles (débordement sur Répartition/Dette résolu en libérant cette largeur). */
+  /* MODIF : marge réduite pour gagner en largeur dans les tuiles
+    (débordement sur Répartition/Dette résolu en libérant cette largeur). */
   main.margin-left-2 { margin-left: 0.2rem; }
   main.margin-right-2 { margin-right: 0.2rem; }
 }
@@ -98,8 +97,9 @@
   main.margin-right-2 { margin-right: 0.5rem; }
 }
 
-/* MODIF 2026-05-17 : empilement vertical scoped au seul
- * bloc information-générale (valeurs longues : UUID, nom de projet, clé Maven).
+/**
+ * MODIF 2026-05-17 : empilement vertical scoped au seul bloc information-générale
+ * (valeurs longues : UUID, nom de projet, clé Maven).
  * Les autres blocs gardent flex-direction:row en small (label gauche, valeur droite).
  * Spécificité supérieure (.callout-information-general .container-ligne) → pas de
  * problème de cascade même si la règle vient avant les breakpoints medium+. */
@@ -294,7 +294,8 @@ textarea[readonly] {
 
 .container-ligne {
   display: flex;
-  /* flex-direction et align-items sont gérés par les media queries :
+  /**
+   * flex-direction et align-items sont gérés par les media queries :
    * - small  → column (empilé) via les @media ≤ 40em ci-dessus
    * - medium+ → row   (côte à côte) via les @media 40+em ci-dessus
    * Ne PAS les déclarer ici : la base viendrait après les @media dans le fichier
@@ -535,8 +536,8 @@ textarea[readonly] {
 #bouton-fermer-mesures-rci:hover,
 #bouton-fermer-scope:hover { background-color: #006182; }
 
-/* select2 custom
- *  placeholder
+/** 
+ * select2 custom placeholder
  *  Ici on surcharge les class de l'api select2
  */
 
@@ -584,10 +585,7 @@ textarea[readonly] {
 }
 
 /* Affichage de : Proposition trouvé */
-.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
-  background-color: #ddd;
-  color: #fff;
-}
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable { background-color: #ddd; }
 
 /*  Couleur des options dans le sélecteur */
 .select2-results__option { color: #00445b; }
@@ -681,9 +679,12 @@ textarea[readonly] {
 }
 
 /* Couleur pour la note D */
+/**
+* MODIF 30/10/2026 : #ba5705 (brun, 4.67:1 avec du blanc) -> #ed7d20 + texte
+* noir (7.55:1), même correctif que .note-d dans common.css. */
 .note-orange {
-  background-color: #ba5705;
-  color: #fff;
+  background-color: #ed7d20;
+  color: #000;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
 }
@@ -795,7 +796,8 @@ textarea[readonly] {
   margin: 20px auto;
 }
 
-/* MODIF 2026-09-29 : graphique RCI (modale _modal_mesures_rci.html.twig).
+/*
+  MODIF 2026-09-29 : graphique RCI (modale _modal_mesures_rci.html.twig).
   Hauteur fixe + position: relative, requis par Chart.js pour dimensionner
   correctement le canvas (sinon héritage de "canvas { height: auto !important }".
  */
@@ -806,9 +808,7 @@ textarea[readonly] {
   margin-top: 1rem;
 }
 
-#rci-bar-chart {
-  height: 300px !important;
-}
+#rci-bar-chart { height: 300px !important; }
 
 /* MODIF 2026-10-08 : graphique Scopes (modale _modal_repartition_scope.html.twig),
   même contrainte de dimensionnement que le graphique RCI ci-dessus. */
@@ -819,9 +819,7 @@ textarea[readonly] {
   margin-top: 1rem;
 }
 
-#scope-bar-chart {
-  height: 300px !important;
-}
+#scope-bar-chart { height: 300px !important; }
 
 canvas {
   width: 100% !important;
