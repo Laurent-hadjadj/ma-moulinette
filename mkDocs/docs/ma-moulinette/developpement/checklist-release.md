@@ -47,7 +47,7 @@ Ces chiffres ne bougent pas avec le volume de code ou de tests ; ils décrivent 
 
 | Fichier | Chiffre |
 | --- | --- |
-| `mkDocs/docs/ma-moulinette/architecture/architecture-base-de-donnees.md` | Nombre de tables (`45 tables` — un fichier par table sous `migrations/POSTGRESQL/20_tables/`) |
+| `mkDocs/docs/ma-moulinette/architecture/architecture-base-de-donnees.md` | Nombre de tables (`54 tables` — un fichier par table sous `migrations/POSTGRESQL/20_tables/`) |
 | `mkDocs/docs/ma-moulinette/application/clean-code.md` | Nombre de colonnes des tableaux (Clean Code projet/synthèse portefeuille, export PDF) |
 | `mkDocs/docs/ma-moulinette/application/statistiques.md` | Nombre de colonnes du tableau de synthèse (22 colonnes) |
 | `mkDocs/docs/ma-moulinette/application/cosui.md` | Nombre d'axes du radar COSUI (6 axes) |

@@ -6,7 +6,7 @@ Ma-Moulinette est une application open source sous licence CC BY-NC-SA 4.0. Le c
 
 | Composant | Développement | Production |
 | --- | --- | --- |
-| PHP | ≥ 8.4 (8.5.5 utilisé) | ≥ 8.4 |
+| PHP | ≥ 8.5 (8.5.12 utilisé) | ≥ 8.5.12 |
 | PostgreSQL | 18 | 18 |
 | Symfony CLI | recommandé (serveur local) | non requis (nginx + PHP-FPM) |
 | SonarQube | 8.9.9 LTS, 9.9.4 LTS, 10 LTA, 2024, 2025 LTA ou 2026 | idem |

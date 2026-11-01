@@ -41,7 +41,7 @@ flowchart TD
 
 ## 📅 Référentiel actif selon la version SonarQube
 
-Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SONAR_VERSION`), pas d'un choix utilisateur libre :
+Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SONAR_VERSION`), et non d'un choix utilisateur libre :
 
 | Version SonarQube | Référentiels disponibles |
 | --- | --- |
@@ -50,7 +50,7 @@ Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SON
 
 !!! note "🤔 Contre-intuitif : le référentiel OWASP et son support SonarQube n'avancent pas au même rythme"
     L'OWASP publie ses Top 10 par génération — **2013, 2017, 2021, 2025**. Mais **l'intégration côté SonarQube** (les facettes `owaspTop10`/`owaspTop10-2021`/... exposées par `/api/issues/search`) ne suit pas cette date de publication : c'est SonarQube qui décide, dans une version donnée de son propre produit, quels référentiels il sait classer.
-    À ce jour, **même la dernière version connue de SonarQube (2026) ne classe pas encore les failles selon l'OWASP Top 10 2025** — seuls 2017 et 2021 sont réellement disponibles, quelle que soit la valeur de `sonar.version`.
+    À ce jour, **même la dernière version connue de SonarQube Community (2026) ne classe pas encore les failles selon l'OWASP Top 10 2025** — seuls 2017 et 2021 sont réellement disponibles, quelle que soit la valeur de `sonar.version`.
     Concrètement : le bouton « OWASP 2025 » de la page reste désactivé indépendamment de `sonar.version`, tant qu'aucune version de SonarQube ne supporte la facette correspondante — pas de seuil numérique à deviner ou à maintenir pour ça.
     Le jour où SonarQube l'ajoutera, il faudra explicitement l'activer dans `templates/owasp/index.html.twig` (et implémenter la collecte associée dans `BatchCollecteOwaspController`, qui aujourd'hui ne récupère que 2017 et 2021).
 
@@ -58,7 +58,7 @@ Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SON
     `BatchCollecteOwaspController` ne s'appuie plus sur les facettes officielles `owaspTop10`/`owaspTop10-2021` de SonarQube (voir note suivante). Il reste vrai qu'une règle peut être détectée comme un problème de sécurité générique (`sonarsourceSecurity` non vide côté SonarQube) sans être classée OWASP du tout, dans ses métadonnées comme dans son tag — dans ce cas la page affiche 0 en toute cohérence, ce n'est pas un bug applicatif.
 
 !!! bug "🔴 Cause racine trouvée le 27/10/2026 — la facette officielle SonarQube n'indexe jamais FindSecBugs"
-    Vérifié en direct sur une instance SonarQube 26.10 réelle, en comparant les métadonnées serveur des deux familles de règles (`/api/rules/show`) :
+    Vérifié en sur une instance SonarQube 26.10, en comparant les métadonnées serveur des deux familles de règles (`/api/rules/show`) :
 
     - Les règles **SonarSource** (repo `java`, ex. `S2068`) portent un bloc structuré `securityStandards.OWASP`/`OWASP Top 10 2021` dans leur JSON de métadonnées — c'est ce bloc, et uniquement lui, qui alimente la facette officielle `owaspTop10`/`owaspTop10-2021`.
     - Les règles du plugin tiers **FindSecBugs** (repo `findsecbugs`, ex. `SQL_INJECTION_JPA`) n'ont **jamais** ce bloc — seulement un tag texte libre `owasp-aX` (`sysTags`), hérité de la classification OWASP **2013**, jamais migré vers 2021. Ce tag n'est jamais lu par la facette officielle.
@@ -113,8 +113,8 @@ Page OWASP
 │
 ├── ℹ️ Callout « nombre de règles » (SonarQube + FindSecBugs couvrant le référentiel actif)
 │
-├── 🛡️ Tuile compteur Vulnérabilités OWASP (total + note A-E — badge .stat-note)
-├── 🔥 Tuile compteur Hotspot (total + note A-E, taux de validation — badge .stat-note)
+├── 🛡️ Tuile compteur Vulnérabilités OWASP (total + note A-E — badge .stat-note, bordure gauche colorée selon la note)
+├── 🔥 Tuile compteur Hotspot (total + note A-E, taux de validation — badge .stat-note, bordure gauche colorée selon la note)
 │
 ├── 🛡️ Tuile détail Vulnérabilités OWASP (bloquante/critique/majeure/mineure)
 ├── 🔥 Tuile détail Hotspot (HIGH/MEDIUM/LOW, examiné/à vérifier)
@@ -144,7 +144,7 @@ Page OWASP
 ## 📋 Contenu de la page
 
 - **Callout « nombre de règles »** : encart pédagogique indiquant, pour le référentiel actif, le nombre de règles (SonarQube elles-mêmes + plugin tiers FindSecBugs) sur lesquelles repose la classification locale — toujours visible, en tête de page, mis à jour à chaque changement de référentiel ;
-- **Tuiles compteur** (résultat en premier) : total + note A-E pour Vulnérabilités OWASP et pour Hotspot, badge `.stat-note`/`note-vertX` — même convention visuelle que les tuiles Accessibilité/RCI/Empreinte Écologique de la page [Projet](projet.md). La note Vulnérabilités OWASP retient la pire sévérité présente sur l'ensemble des catégories (Bloquant > Critique > Majeur > Mineur, A si aucune vulnérabilité) ; la note Hotspot reste le taux de validation déjà existant ;
+- **Tuiles compteur** (résultat en premier) : total + note A-E pour Vulnérabilités OWASP et pour Hotspot, badge `.stat-note`/`note-vertX` — même convention visuelle que les tuiles Accessibilité/RCI/Empreinte Écologique de la page [Projet](projet.md). La note Vulnérabilités OWASP retient la pire sévérité présente sur l'ensemble des catégories (Bloquant > Critique > Majeur > Mineur, A si aucune vulnérabilité) ; la note Hotspot reste le taux de validation déjà existant. Les 2 tuiles portent depuis le 30/10/2026 une bordure gauche (`.alert-callout-border`, même pattern que les tuiles de la page [Clean Code](clean-code.md)) colorée selon cette même note A-E, posée dynamiquement en JavaScript puisque la note n'est connue qu'après l'appel de peinture ;
 - **Tuiles détail** (juste en dessous) : répartition par sévérité — Bloquante/Critique/Majeure/Mineure pour les vulnérabilités, HIGH/MEDIUM/LOW/Examiné/À vérifier pour les hotspots ;
 - **Répartition par module** (frontend/backend/autre — voir [Architecture des applications Java](../architecture/architecture-java.md)) : porte désormais sur les **vulnérabilités OWASP**, pas sur les hotspots — remplace la répartition affichée jusqu'ici ;
 - **Tableau de synthèse** : une ligne par catégorie A1-A10, nombre de failles et de hotspots avec badge de note (`.badge`/`note-a..e`, inchangé pour ce tableau) ; la source (core/FindSecBugs/mixte) du référentiel actif est affichée juste au-dessus, à côté de son numéro ;
@@ -160,6 +160,9 @@ Page OWASP
 
 !!! note "✅ Données du référentiel par défaut affichées sans clic préalable"
     Jusqu'ici, aucune donnée (tuiles, tableau de synthèse, graphique, répartition par module) ne s'affichait tant qu'on n'avait pas cliqué sur un des 3 boutons de référentiel, même si le référentiel par défaut était déjà visuellement actif ailleurs sur la page (accordéon, `<select>`). Le bouton correspondant au référentiel par défaut (2021 si disponible, sinon 2017) est désormais marqué actif dès le rendu côté Twig, et `index-owasp.js` charge ses données automatiquement à l'initialisation, sans attendre d'interaction. Les 3 boutons restent utilisables pour changer de référentiel ensuite.
+
+!!! note "✅ Badge de note vide sur une catégorie à une seule anomalie (30/10/2026)"
+    Le badge de note du tableau de synthèse A1-A10 pouvait s'afficher sans couleur ni lettre (`class="badge "`) dès qu'une catégorie comptait exactement 1 occurrence d'une seule sévérité (ex. une seule anomalie mineure) — l'initialisation par défaut ne retombait sur aucune valeur valide quand aucun des seuils de sévérité (`> 1`, au lieu de `>= 1`) ne matchait. Identifié lors de la correction : la catégorie A4 comparait ses propres compteurs à ceux de la catégorie A1 (copier-coller, *ah mais ou ai-je la tête !*). Les deux corrigés.
 
 ## 📄 Export PDF
 

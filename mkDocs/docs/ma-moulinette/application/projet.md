@@ -55,9 +55,14 @@ Page Projet
 
 ## 📰 Zone Journal
 
-Un journal d'activité (`<textarea readonly>`) affiche en direct la trace des appels effectués par la page (collecte, peinture, erreurs). Le bouton 🧹 (icône gomme) le vide sans rien envoyer au serveur — c'est un affichage purement local, rien n'est conservé après un rechargement de la page.
+Un journal d'activité (`<textarea readonly>`) affiche en direct la trace des appels effectués par la page (collecte, peinture, erreurs).
+Le bouton 🧹 (icône gomme) le vide sans rien envoyer au serveur — c'est un affichage purement local, rien n'est conservé après un rechargement de la page.
 
 ## 🔎 Zone Sélection du projet
+
+!!! note "✅ Ajout d'une pastille de collecte (29/10/2026)"
+    Chaque projet du sélecteur dispose d'une pastille de couleur grise
+    quand le projet n'a pas encore été collecter et verte si une version existe déjà dans les tables temporaires.
 
 Le sélecteur (Select2) recherche parmi les projets du **groupe fonctionnel** de l'utilisateur (voir [Groupes](../back-office/groupes.md#-groupe-fonctionnel)) — la recherche se déclenche à partir de **2 caractères** saisis (`minimumInputLength: 2`). Si l'utilisateur n'est rattaché à aucun groupe fonctionnel, ou qu'aucun tag SonarQube ne correspond à son périmètre, aucun projet n'est proposé.
 
@@ -80,10 +85,14 @@ Au-dessus du tableau, un badge 🎯 rappelle chaque groupe fonctionnel auquel l'
     Le header à deux niveaux (groupes de colonnes + sous-colonnes) est géré nativement — plus de perte de l'en-tête en scrollant une longue liste.
 
 !!! note "✅ Centrage des en-têtes de colonne (25/10/2026)"
-    Les en-têtes restaient alignés à gauche malgré la classe `text-center` posée dans le template : la feuille de style du thème DataTables/Foundation (`table.dataTable thead th { text-align: left; }`) est plus spécifique que la classe utilitaire Foundation `.text-center` et l'emportait systématiquement — y compris sur la ligne d'en-tête groupée (colspan), que les réglages `columnDefs`/`className` de DataTables ne peuvent pas atteindre puisqu'ils ne s'appliquent qu'à la ligne « feuille » (une cellule par colonne réelle). Corrigé en ciblant l'ID de la table (`#table-mes-projets thead th.text-center` dans `mes-projets.css`), ce qui fonctionne sur les deux lignes d'en-tête sans dépendre des options JS de DataTables.
+    Les en-têtes restaient alignés à gauche malgré la classe `text-center` posée dans le template : la feuille de style du thème DataTables/Foundation (`table.dataTable thead th { text-align: left; }`) est plus spécifique que la classe utilitaire Foundation `.text-center` et l'emportait systématiquement — y compris sur la ligne d'en-tête groupée (colspan), que les réglages `columnDefs`/`className` de DataTables ne peuvent pas atteindre puisqu'ils ne s'appliquent qu'à la ligne « feuille ». Corrigé en ciblant l'ID de la table (`#table-mes-projets thead th.text-center` dans `mes-projets.css`), ce qui fonctionne sur les deux lignes d'en-tête sans dépendre des options JS de DataTables.
 
 !!! note "✅ Encart d'information sur la colonne Version (23/10/2026)"
     Un encart rappelle désormais que la colonne **Version** correspond à la version analysée lors de la **dernière collecte** effectuée pour chaque projet — pas nécessairement à la dernière version publiée.
+
+!!! note "✅ Couleurs et largeur des badges Fiabilité/Sécurité/Maintenabilité (30/10/2026)"
+    Les badges (`span.label.success/.warning/.alert`) affichaient les couleurs **par défaut de Foundation** (vert vif, orange ambré, rouge brique), jamais alignées sur la palette du reste de l'application — recolorés sur `#077e07`/`#ed7d20`/`#d4333f` (portée limitée au tableau de cette page, pour ne pas toucher le message d'erreur de la page de connexion qui utilise aussi `.label.alert`).
+    Leur largeur dépendait aussi du nombre de chiffres affichés (`47` et `104 337` prenaient des largeurs très différentes dans la même colonne) — largeur désormais fixe par colonne : Fiabilité/Sécurité restent étroites (violations corrigées en priorité, rarement plus de 10 000), Maintenabilité est plus large (10 000 à 100 000 courant).
 
 ## ⚙️ Zone des actions
 
@@ -134,7 +143,7 @@ Trois blocs (« triptyque ») plus un bandeau, tous initialement vides et rempli
 
 Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution des langages détectés. Purement informatif.
 
-!!! note "✅ Ajout 2026-07-23 : pastille Actuator"
+!!! note "✅ Ajout d'une pastille pour Actuator (23/07/2026)"
     Une pastille ronde à côté du libellé « Actuator » (⚪ grise / 🟢 verte / 🔴 rouge, voir [module Actuator](actuator.md#️-affichage-sur-la-page-projet)) ouvre une fenêtre modale listant les clés/valeurs de la dernière collecte du point d'accès Actuator déclaré pour ce projet (aucune donnée si aucun point d'accès n'est déclaré).
 
 ### 🏀 Bloc « Version »
@@ -195,16 +204,16 @@ Aucun seuil de couleur n'est codé en dur dans les templates : les badges de not
     En interne, « Accept » reste représenté par `status=RESOLVED` + `resolution=WONTFIX` côté ancien modèle — avec l'**ancien** filtre (`statuses=OPEN,CONFIRMED,REOPENED`), faire « Accept » sur une anomalie la **retire** du compteur (comme un `RESOLVED` classique).<br>
     Avec la règle retenue ici (`issueStatuses` incluant `ACCEPTED`), faire « Accept » ne fait **plus baisser** le compteur d'anomalies actives. C'est un choix délibéré, cohérent avec la doc SonarQube (le défaut reste réel tant qu'il n'est pas corrigé), mais une équipe habituée à l'ancien comportement (le compteur baissait après un triage « Accept ») verra une différence perceptible après la migration.
 
-**Vérifié en conditions réelles** (comparaison live des deux filtres, serveur SonarQube 26.9.0, projet `monAppliation`) : avant bascule, `statuses=OPEN,CONFIRME REOPENED` et `issueStatuses=OPEN,CONFIRMED` valaient tous les deux 595. Après avoir basculé une issue BUG/BLOCKER en « Accept » dans l'interface SonarQube : `statuses=OPEN,CONFIRMED,REOPENED` et `issueStatuses=OPEN,CONFIRMED` descendent tous les deux à 594 (perdent l'issue), tandis que `issueStatuses=OPEN,CONFIRMED ACCEPTED` reste à 595 (la récupère) — confirmant que la règle retenue reproduit exactement le total de l'ancien modèle **avant** triage, tout en gardant les issues `ACCEPTED` dans le décompte après triage, contrairement à l'ancien modèle.
+**Vérifié** (comparaison live des deux filtres, serveur SonarQube 26.9.0, projet `monAppliation`) : avant bascule, `statuses=OPEN,CONFIRME REOPENED` et `issueStatuses=OPEN,CONFIRMED` valaient tous les deux 595. Après avoir basculé une issue BUG/BLOCKER en « Accept » dans l'interface SonarQube : `statuses=OPEN,CONFIRMED,REOPENED` et `issueStatuses=OPEN,CONFIRMED` descendent tous les deux à 594 (perdent l'issue), tandis que `issueStatuses=OPEN,CONFIRMED ACCEPTED` reste à 595 (la récupère) — confirmant que la règle retenue reproduit exactement le total de l'ancien modèle **avant** triage, tout en gardant les issues `ACCEPTED` dans le décompte après triage, contrairement à l'ancien modèle.
 
 ### 🏀 Bloc « Accessibilité »
 
-!!! note "✅ Nouveau bloc 27/10/2026 : Accessibilité (tag SonarQube `accessibility`)"
-    Nombre d'anomalies accessibilité (OPEN) détectées par SonarQube via le tag `accessibility` (122 règles couvrant les langages CSS / Web (HTML) / JavaScript / TypeScript), avec une note A-E — même méthode SQALE que RCI et Empreinte Écologique (dette estimée ÷ (ncloc × 30 min), seuils 5/10/20/50 %) — globale **et** par langage (4 lignes de détail affichées directement sous la ligne globale, sans modale).
+!!! note "✅ Nouveau bloc Accessibilité (27/10/2026)"
+     Affiche le nombre d'anomalies accessibilité (OPEN) détectées par SonarQube via le tag `accessibility` (122 règles couvrant les langages CSS / Web (HTML) / JavaScript / TypeScript), avec une note A-E — même méthode SQALE que RCI et Empreinte Écologique (dette estimée ÷ (ncloc × 30 min), seuils 5/10/20/50 %) — globale **et** par langage (4 lignes de détail affichées directement sous la ligne globale, sans modale).
 
-    Pas de facette WCAG officielle côté SonarQube (confirmé en direct : `/api/issues/search?facets=wcag` renvoie 400 et liste exhaustivement les facettes supportées — aucune dédiée à l'accessibilité). Le tag `wcag` existe mais ne couvre que 6 règles très récentes ; le tag `accessibility`, bien plus représentatif, a été retenu comme filtre. Pas de numéro de critère WCAG (1.4.3, 2.4.4…) exploitable via l'API : seulement un détail par règle/sévérité/langage.
+    Pas de facette WCAG officielle côté SonarQube (confirmé : `/api/issues/search?facets=wcag` renvoie 400 et liste exhaustivement les facettes supportées — aucune dédiée à l'accessibilité). Le tag `wcag` existe mais ne couvre que 6 règles très récentes ; le tag `accessibility`, bien plus représentatif, a été retenu comme filtre. Pas de numéro de critère WCAG (1.4.3, 2.4.4…) exploitable via l'API : seulement un détail par règle/sévérité/langage.
 
-    Contrairement à l'Empreinte Écologique (plugins tiers Creedengo, activable via `CREEDENGO_ENABLED`), les règles d'accessibilité sont intégrées aux plugins de langage standards de SonarQube — pas de feature-flag, toujours collecté.
+    Contrairement à l'Empreinte Écologique (plugins tiers Creedengo, activable via `CREEDENGO_ENABLED`), les règles d'accessibilité sont intégrées aux plugins de langage standards de SonarQube — il n'est pas de nécessaire d'activer un feature-flag, elle est toujours collectée.
 
 !!! note "✅ Historique alimenté par les deux pipelines, y compris un enregistrement manuel"
    Accessibilité suit le pattern **RCI** : `peinture.js` pose la réponse complète de l'API sur le `dataset` de l'élément pivot, relue par `enregistrement.js` au clic « Enregistrer ». `historique.accessibility_*` est donc alimenté quel que soit le pipeline (interactif ou batch/cron).
