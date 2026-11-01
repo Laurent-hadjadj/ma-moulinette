@@ -94,13 +94,29 @@ const calculNoteHotspot = function(taux) {
  * compteur (Vulnérabilités OWASP et Hotspot, badge .stat-note/.note-vertX) —
  * le tableau de synthèse A1-A10 garde calculNoteHotspot()/l'ancien badge,
  * inchangé. MODIF 28/10/2026 : renommée (générique) — sert désormais aussi à
- * la note Vulnérabilités OWASP, pas seulement Hotspot. */
+ * la note Vulnérabilités OWASP. */
 const colorByRatingNote = {
   A: 'note-vert1',
   B: 'note-vert2',
   C: 'note-jaune',
   D: 'note-orange',
   E: 'note-rouge',
+};
+
+/* MODIF 30/10/2026 : bordure gauche des 2 tuiles KPI (#js-owasp-kpi-tile/
+ * #js-hotspot-kpi-tile, classe .alert-callout-border posée côté Twig)
+ * recolorée selon la note A-E — même palette que les badges, posée
+ * dynamiquement ici puisque la note n'est connue qu'après l'appel AJAX. */
+const borderColorByRating = {
+  A: '#077e07',
+  B: '#a3c50b',
+  C: '#edbf05',
+  D: '#ed7d20',
+  E: '#d4333f',
+};
+
+const setTileBorderColor = function (tileSelector, rating) {
+  $(tileSelector).css('border-left-color', borderColorByRating[rating] ?? '#cacaca');
 };
 
 const noteHotspotFromTaux = function (taux) {
@@ -121,24 +137,22 @@ const noteHotspotFromTaux = function (taux) {
 const renderOwaspHotspotRating = function (selector, taux) {
   if (taux === null || taux === undefined || Number.isNaN(taux)) {
     $(selector).html(`<span class="stat-note-kpi stat-note-width note-gris">${displayValue(null)}</span>`);
+    setTileBorderColor('#js-hotspot-kpi-tile', null);
     return;
   }
   const rating = noteHotspotFromTaux(taux);
   const cssClass = colorByRatingNote[rating] ?? '';
   $(`${selector}-percent`).html(`${displayPercent(taux * cent)}`)
   $(`${selector}`).html(`<span class="stat-note-kpi stat-note-width ${cssClass}">${rating}</span>`);
+  setTileBorderColor('#js-hotspot-kpi-tile', rating);
 };
 
 /* MODIF 28/10/2026 : note A-E de la tuile compteur Vulnérabilités OWASP
- * (manquait jusqu'ici — seule la tuile Hotspot avait une note). Même ordre de
- * sévérité (pire sévérité présente → pire note) que l'ancien
- * injectionOwaspInfo() par catégorie, mais réécrite ici en fonction pure,
- * exhaustive sur des seuils >=1 (pas de recouvrement ni de cas "aucune
- * condition ne matche" — l'original, en cascade de if sans else, laissait un
- * badge non défini si le total valait exactement 1 avec une seule sévérité
- * concernée, cf. historique du fichier) : appliquée au total toutes
- * catégories confondues (r.bloquant/r.critique/r.majeur/r.mineur, déjà dans
- * la réponse de /api/secure/peinture/owasp/liste), pas par catégorie.
+ * Même ordre de sévérité (pire sévérité présente → pire note) que l'ancien
+ * injectionOwaspInfo() par catégorie, exhaustive sur des seuils >=1 :
+ * appliquée au total toutes catégories confondues
+ * (r.bloquant/r.critique/r.majeur/r.mineur, déjà dans
+ * la réponse de /api/secure/peinture/owasp/liste).
  *
  * @param {number} bloquant
  * @param {number} critique
@@ -172,11 +186,13 @@ const renderOwaspVulnRating = function (selector, bloquant, critique, majeur, mi
   const rating = noteOwaspFromCounts(bloquant, critique, majeur, mineur);
   const cssClass = rating ? (colorByRatingNote[rating] ?? '') : 'note-gris';
   $(selector).html(`<span class="stat-note-kpi stat-note-width ${cssClass}">${displayValue(rating)}</span>`);
+  setTileBorderColor('#js-owasp-kpi-tile', rating);
 };
 
 /**
  * Injecte le compteur + la part (%) d'un module dans la répartition par
- * module des vulnérabilités OWASP (remplace injectionModule(), qui portait sur les hotspots — cf. historique du fichier).
+ * module des vulnérabilités OWASP (remplace injectionModule(),
+ * qui portait sur les hotspots — cf. historique du fichier).
  *
  * @param {string} selector
  * @param {number|null} count
@@ -208,7 +224,7 @@ const injectionOwaspInfo = function(id, menace, badge, laNote) {
 
 /**
  * [Description for videLeTableau]
- *
+ * réinitialise les valeurs.
  * @return void
  *
  * Created at: 27/03/2024 13:05:58 (Europe/Paris)
@@ -216,11 +232,10 @@ const injectionOwaspInfo = function(id, menace, badge, laNote) {
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 const videLeTableau = function() {
-  /** réinitialise les valeurs.
-   *  MODIF 2026-07-18 : '' -> '--' (une cellule vide se confondait avec un
-   *  vrai zéro), + ajout de la boucle #a1..#a10 (tableau de synthèse) qui
-   *  manquait ici : sans données pour le référentiel sélectionné (406), les
-   *  compteurs de failles du référentiel précédent restaient affichés. */
+  /*  MODIF 2026-07-18 : '' -> '--' (une cellule vide se confondait avec un
+  *  vrai zéro), + ajout de la boucle #a1..#a10 (tableau de synthèse) qui
+  *  manquait ici : sans données pour le référentiel sélectionné (406), les
+  *  compteurs de failles du référentiel précédent restaient affichés.*/
   const placeholder = '--';
 
   /** version et la date du projet dans SonarQube */
@@ -234,6 +249,7 @@ const videLeTableau = function() {
   $('#js-nombre-faille-majeur').html(placeholder);
   $('#js-nombre-faille-mineur').html(placeholder);
   $('#js-owasp-rating').html(placeholder);
+  setTileBorderColor('#js-owasp-kpi-tile', null);
 
   /** nombre de hotspot au status REVIEWED */
   $('#js-hotspot-reviewed').html(placeholder);
@@ -246,6 +262,7 @@ const videLeTableau = function() {
   $('#js-nombre-hotspot-medium').html(placeholder);
   $('#js-nombre-hotspot-low').html(placeholder);
   $('#js-hotspot-rating').html(placeholder);
+  setTileBorderColor('#js-hotspot-kpi-tile', null);
 
   /* Tableau de synthèse (failles) + Hotspot */
   for (let id=1; id<11; id++) {
@@ -267,6 +284,8 @@ const videLeTableau = function() {
   sessionStorage.setItem('ma_moulinette_referential_owasp', '');
 }
 
+const owaspSeverityByCategory = {};
+
 /**
 * [Description for remplissageOwaspInfo]
 * Récupération des informations sur les vulnérabilités OWASP.
@@ -277,12 +296,13 @@ const videLeTableau = function() {
 * Created at: 19/12/2022, 21:32:27 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-/* MODIF 26/10/2026 : cache de la répartition par sévérité des violations par catégorie (a1..a10), reconstruit à chaque remplissageOwaspInfo() (donc à chaque changement de référentiel) — voir son utilisation dans remplissageDetailsHotspotOwasp() plus bas. */
-const owaspSeverityByCategory = {};
-
 const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
 
-  /** si la clé maven n'est pas défini alors on sort */
+/** MODIF 26/10/2026 : cache de la répartition par sévérité des violations par catégorie (a1..a10),
+  * reconstruit à chaque remplissageOwaspInfo() (donc à chaque changement de référentiel).
+  */
+
+/** si la clé maven n'est pas défini alors on sort */
   if (maven_key === undefined || referential_owasp === undefined) {
     return;
   }
@@ -314,7 +334,8 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   }
 
   /* MODIF 26/10/2026 : met en cache la répartition par sévérité des
-   * VIOLATIONS de chaque catégorie (a1Blocker..a10Minor, déjà présents * dans cette même réponse, jusqu'ici jamais lus) — réutilisé par
+   * VIOLATIONS de chaque catégorie (a1Blocker..a10Minor, déjà présents
+   * dans cette même réponse, jusqu'ici jamais lus) — réutilisé par
    * remplissageDetailsHotspotOwasp() pour les afficher dans la modale
    * "Détail", qui ne montrait jusqu'ici que la sévérité des hotspots. */
   for (let i = 1; i <= 10; i++) {
@@ -333,13 +354,15 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   /** On affiche la version du référentiel.
    *  MODIF 27/10/2026 : vocabulaire aligné sur la classification locale
    *  (OwaspRuleClassifierService) — 'core' (règle SonarQube elle-même),
-   *  'findsecbugs' (règle du plugin tiers FindSecBugs, jamais indexée par la facette officielle) ou 'mixed' (les deux contribuent) — remplace l'ancien vocabulaire 'facet'/'tag' (colonne owasp.source, supprimée). */
+   *  'findsecbugs' (règle du plugin tiers FindSecBugs, jamais indexée par la facette officielle) ou 'mixed' (les deux contribuent)
+   *  — remplace l'ancien vocabulaire 'facet'/'tag' (colonne owasp.source, supprimée). */
   let sourceLabel = 'OWASP (SonarQube)';
   if (r.source === 'findsecbugs') { sourceLabel = 'OWASP (FindSecBugs)'; }
   if (r.source === 'mixed') { sourceLabel = 'OWASP (mixte SonarQube + FindSecBugs)'; }
   $('#owasp-version').html(`Référentiel OWASP Actuel : <span class="lead color-noir">${r.referential_owasp}</span> — <span class="lead color-noir">${sourceLabel}</span>`);
 
-  /* MODIF 27/10/2026 : met à jour le callout « nombre de règles » pour le référentiel actif (donnée statique posée en data-* par Twig, cf. OwaspController::index() -> owasp_rule_count_2017/2021). */
+  /* MODIF 27/10/2026 : met à jour le callout « nombre de règles » pour le référentiel actif
+    (donnée statique posée en data-* par Twig, cf. OwaspController::index() -> owasp_rule_count_2017/2021). */
   const ruleCountData = $('#js-owasp-rule-count-callout').data(`ruleCount${r.referential_owasp}`);
   if (ruleCountData !== undefined) {
     $('#js-owasp-rule-count').text(ruleCountData);
@@ -362,26 +385,33 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   /* MODIF 28/10/2026 : note A-E de la tuile compteur Vulnérabilités OWASP. */
   renderOwaspVulnRating('#js-owasp-rating', r.bloquant, r.critique, r.majeur, r.mineur);
 
-  let c=[], n=[];
+  /**
+   * MODIF 30/10/2026 : BUG CORRIGÉ — l'initialisation `c=[], n=[]` (tableaux
+   * vides) donnait `class="badge "` (pas de suffixe `note-a`) et une note
+   * vide dès qu'une catégorie n'avait ni 0 occurrence ni >=1 occurrence d'une
+   * seule sévérité repassant par aucun des `if` ci-dessous (cf. seuils `> 1`
+   * corrigés en `>= 1` juste après). Défaut sûr :
+   * vert/A, comme `calculNoteHotspot`/le repli de remplissageHotspotListe(). */
+  let c = couleur[un], n = note[un];
 
   /* Détails A1 */
   if (Number(r.a1Blocker + r.a1Critical + r.a1Major + r.a1Minor) === 0){
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a1Minor) > 1) {
+  if (Number(r.a1Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a1Major) > 1) {
+  if (Number(r.a1Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a1Critical) > 1) {
+  if (Number(r.a1Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a1Blocker) > 1) {
+  if (Number(r.a1Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -393,19 +423,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a2Minor) > 1) {
+  if (Number(r.a2Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a2Major) > 1) {
+  if (Number(r.a2Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a2Critical) > 1) {
+  if (Number(r.a2Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a2Blocker) > 1) {
+  if (Number(r.a2Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -417,19 +447,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a3Minor) > 1) {
+  if (Number(r.a3Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a3Major) > 1) {
+  if (Number(r.a3Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a3Critical) > 1) {
+  if (Number(r.a3Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a3Blocker) > 1) {
+  if (Number(r.a3Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -437,23 +467,27 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(trois, r.a3, c, n);
 
   /* Détails A4 */
-  if (Number(r.a4Blocker + r.a1Critical + r.a1Major + r.a1Minor) === 0) {
+  /**
+   * MODIF 30/10/2026 : BUG CORRIGÉ — comparait a4Blocker aux critical/major/
+   * minor de A1 (copier-coller), pas aux siens : A4 pouvait afficher vert/A
+   * en se basant sur les compteurs d'une autre catégorie. */
+  if (Number(r.a4Blocker + r.a4Critical + r.a4Major + r.a4Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a4Minor) > 1) {
+  if (Number(r.a4Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a4Major) > 1) {
+  if (Number(r.a4Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a4Critical) > 1) {
+  if (Number(r.a4Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a4Blocker) > 1) {
+  if (Number(r.a4Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -465,19 +499,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a5Minor) > 1) {
+  if (Number(r.a5Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a5Major) > 1) {
+  if (Number(r.a5Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a5Critical) > 1) {
+  if (Number(r.a5Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a5Blocker) > 1) {
+  if (Number(r.a5Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -488,19 +522,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a6Minor) > 1) {
+  if (Number(r.a6Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a6Major) > 1) {
+  if (Number(r.a6Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a6Critical) > 1) {
+  if (Number(r.a6Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a6Blocker) > 1) {
+  if (Number(r.a6Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -512,19 +546,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a7Minor) > 1) {
+  if (Number(r.a7Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a7Major) > 1) {
+  if (Number(r.a7Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a7Critical) > 1) {
+  if (Number(r.a7Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a7Blocker) > 1) {
+  if (Number(r.a7Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -536,19 +570,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a8Minor) > 1) {
+  if (Number(r.a8Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a8Major) > 1) {
+  if (Number(r.a8Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a8Critical) > 1) {
+  if (Number(r.a8Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a8Blocker) > 1) {
+  if (Number(r.a8Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -560,19 +594,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a9Minor) > 1) {
+  if (Number(r.a9Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a9Major) > 1) {
+  if (Number(r.a9Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a9Critical) > 1) {
+  if (Number(r.a9Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a9Blocker) > 1) {
+  if (Number(r.a9Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -584,19 +618,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     c = couleur[un];
     n = note[un];
   }
-  if (Number(r.a10Minor) > 1) {
+  if (Number(r.a10Minor) >= 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (Number(r.a10Major) > 1) {
+  if (Number(r.a10Major) >= 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (Number(r.a10Critical) > 1) {
+  if (Number(r.a10Critical) >= 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (Number(r.a10Blocker) > 1) {
+  if (Number(r.a10Blocker) >= 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -663,9 +697,10 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
   $('#js-nombre-hotspot-medium').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium));
   $('#js-nombre-hotspot-low').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
 
-  /* MODIF 27/10/2026 : badge recoloré — .stat-note/.note-vertX (même
+  /**
+   * MODIF 27/10/2026 : badge recoloré — .stat-note/.note-vertX (même
    * convention que les tuiles Accessibilité/RCI/Empreinte Écologique),
-   * remplace l'ancien .badge/note-a..e (incohérence visuelle signalée).
+   * remplace l'ancien .badge/note-a..e.
    * Le tableau de synthèse A1-A10 (remplissageHotspotListe() plus bas)
    * garde calculNoteHotspot()/l'ancien badge, inchangé. */
   let leTaux = nombreHotspot !== 0 ? 1 - (Number(hotspotToReview) / nombreHotspot) : 1;
@@ -734,7 +769,11 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
       return;
     }
 
-    /* MODIF 28/10/2026 : BUG CORRIGÉ — repli par défaut à 'a' (littéral), alors que la constante couleur (constante.js) utilise le préfixe 'note-' ('note-a'..'note-e'). class="badge a" ne correspond à aucune règle CSS : badge bleu par défaut de Foundation, visible dès qu'un projet n'a aucun hotspot OWASP (nombreHotspot === 0 ci-dessous, branche else). */
+    /**
+     * MODIF 28/10/2026 : BUG CORRIGÉ — repli par défaut à 'a' (littéral), alors que la constante couleur
+     * (constante.js) utilise le préfixe 'note-' ('note-a'..'note-e'). class="badge a" ne correspond à aucune
+     * règle CSS : badge bleu par défaut de Foundation, visible dès qu'un projet n'a aucun hotspot OWASP
+     * (nombreHotspot === 0 ci-dessous, branche else). */
     let leTaux=1, laNote=['note-a','A'], formatage;
     const nombreHotspot = Number(r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+
                             r.menaceA5+r.menaceA6+r.menaceA7+r.menaceA8+
@@ -917,7 +956,11 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
     return;
   }
 
-    /* MODIF 27/10/2026 : la répartition par module (#frontend/#backend/#autre) ne porte plus sur les hotspots — elle est désormais alimentée par remplissageOwaspInfo() à partir des vulnérabilités OWASP (cf. injectionModuleOwasp(), templates/owasp/index.html.twig). Cette fonction se limite au tableau détaillé des hotspots. */
+    /**
+     * MODIF 27/10/2026 : la répartition par module (#frontend/#backend/#autre) ne porte plus sur les hotspots —
+     * elle est désormais alimentée par remplissageOwaspInfo() à partir des vulnérabilités OWASP
+     * (cf. injectionModuleOwasp(), templates/owasp/index.html.twig).
+     * Cette fonction se limite au tableau détaillé des hotspots. */
     let number = 0, monNumber, ligne, c;
     const serveurURL = $('#js-serveur').data('serveur');
 
@@ -986,11 +1029,11 @@ const injectionOwaspDetailsRow = function (number, url, rule, severity, categori
 
 /**
  * [Description for remplissageOwaspDetails]
- * Affiche le tableau de détail des vulnérabilités OWASP (10 premières,
- * triées par criticité, cf. OwaspDetailsRepository::selectOwaspDetailsTop10BySeverity())
- * + le nombre total réel sous le tableau.
+ * Affiche le tableau de détail des vulnérabilités OWASP (10 premières, triées par criticité,
+ * cf. OwaspDetailsRepository::selectOwaspDetailsTop10BySeverity()) + le nombre total réel sous le tableau.
  *
- * MODIF 28/10/2026 : nouveau — le seul tableau de détail de la page n'avait jusqu'ici jamais couvert que les Security Hotspots (remplissageHotspotDetails() ci-dessus), jamais les vulnérabilités OWASP elles-mêmes.
+ * MODIF 28/10/2026 : nouveau — le seul tableau de détail de la page n'avait jusqu'ici jamais couvert que
+ * les Security Hotspots (remplissageHotspotDetails() ci-dessus), jamais les vulnérabilités OWASP elles-mêmes.
  *
  * @param string maven_key
  * @param integer referential_owasp
@@ -1062,10 +1105,10 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
     return;
   }
 
-  /* MODIF 26/10/2026 : BUG CORRIGÉ — referential_owasp n'était jamais envoyé
-   * au backend : countHotspotOwaspMenaceByStatus()
-   * sommait silencieusement 2017 ET 2021, donnant le même résultat quel que
-   * soit l'onglet sélectionné. */
+  /**
+   * MODIF 26/10/2026 : BUG CORRIGÉ — referential_owasp n'était jamais envoyé au backend :
+   * countHotspotOwaspMenaceByStatus() faisait la somme silencieusement pour 2017 et 2021,
+   * donnant le même résultat quel que soit l'onglet sélectionné. */
   const referentialOwasp = sessionStorage.getItem('ma_moulinette_referential_owasp');
   const data = { maven_key, menace, referential_owasp: referentialOwasp };
   const options = {
@@ -1084,12 +1127,14 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
   if (r.code===http_400) {
     const message=`La requête n'est pas conforme (Erreur 400) !`;
     showMessage('error', message);
-    /* MODIF 28/10/2026 : sans ça, le spinner posé par showDetailsModalSpinner() restait affiché indéfiniment dans la modale déjà ouverte en cas d'erreur. */
+    /**
+     * MODIF 28/10/2026 : sans ça, le spinner posé par showDetailsModalSpinner() restait affiché indéfiniment
+     * dans la modale déjà ouverte en cas d'erreur. */
     $('.details-titre').text('Erreur lors du chargement du détail.');
     return;
   }
 
-    /** on affiche le titre en fonction du référentiel */
+    /** On affiche le titre en fonction du référentiel */
     const x = referentialOwasp;
 
     if (x === undefined || x == null || x == '') { return; }
@@ -1123,12 +1168,11 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
  * Met à jour les libellés de catégorie (colonne "show-for-medium") du tableau
  * de synthèse selon le référentiel sélectionné.
  *
- * MODIF 2026-07-18 : ces libellés étaient câblés en dur dans le HTML sur la
- * nomenclature 2017, quel que soit le référentiel réellement choisi (ex.
- * "A1 - Attaques d'injection" restait affiché même en 2021, où A1 signifie
- * "Contrôle d'accès défaillant"). Les listes `listeOwasp2017/2021/2025`
- * existent déjà (utilisées pour le titre de la modale de détail) — on les
- * réutilise ici pour le tableau de synthèse.
+ * MODIF 2026-07-18 : ces libellés étaient câblés en dur dans le HTML sur la nomenclature 2017,
+ * quel que soit le référentiel réellement choisi (ex. "A1 - Attaques d'injection" restait affiché
+ * même en 2021, où A1 signifie "Contrôle d'accès défaillant"). Les listes `listeOwasp2017/2021/2025`
+ * existent déjà (utilisées pour le titre de la modale de détail) — on les réutilise ici pour le
+ * tableau de synthèse.
  *
  * @param string referential_owasp
  *
@@ -1187,14 +1231,14 @@ const selectReferentialOwasp = function(version){
   const $version_2021 = $('#owasp-2021');
   const $version_2025 = $('#owasp-2025');
 
-  /* MODIF 2026-07-18 : les branches 2017/2025 avaient une double négation
-   * (`!X.hasClass('display-off') === false`, équivalente à `X.hasClass(...)`
-   * seul) qui inversait la logique voulue — elle ne masquait un bloc que
-   * s'il était déjà masqué (no-op), jamais quand il était visible. Résultat :
-   * sélectionner 2017 ou 2025 ne masquait jamais les deux autres blocs, qui
-   * restaient affichés en même temps. Seule la branche 2021 était correcte
-   * (sans le `!` en trop) — les 3 branches suivent maintenant ce même
-   * schéma : masquer si PAS déjà masqué. */
+  /**
+   * MODIF 2026-07-18 : les branches 2017/2025 avaient une double négation
+   * (`!X.hasClass('display-off') === false`, équivalente à `X.hasClass(...)` seul)
+   * qui inversait la logique voulue — elle ne masquait un bloc que s'il était déjà
+   * masqué, jamais quand il était visible. Résultat :
+   * sélectionner 2017 ou 2025 ne masquait jamais les deux autres blocs, qui restaient
+   * affichés en même temps. Seule la branche 2021 était correcte (sans le `!` en trop) —
+   * les 3 branches suivent maintenant ce même schéma : masquer si PAS déjà masqué. */
   if (version === "2017") {
     if ($version_2021.hasClass('display-off') === false) { $version_2021.addClass('display-off')}
     if ($version_2025.hasClass('display-off') === false) { $version_2025.addClass('display-off')}
@@ -1223,10 +1267,10 @@ const selectReferentialOwasp = function(version){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-/* MODIF 2026-07-18 : conserve l'instance du graphique pour la détruire avant
-* d'en recréer une — sans ça, chaque clic sur un référentiel (2017/2021/2025)
-* tentait un new Chart() sur le même canvas déjà utilisé, provoquant
-* "Uncaught (in promise) Error: Canvas is already in use." */
+/**
+ * MODIF 2026-07-18 : conserve l'instance du graphique pour la détruire avant d'en recréer une —
+ * sans ça, chaque clic sur un référentiel (2017/2021/2025) tentait un new Chart() sur le même
+ * canvas déjà utilisé, provoquant "Uncaught (in promise) Error: Canvas is already in use." */
 let owaspBarChartInstance = null;
 
 const dessineMoiUneBarre = function (referential, data){
@@ -1313,29 +1357,28 @@ const dessineMoiUneBarre = function (referential, data){
 
 /*************** Main du programme **************/
 
-/** On récupère la clé du projet.
- *  MODIF 2026-07-18 : `maven_key` peut être `null` (sessionStorage vidé,
- *  page rouverte directement, nouvel onglet...) — un `.split(':')` sur
- *  `null` plantait ici, en tête de script, AVANT l'attachement de tous les
- *  gestionnaires de clic plus bas (référentiels, export PDF, modales) : la
- *  page semblait chargée mais restait totalement inerte, sans message
- *  visible pour l'utilisateur (seule une erreur JS non catchable dans le
- *  flux applicatif apparaissait en console). Le repli `['', '']` reste
- *  nécessaire pour éviter ce crash.
- *  MODIF 2026-07-22 : le `showMessage('warning', ...)` qui accompagnait ce
- *  repli a été retiré — il faisait doublon avec le message flash serveur
- *  (`OwaspController::index()`, cas token absent), affiché sur la même
- *  page pour la même raison. */
+/**
+ * On récupère la clé du projet.
+ *  MODIF 2026-07-18 : `maven_key` peut être `null` (sessionStorage vidé, page rouverte directement,
+ *  nouvel onglet...) — un `.split(':')` sur `null` plantait ici, en tête de script, AVANT
+ *  l'attachement de tous les gestionnaires de clic plus bas (référentiels, export PDF, modales) :
+ *  la page semblait chargée mais restait totalement inerte, sans message visible pour l'utilisateur
+ *  (seule une erreur JS non catchable dans le flux applicatif apparaissait en console).
+ *  Le repli `['', '']` reste nécessaire pour éviter ce crash.
+ *  MODIF 2026-07-22 : le `showMessage('warning', ...)` qui accompagnait ce repli a été retiré —
+ *  il faisait doublon avec le message flash serveur (`OwaspController::index()`, cas token absent),
+ *  affiché sur la même page pour la même raison. */
 const maven_key = sessionStorage.getItem('ma_moulinette_projet');
 const projet = maven_key ? maven_key.split(':') : ['', ''];
 
 /** On met à jour la page */
 $('#js-application').html(projet[1] || '');
 
-/** On appel les fonctions de remplissage pour la version OWASP.
- *  Fix 2026-05-03 : ligne `setItem(..., 2021)` parasite supprimée — elle
- *  écrasait la valeur 2017 juste après l'avoir posée → l'export PDF lisait
- *  systématiquement 2021 dans sessionStorage quel que soit le bouton cliqué. */
+/**
+ * On appel les fonctions de remplissage pour la version OWASP.
+ *  Fix 2026-05-03 : ligne `setItem(..., 2021)` parasite supprimée — elle écrasait la valeur 2017 juste
+ *  après l'avoir posée → l'export PDF lisait systématiquement 2021 dans sessionStorage quel que soit
+ *  le bouton cliqué. */
 const $owasp_2017 = $('#bouton-choisir-owasp-2017');
 const $owasp_2021 = $('#bouton-choisir-owasp-2021');
 const $owasp_2025 = $('#bouton-choisir-owasp-2025');
@@ -1375,16 +1418,20 @@ $('select[name="owasp"]').on('change', function () {
   selectReferentialOwasp(version);
 });
 
-/* MODIF 27/10/2026 : chargement automatique du référentiel par défaut, déjà sélectionné côté Twig (referentiel_affiche_defaut -> <select> + bouton marqué "active", cf. templates/owasp/index.html.twig) — avant, aucune donnée ne s'affichait tant qu'on n'avait pas cliqué sur un bouton de référentiel. Les boutons restent utilisables pour en changer ensuite. */
+/**
+ * MODIF 27/10/2026 : chargement automatique du référentiel par défaut, déjà sélectionné côté Twig
+ * (referentiel_affiche_defaut -> <select> + bouton marqué "active", cf. templates/owasp/index.html.twig) —
+ * avant, aucune donnée ne s'affichait tant qu'on n'avait pas cliqué sur un bouton de référentiel.
+ * Les boutons restent utilisables pour en changer ensuite. */
 const referentielParDefaut = $('select[name="owasp"]').val();
 if (referentielParDefaut) {
   sessionStorage.setItem('ma_moulinette_referential_owasp', referentielParDefaut);
   selectAnalyseVersion(maven_key, referentielParDefaut);
 }
 
-/** Export PDF : ouvre /owasp/rapport/pdf?maven_key=...&referential_owasp=...
- *  dans un nouvel onglet (rendu inline). Le serveur agrège les données via
- *  les repos Owasp / HotspotOwasp / HotspotDetails. */
+/**
+ * Export PDF : ouvre /owasp/rapport/pdf?maven_key=...&referential_owasp=... dans un nouvel onglet.
+ * Le serveur agrège les données via les repos Owasp / HotspotOwasp / HotspotDetails. */
 $('#bouton-ouvrir-rapport-owasp').on('click', () => {
   const mavenKey = sessionStorage.getItem('ma_moulinette_projet');
   const referential = sessionStorage.getItem('ma_moulinette_referential_owasp') || '2025' ;
@@ -1396,7 +1443,12 @@ $('#bouton-ouvrir-rapport-owasp').on('click', () => {
   window.open(`${serveur()}/owasp/rapport/pdf?${params.toString()}`, '_blank');
 });
 
-/* MODIF 28/10/2026 : BUG CORRIGÉ — plusieurs clics rapprochés sur une icône 🔎 (le temps que l'appel AJAX réponde) empilaient autant de gestionnaires async en parallèle ; chacun appelait modalSafe.open('#details') à la fin de son propre await, ce qui rouvrait/refermait la modale en rafale au fur et à mesure que les promesses se résolvaient. Garde anti-double-clic (detailsModalLoading) : les clics reçus pendant un chargement en cours sont ignorés. La modale s'ouvre désormais immédiatement avec un spinner ;
+/**
+ * MODIF 28/10/2026 : BUG CORRIGÉ — plusieurs clics rapprochés sur une icône 🔎 (le temps que l'appel AJAX réponde)
+ * empilaient autant de gestionnaires async en parallèle ; chacun appelait modalSafe.open('#details') à la fin de
+ * son propre await, ce qui rouvrait/refermait la modale en rafale au fur et à mesure que les promesses se résolvaient.
+ * Garde anti-double-clic (detailsModalLoading) : les clics reçus pendant un chargement en cours sont ignorés.
+ * La modale s'ouvre désormais immédiatement avec un spinner ;
  * remplissageDetailsHotspotOwasp() écrase ensuite le spinner par le vrai titre une fois la réponse arrivée. */
 let detailsModalLoading = false;
 

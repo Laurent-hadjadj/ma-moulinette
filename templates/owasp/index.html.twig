@@ -37,7 +37,7 @@ appel SonarQube : c'est de la documentation déjà chargée par le contrôleur. 
 {% endif %}
 
 {# MODIF 27/10/2026 : le bouton du référentiel par défaut (celui déjà choisi
-ci-dessus pour l'accordéon/le <select>) est marqué actif dès le rendu Twig —
+ci-dessus pour l'accordéon/le <\select\>) est marqué actif dès le rendu Twig —
 les données de ce référentiel s'affichent désormais sans clic préalable
 (cf. index-owasp.js, chargement automatique au script init). #}
 {% set active_2017 = referentiel_affiche_defaut == '2017' ? 'active' : '' %}
@@ -99,10 +99,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
       {# MODIF 27/10/2026 : remplace le callout décrivant l'ancien mécanisme
         (facette officielle + secours par tag owasp-aXX, colonne owasp.source) —
-        la classification se fait désormais localement, à partir d'une liste de
-        règles (SonarSource + FindSecBugs), cf. OwaspRuleClassifierService et
-        application/owasp.md. Les compteurs sont des données statiques (indépendantes
-        du projet), mis à jour en JS au changement de référentiel. #}
+        la classification se fait désormais localement, à partir d'une liste de règles
+        (SonarSource + FindSecBugs), cf. OwaspRuleClassifierService et application/owasp.md.
+        Les compteurs sont des données statiques (indépendantes du projet), mis à jour en JS
+        au changement de référentiel. #}
       <div id="js-owasp-rule-count-callout"
           class="callout callout-information cell"
           data-rule-count2017="{{ owasp_rule_count_2017 }}"
@@ -143,7 +143,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             aria-label="Export PDF"><span aria-hidden="true">📄</span> Export PDF
           </button>
           {# lien project-scoped (group/artifact/version).
-            bouton totalement decouple du breadcrumb OWASP Sonar (qui peut être vide). On utilise `dc_link_*` calcules dans le controller depuis le dernier scan DC pour ce maven_key. Le bouton apparaît dès qu'un scan DC existe, peu importe l'état de la table `owasp`. #}
+            Bouton totalement découple du breadcrumb OWASP Sonar (qui peut être vide).
+            On utilise `dc_link_*` calcules dans le controller depuis le dernier scan DC pour ce maven_key.
+            Le bouton apparaît dès qu'un scan DC existe, peu importe l'état de la table `owasp`. #}
           {% if is_granted('ROLE_SECURITY') and has_dc_scan %}
             <a id="bouton-ouvrir-rapport-dependency-check"
               href="{{ path('dc_projet', {group: dc_link_group, artifact: dc_link_artifact, version: dc_link_version}) }}"
@@ -171,7 +173,11 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {# MODIF 28/10/2026 : tuiles compteur (petites, résultat en premier) —
           total + note A-E en un coup d'œil, avant le détail par sévérité porté par les tuiles ci-dessous. #}
         <div class="grid-x grid-margin-x cell">
-          <div class="callout callout-information small-6 medium-4 large-3 cell">
+          {# MODIF 30/10/2026 : bordure gauche colorée (pattern alert-callout-border
+          déjà utilisé sur les tuiles Clean Code, templates/clean-code/index.html.twig)
+          — couleur affichée dynamiquement en JS (renderOwaspVulnRating) selon la note
+          A-E, la note n'étant connue qu'après l'appel AJAX. #}
+          <div id="js-owasp-kpi-tile" class="callout callout-information alert-callout-border small-6 medium-4 large-3 cell">
               <h2 class="h5 claire-hand no-select"><span aria-hidden="true">🛡️</span>&nbsp;OWASP</h2>
               <div class="container-ligne open-sans margin-top-05">
                 <div class="ligne-gauche float-center">
@@ -180,7 +186,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 </div>
               </div>
           </div>
-          <div class="callout callout-information small-6 medium-3 large-3 cell">
+          <div id="js-hotspot-kpi-tile" class="callout callout-information alert-callout-border small-6 medium-3 large-3 cell">
               <h2 class="h5 claire-hand no-select"><span aria-hidden="true">🔥</span>&nbsp;Hotspot</h2>
               <div class="container-ligne open-sans margin-top-05">
                 <span class="ligne-gauche float-center">
@@ -193,7 +199,11 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </div>
 
         {# MODIF 27/10/2026 : séparation vulnérabilités OWASP / hotspots en 2 tuiles
-        distinctes — fini le mélange des deux concepts dans un seul fieldset (les hotspots sont une fonctionnalité dépréciée côté SonarQube, appelée à disparaître un jour ; les vulnérabilités OWASP, non). Priorité aux vulnérabilités (tuile affichée en premier). MODIF 28/10/2026 : le total et la note sont désormais dans les tuiles compteur ci-dessus — ces tuiles ne portent plus que le détail par sévérité. #}
+        distinctes — fini le mélange des deux concepts dans un seul fieldset
+        (les hotspots sont une fonctionnalité dépréciée côté SonarQube, appelée à disparaître un jour ;
+        les vulnérabilités OWASP, non). Priorité aux vulnérabilités (tuile affichée en premier).
+        MODIF 28/10/2026 : le total et la note sont désormais dans les tuiles compteur ci-dessus —
+        ces tuiles ne portent plus que le détail par sévérité. #}
         <div class="grid-x grid-margin-x cell">
           <div class="callout callout-information small-12 medium-6 large-6 cell">
             <div class="callout-body">
@@ -267,7 +277,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
           </div>
         </div>
 
-        {# MODIF 27/10/2026 : répartition par module des VULNÉRABILITÉS OWASP —remplace l'ancienne répartition, qui ne portait que sur les hotspots (voir historique du fichier). Mêmes IDs réutilisés (#frontend/#backend/#autre). #}
+        {# MODIF 27/10/2026 : répartition par module des VULNÉRABILITÉS OWASP — remplace l'ancienne répartition,
+          qui ne portait que sur les hotspots (voir historique du fichier).
+          Mêmes IDs réutilisés (#frontend/#backend/#autre). #}
         <div class="callout callout-information">
           <p>Répartition par module (vulnérabilités OWASP).</p>
           <div class="container-ligne open-sans">
@@ -641,12 +653,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </div>
       </section>
 
-      {# MODIF 28/10/2026 : titre et légende précisés — ce tableau ne liste que les
-            Security Hotspots (table hotspot_details), jamais les vulnérabilités OWASP
-            (section précédente, désormais avec son propre tableau de détail).
-            L'ancien titre générique "Liste des failles de sécurité" laissait croire
-            à une portée plus large. Signalé par l'utilisateur — correctif de
-            présentation uniquement, pas de changement de données. #}
+      {# MODIF 28/10/2026 : titre et légende précisés — ce tableau ne liste que les security Hotspots
+      (table hotspot_details), jamais les vulnérabilités OWASP. L'ancien titre générique "Liste des failles de
+      sécurité" laissait croire à une portée plus large. #}
       <section id="failles de sécurité" class="margin-top-2">
         <h2 class="h4 claire-hand"><span aria-hidden="true">🔥</span> Liste des Hotspots (menaces potentielles).
         </h2>
@@ -809,24 +818,20 @@ https://github.com/Laurent-hadjadj/ma-moulinette
       </section>
     </main>
 
-    {# Modal Owasp et points chauds #}
-    {# MODIF 28/10/2026 : "reveal large" -> "reveal small" — avec .stat-list en
-    display:grid/grid-auto-flow:column (cf. owasp.css), les 4 colonnes
-    Vulnérabilités et les 3 colonnes Hotspots s'alignent sur leur propre
-    largeur de contenu, sans retour à laboxmême en largeur réduite ; la
-    largeur "large" d'origine (ajoutée le 26/10/2026 pour éviter ce
-    débordement avec l'ancien text-align:center) laissait trop de vide. #}
+    {# Modal Owasp et menaces potentielles #}
+    {# MODIF 28/10/2026 : "reveal large" -> "reveal small" — avec .stat-list en display:grid/grid-auto-flow:column (cf. owasp.css),
+      les 4 colonnes Vulnérabilités et les 3 colonnes Hotspots s'alignent sur leur propre largeur de contenu ;
+      la largeur "large" d'origine (ajoutée le 26/10/2026 pour éviter ce débordement avec l'ancien
+      text-align:center) laissait trop de vide. #}
     <dialog class="reveal small" id="details" data-reveal data-close-on-click="true" data-animation-in="fade-in">
-      {# MODIF 26/10/2026 : titre aligné sur la convention du reste de la page
-        (h4 + claire-hand + emoji, ex. "📊 Répartition des failles Owasp" /
-        "🗒️ Liste des failles de sécurité" plus haut) — il utilisait jusqu'ici
+      {# MODIF 26/10/2026 : titre aligné sur la convention du reste de la page (h4 + claire-hand + emoji, ex. "📊
+        Répartition des failles Owasp" /"🗒️ Liste des failles de sécurité" plus haut) — il utilisait jusqu'ici
         h3 + open-sans, seule exception de la page. #}
       <h2 class="h4 claire-hand"><span aria-hidden="true">🔎</span> Owasp et Points chauds</h2>
       <p class="lead details-titre"></p>
 
-      {# MODIF 26/10/2026 : section Vulnérabilités (violations OWASP a1..a10) —
-        jusqu'ici cette modale n'affichait que la sévérité des hotspots (section
-        suivante), jamais celle des violations, pourtant déjà en base. #}
+      {# MODIF 26/10/2026 : section Vulnérabilités (violations OWASP a1..a10) — jusqu'ici cette modale n'affichait que
+        la sévérité des hotspots (section suivante), jamais celle des violations, pourtant déjà en base. #}
       <h3 class="h5 claire-hand">Vulnérabilités</h3>
       <ul class="stat-list">
         <li>
@@ -842,10 +847,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
           <span id="detail-violation-majeur" class="stat stat-list-bleu">--</span>
         </li>
         <li>
-          {# MODIF 28/10/2026 : classe de couleur manquante — Bloquant/Critique/Majeur
-                réutilisaient note-e/d/c (échelle hotspot à 3 niveaux), Mineur n'en avait
-                aucune (pas de pastille, désalignement visuel avec les 3 autres). note-b
-                (vert clair) complète l'échelle A-E à 5 couleurs déjà utilisée ailleurs. #}
+          {# MODIF 28/10/2026 : classe de couleur manquante — Bloquant/Critique/Majeur réutilisaient note-e/d/c
+            (échelle hotspot à 3 niveaux), Mineur n'en avait aucune (pas de pastille, désalignement visuel
+            avec les 3 autres). note-b (vert clair) complète l'échelle A-E à 5 couleurs déjà utilisée ailleurs. #}
           <span class="stat-list-label note-b stat-detail">Mineur</span>
           <span id="detail-violation-mineur" class="stat stat-list-bleu">--</span>
         </li>
