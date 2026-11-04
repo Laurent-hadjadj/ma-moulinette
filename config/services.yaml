@@ -159,6 +159,11 @@ services:
     App\EventSubscriber\SecurityHeadersSubscriber:
         arguments:
             $debug: '%kernel.debug%'
+            # MODIF 04/11/2026 : interrupteur à repasser à `false` uniquement si une
+            # autre couche (reverse-proxy, nginx) pose déjà sa propre CSP : deux
+            # CSP simultanées se neutralisent (le navigateur applique leur
+            # intersection).
+            $cspEnabled: true
 
     App\Service\ActuatorCredentialCipher:
         arguments:

@@ -69,6 +69,46 @@ flowchart TD
 ```
 <!-- markdownlint-enable MD046 -->
 
+## 🧭 Chemin de fer de la page
+
+<!-- markdownlint-disable MD046 -->
+```text
+Page ZAP (DAST)
+│
+├── 🧵 Fil d'Ariane : Accueil › OWASP › ZAP (DAST)
+├── 🔔 Zone de messages (flash serveur uniquement)
+│
+├── 👻 Titre : ZAP (DAST) — {maven_key}
+│
+├── ℹ️ Callout « Aucun scan ZAP disponible pour ce projet » (si aucune lane)
+│
+└── 🎯 Une section par lane (cible DAST distincte — titre masqué s'il n'y en a qu'une)
+         │
+         ├── 📄 Bouton « Export PDF » (lien direct, token déjà décodé)
+         │
+         ├── 📊 Bandeau KPI (3 cartes : Scan du + version ZAP / Cible scannée / Alertes au total)
+         │
+         ├── 📊 Répartition par risque (4 badges HIGH/MEDIUM/LOW/INFORMATIONAL)
+         │
+         ├── 🗒️ Détail des alertes (tableau : Risque, Règle, Instances, bouton 🔎 Détail)
+         │        └── 🪟 1 modale par alerte (risque, CWE/WASC, description/solution/référence, instances méthode+URI)
+         │   (ou message « Aucune alerte sur ce scan » si la lane est vide)
+         │
+         ├── 📈 Alertes par catégorie OWASP
+         │        ├── 1 bar chart par référentiel présent (2017 et/ou 2021)
+         │        ├── ℹ️ info_callout (lecture prudente A07/A09/A10)
+         │        └── 1 tableau de synthèse A1-A10 par référentiel
+         │   (ou callout « Aucune des alertes de ce scan ne porte de tag OWASP 2017/2021 reconnu » si aucun tag)
+         │
+         ├── 📉 Évolution du risque (line chart, 1 point par scan ingéré) + ℹ️ info_callout
+         │
+         └── 🕒 Historique des scans (tableau, 20 scans les plus récents) + ℹ️ info_callout
+             (ou message « Aucun historique » si la lane n'a qu'un seul scan)
+
+🔘 Footer
+```
+<!-- markdownlint-enable MD046 -->
+
 ## 🎯 Plusieurs cibles sous une même clé Maven (« lanes »)
 
 Une clé Maven peut recouvrir **plusieurs cibles DAST réelles** — par exemple le tier présentation et le tier métier d'une même application, suivis sous la même clé côté SonarQube mais scannés séparément par ZAP (2 `target_url` distinctes). Depuis le 26/10/2026, la page affiche une **lane** (bloc KPI +

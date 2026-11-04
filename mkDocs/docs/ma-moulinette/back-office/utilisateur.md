@@ -93,6 +93,9 @@ Quelques garde-fous supplémentaires, appliqués à la fois dans le formulaire (
     Chaque modification de rôles ou du statut Actif est auditée en base (table `user_role_log`, alimentée par `UserRoleLoggerService` à chaque `updateEntity()` — courriel de la cible et de l'éditeur, anciens/nouveaux rôles, ancien/nouveau statut actif, alertes de `SuspiciousActivityDetector`).
     Ajout d'une page dédiée : [Journal des rôles](#-journal-des-rôles).
 
+!!! note "✅ Auto-suppression bloquée (03/11/2026)"
+    Un éditeur pouvait supprimer son propre compte depuis ce CRUD — la ligne disparaissait en base alors que la session restait authentifiée, et la requête suivante plantait (`EntityUserProvider::refreshUser()` ne retrouve plus l'identifiant). Reproduit en conditions réelles (un compte connecté a supprimé son propre compte). `UtilisateurCrudController::deleteEntity()` compare désormais le courriel de la cible à celui de l'éditeur connecté et bloque la suppression (message flash), quel que soit son rôle — y compris `ROLE_INTERNAL`.
+
 ## 📜 Journal des rôles
 
 Nouvelle page `Admin\UserRoleLogController` (`/admin/journal-roles`, carte dédiée sur la page d'accueil du back-office à côté de « Log », `ROLE_INTERNAL` — plus restrictif que le CRUD Utilisateur lui-même, car ce journal expose qui a modifié les droits de qui).

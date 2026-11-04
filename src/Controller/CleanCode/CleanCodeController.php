@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\CleanCode;
@@ -69,7 +69,7 @@ class CleanCodeController extends AbstractController
      *
      * Created at: 17/05/2026 12:33:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -93,7 +93,7 @@ class CleanCodeController extends AbstractController
      *
      * Created at: 17/05/2026 12:33:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeToken(string $token): ?string
     {
@@ -110,6 +110,42 @@ class CleanCodeController extends AbstractController
     }
 
     /**
+     * [Description for severiteBadge]
+     * Traduit la "pire sévérité" d'une dimension Clean Code (maintainability_
+     * issue_severity/reliability_issue_severity/security_issue_severity,
+     * métriques SonarQube optionnelles 26.3-26.9) en label + classe CSS
+     * `.badge-level` (déjà utilisée pour `risk_level` sur cette même page).
+     * Encodage confirmé via l'API SonarQube locale (/api/metrics/
+     * search + /api/issues/search, facette impactSeverities) : 0 = aucune
+     * issue de cette dimension, 5/10/15/20/25 = INFO/LOW/MEDIUM/HIGH/BLOCKER.
+     *
+     * @param array<string, mixed> $row
+     * @param string $column
+     *
+     * @return array{label: string, class: string}|null null si 0, absente ou valeur inattendue (pas de badge affiché).
+     *
+     * Created at: 02/11/2026
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    private static function severiteBadge(array $row, string $column): ?array
+    {
+        $value = $row[$column] ?? null;
+        if ($value === null) {
+            return null;
+        }
+
+        return match ((int) $value) {
+            5  => ['label' => 'INFO', 'class' => 'info'],
+            10 => ['label' => 'LOW', 'class' => 'low'],
+            15 => ['label' => 'MEDIUM', 'class' => 'medium'],
+            20 => ['label' => 'HIGH', 'class' => 'high'],
+            25 => ['label' => 'BLOCKER', 'class' => 'critical'],
+            default => null,
+        };
+    }
+
+    /**
      * [Description for index]
      * Page mini-dashboard des indicateurs SonarQube 10+ clean code taxonomy.
      *
@@ -119,7 +155,7 @@ class CleanCodeController extends AbstractController
      *
      * Created at: 17/05/2026 12:34:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/clean-code', name: 'clean_code')]
     public function index(Request $request): Response
@@ -130,10 +166,16 @@ class CleanCodeController extends AbstractController
 
         /* MODIF 2026-05-15 : data toujours présent dans le contexte Twig. */
         $render['data'] = null;
+        /**
+         * MODIF 02/11/2026 : idem pour severity_pire (pire sévérité par
+         * dimension), sinon `strict_variables` (actif en env `test`) fait
+         * échouer tous les tests Integration qui sortent avant le rendu final. */
+        $render['severity_pire'] = null;
 
         $token = $request->query->get('token');
         if (empty($token)) {
-            /* MODIF 2026-07-22 : token absent = navigation sans contexte, pas une
+            /**
+             * MODIF 2026-07-22 : token absent = navigation sans contexte, pas une
              * anomalie — contrairement à un token présent mais indécodable
              * (bloc suivant), qui reste une vraie erreur 400. */
             $this->logger->info('[Clean Code] ℹ️ Token absent, aucun projet sélectionné.');
@@ -148,7 +190,8 @@ class CleanCodeController extends AbstractController
             return $this->render(self::$page, $render);
         }
 
-        /* MODIF 2026-07-19 : ajout du filtrage par groupe fonctionnel — jusqu'ici
+        /**
+         * MODIF 2026-07-19 : ajout du filtrage par groupe fonctionnel — jusqu'ici
          * seul le pare-feu (ROLE_UTILISATEUR) protégeait cette page, sans
          * vérification de périmètre (alignement sur OwaspController::index()). */
         $perimetre = $this->verifierPerimetreProjet($maven_key, '[Clean Code]');
@@ -220,20 +263,38 @@ class CleanCodeController extends AbstractController
             ],
         ];
 
-        /* MODIF 2026-05-19 : delta vs version précédente + graphique évolution
+        /**
+         * MODIF 2026-05-19 : delta vs version précédente + graphique évolution
          * violations = total issues dans historique (équivalent de issue_total dans clean_code).
          * TO.DO : A déplacer dans le repository dans la prochaine version*/
         $historyRows = $this->em->getConnection()->fetchAllAssociative(
             'SELECT version, date_enregistrement, violations,
                     cc_consistent, cc_intentional, cc_adaptable, cc_responsible,
                     quality_maintainability, quality_reliability, quality_security,
-                    impact_blocker, impact_high, impact_medium, impact_low, impact_info
+                    impact_blocker, impact_high, impact_medium, impact_low, impact_info,
+                    maintainability_issue_severity, reliability_issue_severity, security_issue_severity
                 FROM ma_moulinette.historique
                 WHERE maven_key = :mk AND cc_responsible IS NOT NULL
                 ORDER BY date_enregistrement DESC
                 LIMIT 10',
                 ['mk' => $maven_key]
             );
+
+        /**
+         * MODIF 02/11/2026 : "pire sévérité" par dimension (maintenabilité/
+         * fiabilité/sécurité) — métriques optionnelles SonarQube 26.3-26.9.
+         * l'API SonarQube locale (/api/metrics/search) : type INT,
+         * description "Worst severity of {dimension} issues". Encodage
+         * numérique vérifié par recoupement avec /api/issues/search
+         * (facette impactSeverities) :
+         * 0 = aucune issue, 5 = INFO, 10 = LOW, 15 = MEDIUM, 20 = HIGH,
+         * 25 = BLOCKER (échelle des 5 sévérités d'impact Clean Code × 5). */
+        $latestHistorique = $historyRows[0] ?? [];
+        $severityPire = [
+            'maintainability' => self::severiteBadge($latestHistorique, 'maintainability_issue_severity'),
+            'reliability'      => self::severiteBadge($latestHistorique, 'reliability_issue_severity'),
+            'security'         => self::severiteBadge($latestHistorique, 'security_issue_severity'),
+        ];
 
         $deltas = null;
         if (!empty($historyRows)) {
@@ -308,6 +369,7 @@ class CleanCodeController extends AbstractController
             'security_pct'    => $securityPct,
             'deltas'          => $deltas,
             'chart_data'      => json_encode($chartData),
+            'severity_pire'   => $severityPire,
         ]);
 
         return $this->render(self::$page, $render);

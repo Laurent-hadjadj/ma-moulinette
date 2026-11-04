@@ -14,7 +14,7 @@ SonarQube 10+ : catégories clean code, impact sévérités/qualités, conformit
 
 Laurent HADJADJ
 https://github.com/Laurent-hadjadj/ma-moulinette
-© 2024 - CC BY-SA-NC 4.0
+© 2024 - AGPL 3.0
 -->
 <html lang="fr" dir="ltr">
 
@@ -236,6 +236,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             {{ data.quality_maintainability|number_format(0, ',', ' ') }}
                         </p>
                         <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la maintenabilité</p>
+                        {# MODIF 02/11/2026 : pire sévérité (métrique SonarQube optionnelle, cf. CleanCodeController::severiteBadge()). #}
+                        {% if severity_pire.maintainability %}
+                        <p class="open-sans font-size-085 margin-top-05 margin-bottom-0">Pire sévérité : <span class="badge-level {{ severity_pire.maintainability.class }}">{{ severity_pire.maintainability.label }}</span></p>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -248,6 +252,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         </p>
                         <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la fiabilité (bugs)
                         </p>
+                        {% if severity_pire.reliability %}
+                        <p class="open-sans font-size-085 margin-top-05 margin-bottom-0">Pire sévérité : <span class="badge-level {{ severity_pire.reliability.class }}">{{ severity_pire.reliability.label }}</span></p>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -259,6 +266,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             {{ data.quality_security|number_format(0, ',', ' ') }}
                         </p>
                         <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la sécurité</p>
+                        {% if severity_pire.security %}
+                        <p class="open-sans font-size-085 margin-top-05 margin-bottom-0">Pire sévérité : <span class="badge-level {{ severity_pire.security.class }}">{{ severity_pire.security.label }}</span></p>
+                        {% endif %}
                     </div>
                 </div>
 

@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Admin;
@@ -46,7 +46,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * Created at: 02/01/2023, 18:37:26 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $emm,
@@ -66,7 +66,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * Created at: 02/01/2023, 18:37:28 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getEntityFqcn(): string
     {
@@ -82,7 +82,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * Created at: 02/01/2023, 18:37:30 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -99,7 +99,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * Created at: 06/04/2026 18:36:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureCrud(Crud $crud): Crud
     {
@@ -119,7 +119,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * Created at: 02/01/2023, 18:37:34 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFields(string $pageName): iterable
     {
@@ -341,7 +341,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * Created at: 05/04/2026 16:13:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -399,7 +399,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * Created at: 02/01/2023, 18:37:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -477,5 +477,39 @@ class UtilisateurCrudController extends AbstractCrudController
         );
 
         parent::updateEntity($em, $entityInstance);
+    }
+
+    /**
+     * [Description for deleteEntity]
+     * Empêche un gestionnaire de supprimer son propre compte depuis ce CRUD.
+     *
+     * une fois la ligne supprimée en base, la session en cours reste
+     * authentifiée mais `Symfony\Bridge\Doctrine\Security\User\EntityUserProvider::
+     * refreshUser()` ne retrouve plus l'identifiant (`courriel`) à la requête
+     * suivante — erreur "You cannot refresh a user from the EntityUserProvider
+     * that does not contain an identifier.".
+     *
+     * @param EntityManagerInterface $em
+     *
+     * @return void
+     *
+     * Created at: 03/11/2026
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function deleteEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        /* MODIF 2026-05-07 : guard instanceof. */
+        // @phpstan-ignore-next-line instanceof.alwaysTrue (garde défensive EasyAdmin)
+        if (!$entityInstance instanceof Utilisateur) {
+            return;
+        }
+
+        if ($entityInstance->getCourriel() === $this->appUser()->getCourriel()) {
+            $this->addFlash('danger', 'Vous ne pouvez pas supprimer votre propre compte utilisateur.');
+            return;
+        }
+
+        parent::deleteEntity($em, $entityInstance);
     }
 }

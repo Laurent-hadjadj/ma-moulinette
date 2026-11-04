@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -82,7 +82,7 @@ import { clean_screen } from './clean-screen.js';
  *
  * Created at: 01/12/2025 12:50:28 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const clean = async function (type) {
   return new Promise((resolve) => {
@@ -1472,6 +1472,7 @@ const projetEmpreinteEcologique = async function (maven_key) {
       log(` - ⚠️ (15) Collecte de l'Empreinte Écologique en échec (Erreur ${t.code}) — non bloquant.`);
     }
   } catch (error) {
+    /* plugin non installé */
     log(` - ⚠️ (15) Collecte de l'Empreinte Écologique en échec (exception) — non bloquant.`);
   }
 };
@@ -1549,7 +1550,7 @@ const finCollecte = function (maven_key) {
   const aria_label = 'Lancer la collecte des indicateurs SonarQube';
 
   if (collecte === 'Tout va bien!') {
-    log(` - ℹ️ (14) La collecte des données est terminée.`);
+    log(` - ℹ️ (17) La collecte des données est terminée.`);
     showMessage('success', `<strong>${collecte}</strong> Le processus de collecte a été réalisé avec success pour le projet ${maven_key} !`);
     setTimeout(() => { hideMessage(); }, troisMille);
     enableButton($boutonCollecteIndicateur, aria_label);

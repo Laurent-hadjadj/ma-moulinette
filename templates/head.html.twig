@@ -26,8 +26,7 @@
 <link rel="shortcut icon" href="{{ asset('favicon/favicon.ico') }}">
 
 {# //////////////// Déclaration des favicon pour IOS ////////////////// #}
-<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon/apple-touch-icon.png') }}">
-
+{# MODIF 03/11/2026 : ligne apple-touch-icon.png retirée (404) — doublon de la dernière ligne ci-dessous (180x180), jamais générée sous ce nom de fichier générique #}
 <!-- Déclaration des favicon pour IOS (on peut laisser juste la dernière ligne 180x180) -->
 <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('favicon/apple-icon-57x57.png') }}">
 <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('favicon/apple-icon-60x60.png') }}">
@@ -47,9 +46,6 @@
 <meta name="msapplication-TileImage" content="{{ asset('favicon/mstile-144x144.png') }}">
 <meta name="msapplication-config" content="{{ asset('favicon/browserconfig.xml') }}">
 <meta name="theme-color" content="#ffffff">
-
-{# //////////////// favicon Mac OS X ////////////////////////////////////////#}
-<link rel="mask-icon" href="{{ asset('favicon/safari-pinned-tab.svg') }}" color="#00445b">
 
 {# Manifest #}
 <link rel="manifest" href="{{ asset('favicon/manifest.json') }}">

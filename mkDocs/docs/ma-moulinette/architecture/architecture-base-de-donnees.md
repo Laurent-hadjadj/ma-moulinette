@@ -12,7 +12,7 @@ Décompte réel des objets déclarés dans `migrations/POSTGRESQL/` (un fichier 
 
 | Type d'objet | Nombre | Source |
 | --- | :---: | --- |
-| Tables | 52 (51 *logged* + 1 *UNLOGGED*, voir ci-dessous) | `20_tables/*.sql` |
+| Tables | 54 (53 *logged* + 1 *UNLOGGED*, voir ci-dessous) | `20_tables/*.sql` |
 | Vues | 5 | `30_views/*.sql` |
 | Index | 157 | `40_indexes/indexes.sql` |
 | Fonctions PL/pgSQL | 2 (`purge_batch_profiling`, `get_pg_stat_activity`) | `50_functions/*.sql` |
@@ -21,8 +21,8 @@ Décompte réel des objets déclarés dans `migrations/POSTGRESQL/` (un fichier 
 | Séquences explicites | 0 (colonnes `GENERATED ... AS IDENTITY`, séquences implicites) | — |
 | Triggers | 0 | — |
 
-!!! note "🔄 Relevé du 26/10/2026"
-    Les évolutions depuis le dernier relevé (45 → 52 tables) sont les 5 tables ZAP/DAST (`zap_processing_queue`, `zap_scan`, `zap_rule`, `zap_finding`, `owasp_dast`) et la table `eco_conception` (Empreinte Écologique, plugins Creedengo) — voir [Tables par domaine](#-tables-par-domaine) plus bas.
+!!! note "🔄 Relevé du 02/11/2026"
+    Les évolutions depuis le dernier relevé (45 → 52 → 54 tables) sont les 5 tables ZAP/DAST (`zap_processing_queue`, `zap_scan`, `zap_rule`, `zap_finding`, `owasp_dast`), `eco_conception` (Empreinte Écologique, plugins Creedengo), `accessibility` (tag SonarQube `accessibility`) et `owasp_details` (détail des vulnérabilités OWASP classées) — voir [Tables par domaine](#-tables-par-domaine) plus bas. Les 2 dernières n'avaient jamais été répercutées dans cette page lors de leur ajout.
 
 ## 📂 Organisation des scripts de migration
 
@@ -207,6 +207,7 @@ erDiagram
 | `anomalie`, `anomalie_details` | Bugs/vulnérabilités/code smells, détail par sévérité |
 | `hotspots`, `hotspot_details`, `hotspot_owasp` | Hotspots de sécurité, classification OWASP |
 | `owasp`, `owasp_top10` | Référentiel OWASP (2017/2021) et rattachement par projet |
+| `owasp_details` | Détail des vulnérabilités OWASP classées (une ligne par vulnérabilité et par référentiel) — snapshot réécrit à chaque collecte comme `owasp`. Alimente le tableau des 10 vulnérabilités les plus critiques de la page [OWASP](../application/owasp.md). |
 | `mesures` | Mesures brutes (couverture, duplication, complexité…) |
 | `no_sonar` | Occurrences `//NOSONAR` |
 | `todo` | Occurrences `TODO`/`FIXME` |
@@ -217,6 +218,7 @@ erDiagram
 | `clean_code` | Indicateurs Clean Code (nouveau modèle SonarQube) |
 | `rci` | Détail par module (frontend/backend/autre/inconnu) du RCI (Risk Criticality Index, plugin `sonar-rci`) — snapshot courant, une ligne par projet. |
 | `eco_conception` | Empreinte Écologique (plugins SonarQube Creedengo `creedengo-java/javascript/php/python`, activable via `CREEDENGO_ENABLED`) — snapshot courant, une ligne par `maven_key`. |
+| `accessibility` | Accessibilité (tag SonarQube `accessibility`, langages css/web/javascript/typescript) — snapshot courant, une ligne par `maven_key`, note A-E globale + détail par langage. |
 
 ### 📈 Activité SonarQube
 

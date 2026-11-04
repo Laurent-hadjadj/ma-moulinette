@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  *
  */
 
@@ -98,6 +98,8 @@
 #bouton-voir-tous-mutualisables,
 #bouton-ouvrir-dc-dashboard,
 #bouton-ouvrir-dc-mutualisables,
+#bouton-ouvrir-dc-index,
+#bouton-ouvrir-dc-history,
 #bouton-ouvrir-dc-kpi,
 #bouton-ouvrir-dc-comparer,
 #bouton-comparer,
@@ -137,6 +139,8 @@
 #bouton-voir-tous-mutualisables:hover,
 #bouton-ouvrir-dc-dashboard:hover,
 #bouton-ouvrir-dc-mutualisables:hover,
+#bouton-ouvrir-dc-history:hover,
+#bouton-ouvrir-dc-index:hover,
 #bouton-ouvrir-dc-kpi:hover,
 #bouton-ouvrir-dc-comparer:hover,
 #bouton-comparer:hover,

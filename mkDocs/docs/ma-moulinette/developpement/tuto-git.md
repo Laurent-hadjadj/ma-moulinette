@@ -2,15 +2,15 @@
 
 ## ✅ Prérequis
 
-Un contexte sain pour utiliser Git serait que toutes les branches soient identiques au départ avant d'entamer le premier sprint.
+Avant de démarrer le premier sprint, vérifiez que toutes les branches partent du même point.
 
 ## 📝 Les premières modifications
 
-Vous venez de faire des modifications sur votre branche et pensez qu'un point de sauvegarde est nécessaire pour la bonne compréhension de votre avancée. Il faut faire ce qu'on appelle un commit.
+Vous avez modifié des fichiers sur votre branche et vous voulez garder une trace claire de votre avancement : il faut créer un commit.
 
 ### Étapes d'un commit
 
-Lorsqu'on s'attaque à Git, il faut ne plus toucher au code et travailler uniquement avec Git jusqu'à la fin du commit.
+Pendant la préparation du commit, ne modifiez plus le code : utilisez uniquement les commandes Git jusqu'à la fin.
 
 ```bash
 git status
@@ -48,9 +48,9 @@ Changes to be committed:
         modified:   src/Controller/ProjetController.php
 ```
 
-Si on ajoute un fichier par erreur, on peut l'enlever en utilisant `git restore [nom du fichier]`.
+Un fichier ajouté par erreur se retire de la liste des fichiers suivis avec `git restore --staged [nom du fichier]`.
 
-Un raccourci utile avec ces deux commandes est `git add .` et `git restore .` qui va ajouter ou enlever tous les fichiers sans exception. Donc, si vous avez un ou plusieurs fichiers `.old` que vous ne voulez pas partager, il n'est pas possible d'utiliser `git add .`.
+Un raccourci utile avec ces deux commandes est `git add .` et `git restore --staged .` qui vont ajouter ou enlever tous les fichiers sans exception. Donc, si vous avez un ou plusieurs fichiers `.old` que vous ne voulez pas partager, il n'est pas possible d'utiliser `git add .`.
 
 ```bash
 git commit -m "Le message de votre commit"
@@ -73,7 +73,7 @@ Cette commande va envoyer tous les commits passés sur le dépôt distant (GitHu
 
 ## 🔀 La fusion des travaux communs
 
-### Mise à jour de la branche develop
+### Mettre à jour la branche develop
 
 Pour bien commencer cette étape, il faut impérativement que la branche `develop` en local ait les dernières modifications du remote. Pour ce faire, on peut utiliser la commande suivante :
 
@@ -87,7 +87,7 @@ Cette commande va télécharger sans modifier les fichiers du projet en local. A
 git diff develop origin/develop
 ```
 
-On pourra voir les différences entre le local et le remote. Pour valider le fetch, il faut entrer la commande suivante :
+Les différences entre votre copie locale et le remote s'affichent. Pour les intégrer à `develop`, saisissez :
 
 ```bash
 git merge origin/develop
@@ -95,15 +95,15 @@ git merge origin/develop
 
 Après la résolution éventuelle de conflits, votre branche `develop` est à jour.
 
-### Début de la fusion
+### Lancer la fusion
 
-Mettez-vous sur votre branche :
+Placez-vous d'abord sur votre branche :
 
 ```bash
 git checkout [votre branche]
 ```
 
-Puis faites la commande :
+Puis fusionnez-y `develop` :
 
 ```bash
 git merge develop
@@ -114,7 +114,7 @@ Il y a deux cas : soit le merge se passe sans souci parce que `develop` n'a pas 
 !!! caution "⚠️ En cas de conflit"
     Il faudra résoudre les conflits (marqueurs `<<<<<<<`/`=======`/`>>>>>>>` dans les fichiers concernés) puis faire l'étape de commit habituelle (`git add` + `git commit`).
 
-### Fusion de votre branche
+### Intégrer votre branche dans develop
 
 Lorsque cela est fait, votre branche a vos modifications et celles de `develop`. Il ne vous reste plus qu'à merger votre branche dans `develop`.
 

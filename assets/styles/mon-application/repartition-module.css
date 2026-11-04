@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  *
  */
 
@@ -296,8 +296,9 @@
     font-weight: bold;
 }
 
+/* MODIF 02/11/2026 : voir projet.css (même correctif, #c45d4e -> #ba5705). */
 .stats-list-vert { color: #187e3d;}
-.stats-list-orange { color: #c45d4e; }
+.stats-list-orange { color: #ba5705; }
 .stats-list-rouge-intense { color: #771404; }
 .stats-list-rouge-claire { color: #b33926; }
 .stats-list-bleu { color: #3b89a3; }

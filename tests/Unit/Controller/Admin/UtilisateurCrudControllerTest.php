@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -26,6 +26,10 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -310,5 +314,79 @@ class UtilisateurCrudControllerTest extends TestCase
         $fields = iterator_to_array($this->controller->configureFields(Crud::PAGE_EDIT), false);
 
         $this->assertGreaterThanOrEqual(12, count($fields));
+    }
+
+    /**
+     * MODIF 03/11/2026 : réenregistre le container avec en plus `request_stack`
+     * (nécessaire à `addFlash()`), tout en gardant `security.token_storage`/
+     * `security.authorization_checker` déjà utilisés par les autres tests.
+     */
+    /** @return FlashBag&MockObject */
+    private function enableFlashSupport(): FlashBag
+    {
+        $flashBag = $this->createMock(FlashBag::class);
+        $session = $this->createMock(Session::class);
+        $session->method('getFlashBag')->willReturn($flashBag);
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getSession')->willReturn($session);
+
+        $adminContextProvider = $this->createMock(AdminContextProviderInterface::class);
+        $adminContextProvider->method('getContext')->willReturn(null);
+
+        $container = $this->createMock(ContainerInterface::class);
+        $container->method('has')->willReturnCallback(
+            fn(string $id): bool => in_array($id, [
+                'security.token_storage', 'security.authorization_checker', 'request_stack',
+            ], true)
+        );
+        $container->method('get')->willReturnMap([
+            ['security.token_storage', 1, $this->tokenStorage],
+            ['security.authorization_checker', 1, $this->authChecker],
+            ['request_stack', 1, $requestStack],
+            [AdminContextProviderInterface::class, 1, $adminContextProvider],
+        ]);
+
+        $this->controller->setContainer($container);
+
+        return $flashBag;
+    }
+
+    public function testDeleteEntityBlocksSelfDeletion(): void
+    {
+        $flashBag = $this->enableFlashSupport();
+
+        $connected = new Utilisateur();
+        $connected->setCourriel('laurent.hadjadj@ma-moulinette.fr');
+        $connected->setRoles(['ROLE_INTERNAL']);
+        $token = new UsernamePasswordToken($connected, 'main', ['ROLE_INTERNAL']);
+        $this->tokenStorage->method('getToken')->willReturn($token);
+
+        $entityInstance = new Utilisateur();
+        $entityInstance->setCourriel('laurent.hadjadj@ma-moulinette.fr');
+
+        $this->em->expects($this->never())->method('remove');
+        $this->em->expects($this->never())->method('flush');
+        $flashBag->expects($this->once())->method('add')->with('danger', $this->isString());
+
+        $this->controller->deleteEntity($this->em, $entityInstance);
+    }
+
+    public function testDeleteEntityAllowsDeletingAnotherUser(): void
+    {
+        $this->enableFlashSupport();
+
+        $connected = new Utilisateur();
+        $connected->setCourriel('laurent.hadjadj@ma-moulinette.fr');
+        $connected->setRoles(['ROLE_INTERNAL']);
+        $token = new UsernamePasswordToken($connected, 'main', ['ROLE_INTERNAL']);
+        $this->tokenStorage->method('getToken')->willReturn($token);
+
+        $entityInstance = new Utilisateur();
+        $entityInstance->setCourriel('autre.utilisateur@ma-moulinette.fr');
+
+        $this->em->expects($this->once())->method('remove')->with($entityInstance);
+        $this->em->expects($this->once())->method('flush');
+
+        $this->controller->deleteEntity($this->em, $entityInstance);
     }
 }

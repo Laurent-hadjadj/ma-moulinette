@@ -1,0 +1,18 @@
+Ma-Moulinette
+Copyright 2022-2026 Laurent HADJADJ
+
+Ce produit est distribué sous licence GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later), voir le fichier LICENSE.
+La documentation (README.md, le dossier mkDocs/docs/) est distribuée sous licence CC BY-SA 4.0 (voir mkDocs/LICENSE.md).
+
+Historique des licences
+-----------------------
+- Jusqu'à la version 2.5.0 incluse (tag v2.5.0), le projet était publié avec CC BY-NC-SA 4.0. Le texte de la licence Creative Commons CC BY-NC-SA 4.0 est conservé dans LICENSES/CC-BY-NC-SA-4.0.txt. Les copies déjà distribuées restent utilisables selon la licence qui les accompagnait.
+- À partir du 4 novembre 2026, le projet est distribué sous licence AGPL 3.0 par son titulaire des droits. L'historique git n'est pas modifié : les commits antérieurs à cette date restent attachés à la licence en vigueur à leur publication.
+- Les en-têtes de fichiers antérieurs au 4 novembre 2026 qui mentionnent une autre licence sont remplacés par la licence du dépôt. En cas de contradiction, le fichier LICENSE prévaut. Les en-têtes sont mis à jour au fil des modifications des fichiers.
+- Une explication détaillée du changement et de sa portée se trouve dans LICENSING.md.
+
+Éléments tiers
+--------------
+- Polices du dossier assets/fonts : elles conservent leur propre licence, dont les textes figurent dans assets/fonts/.licence/ (Apache License 2.0 et SIL Open Font License).
+- Dépendances installées par Composer (vendor/) et par les gestionnaires de paquets JavaScript : elles conservent leur propre licence. Celles qui sont utilisées ici (MIT, BSD, LGPL) sont compatibles avec l'AGPL 3.0.
+- SonarQube est une marque de SonarSource SA, Suisse. Ma-Moulinette s'interface avec SonarQube sans le distribuer.
