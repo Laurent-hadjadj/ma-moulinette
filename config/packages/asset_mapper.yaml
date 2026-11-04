@@ -5,6 +5,12 @@ framework:
         paths:
             - assets/
         missing_import_mode: strict
+        # MODIF 2026-11-03 : désactivé — tous les navigateurs réellement ciblés
+        # (Chrome/Edge 89+, Firefox 108+, Safari 16.4+) supportent nativement les
+        # import maps depuis 2022-2023 ; le shim n'a plus d'utilité pour une
+        # application interne en 2026, et supprime au passage un 3e bloc de
+        # <script> inline à devoir couvrir par le nonce CSP.
+        importmap_polyfill: false
 when@prod:
     framework:
         asset_mapper:
