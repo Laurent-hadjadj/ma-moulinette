@@ -1,6 +1,6 @@
 # 🚀 Pour bien démarrer avec Ma-Moulinette
 
-Ma-Moulinette est une application open source sous licence CC BY-NC-SA 4.0. Le code source ne suffit pas à lui seul : il faut un environnement d'exécution (PHP, PostgreSQL) et, en développement, quelques outils complémentaires.
+Ma-Moulinette est une application open source sous licence GNU AGPL 3.0 ou ultérieure. Le code source ne suffit pas à lui seul : il faut un environnement d'exécution (PHP, PostgreSQL) et, en développement, quelques outils complémentaires.
 
 ## 🧰 Prérequis
 

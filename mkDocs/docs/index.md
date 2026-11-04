@@ -8,7 +8,7 @@
 [![Assertions](https://img.shields.io/badge/assertions-10457-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![Coverage](https://img.shields.io/badge/coverage-80.29%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%206-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
-[![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.html)
 
 ┏┓┏┓┏┓━┏━━┓━┏━━━┓
 ┃┃┃┃┃┃━┗┫┣┛━┃┏━┓┃
@@ -56,14 +56,17 @@ Ce double objectif a guidé son développement : offrir une **application robust
 
 ## 📜 Licence
 
-Ma-Moulinette est distribuée sous licence
-**[Creative Commons CC BY-NC-SA 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/)**.
+Le code de Ma-Moulinette est distribué sous licence
+**[GNU AGPL 3.0 ou ultérieure](https://www.gnu.org/licenses/agpl-3.0.html)**, une licence à copyleft qui garantit que le logiciel reste ouvert, y compris lorsqu'il est proposé comme service web. Cette documentation est sous licence
+**[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr)**.
 
-> Vous êtes libres de partager et d’adapter le projet à condition de :
+> Vous êtes libres d’utiliser, de modifier et de redistribuer le code, y compris dans un cadre commercial, à condition de :
 >
-> - **Citer l’auteur** (BY),
-> - **Ne pas en faire un usage commercial** (NC),
-> - **Partager sous la même licence** (SA).
+> - **Conserver les mentions de copyright** et le fichier `NOTICE`,
+> - **Indiquer vos modifications**,
+> - **Publier le code source de vos versions modifiées**, diffusées ou accessibles par le réseau, sous la même licence.
+
+Jusqu’à la version 2.5.0 incluse, Ma-Moulinette était publiée sous licence CC BY-NC-SA 4.0 ; ces versions restent sous cette licence. Les en-têtes de fichiers antérieurs au 4 novembre 2026 mentionnent encore l’ancienne licence : en cas de contradiction, le fichier `LICENSE` prévaut. Le motif et la portée du changement sont expliqués dans `LICENSING.md`.
 
 ## 📖 Histoire du projet
 

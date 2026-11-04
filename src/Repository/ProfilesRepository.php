@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -39,7 +39,7 @@ class ProfilesRepository extends ServiceEntityRepository
    *
    * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Lilmod & Lelamed - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
@@ -65,13 +65,13 @@ class ProfilesRepository extends ServiceEntityRepository
 
   /**
    * [Description for countProfiles]
-   * Compte le nombre total de profiles (par default on compte les profils actifs)
+   * Retourne le nombre de profils correspondant au filtre (profils actifs par défaut)
    *
    * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 13:56:31 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function countProfiles(string $referential_default = 'true', ?string $langage = null): array
   {
@@ -79,14 +79,14 @@ class ProfilesRepository extends ServiceEntityRepository
             FROM ma_moulinette.profiles
             WHERE referential_default = :referential_default";
     try {
-      if ($langage !== null) {
-          $sql .= ' AND language_name LIKE :langage ';
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
-            $stmt->bindValue('referential_default', $referential_default);
-            $stmt->bindValue('langage', $langage);
-      } else {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
-            $stmt->bindValue('referential_default', $referential_default);
+      $avecLangage = $langage !== null;
+      if ($avecLangage) {
+        $sql .= ' AND language_name LIKE :langage ';
+      }
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
+      $stmt->bindValue('referential_default', $referential_default);
+      if ($avecLangage) {
+        $stmt->bindValue('langage', $langage);
       }
       $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
@@ -103,7 +103,7 @@ class ProfilesRepository extends ServiceEntityRepository
    *
    * Created at: 19/02/2024 17:08:03 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function selectProfiles(string $referential_default = 'true', ?string $langage = null): array
   {
@@ -121,17 +121,16 @@ class ProfilesRepository extends ServiceEntityRepository
             WHERE referential_default = :referential_default";
             //ORDER BY langage, name;
     try {
-      if ($langage !== null) {
-            $sql .= ' AND language_name LIKE :langage ';
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue('referential_default', $referential_default);
-            $stmt->bindValue('langage', $langage);
-          } else {
-            //On sélectionne les profils actifs
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
-            $stmt->bindValue('referential_default', $referential_default);
-          }
-          $liste = $stmt->executeQuery()->fetchAllAssociative();
+      $avecLangage = $langage !== null;
+      if ($avecLangage) {
+        $sql .= ' AND language_name LIKE :langage ';
+      }
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
+      $stmt->bindValue('referential_default', $referential_default);
+      if ($avecLangage) {
+        $stmt->bindValue('langage', $langage);
+      }
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
@@ -146,7 +145,7 @@ class ProfilesRepository extends ServiceEntityRepository
    *
    * Created at: 19/02/2024 17:11:56 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function deleteProfiles(): array
   {
@@ -171,7 +170,7 @@ class ProfilesRepository extends ServiceEntityRepository
    *
    * Created at: 20/02/2024 11:15:53 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function selectProfilesLanguage(): array
   {
@@ -195,7 +194,7 @@ class ProfilesRepository extends ServiceEntityRepository
    *
    * Created at: 27/02/2024 21:36:40 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function selectProfilesRuleCount(): array
   {
@@ -221,7 +220,7 @@ class ProfilesRepository extends ServiceEntityRepository
    *
    * Created at: 07/11/2024 14:01:38 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function insertProfiles(array $map): array
   {
