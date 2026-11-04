@@ -46,7 +46,7 @@ Page Clean Code
 ├── 📈 Ligne 2 — 2 graphiques (donut catégories, barres horizontales sévérités)
 ├── 📉 Courbe d'évolution (si ≥2 collectes dans l'historique, sinon message dédié)
 │
-├── 🧩 Ligne 3 — 3 cartes qualité logicielle (Maintenabilité / Fiabilité / Sécurité)
+├── 🧩 Ligne 3 — 3 cartes qualité logicielle (Maintenabilité / Fiabilité / Sécurité, badge « Pire sévérité » si disponible)
 ├── 📋 Ligne 4 — 3 indicateurs de conformité (OWASP Top 10 2021 / SANS-CWE Top 25 / CWE)
 │
 ├── 🗒️ Tableau détail des 4 catégories d'attribut (ligne RESPONSIBLE surlignée si >0)
@@ -69,7 +69,7 @@ Sinon :
   - *Exposition Sécurité* — `quality_security / (maintainability+reliability+security)`, couleur alerte si >15 %, avertissement si >5 %.
 - **2 graphiques** : donut des 4 catégories d'attribut (RESPONSIBLE en rouge) ; barres horizontales des 5 niveaux de sévérité d'impact.
 - **Courbe d'évolution** (si ≥2 lignes d'historique disponibles, sinon message "pas encore assez de données") : score de risque, % RESPONSIBLE, % sécurité, sur les 10 dernières collectes enregistrées.
-- **3 cartes qualité logicielle** : Maintenabilité (neutre), Fiabilité (alerte si >0), Sécurité (alerte si >0).
+- **3 cartes qualité logicielle** : Maintenabilité (neutre), Fiabilité (alerte si >0), Sécurité (alerte si >0). Chacune affiche en plus, depuis le 02/11/2026, un badge « Pire sévérité » (`maintainability_issue_severity`/`reliability_issue_severity`/`security_issue_severity` — métriques optionnelles SonarQube 26.3-26.9, collectées mais jamais affichées jusqu'ici, sémantique confirmée en direct via `/api/metrics/search` : « Worst severity of {dimension} issues »). Badge masqué si la métrique n'existe pas sur ce serveur SonarQube ou si la dimension n'a aucune issue.
 - **3 indicateurs de conformité** : OWASP Top 10 2021, SANS/CWE Top 25, CWE (total de références, peut cumuler plusieurs tags par issue).
 - **Tableau détail** : une ligne par catégorie d'attribut (signification, nb issues, % du total), ligne RESPONSIBLE surlignée si >0, total = 100 %.
 

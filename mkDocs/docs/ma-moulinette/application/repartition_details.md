@@ -156,8 +156,11 @@ sequenceDiagram
 | *(relayé du serveur)* | Erreur pendant un appel de collecte/analyse/historique | ❌ Le message renvoyé par le serveur est affiché tel quel (`t.type`, `t.message`) |
 | `critical` | Exception JS inattendue pendant la collecte (`try/catch`) | 🔴 Une erreur inconnue s'est produite (Erreur 500). |
 | `warning` | Analyse lancée sans collecte préalable pour ce `setup` | ⚠️ Il n'y a pas de données disponibles pour ce setup. Vous devez lancer une collecte avant de lancer une analyse (Erreur 404). |
-| `critical` | Une collecte a échoué avant le clic sur « Répartition »/« Historique » (indicateur de session) | 🔴 Une erreur générale lors du calcul de la répartition / de la récupération des données historisées a été rencontrée (Erreur 500). |
+| `critical` | Une vraie erreur serveur (≠ 404) s'est produite sur l'appel historique (indicateur de session) | 🔴 Une erreur générale lors du calcul de la répartition / de la récupération des données historisées a été rencontrée (Erreur 500). |
 | `success` | Analyse terminée avec au moins une catégorie complète | ✅ Mise à jour de la répartition des anomalies par module effectuée. |
+
+!!! note "✅ Verrou de session corrigé (30/10/2026)"
+    Le bouton « Historique » pouvait rester bloqué sur le message générique ci-dessus pour le reste de la session, même après une Collecte + Analyse + Enregistrement réussis entre-temps — le verrou de session se posait jusqu'ici sur **toute** réponse autre que 200/201 de `PUT /api/secure/repartition/historique`, y compris le 404 normal « pas encore de données historisées » (un état attendu et récupérable, pas une panne). Une fois posé, le clic suivant ne rappelait plus jamais l'API. Seule une vraie erreur serveur verrouille désormais ; un rechargement de page n'est plus nécessaire pour s'en sortir.
 
 ## 📚 Pour aller plus loin
 

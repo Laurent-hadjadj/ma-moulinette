@@ -112,6 +112,57 @@ flowchart TD
 !!! note "🔗 Deux points d'entrée équivalents vers la liste"
     `/actuator` est accessible depuis le bouton « Accéder à l'inventaire Actuator » de la page [Préférences](preferences.md) et depuis la carte « Actuator » de la page d'accueil du back-office (`/admin`, voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes)) — les deux gated par `ROLE_ACTUATOR`.
 
+## 🧭 Chemin de fer de la page `/actuator` (liste)
+
+<!-- markdownlint-disable MD046 -->
+```text
+Page Actuator — liste
+│
+├── 🧵 Fil d'Ariane : Accueil › Actuator
+├── 🔔 Zone de messages (flash serveur uniquement)
+│
+├── ⚠️ Callout avertissement (bonnes pratiques — mot de passe obligatoire, ne jamais exposer un endpoint de prod sans protection)
+│
+├── ➕ Bouton « Ajouter une application » → /actuator/info
+│
+├── 🎛️ Callout « Filtres d'affichage » (tri cliquable : Application / URL / Personne / Date) + compteur total
+│
+├── 🗂️ Une carte par fiche (Application, URL, Responsable, Date de modification, Date de création)
+│        ├── ✏️ Modifier → /actuator/{id}/modifier
+│        └── 🗑️ Supprimer (confirmation JS + jeton CSRF, suppression immédiate)
+│   (ou message « Aucun résultat trouvé » si la liste est vide)
+│
+├── 🔀 Pagination (9 fiches par page)
+│
+└── 🔘 Footer
+```
+<!-- markdownlint-enable MD046 -->
+
+## 🧭 Chemin de fer des pages `/actuator/info` (ajout) et `/actuator/{id}/modifier` (édition)
+
+Même template (`templates/actuator/ajouter.html.twig`), le fil d'Ariane et le titre s'adaptent au mode :
+
+<!-- markdownlint-disable MD046 -->
+```text
+Page Actuator — formulaire
+│
+├── 🧵 Fil d'Ariane : Accueil › Actuator › Ajout (ou Modification)
+├── 🔔 Zone de messages (flash serveur uniquement)
+│
+├── 📝 Titre : « Ajouter une application. » ou « Modifier une application. »
+│
+├── 🗃️ Bloc champs principaux (Nom de l'application, Clé Maven, Responsable, URL, Utilisateur d'accès, Mot de passe d'accès)
+│        └── note sous le mot de passe en mode édition : « Laisser vide pour conserver le mot de passe actuellement enregistré »
+│
+├── 🔑 Bloc « Informations » (liste dynamique description + clé JSON à extraire, 15 maximum)
+│        └── ➕ Bouton « Ajouter clé » (JS, prototype Symfony Form)
+│
+├── ❌ Bloc erreurs de validation (un par champ, y compris chaque ligne Informations)
+│
+└── 🔘 Footer : ↩️ Retour (→ /actuator) / 💾 Enregistrer
+```
+<!-- markdownlint-enable MD046 -->
+
 ## 📋 Page `/actuator` — liste
 
 - Tri (colonnes cliquables) sur **Application**, **URL**, **Personne**, **Date** — whitelist stricte côté contrôleur et re-vérifiée côté dépôt ; colonne/direction invalides → repli sur `date_modification DESC`.

@@ -1,21 +1,21 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.5.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.6.0-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.9-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-4217%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-11368-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-80.94%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-4225%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11390-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-81.01%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
-[![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](LICENSE)
 
 ┏┓┏┓┏┓━┏━━┓━┏━━━┓\
 ┃┃┃┃┃┃━┗┫┣┛━┃┏━┓┃\
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.5.0 Release on November 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.6.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -60,16 +60,11 @@ Ce double objectif a guidé son développement : offrir une **application robust
 ## 📜 Licence
 
 > [!NOTE]
-> Ma-Moulinette est distribuée sous licence
-> **[Creative Commons CC BY-NC-SA 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/)**.
-
-_
-> [!TIP]
-> Vous êtes libres de partager et d’adapter le projet à condition de :
 >
-> - **Citer l’auteur** (BY),
-> - **Ne pas en faire un usage commercial** (NC),
-> - **Partager sous la même licence** (SA).
+> - **Code** : [GNU AGPL 3.0 ou ultérieure](LICENSE) (`AGPL-3.0-or-later`), licence à copyleft : le logiciel reste ouvert, y compris lorsqu'il est proposé comme service web.
+> - **Documentation** (`README.md`, `mkDocs/docs/`) : [CC BY-SA 4.0](mkDocs/LICENSE.md).
+>
+> **Changement de licence.** Depuis le 4 novembre 2026, le code est distribué sous AGPL 3.0. Jusqu'à la version 2.5.0 incluse (tag `v2.5.0`), il était publié sous [CC BY-NC-SA 4.0](LICENSES/CC-BY-NC-SA-4.0.txt) ; ces versions restent sous cette licence. L'usage commercial est désormais autorisé, à condition de respecter le copyleft. Les en-têtes de fichiers antérieurs mentionnent encore l'ancienne licence : en cas de contradiction, le fichier [LICENSE](LICENSE) prévaut. **Motif et portée du changement : [LICENSING.md](LICENSING.md)**. Attributions : [NOTICE](NOTICE).
 
 ## 📖 Histoire du projet
 
@@ -87,27 +82,27 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 30/10/2026)
+> [!NOTE] Information sur le projet (relevé du 03/11/2026)
 >
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-|  PHP      |  322      | 56018  | 24709        | 10183 | 90910 |
-|  HTML    |  157      | 28574  | 1147         | 2043  | 31764 |
-|  JS      |  93       | 11209  | 4611         | 1823  | 17643 |
-|  CSS     |  39       | 6594   | 1332         | 1394  | 9320 |
-|  SQL     |  84       | 3343   | 1758         | 772   | 5873 |
-|  MIGRATION |  17     | 1014   | 286          | 200   | 1500 |
+|  PHP      |  323      | 56086  | 24843        | 10198 | 91127 |
+|  HTML    |  157      | 28586  | 1147         | 2043  | 31776 |
+|  JS      |  93       | 11209  | 4631         | 1824  | 17664 |
+|  CSS     |  39       | 6608   | 1363         | 1396  | 9367 |
+|  SQL     |  84       | 3345   | 1760         | 772   | 5877 |
+|  MIGRATION |  19     | 1110   | 325          | 216   | 1651 |
 
-### 📊 Qualité du code (relevé du 30/10/2026)
+### 📊 Qualité du code (relevé du 03/11/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 517** tests / 9 612 assertions |
+| Tests unitaires (`tests/Unit`) | **3 525** tests / 9 634 assertions |
 | Tests d'intégration (`tests/Integration`) | **700** tests / 1 756 assertions |
-| **Total** | **4 217** tests / **11 368** assertions |
+| **Total** | **4 225** tests / **11 390** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **80,94 %** |
+| Couverture — lignes | **81,01 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
@@ -116,7 +111,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.5.0** est publiée et apporte de nombreuses améliorations.
+La **version 2.6.0** est publiée et apporte de nombreuses améliorations.
 
 ### ✅ Fonctionnalités disponibles
 
@@ -137,7 +132,7 @@ La **version 2.5.0** est publiée et apporte de nombreuses améliorations.
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 194 tests, 11 320 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 225 tests, 11 390 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 
 ### 🧱 Fonctionnalités en cours de finalisation
