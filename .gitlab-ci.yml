@@ -3,21 +3,19 @@ spec:
   inputs:
     DEPLOYED_HOSTNAME:
       type: string
-      options: ['ma-moulinette-dev', 'ma-moulinette-rec', 'ma-moulinette-prod']
+      options: ['ma-moulinette-dev', 'ma-moulinette-prod']
       default: 'ma-moulinette-dev'
       description: |
         Indique le nom du serveur pour le déploiement :<br />
         [DEV] ➔ ma-moulinette-dev<br />
-        [REC] ➔ ma-moulinette-rec<br />
         [PRD] ➔ ma-moulinette-prod
     APP_ENV:
       type: string
-      options: ['dev', 'rec', 'prod']
-      default: 'prod'
+      options: ['dev', 'prod']
+      default: 'dev'
       description: |
         Indique le mode de distribution :<br />
-        [Environnement de développement/intégration et de recette]  ➔ dev<br />
-        [Environnement de recette]  ➔ dev<br />
+        [Environnement de développement]  ➔ dev<br />
         [Environnement de production]  ➔ prod
     APP_DEBUG:
       type: string
@@ -28,20 +26,18 @@ spec:
         [Les logs applicatives sont activées] ➔ 1<br />
         [Les logs applicatives sont désactivées] ➔ 0
     ENVIRONNEMENT:
-      options: ['DEV', 'REC', 'PRD']
+      options: ['DEV', 'PRD']
       default: 'DEV'
       description: |
         Indique le type d'environnement :<br />
         [Environnement de développement] ➔ DEV<br />
-        [Environnement de recette] ➔ REC<br />
         [Environnement de production] ➔ PRD
     TRUST_HOST2:
-      options: ['ma-moulinette-dev.mon-serveur.fr', 'ma-moulinette-rec.mon-serveur.fr', 'ma-moulinette.mon-serveur.fr']
+      options: ['ma-moulinette-dev.mon-serveur.fr', 'ma-moulinette.mon-serveur.fr']
       default: 'ma-moulinette-dev.mon-serveur.fr'
       description: |
         Indiquer la racine d'accès au site.<br />
         [DEV] ➔ ma-moulinette-dev.mon-serveur.fr<br />
-        [REC] ➔ ma-moulinette-rec.mon-serveur.fr<br />
         [PRD] ➔ ma-moulinette.mon-serveur.fr
 
 ---
@@ -78,8 +74,6 @@ variables:
 ############################
 #    Include Components    #
 ############################
-
-
 
 ############################
 #           JOBS           #
@@ -170,7 +164,7 @@ build_ma_moulinette_job:
   after_script:
     - echo "JOB_ID=$CI_JOB_ID" >> git_external_job_id.env
   artifacts:
-    expire_in: 30 min
+    expire_in: 60 min
     paths:
       - $CI_PROJECT_DIR
 
@@ -235,7 +229,7 @@ deploy_ma_moulinette_job:
         eval $(ssh-agent)
         echo "$SSH_PRIVATE_KEY_PASSWORD" | ssh-add ~/.ssh/id_rsa
         scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" artifacts.zip $DEPLOY_SERVER:$DEPLOY_PATH
-        ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" $DEPLOY_SERVER "echo 'Executing commands on the remote server...' ; export MY_PATH='$DEPLOY_PATH'; echo \$MY_PATH; cd \"\$MY_PATH\"; pwd; ls -l; echo \"\$MY_PATH/archives/prod_ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\"; tar -czf \"\$MY_PATH/archives/prod_ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\" prod_ma_moulinette; rm -rf prod_ma_moulinette; unzip artifacts.zip -d prod_ma_moulinette; ls -l; ls -la prod_ma_moulinette; rm artifacts.zip; ls -lathr; ls -lathr archives; chmod -R 777  \"\${MY_PATH}prod_ma_moulinette/var/cache\" ; chmod -R 777  \"\${MY_PATH}prod_ma_moulinette/var/log\" "
+        ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" $DEPLOY_SERVER "echo 'Executing commands on the remote server...' ; export MY_PATH='$DEPLOY_PATH'; echo \$MY_PATH; cd \"\$MY_PATH\"; pwd; ls -l; echo \"\$MY_PATH/ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\"; tar -czf \"\$MY_PATH/ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\" ma_moulinette; rm -rf ma_moulinette; unzip artifacts.zip -d ma_moulinette; ls -l; ls -la ma_moulinette; rm artifacts.zip; ls -lathr; ls -lathr archives; mkdir -p  \"\${MY_PATH}ma_moulinette/var/sessions\" ; chmod -R 777  \"\${MY_PATH}ma_moulinette/var/sessions\" ; chmod -R 777  \"\${MY_PATH}ma_moulinette/var/cache\" ; chmod -R 777  \"\${MY_PATH}ma_moulinette/var/log\" ; # docker restart php-fpm-ma-moulinette  -- désactive : a réactiver si du cache redevient périmé (OPcache/conteneur compile) malgré les chmod ci-dessus, notamment si une requête arrive pile pendant la bascule rm -rf/unzip"
         scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" migrations/POSTGRESQL/updates/* $DEPLOY_SERVER:$SSH_DEPLOY_SQL
         ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" $DEPLOY_SERVER "echo 'Executing commands on the remote server...' ; export MY_PATH='$SSH_DEPLOY_SQL'; echo \$MY_PATH; cd \"\$MY_PATH\"; pwd; ls -l; docker exec -i postgresql-ma-moulinette ls -lathr /data/sql/update ; docker exec -i postgresql-ma-moulinette /scripts/postgresql/execute_sql_files.sh"
         #

@@ -23,17 +23,27 @@ server {
     # Il faut avoir le module HttpEchoModule ou le module HttpRequestIdModule
     #add_header X-Request-ID $request_id;
 
+    # MODIF 04/11/2026 : en-têtes de sécurité désactivés ici (commentés, pas
+    # supprimés) — doublonnent avec App\EventSubscriber\SecurityHeadersSubscriber
+    # (X-Frame-Options, X-Content-Type-Options, CSP), posé au niveau applicatif
+    # Symfony. Avoir les deux en même temps casse la CSP : le navigateur
+    # applique l'intersection des deux Content-Security-Policy reçues, et celle
+    # ci-dessous (statique, "script-src 'self'" sans nonce) neutralise le nonce
+    # posé par Symfony — tout le JS applicatif (asset-mapper) reste bloqué
+    # malgré un en-tête applicatif pourtant correct. Cas réel rencontré sur un
+    # déploiement réel (fork interne).
+
     # Avoid clickjacking
-    add_header X-Frame-Options SAMEORIGIN;
+    #add_header X-Frame-Options SAMEORIGIN;
 
     # Disable content-type sniffing on some browsers
-    add_header X-Content-Type-Options nosniff;
+    #add_header X-Content-Type-Options nosniff;
 
     # Protection XSS
-    add_header X-XSS-Protection "1; mode=block";
+    #add_header X-XSS-Protection "1; mode=block";
 
     # Enable the Cross-site scripting (XSS) filter
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://[changeMe].*;" always;
+    #add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://[changeMe].*;" always;
 
     charset UTF-8;
 
