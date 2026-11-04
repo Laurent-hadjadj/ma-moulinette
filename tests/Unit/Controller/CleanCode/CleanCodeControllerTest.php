@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -25,6 +25,7 @@ use App\Controller\CleanCode\CleanCodeController;
 use App\Entity\{CleanCode, ListeProjet, Utilisateur};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Repository\{CleanCodeRepository, ListeProjetRepository};
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -377,5 +378,73 @@ class CleanCodeControllerTest extends TestCase
         $this->assertArrayHasKey('severities', $decoded);
         $this->assertSame(['CONSISTENT', 'INTENTIONAL', 'ADAPTABLE', 'RESPONSIBLE'], $decoded['categories']['labels']);
         $this->assertSame([5, 3, 4, 2], $decoded['categories']['values']);
+    }
+
+    /**
+     * MODIF 02/11/2026 : pire sévérité par dimension (maintainability_issue_
+     * severity/reliability_issue_severity/security_issue_severity) — encodage
+     * numérique confirmé en direct via l'API SonarQube (0/5/10/15/20/25 =
+     * aucune/INFO/LOW/MEDIUM/HIGH/BLOCKER, cf. CleanCodeController::severiteBadge()).
+     */
+    public function testIndexExposesWorstSeverityBadges(): void
+    {
+        $this->authorizeMavenKey();
+
+        $row = [
+            'project_name'        => 'ma-moulinette',
+            'date_enregistrement' => '2026-03-01 00:00:00',
+            'issue_total'         => 1,
+            'cc_consistent'       => 1,
+            'cc_intentional'      => 0,
+            'cc_adaptable'        => 0,
+            'cc_responsible'      => 0,
+            'quality_maintainability' => 1,
+            'quality_reliability'     => 0,
+            'quality_security'        => 0,
+            'impact_blocker'      => 0,
+            'impact_high'         => 1,
+            'impact_medium'       => 0,
+            'impact_low'          => 0,
+            'impact_info'         => 0,
+            'owasp_top10'         => 0,
+            'sans_top25'          => 0,
+            'cwe'                 => 0,
+        ];
+        $this->cleanCodeRepo->expects($this->once())
+            ->method('selectCleanCode')
+            ->willReturn(['code' => 200, 'liste' => [$row], 'erreur' => '']);
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchAllAssociative')->willReturn([
+            [
+                'version' => '1.0.0',
+                'date_enregistrement' => '2026-03-01 00:00:00',
+                'violations' => 1,
+                'cc_consistent' => 1, 'cc_intentional' => 0, 'cc_adaptable' => 0, 'cc_responsible' => 0,
+                'quality_maintainability' => 1, 'quality_reliability' => 0, 'quality_security' => 0,
+                'impact_blocker' => 0, 'impact_high' => 1, 'impact_medium' => 0, 'impact_low' => 0, 'impact_info' => 0,
+                // Maintenabilité au pire BLOCKER (25), fiabilité au pire LOW (10), aucune issue sécurité (0 -> pas de badge).
+                'maintainability_issue_severity' => 25,
+                'reliability_issue_severity' => 10,
+                'security_issue_severity' => 0,
+            ],
+        ]);
+        $connection->method('fetchOne')->willReturn('1.0.0');
+        $this->em->method('getConnection')->willReturn($connection);
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('clean-code/index.html.twig', $this->callback(function ($ctx) use (&$capturedCtx) {
+                $capturedCtx = $ctx;
+                return true;
+            }))
+            ->willReturn('<html>ok</html>');
+
+        $this->controller->index($this->buildRequest($this->buildValidToken()));
+
+        $this->assertSame(['label' => 'BLOCKER', 'class' => 'critical'], $capturedCtx['severity_pire']['maintainability']);
+        $this->assertSame(['label' => 'LOW', 'class' => 'low'], $capturedCtx['severity_pire']['reliability']);
+        $this->assertNull($capturedCtx['severity_pire']['security']);
     }
 }
