@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  *
  */
 
@@ -84,7 +84,8 @@
   max-width: 32px
 }
 
-.voir-details-svg:hover { fill: #c45d4e; }
+/* MODIF 02/11/2026 : BUG CORRIGÉ (Sonar) — #c45d4e échouait le contraste WCAG AA (4.18:1). Remplacé par #bf0815 (.couleur-rouge, 6.44:1). */
+.voir-details-svg:hover { fill: #bf0815; }
 
 /* Information bug, vulnérabilité et code_smell  */
 .stat-list {

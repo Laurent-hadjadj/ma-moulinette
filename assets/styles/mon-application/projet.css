@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  *
  */
 
@@ -601,8 +601,15 @@ textarea[readonly] {
 }
 
 /* Couleur pour la sévérité */
+/* MODIF 02/11/2026 : BUG CORRIGÉ (Sonar) — #c45d4e (en réalité un rouge
+ * saumon, malgré son nom) échouait le contraste WCAG AA en texte sur fond
+ * clair (4.18:1, sous le seuil 4.5:1). Remplacé par #ba5705, déjà la
+ * référence "orange texte sur fond clair" de l'application (.color-orange/
+ * .couleur-orange, 4.67:1) — garde sa propre teinte, distincte des 2 rouges
+ * voisins (rouge-intense/rouge-claire), contrairement à #c45d4e qui s'en
+ * rapprochait visuellement sans raison. */
 .stats-list-vert { color: #187e3d; }
-.stats-list-orange { color: #c45d4e; }
+.stats-list-orange { color: #ba5705; }
 .stats-list-rouge-intense { color: #771404; }
 .stats-list-rouge-claire { color: #b33926; }
 .stats-list-bleu { color: #3b89a3; }
