@@ -4,9 +4,9 @@
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-4230%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-11418-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-81.02%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-4231%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11426-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-81.13%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](LICENSE)
 
@@ -87,9 +87,9 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-|  PHP      |  323      | 56110  | 24886        | 10199 | 91195 |
-|  HTML    |  157      | 28600  | 1154         | 2041  | 31795 |
-|  JS      |  93       | 11222  | 4668         | 1826  | 17716 |
+|  PHP      |  323      | 56112  | 24890        | 10199 | 91201 |
+|  HTML    |  157      | 28592  | 1156         | 2041  | 31789 |
+|  JS      |  93       | 11222  | 4673         | 1826  | 17721 |
 |  CSS     |  39       | 6640   | 1382         | 1403  | 9425 |
 |  SQL     |  84       | 3346   | 1760         | 772   | 5878 |
 |  MIGRATION |  20     | 1145   | 337          | 222   | 1704 |
@@ -98,11 +98,11 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 527** tests / 9 646 assertions |
+| Tests unitaires (`tests/Unit`) | **3 528** tests / 9 654 assertions |
 | Tests d'intégration (`tests/Integration`) | **703** tests / 1 772 assertions |
-| **Total** | **4 230** tests / **11 418** assertions |
+| **Total** | **4 231** tests / **11 426** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **81,02 %** |
+| Couverture — lignes | **81,13 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
@@ -132,7 +132,7 @@ La **version 2.7.0** corrige un bug critique introduit en 2.6.0 et ajoute un com
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 230 tests, 11 418 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 231 tests, 11 426 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 
 ### 🧱 Fonctionnalités en cours de finalisation

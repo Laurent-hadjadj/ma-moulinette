@@ -4,16 +4,16 @@
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 527 | 9 646 | Unitaires purs (mocks, aucune base réelle) |
+| `unit` (`tests/Unit`) | 3 528 | 9 654 | Unitaires purs (mocks, aucune base réelle) |
 | `integration` (`tests/Integration`) | 703 | 1 772 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **4 230** | **11 418** | |
+| **Total** | **4 231** | **11 426** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
 **Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
 
 | Granularité | Couverture |
 | --- | --- |
-| Lignes | **81,02 %** |
+| Lignes | **81,13 %** |
 
 **Analyse statique** : **PHPStan niveau 7**, 0 erreur sur tout le périmètre configuré (`bin/`, `config/`, `public/`, `src/`, `tests/`) — voir [Analyse statique](#-analyse-statique-phpstan) plus bas.
 

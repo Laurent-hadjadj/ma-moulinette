@@ -4,9 +4,9 @@
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-4230%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-11418-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-81.02%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-4231%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11426-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-81.13%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.html)
 
@@ -111,11 +111,11 @@ Relevé du 07/11/2026 — voir [Tests unitaires et d'intégration](ma-moulinette
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires | **3 527** (9 646 assertions) |
+| Tests unitaires | **3 528** (9 654 assertions) |
 | Tests d'intégration | **703** (1 772 assertions) |
-| **Total** | **4 230** tests / **11 418** assertions |
+| **Total** | **4 231** tests / **11 426** assertions |
 | Tests End-to-End | **22** suites Playwright (voir [Tests End-to-End](ma-moulinette/developpement/test-e2e.md)) |
-| Couverture de code (lignes) | **81,02 %** |
+| Couverture de code (lignes) | **81,13 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 ### 🧱 Fonctionnalités en cours de finalisation

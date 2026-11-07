@@ -1,12 +1,12 @@
 {
-    "generated_at": "2026-11-07T19:00:23+00:00",
+    "generated_at": "2026-11-07T19:52:32+00:00",
     "cloc": {
         "php": {
             "fichier": 323,
-            "code": 56110,
-            "comment": 24886,
+            "code": 56112,
+            "comment": 24890,
             "vide": 10199,
-            "total": 91195
+            "total": 91201
         },
         "html": {
             "fichier": 157,
@@ -18,9 +18,9 @@
         "js": {
             "fichier": 93,
             "code": 11222,
-            "comment": 4668,
+            "comment": 4673,
             "vide": 1826,
-            "total": 17716
+            "total": 17721
         },
         "css": {
             "fichier": 39,
@@ -46,10 +46,10 @@
     },
     "tests": {
         "unit": {
-            "count": 3527
+            "count": 3528
         },
         "integration": {
-            "count": 701
+            "count": 703
         }
     }
 }
