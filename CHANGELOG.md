@@ -4,6 +4,30 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.7.0] - 07-11-2026
+
+### Ajouté
+
+- **Page Projet** : Le sélecteur de projet affiche désormais, juste au-dessus de la liste déroulante, le nombre total de projets du périmètre de l'utilisateur ainsi que leur répartition collectés (pastille verte) / à collecter (pastille grise) — jusqu'ici, seule la pastille individuelle de chaque projet dans la liste déroulante donnait cette information, sans vue d'ensemble. Entièrement calculé côté client depuis les données déjà transmises par `/api/secure/projet/liste` (aucun appel réseau supplémentaire), mis à jour aussi bien au chargement de la page qu'après chaque collecte réussie. Sur petit écran, les libellés texte sont masqués (seules les pastilles et les chiffres restent visibles, agrandies, pour éviter un retour à la ligne) ; le détail complet reste disponible aux lecteurs d'écran via un attribut `aria-label` dédié, à toutes les tailles d'écran.
+
+### Corrigé
+
+- **Page Suivi** : La modale « Ajouter une version » (`ApiSuiviController::suiviMiseAJour()`) omettait `sonarqube_server_version` dans les données envoyées à `insertHistoriqueAjoutProjet()` — ce repository liste explicitement toutes les colonnes de sa whitelist et bind `null` pour toute clé absente du payload, ce qui écrase le `DEFAULT 'inconnu'` de cette colonne `NOT NULL` et fait échouer l'INSERT en base réelle. Corrigé en reprenant le même appel à `GetSonarVersionService::getSonarQubeVersion()` que `CollecteController` (avec le même repli sur `'inconnu'` en cas d'échec HTTP). Le test du happy path masquait ce bug depuis l'origine : `insertHistoriqueAjoutProjet()` étant mocké en Unit, aucune assertion ne portait sur le contenu réel du `$map` envoyé — complété.
+- **Menu icônes (en-tête, toutes les pages)** : La colonne du menu d'icônes (préférences/déconnexion) était en `small-7` au lieu de `small-6`, désalignée avec la colonne voisine sur petit écran.
+- **Back-office › Utilisateurs** : Un clic sur l'en-tête de colonne « Groupe fonctionnel » du CRUD EasyAdmin déclenchait une erreur 500 (`could not identify an ordering operator for type json`) — ce champ est stocké en colonne `json` (non en `jsonb`), sans opérateur d'ordre en PostgreSQL, et restait sortable par défaut sur la page d'index. Scindé en deux champs (liste non triable / formulaire), même pattern déjà en place pour le champ `roles`, lui aussi en JSON.
+- **Page Suivi** : Après une action dans la modale « Ajouter une version » ou « Modifier » (suppression d'une version, sélection/désélection du suivi, bascule « version de référence »), l'affichage de la page (compteur, graphiques, tableaux — tous rendus côté serveur au chargement initial, sans route JSON pour les rafraîchir en JS) ne se mettait jamais à jour sans un F5 manuel. Un gestionnaire existant ciblait un id (`#fermer-modifier-analyse`) renommé depuis dans le template, donc silencieusement inopérant ; la modale « Ajouter » n'avait quant à elle jamais eu de rafraîchissement. Les deux modales rechargent désormais automatiquement la page à leur fermeture (`closed.zf.reveal`, couvre aussi Échap et le clic extérieur, pas seulement le bouton « Fermer »).
+- **Page Statistiques (`/statistiques/ma-moulinette`)** : Les graphiques (anomalies, projets) ne s'affichaient jamais (`JSON parse error` en console) — le template utilisait des accolades Twig simples (`{ chart_anomalies | raw }`) au lieu de `{{ chart_anomalies|raw }}` : syntaxiquement valide pour Twig (texte littéral, pas une erreur de parsing), donc jamais détecté par `lint:twig` ; `admin-stats.js` capturait l'erreur et abandonnait silencieusement le rendu.
+- **Page Suivi (graphiques)** : Le survol d'un point des graphiques « Historique des anomalies » et RCI par portée déclenchait un `RangeError` (« Format string contains an unescaped latin alphabet character `l` ») — `tooltipFormat: 'll'` est un token Moment.js, pas date-fns (l'adaptateur réellement utilisé ici, `chartjs-adapter-date-fns`). Corrigé en `'dd LLL yyyy'`, cohérent avec le format déjà utilisé ailleurs dans le même fichier. Le rendu initial des graphiques n'était pas affecté, seule l'interaction (tooltip au survol).
+- **Dépendances** : Mise à jour des dépendances. Passage à la version 8.1.11, pour résoudre une faille de sécurité, sur Symfony. Plancher de version (`^X.Y.Z`) de chaque paquet aligné sur la version réellement installée (vérifié avec le vérificateur de semver de Composer : 67/67 OK).
+
+### Documentation
+
+- **Page Projet** : Nouvelle note décrivant le chip de compteurs total/collectés/à collecter, son calcul côté client et son comportement sur petit écran.
+- **Page Suivi** : Nouvelle note décrivant le rechargement automatique des 2 modales à leur fermeture.
+- **README / mkDocs** : Statistiques (lignes de code, nombre de tests/assertions, couverture) régénérées via `app:admin:refresh-stats` et `composer test:coverage` (4 230 tests / 11 418 assertions, 81,02 % de lignes couvertes).
+- **Veille SonarQube** : Nouveau snapshot `bin/metrics/metrics_26.11.0.json` (0 changement vs 26.10.0) — dépréciation complète de `/api/hotspots/search,show,change_status` repérée (depuis la version SonarQube « 2026.4 », toujours fonctionnelle), migration vers `issues/search` différée à une future 2.8.0.
+- **Tests** : Nouveaux tests de régression pour 4 bugs corrigés dans cette version, tous sans couverture jusqu'ici — `StatistiqueControllerMaMoulinetteTest`/`UtilisateurCrudSortTest` (Integration, rendu/tri réels) ; `07-suivi.spec.ts`/`06-collecte-manuelle.spec.ts` (e2e Playwright : survol de graphique, chip de compteurs, rechargement de modale — comportements navigateur invisibles à Unit/Integration).
+
 ## [2.6.0] - 04-11-2026
 
 ### Corrigé

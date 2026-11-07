@@ -1,13 +1,13 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.1.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.7.0-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![Symfony](https://img.shields.io/badge/Symfony-8.1.6-000000?logo=symfony&logoColor=white)](https://symfony.com/)
+[![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-3953%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-10457-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-80.29%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%206-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
+[![Tests](https://img.shields.io/badge/tests-4230%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11418-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-81.02%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.html)
 
 ┏┓┏┓┏┓━┏━━┓━┏━━━┓
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛
 ┗┓┏┓┏┛━┏┫┣┓━┃┃
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.2.0 Release on October 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.7.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -86,7 +86,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
+La **version 2.7.0** corrige un bug critique introduit en 2.6.0 et ajoute un compteur de projets collectés/à collecter sur la page Projet (voir [CHANGELOG.md](CHANGELOG.md)).
 
 ### ✅ Fonctionnalités disponibles
 
@@ -107,27 +107,22 @@ La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
 
 ### 📊 Qualité du code
 
-Relevé du 11/10/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
+Relevé du 07/11/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires | **3 347** (9 068 assertions) |
-| Tests d'intégration | **606** (1 389 assertions, 2 skips volontaires) |
-| **Total** | **3 953** tests / **10 457** assertions |
+| Tests unitaires | **3 527** (9 646 assertions) |
+| Tests d'intégration | **703** (1 772 assertions) |
+| **Total** | **4 230** tests / **11 418** assertions |
 | Tests End-to-End | **22** suites Playwright (voir [Tests End-to-End](ma-moulinette/developpement/test-e2e.md)) |
-| Couverture de code (lignes) | **80,29 %** |
-| Analyse statique | **PHPStan niveau 6** (68 erreurs résiduelles) |
+| Couverture de code (lignes) | **81,02 %** |
+| Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 ### 🧱 Fonctionnalités en cours de finalisation
 
 Liste des évolutions restantes :
 
-- [x] ~~Finalisation de la refonte des **tests unitaires** et de la couverture ;~~
-- [x] ~~Alignement et complétion de la documentation sur a version 2.0.0 ;~~
-- [x] ~~Polissage de la **gestion des préférences utilisateurs** ;~~
 - [ ] Finalisation de la récupération "j'ai oublié mon mot de passe" ;
-- [x] ~~Ajout de nouveaux **indicateurs SonarQube 2026** ;~~
-- [x] ~~Développement du support multi-projet filtré par groupe fonctionnel ;~~
 - [ ] Améliorer la couverture des tests e2e;
 
 -**-- FIN --**-
