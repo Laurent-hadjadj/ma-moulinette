@@ -104,3 +104,32 @@ test.describe('06 — Collecte manuelle', () => {
     expect(enregistrementResponse.status()).toBe(200);
   });
 });
+
+/**
+ * Régression 2026-11-07 : chip de compteurs total/collectés/à collecter
+ * (#projet-compteurs, en remplacement visuel du label "Liste des projets
+ * disponibles" au-dessus du sélecteur) — nouvelle fonctionnalité sans
+ * aucune couverture jusqu'ici (ni Unit, ni Integration : calcul entièrement
+ * côté client depuis listeProjetData). État seed-after-spec-05 : exactement
+ * 1 projet (tetris:TetrisGame) dans le périmètre de Nathan, jamais collecté
+ * (fraîchement reseedé, avant toute collecte) → 1 total / 0 collecté / 1 à
+ * collecter.
+ */
+test.describe('06b — Chip de compteurs (page Projet)', () => {
+  test.beforeAll(() => {
+    resetAndSeedAfterSpec05();
+  });
+
+  test('Le chip affiche 1 projet / 0 collecté / 1 à collecter avant toute collecte', async ({ page }) => {
+    await login(page, USERS.nathan);
+    await page.goto('/projet');
+
+    const chip = page.locator('#projet-compteurs');
+    await expect(chip).toBeVisible({ timeout: 10_000 });
+
+    await expect(chip.locator('#projet-compteurs-total')).toHaveText('1');
+    await expect(chip.locator('#projet-compteurs-collectes')).toHaveText('0');
+    await expect(chip.locator('#projet-compteurs-a-collecter')).toHaveText('1');
+    await expect(chip).toHaveAttribute('aria-label', '1 projet : 0 collecté, 1 à collecter');
+  });
+});

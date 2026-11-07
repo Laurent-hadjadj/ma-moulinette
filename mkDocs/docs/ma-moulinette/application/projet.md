@@ -38,6 +38,7 @@ Page Projet
 │
 ├── 🔎 Zone Sélection du projet
 │        ├── ⭐ Icône favori (bascule le projet sélectionné en favori)
+│        ├── 🟢⚪ Chip de compteurs (total / collectés / à collecter)
 │        ├── 🔽 Sélecteur de projet (filtré par groupe fonctionnel)
 │        └── 📊 Bouton « Mes projets » → page dédiée (tableau complet)
 │
@@ -63,6 +64,17 @@ Le bouton 🧹 (icône gomme) le vide sans rien envoyer au serveur — c'est un 
 !!! note "✅ Ajout d'une pastille de collecte (29/10/2026)"
     Chaque projet du sélecteur dispose d'une pastille de couleur grise
     quand le projet n'a pas encore été collecter et verte si une version existe déjà dans les tables temporaires.
+
+!!! note "✅ Chip de compteurs total/collectés/à collecter (07/11/2026)"
+    Juste au-dessus du sélecteur, un chip (fond gris clair) affiche le nombre total de projets du
+    périmètre de l'utilisateur, le nombre déjà collectés (pastille verte) et le nombre restant à collecter
+    (pastille grise) — en remplacement visuel du libellé « Liste des projets disponibles » (conservé dans
+    le DOM, masqué visuellement, pour les lecteurs d'écran). Entièrement calculé côté client depuis les
+    données déjà reçues de `/api/secure/projet/liste` (pas d'appel réseau supplémentaire), mis à jour au
+    chargement de la page et après chaque collecte réussie. Sur petit écran, seules les pastilles et les
+    chiffres restent visibles (agrandis), les libellés texte étant masqués pour éviter un retour à la
+    ligne — le détail complet reste disponible aux lecteurs d'écran via un `aria-label` dédié, à toutes
+    les tailles d'écran.
 
 Le sélecteur (Select2) recherche parmi les projets du **groupe fonctionnel** de l'utilisateur (voir [Groupes](../back-office/groupes.md#-groupe-fonctionnel)) — la recherche se déclenche à partir de **2 caractères** saisis (`minimumInputLength: 2`). Si l'utilisateur n'est rattaché à aucun groupe fonctionnel, ou qu'aucun tag SonarQube ne correspond à son périmètre, aucun projet n'est proposé.
 

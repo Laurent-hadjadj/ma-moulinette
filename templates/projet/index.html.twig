@@ -73,7 +73,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             {# On récupère les droits de l'utilisateur #}
             <div class="js-user-rating" data-user="{{ app.user.roles|serialize(format = 'json') }}"></div>
 
-            <h3 class="h4 grid-x cell claire-hand"><span aria-hidden="true">🧩</span>Je choisis mon projet
+            <h3 class="h4 grid-x cell claire-hand titre-choix-projet"><span aria-hidden="true">🧩</span>Je choisis mon projet
                 <span id="j-aime" class="margin-left-05 padding-top-03">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 28 28"
                         class="favori-svg">
@@ -86,8 +86,30 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             </h3>
 
             <div class="grid-x cell">
-                <div class="small-12 medium-6 large-6 cell">
-                    <label for="liste-projet">Liste des projets disponibles.</label>
+                <div class="small-12 medium-7 large-6 cell">
+                    {# MODIF 07/11/2026 : le libellé visible est remplacé par les compteurs
+                    total/collectés/à collecter du périmètre de l'utilisateur, calculés côté
+                    jS depuis listeProjetData (déjà en mémoire pour le select2 ci-dessous) —
+                    pas d'appel réseau supplémentaire. Le label d'origine reste présent pour
+                    les lecteurs d'écran (show-for-sr), le </select> doit toujours en avoir un.
+                    Chip masqué tant que selectProjet() n'a pas renseigné les 3 nombres (évite
+                    d'afficher "0 projet" le temps de la réponse). #}
+                    <label for="liste-projet" class="show-for-sr">Liste des projets disponibles.</label>
+                    <span id="projet-compteurs" class="projet-compteurs" aria-live="polite" hidden>
+                        <span class="projet-compteurs-contenu" aria-hidden="true">
+                            📁
+                            <span id="projet-compteurs-total" class="projet-compteurs-total"></span>
+                            <span class="projet-compteurs-label">projets</span>
+                            <span class="projet-compteurs-separateur">·</span>
+                            <span class="status-dot status-dot-collected"></span>
+                            <span id="projet-compteurs-collectes" class="projet-compteurs-nombre"></span>
+                            <span class="projet-compteurs-label">collectés</span>
+                            <span class="projet-compteurs-separateur">·</span>
+                            <span class="status-dot status-dot-not-collected"></span>
+                            <span id="projet-compteurs-a-collecter" class="projet-compteurs-nombre"></span>
+                            <span class="projet-compteurs-label">à collecter</span>
+                        </span>
+                    </span>
                     <select id="liste-projet" class="js-projet form-control open-sans" name="projet"
                         title="Choisi un projet">
                         <option value="TheID" selected="selected">--- Application ---</option>

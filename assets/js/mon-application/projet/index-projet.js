@@ -286,6 +286,42 @@ const templateProjetSelection = function (data) {
 };
 
 /**
+ * [Description for updateProjetCompteurs]
+ * Recalcule et affiche le total de projets du périmètre de l'utilisateur,
+ * et la répartition collectés/à collecter, dans le chip #projet-compteurs
+ * (à côté de l'icône favori) — entièrement depuis listeProjetData, déjà en
+ * mémoire pour le select2 ci-dessus, donc sans aucun appel réseau
+ * supplémentaire. Appelée après le chargement initial de la liste
+ * (selectProjet()) et après chaque bascule locale d'une pastille
+ * (markProjetCollecte()).
+ *
+ * MODIF 07/11/2026 : tout le contenu visuel du chip (icône, chiffres,
+ * libellés, pastilles) est `aria-hidden` — sur petit écran, seuls les
+ * libellés texte ("projets"/"collectés"/"à collecter") sont masqués
+ * visuellement (CSS) pour éviter le retour à la ligne, les pastilles de
+ * couleur restant seules avec leur chiffre. Le sens complet reste
+ * disponible aux lecteurs d'écran, à toutes les tailles d'écran, via cet
+ * aria-label — posé ici pour rester synchronisé avec les chiffres affichés.
+ *
+ * @return void
+ *
+ * Created at: 07/11/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const updateProjetCompteurs = function () {
+  const total = listeProjetData.length;
+  const collectes = listeProjetData.filter(p => p.collected).length;
+  const aCollecter = total - collectes;
+
+  $('#projet-compteurs-total').text(total);
+  $('#projet-compteurs-collectes').text(collectes);
+  $('#projet-compteurs-a-collecter').text(aCollecter);
+  $('#projet-compteurs')
+    .attr('aria-label', `${total} projet${total > 1 ? 's' : ''} : ${collectes} collecté${collectes > 1 ? 's' : ''}, ${aCollecter} à collecter`)
+    .prop('hidden', false);
+};
+
+/**
  * [Description for markProjetCollecte]
  * Bascule la pastille d'un projet sur "déjà collecté" juste après le succès
  * d'une collecte, sans recharger la page ni refaire d'appel réseau — mutation
@@ -326,6 +362,7 @@ const markProjetCollecte = function (maven_key) {
   if (selected) {
     $select.val(selected).trigger('change.select2');
   }
+  updateProjetCompteurs();
 };
 
 /**
@@ -375,6 +412,7 @@ const selectProjet = async function () {
       templateResult: templateProjetOption,
       templateSelection: templateProjetSelection
     });
+    updateProjetCompteurs();
     $('.analyse').removeClass('hide');
   }
 };
