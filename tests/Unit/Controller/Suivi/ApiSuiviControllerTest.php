@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Controller\Suivi;
 use App\Controller\Suivi\ApiSuiviController;
 use App\Entity\{Historique, InformationProjet, Utilisateur};
 use App\Repository\{HistoriqueRepository, InformationProjetRepository, UtilisateurRepository};
-use App\Service\{ClientService, ExtractName};
+use App\Service\{ClientService, ExtractName, GetSonarVersionService};
 use App\Service\CommandRebuildHistorique\{BuildMapHistoryService, SonarAnalysisFetcherService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -42,12 +42,14 @@ class ApiSuiviControllerTest extends TestCase
     /** @var LoggerInterface&MockObject */                   private MockObject $logger;
     private BuildMapHistoryService $buildMap;
     /** @var SonarAnalysisFetcherService&MockObject */         private MockObject $analysisFetcher;
+    /** @var GetSonarVersionService&MockObject */             private MockObject $getSonarVersionService;
     /** @var HistoriqueRepository&MockObject */              private MockObject $historiqueRepo;
     /** @var InformationProjetRepository&MockObject */       private MockObject $informationRepo;
     /** @var UtilisateurRepository&MockObject */             private MockObject $utilisateurRepo;
     /** @var ParameterBagInterface&MockObject */             private MockObject $params;
     /** @var AuthorizationCheckerInterface&MockObject */     private MockObject $authChecker;
     /** @var TokenStorageInterface&MockObject */             private MockObject $tokenStorage;
+    /** @var ContainerInterface&MockObject */                private MockObject $containerMock;
     /* MODIF 2026-05-15 : user partagé entre setUp et tests
         pour pouvoir modifier la preference au cas par cas (le mock TokenStorage ne
        supporte pas le double override de getToken via stubTokenStorageUser). */
@@ -68,6 +70,8 @@ class ApiSuiviControllerTest extends TestCase
         // les tests n'asserrtent pas sur les compteurs version_release/etc.
         $this->analysisFetcher = $this->createMock(SonarAnalysisFetcherService::class);
         $this->analysisFetcher->method('computeVersionCounters')->willReturnArgument(0);
+        $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn('10.4.1');
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
         $this->informationRepo = $this->createMock(InformationProjetRepository::class);
         $this->utilisateurRepo = $this->createMock(UtilisateurRepository::class);
@@ -83,13 +87,13 @@ class ApiSuiviControllerTest extends TestCase
             [Utilisateur::class, $this->utilisateurRepo],
         ]);
 
-        $container = $this->createMock(ContainerInterface::class);
-        $container->method('has')->willReturnCallback(
+        $this->containerMock = $this->createMock(ContainerInterface::class);
+        $this->containerMock->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
                 'security.authorization_checker', 'security.token_storage', 'parameter_bag',
             ], true)
         );
-        $container->method('get')->willReturnMap([
+        $this->containerMock->method('get')->willReturnMap([
             ['security.authorization_checker', 1, $this->authChecker],
             ['security.token_storage', 1, $this->tokenStorage],
             ['parameter_bag', 1, $this->params],
@@ -108,8 +112,8 @@ class ApiSuiviControllerTest extends TestCase
         $token->method('getUser')->willReturnCallback(fn () => $this->defaultUser);
         $this->tokenStorage->method('getToken')->willReturn($token);
 
-        $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap, $this->analysisFetcher);
-        $this->controller->setContainer($container);
+        $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap, $this->analysisFetcher, $this->getSonarVersionService);
+        $this->controller->setContainer($this->containerMock);
     }
 
     /* ============ listeVersionV1 ============ */
@@ -224,14 +228,60 @@ class ApiSuiviControllerTest extends TestCase
         $user->setCourriel('u@x');
         $this->security->method('getUser')->willReturn($user);
 
+        $capturedMap = [];
         $this->historiqueRepo->expects($this->once())
             ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->suiviMiseAJour($this->jsonRequest($this->buildSuiviPayload()));
         $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
+        /* Régression 2026-11-04 : sonarqube_server_version absent du map →
+         * colonne NOT NULL sans défaut appliqué (bind explicite de null dans
+         * insertHistoriqueAjoutProjet écrase le DEFAULT SQL), INSERT en échec
+         * en conditions réelles alors que ce test mocké restait vert. */
+        $this->assertSame('10.4.1', $capturedMap['sonarqube_server_version']);
+    }
+
+    /**
+     * Régression 2026-11-07 : GetSonarVersionService::getSonarQubeVersion()
+     * renvoie un tableau d'erreur (pas une chaîne) en cas d'échec HTTP — le
+     * marqueur doit retomber sur 'inconnu' plutôt que de propager le tableau
+     * brut (colonne VARCHAR, bind d'un array fait échouer l'INSERT).
+     */
+    public function testSuiviMiseAJourFallsBackToInconnuWhenSonarVersionLookupFails(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('u@x');
+        $this->security->method('getUser')->willReturn($user);
+
+        $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn([
+            'code' => 503,
+            'erreur' => 'Service indisponible',
+        ]);
+        $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap, $this->analysisFetcher, $this->getSonarVersionService);
+        $this->controller->setContainer($this->containerMock);
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $response = $this->controller->suiviMiseAJour($this->jsonRequest($this->buildSuiviPayload()));
+        $data = json_decode((string) $response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertSame('inconnu', $capturedMap['sonarqube_server_version']);
     }
 
     /* ============ suiviVersionListe ============ */
