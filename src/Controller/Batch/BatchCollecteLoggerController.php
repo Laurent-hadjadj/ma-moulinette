@@ -146,7 +146,13 @@ class BatchCollecteLoggerController extends AbstractController
         $fileName  = basename($filePath);
         $className = pathinfo($fileName, PATHINFO_FILENAME); // ex: ApplicationExceptionHandler.java -> ApplicationExceptionHandler
 
-        $lineNumber    = isset($issue['line']) ? (int) $issue['line'] : null;
+        // MODIF 07/11/2026 : BUG CORRIGÉ — `line` est absent (jamais `null`,
+        // absent de la clé) sur certaines issues SonarQube —
+        // la ligne reste pourtant connue de SonarQube, exposée via
+        // `textRange.startLine`. Replis sur ce champ avant d'abandonner.
+        $lineNumber = isset($issue['line'])
+            ? (int) $issue['line']
+            : (isset($issue['textRange']['startLine']) ? (int) $issue['textRange']['startLine'] : null);
         $sonarIssueKey = isset($issue['key']) ? (string) $issue['key'] : null;
 
         return [

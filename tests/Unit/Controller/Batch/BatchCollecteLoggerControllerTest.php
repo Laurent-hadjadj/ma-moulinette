@@ -197,6 +197,75 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $capturedInsert['date_enregistrement']);
     }
 
+    /**
+     * Régression 2026-11-07 : certaines issues SonarQube n'ont
+     * jamais la clé `line` — seulement `textRange.startLine`, qui porte
+     * pourtant la même information. `parseIssueToDetail()` ne lisait que
+     * `line` et laissait `line_number` à null dans ce cas, alors que la
+     * ligne réelle était connue.
+     */
+    public function testParsesLineNumberFromTextRangeWhenLineKeyIsAbsent(): void
+    {
+        $this->parameterBag->method('get')->willReturnMap([
+            ['sonar.url', 'https://sonar.example.com'],
+            ['track.logger.method', '1'],
+        ]);
+
+        $issueWithLine = [
+            'rule' => 'track-logger-method:track-info-method',
+            'message' => 'Utilisation du Logger en mode : info [Lombok @Slf4j]',
+            'component' => self::MAVEN_KEY . ':src/main/java/App.java',
+            'line' => 149,
+            'key' => 'issue-avec-line',
+        ];
+        $issueSansLine = [
+            'rule' => 'track-logger-method:track-info-method',
+            'message' => 'Utilisation du Logger en mode : info [SLF4J]',
+            'component' => self::MAVEN_KEY . ':src/main/java/App.java',
+            'textRange' => ['startLine' => 172, 'endLine' => 172],
+            'key' => 'issue-sans-line',
+        ];
+
+        $call = 0;
+        $this->client->expects($this->exactly(4))
+            ->method('httpSonarQube')
+            ->willReturnCallback(function () use (&$call, $issueWithLine, $issueSansLine) {
+                $issues = $call === 0 ? [$issueWithLine, $issueSansLine] : [];
+                $call++;
+                return ['code' => 200, 'json' => ['paging' => ['total' => count($issues)], 'issues' => $issues]];
+            });
+
+        $this->repo->method('deleteLoggerMavenKey')->willReturn(['code' => 200]);
+        $this->repo->method('insertLogger')->willReturn(['code' => 200]);
+        $this->informationProjetRepo->method('selectInformationProjetVersion')
+            ->willReturn(['code' => 200, 'info' => [['version' => '4.2.0']]]);
+        $this->loggerDetailRepo->method('deleteLoggerDetailMavenKey')->willReturn(['code' => 200]);
+        $this->loggerDetailRepo->method('countByMavenKeyGroupedByLevelAndFramework')
+            ->willReturn(['code' => 200, 'liste' => []]);
+
+        $capturedRows = [];
+        $this->loggerDetailRepo->expects($this->once())
+            ->method('insertLoggerDetailBatch')
+            ->with($this->callback(function (array $rows) use (&$capturedRows) {
+                $capturedRows = $rows;
+                return true;
+            }))
+            ->willReturn(['code' => 200, 'nombre' => 2]);
+
+        $result = $this->controller->BatchCollecteLogger(self::MAVEN_KEY, 'auto', 'u');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertCount(2, $capturedRows);
+
+        $byKey = [];
+        foreach ($capturedRows as $row) {
+            $byKey[$row['sonar_issue_key']] = $row;
+        }
+
+        $this->assertSame(149, $byKey['issue-avec-line']['line_number']);
+        $this->assertSame(172, $byKey['issue-sans-line']['line_number']);
+    }
+
     public function testReturnsErrorWhenInsertFails(): void
     {
         $this->parameterBag->method('get')->willReturnMap([
