@@ -125,10 +125,15 @@ const dessineMoiUnMouton= function( labels, data1, data2, data3) {
     scales: {
       x: {
         type: 'timeseries',
+        /* MODIF 07/11/2026 : BUG CORRIGÉ — tooltipFormat: 'll' est un token
+            Moment.js ("medium localized date"), pas date-fns (adaptateur
+            chartjs-adapter-date-fns réellement utilisé ici) : 'l' n'existe
+            dans aucun token date-fns, donc traité comme un caractère littéral
+            non échappé → RangeError au survol d'un point du graphique. */
         time: {
           unit: 'day',
           unitStepSize: 1,
-          tooltipFormat: 'll',
+          tooltipFormat: 'dd LLL yyyy',
           displayFormats: { 'day': 'dd/MM/yyyy' }
         },
         ticks: {
@@ -281,7 +286,7 @@ if (rciScopeDataEl && rciScopeCanvas) {
           scales: {
             x: {
               type: 'timeseries',
-              time: { unit: 'day', unitStepSize: 1, tooltipFormat: 'll', displayFormats: { 'day': 'dd/MM/yyyy' } },
+              time: { unit: 'day', unitStepSize: 1, tooltipFormat: 'dd LLL yyyy', displayFormats: { 'day': 'dd/MM/yyyy' } },
               ticks: {
                 callback: function(value) {
                   return format(new Date(value), 'dd LLL yyyy', { locale: fr });
@@ -409,8 +414,22 @@ $('#bouton-fermer-ajouter-analyse').on('click', function() {
   modalSafe.close('#modal-ajouter-analyse');
 });
 
-/* On recharge la page pour mettre à jour la vue */
-$('#fermer-modifier-analyse').on('click', ()=>{
+/**
+ * MODIF 07/11/2026 : BUG CORRIGÉ — ce handler ciblait `#fermer-modifier-analyse`,
+ * un id qui n'existe plus depuis le renommage en `#bouton-fermer-modifier-analyse`
+ * (commit 070dc365), donc ne se déclenchait plus jamais. Toute la page Suivi
+ * (compteur, graphiques, tableaux) est rendue côté serveur au chargement initial,
+ * sans route JSON pour ne rafraîchir que ces données en JS : après une action
+ * réussie dans une modale (ajout, suppression, bascule favori/suivi/référence),
+ * rien n'était répercuté sur la page tant qu'on ne faisait pas F5.
+ *
+ * Écoute `closed.zf.reveal` (événement standard Foundation Reveal, même pattern
+ * que index-batch.js) plutôt qu'un clic sur le seul bouton "Fermer" : couvre
+ * aussi la fermeture par Échap ou par clic à l'extérieur de la modale. Posé sur
+ * les 2 modales (Ajouter et Modifier), aucune des deux n'avait de rafraîchissement
+ * jusqu'ici.
+ */
+$('#modal-ajouter-analyse, #modal-modifier-analyse').on('closed.zf.reveal', () => {
   location.reload();
 });
 

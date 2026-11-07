@@ -121,6 +121,13 @@ Si la version existe déjà dans l'historique, un message l'indique sans dupliqu
 
 Depuis la modale dédiée : bascule du **favori** (personnel), de la **version de référence** (partagée, `ROLE_SUIVI`), de l'inclusion dans la **liste de suivi personnalisée** (max 15 versions), ou **suppression** de la version (`ROLE_SUIVI`). Chaque bascule échouée côté serveur revient visuellement en arrière (rollback JS de l'interrupteur).
 
+!!! note "✅ Rechargement automatique à la fermeture des modales (07/11/2026)"
+    La page (compteur, graphiques, tableaux — tous rendus côté serveur au chargement initial) ne se
+    mettait jamais à jour après une action dans la modale « Ajouter une analyse » ou « Modifier les
+    paramètres d'une version » : il fallait recharger manuellement (F5) pour voir le résultat. Les deux
+    modales rechargent désormais la page automatiquement à leur fermeture, quelle que soit la façon de la
+    fermer (bouton « Fermer », touche Échap, clic à l'extérieur).
+
 ## 📄 Export PDF
 
 Bouton « Éditer en PDF » — accessible sans rôle spécifique, ouvre le rapport dans un nouvel onglet.
