@@ -1,12 +1,12 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.6.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.7.0-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![Symfony](https://img.shields.io/badge/Symfony-8.1.9-000000?logo=symfony&logoColor=white)](https://symfony.com/)
+[![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-4225%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-11390-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-81.01%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-4231%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11426-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-81.13%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](LICENSE)
 
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.6.0 Release on November 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.7.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -82,27 +82,27 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 03/11/2026)
+> [!NOTE] Information sur le projet (relevé du 07/11/2026)
 >
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-|  PHP      |  323      | 56086  | 24843        | 10198 | 91127 |
-|  HTML    |  157      | 28586  | 1147         | 2043  | 31776 |
-|  JS      |  93       | 11209  | 4631         | 1824  | 17664 |
-|  CSS     |  39       | 6608   | 1363         | 1396  | 9367 |
-|  SQL     |  84       | 3345   | 1760         | 772   | 5877 |
-|  MIGRATION |  19     | 1110   | 325          | 216   | 1651 |
+|  PHP      |  323      | 56112  | 24890        | 10199 | 91201 |
+|  HTML    |  157      | 28592  | 1156         | 2041  | 31789 |
+|  JS      |  93       | 11222  | 4673         | 1826  | 17721 |
+|  CSS     |  39       | 6640   | 1382         | 1403  | 9425 |
+|  SQL     |  84       | 3346   | 1760         | 772   | 5878 |
+|  MIGRATION |  20     | 1145   | 337          | 222   | 1704 |
 
-### 📊 Qualité du code (relevé du 03/11/2026)
+### 📊 Qualité du code (relevé du 07/11/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 525** tests / 9 634 assertions |
-| Tests d'intégration (`tests/Integration`) | **700** tests / 1 756 assertions |
-| **Total** | **4 225** tests / **11 390** assertions |
+| Tests unitaires (`tests/Unit`) | **3 528** tests / 9 654 assertions |
+| Tests d'intégration (`tests/Integration`) | **703** tests / 1 772 assertions |
+| **Total** | **4 231** tests / **11 426** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **81,01 %** |
+| Couverture — lignes | **81,13 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
@@ -111,7 +111,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.6.0** est publiée et apporte de nombreuses améliorations.
+La **version 2.7.0** corrige un bug critique introduit en 2.6.0 et ajoute un compteur de projets collectés/à collecter sur la page Projet (voir [CHANGELOG.md](CHANGELOG.md)).
 
 ### ✅ Fonctionnalités disponibles
 
@@ -132,7 +132,7 @@ La **version 2.6.0** est publiée et apporte de nombreuses améliorations.
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 225 tests, 11 390 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 231 tests, 11 426 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 
 ### 🧱 Fonctionnalités en cours de finalisation
@@ -142,6 +142,7 @@ La **version 2.6.0** est publiée et apporte de nombreuses améliorations.
 Liste des évolutions restantes :
 
 - [ ] Finalisation de la récupération "j'ai oublié mon mot de passe" ;
+- [ ] Migration des Security Hotspots SonarQube (`/api/hotspots/*`), dépréciés depuis la version SonarQube 2026.4, vers `issues/search` ;
 
 ## 🔐 Compte administrateur
 

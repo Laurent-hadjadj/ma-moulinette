@@ -76,6 +76,20 @@ test.describe('16 — Statistiques', () => {
       await expect(page.locator('#admin-stats-data')).toBeAttached();
       await expect(page.locator('#chart-anomalies')).toBeVisible();
       await expect(page.locator('#chart-projets')).toBeVisible();
+
+      /**
+       * Régression 2026-11-07 : le canvas est toujours présent/visible même
+       * quand admin-stats.js échoue à parser #admin-stats-data (catch +
+       * return silencieux, aucune exception levée) — toBeVisible() seul ne
+       * détecte donc pas un JSON malformé injecté par le template (bug réel :
+       * accolades Twig simples au lieu de {{ }}). Vérifie que le JSON est
+       * réellement valide et porte les clés attendues par admin-stats.js. */
+      const statsJson = await page.locator('#admin-stats-data').textContent();
+      const stats = JSON.parse(statsJson ?? '');
+      expect(stats.anomalies).toHaveProperty('labels');
+      expect(stats.anomalies).toHaveProperty('data');
+      expect(stats.projets).toHaveProperty('labels');
+      expect(stats.projets).toHaveProperty('data');
     });
 
     await test.step('4. Statistiques par projet — ligne tetris présente', async () => {

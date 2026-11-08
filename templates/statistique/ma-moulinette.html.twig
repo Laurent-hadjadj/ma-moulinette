@@ -28,19 +28,13 @@ https://github.com/Laurent-hadjadj/ma-moulinette
     {{ include('no-script.html.twig') }}
     {{ include('header.html.twig') }}
 
-    {# Données JSON pour Chart.js #}
+    {# Données JSON pour Chart.js — chart_anomalies/chart_projets sont déjà des
+       chaînes JSON complètes (json_encode côté contrôleur), à interpoler telles
+       quelles (pas d'accolades littérales supplémentaires). #}
     <script type="application/json" id="admin-stats-data">
         {
-            "anomalies": {
-                {
-                    chart_anomalies | raw
-                }
-            },
-            "projets": {
-                {
-                    chart_projets | raw
-                }
-            }
+            "anomalies": {{ chart_anomalies|raw }},
+            "projets": {{ chart_projets|raw }}
         }
     </script>
 

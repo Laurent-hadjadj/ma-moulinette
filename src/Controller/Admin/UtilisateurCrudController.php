@@ -315,7 +315,22 @@ class UtilisateurCrudController extends AbstractCrudController
             $choices[$label] = $value['groupe_fonctionnel'];
         }
 
+        // MODIF 07/11/2026 : BUG CORRIGÉ — champ unique utilisé pour la liste ET le
+        // formulaire, sortable par défaut sur la page d'index alors que la colonne
+        // Doctrine sous-jacente (liste_groupe_fonctionnel) est de type `json`,
+        // sans opérateur d'ordre en PostgreSQL : cliquer sur l'en-tête de
+        // colonne déclenchait "ERROR: could not identify an ordering operator for
+        // type json" (500). Scindé en index/formulaire, même pattern déjà en place
+        // pour `roles` (également Types::JSON) ci-dessus.
         yield ChoiceField::new('listeGroupeFonctionnel')
+            ->onlyOnIndex()
+            ->setLabel('Groupe fonctionnel')
+            ->setSortable(false)
+            ->setChoices($choices)
+            ->setFormTypeOption('choice_translation_domain', false);
+
+        yield ChoiceField::new('listeGroupeFonctionnel')
+            ->onlyOnForms()
             ->setLabel('Groupe fonctionnel')
             ->setChoices($choices)
             ->allowMultipleChoices()

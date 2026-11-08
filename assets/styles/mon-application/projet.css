@@ -33,8 +33,10 @@
   .separate-ligne { margin-bottom: 0.6rem; }
   /* MODIF : marge réduite pour gagner en largeur dans les tuiles
     (débordement sur Répartition/Dette résolu en libérant cette largeur). */
-  main.margin-left-2 { margin-left: 0.2rem; }
-  main.margin-right-2 { margin-right: 0.2rem; }
+  main.margin-left-2,
+  section.margin-left-2 { margin-left: 0.2rem; }
+  main.margin-right-2,
+  section.margin-right-2 { margin-right: 0.2rem; }
 }
 
 /* Media Small */
@@ -53,8 +55,10 @@
   .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
-  main.margin-left-2 { margin-left: 0.2rem; }
-  main.margin-right-2 { margin-right: 0.2rem; }
+  main.margin-left-2,
+  section.margin-left-2 { margin-left: 0.2rem; }
+  main.margin-right-2,
+  section.margin-right-2 { margin-right: 0.2rem; }
 }
 
 /* Media Small */
@@ -73,8 +77,10 @@
   .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
-  main.margin-left-2 { margin-left: 0.3rem; }
-  main.margin-right-2 { margin-right: 0.3rem; }
+  main.margin-left-2,
+  section.margin-left-2 { margin-left: 0.3rem; }
+  main.margin-right-2,
+  section.margin-right-2 { margin-right: 0.3rem; }
 }
 
 /* Media Small */
@@ -93,8 +99,10 @@
   .accessibility-svg,
   .projet-graphique-svg { max-width: 24px; }
   .separate-ligne { margin-bottom: 0.6rem; }
-  main.margin-left-2 { margin-left: 0.5rem; }
-  main.margin-right-2 { margin-right: 0.5rem; }
+  main.margin-left-2,
+  section.margin-left-2 { margin-left: 0.5rem; }
+  main.margin-right-2,
+  section.margin-right-2 { margin-right: 0.5rem; }
 }
 
 /**
@@ -113,6 +121,15 @@
   .callout-information-general .ligne-valeur {
     align-self: flex-end;
   }
+
+  /* MODIF 05/11/2026 : sur petit écran, le chip de compteurs du sélecteur de
+     projet passait sur 2 lignes ("à collecter" débordait) — les libellés
+     texte ("projets"/"collectés"/"à collecter") sont masqués, seules les
+     pastilles de couleur et les chiffres restent visibles (grossis pour
+     rester lisibles sans le texte). Le sens complet reste disponible pour
+     les lecteurs d'écran via l'aria-label posé par updateProjetCompteurs(). */
+  .projet-compteurs-label { display: none; }
+  .projet-compteurs .status-dot { width: 18px; height: 18px; }
 }
 
 /* Media Medium */
@@ -231,6 +248,47 @@
 
 .status-dot-collected { background-color: #077e07; }
 .status-dot-not-collected { background-color: #9e9e9e; }
+
+/* MODIF 07/11/2026 : .grid-x (Foundation) ne fixe pas align-items, le
+    navigateur retombe sur "stretch" par défaut — le span de l'icône favori
+    (padding-top-03) s'étirait alors différemment du texte et de l'emoji
+   🧩, créant un décalage vertical visible sur la ligne du titre. */
+.titre-choix-projet { align-items: center; }
+
+/* MODIF 07/11/2026 : chip de compteurs total/collectés/à collecter, en
+    remplacement visuel du label "Liste des projets disponibles" au-dessus
+    du sélecteur de projet — mêmes couleurs que les pastilles du select2
+   ci-dessus, pour rester cohérent. */
+.projet-compteurs {
+  display: inline-flex;
+  margin-bottom: 0.4rem;
+  padding: 0.15rem 0.75rem;
+  border-radius: 1rem;
+  background-color: #f1f1f1;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: normal;
+  color: #00445b;
+}
+
+.projet-compteurs[hidden] { display: none; }
+
+/* Conteneur interne flex : porte l'alignement vertical des pastilles/chiffres/
+    libellés entre eux. Nécessaire en plus de .projet-compteurs lui-même, qui
+    n'a qu'un seul enfant direct (ce conteneur, aria-hidden pour les lecteurs
+    d'écran — le sens complet est porté par l'aria-label posé en JS) : son
+    propre align-items n'aurait rien à aligner. */
+.projet-compteurs-contenu {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.projet-compteurs-total,
+.projet-compteurs-nombre { font-weight: bold; }
+
+.projet-compteurs-separateur { color: #9e9e9e; }
 
 .option-text {
   flex-grow: 1;

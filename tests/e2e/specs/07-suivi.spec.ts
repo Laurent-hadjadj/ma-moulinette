@@ -155,4 +155,65 @@ test.describe('07 — Page Suivi', () => {
       await expect(page.locator('#tableau-liste-version td[id^="version-"]')).toHaveText(['1.1.0-RELEASE']);
     });
   });
+
+  test.describe('Graphique "Historique des anomalies" (régression tooltipFormat)', () => {
+    test.beforeAll(() => {
+      resetAndSeedForSuiviHistorique();
+    });
+
+    /**
+     * Régression 2026-11-07 : tooltipFormat: 'll' (token Moment.js, invalide
+     * en date-fns — l'adaptateur réellement utilisé ici) faisait planter
+     * Chart.js avec un RangeError au survol d'un point du graphique
+     * ("Format string contains an unescaped latin alphabet character `l`").
+     * Le canvas se rend normalement au chargement (dessineMoiUnMouton()
+     * s'exécute sans garde dès le chargement du module) — seule l'INTERACTION
+     * (tooltip → getLabelForValue() → date-fns format()) déclenchait l'erreur,
+     * donc une simple assertion de visibilité du canvas ne l'aurait jamais
+     * détectée.
+     */
+    test('Le survol du graphique ne déclenche aucune erreur JS', async ({ page }) => {
+      const pageErrors: Error[] = [];
+      page.on('pageerror', (err) => pageErrors.push(err));
+
+      await goToSuiviTetris(page);
+
+      const canvas = page.locator('#graphique-anomalie');
+      await expect(canvas).toBeVisible();
+
+      const box = await canvas.boundingBox();
+      expect(box).not.toBeNull();
+      if (box) {
+        await page.mouse.move(box.x + box.width * 0.3, box.y + box.height / 2);
+        await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2);
+      }
+
+      expect(pageErrors.map((e) => e.message)).toEqual([]);
+    });
+  });
+
+  test.describe('Rechargement automatique à la fermeture des modales (régression)', () => {
+    test.beforeAll(() => {
+      resetAndSeedForSuiviHistorique();
+    });
+
+    /**
+     * Régression 2026-11-07 : la page (compteur, graphiques, tableaux —
+     * tous rendus côté serveur) ne se mettait jamais à jour après une action
+     * dans une modale, sans aucun test de régression jusqu'ici (comportement
+     * navigateur — un vrai rechargement de page — invisible à Unit et
+     * Integration). Vérifie qu'un événement `load` se déclenche réellement
+     * à la fermeture de la modale "Modifier les versions", quel que soit le
+     * chemin de fermeture (ici : le bouton "Fermer").
+     */
+    test('La fermeture de la modale "Modifier" recharge réellement la page', async ({ page }) => {
+      await goToSuiviTetris(page);
+      await ouvrirModaleVersions(page);
+
+      await Promise.all([
+        page.waitForEvent('load', { timeout: 10_000 }),
+        page.locator('#bouton-fermer-modifier-analyse').click(),
+      ]);
+    });
+  });
 });

@@ -281,7 +281,7 @@ class UtilisateurCrudControllerTest extends TestCase
 
         $fields = iterator_to_array($this->controller->configureFields(Crud::PAGE_NEW), false);
 
-        // 2 FormField columns + avatar + personne + prenom + nom + courriel + 2 roles fields + actif + groupeUtilisateur + listeGroupeFonctionnel + 2 dates
+        // 2 FormField columns + avatar + personne + prenom + nom + courriel + 2 roles fields + actif + groupeUtilisateur + 2 listeGroupeFonctionnel fields + 2 dates
         $this->assertGreaterThanOrEqual(12, count($fields));
     }
 

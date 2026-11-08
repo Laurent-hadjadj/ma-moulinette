@@ -25,6 +25,7 @@ use App\Entity\{Historique, Utilisateur, InformationProjet};
 use App\Service\ClientService;
 use App\Service\CommandRebuildHistorique\{BuildMapHistoryService, SonarAnalysisFetcherService};
 use Psr\Log\LoggerInterface;
+use App\Service\GetSonarVersionService;
 
 /**
  * [Description ApiSuiviController]
@@ -47,9 +48,9 @@ class ApiSuiviController extends AbstractController
         private Security $security,
         private LoggerInterface $logger,
         private BuildMapHistoryService $buildMap,
-        private SonarAnalysisFetcherService $analysisFetcher
-    ) {
-    }
+        private SonarAnalysisFetcherService $analysisFetcher,
+        private GetSonarVersionService $getSonarVersionService
+    ) {}
 
     /**
      * [Description for listeVersion]
@@ -188,7 +189,7 @@ class ApiSuiviController extends AbstractController
          *  analysisKey/date/version). Le service calcule les compteurs
          *  cumulés version_release/snapshot/autre à la date de chaque
          *  analyse (métrique custom ma-moulinette). */
-        $adapted = array_map(static fn (array $a): array => [
+        $adapted = array_map(static fn(array $a): array => [
             'analysisKey' => $a['key'] ?? null,
             'date' => $a['date'] ?? null,
             'version' => $a['projectVersion'] ?? 'unknown',
@@ -258,8 +259,10 @@ class ApiSuiviController extends AbstractController
 
         /** On récupère la maven_Key */
         $data = json_decode($request->getContent());
-        if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key) ||
-            !property_exists($data, 'date') || !is_string($data->date)) {
+        if (
+            $data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key) ||
+            !property_exists($data, 'date') || !is_string($data->date)
+        ) {
             $this->logger->error("[Suivi-Version] ❌ Requête invalide : clé 'maven_key', 'date' manquante ou JSON mal formé.", [
                 'utilisateur' => $username,
                 'payload' => $data ?? self::$noData
@@ -397,6 +400,12 @@ class ApiSuiviController extends AbstractController
          * reserve aux vraies collectes a chaud (BatchCollecteMesureController). */
         $map['mode_collecte'] = 'REBUILD';
         $map['utilisateur_collecte'] = $this->appUser()->getCourriel() ?? self::$noData;
+
+        /* MODIF 2026-11-07 - Ajout de la version SonarQube */
+        $getVersionSonar = $this->getSonarVersionService->getSonarQubeVersion();
+        $sonarqube_server_version = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
+        $map['sonarqube_server_version'] = $sonarqube_server_version;
+
         $map['date_enregistrement'] = $dateEnregistrement;
 
         /** Normalise les valeurs string 'null' / '' / null en vrai null PHP pour
@@ -405,9 +414,16 @@ class ApiSuiviController extends AbstractController
          *  le littéral 'null'). populerMetriques côté JS écrit null dans
          *  dataset.* → DOM coerce en string "null" → on le retraduit.
          *  Whitelist limitée aux vraies clés textuelles métier. */
-        $stringKeys = ['maven_key', 'analyse_key', 'version', 'date_version',
-                        'project_name', 'mode_collecte', 'utilisateur_collecte',
-                        'date_enregistrement'];
+        $stringKeys = [
+            'maven_key',
+            'analyse_key',
+            'version',
+            'date_version',
+            'project_name',
+            'mode_collecte',
+            'utilisateur_collecte',
+            'date_enregistrement'
+        ];
         foreach ($map as $k => $v) {
             if (in_array($k, $stringKeys, true)) {
                 continue;
@@ -445,7 +461,7 @@ class ApiSuiviController extends AbstractController
                 'type' => 'error',
                 'message' => "Une erreur est survenue lors de la mise à jour des données dans l'historique.",
                 'trace' => $result['erreur'] ?? self::$noData
-                ], Response::HTTP_OK);
+            ], Response::HTTP_OK);
         }
 
         return new JsonResponse([
@@ -599,11 +615,13 @@ class ApiSuiviController extends AbstractController
 
         // 'courriel' n'est PAS requis dans le payload : on le récupère côté serveur via appUser()
         // (sécurité : empêche un client de cibler un autre utilisateur).
-        if ($data === null || !property_exists($data, 'maven_key') ||
+        if (
+            $data === null || !property_exists($data, 'maven_key') ||
             !is_string($data->maven_key) ||
             !property_exists($data, 'favori') ||
             !property_exists($data, 'version') ||
-            !property_exists($data, 'date_version')) {
+            !property_exists($data, 'date_version')
+        ) {
             $this->logger->error("[Suivi-favori] ❌ Requête invalide : clé 'maven_key', 'favori', 'version', 'date_version' ou JSON mal formé.", [
                 'utilisateur' => $username,
                 'payload' => $data ?? self::$noData
@@ -741,7 +759,8 @@ class ApiSuiviController extends AbstractController
 
         $data = json_decode($request->getContent());
 
-        if ($data === null ||
+        if (
+            $data === null ||
             !property_exists($data, 'maven_key') || !is_string($data->maven_key) ||
             !property_exists($data, 'version')   || !is_string($data->version)   ||
             !property_exists($data, 'suivi')
@@ -751,7 +770,9 @@ class ApiSuiviController extends AbstractController
                 'payload' => $data ?? self::$noData
             ]);
             return new JsonResponse([
-                'code' => 400, 'type' => 'error', 'message' => self::$erreur400
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -771,14 +792,16 @@ class ApiSuiviController extends AbstractController
                 'data' => $map,
             ]);
             return new JsonResponse([
-                'code' => $result['code'], 'type' => 'error',
+                'code' => $result['code'],
+                'type' => 'error',
                 'message' => $result['erreur'] ?? "Une erreur est survenue lors de la mise à jour du suivi.",
             ], Response::HTTP_OK);
         }
 
         $count = count($result['suivi_version'][$data->maven_key] ?? []);
         return new JsonResponse([
-            'code' => 200, 'type' => 'success',
+            'code' => 200,
+            'type' => 'success',
             'message' => "Mise à jour du suivi effectuée.",
             'suivi_version_count' => $count,
         ], Response::HTTP_OK);
@@ -847,10 +870,10 @@ class ApiSuiviController extends AbstractController
 
         /** On supprime la version du projet */
         $map = [
-                    'maven_key' => $data->maven_key,
-                    'version' => $data->version,
-                    'date_version' => $data->date_version
-                ];
+            'maven_key' => $data->maven_key,
+            'version' => $data->version,
+            'date_version' => $data->date_version
+        ];
         $result = $historiqueRepository->deleteHistoriqueProjet($map);
         if ($result['code'] != 200) {
             $this->logger->error('[Suivi-Update] ❌ Échec de la requête deleteHistoriqueProjet.', [
@@ -882,11 +905,11 @@ class ApiSuiviController extends AbstractController
 
         if ($estFavori) {
             $map = [
-                    'favori' => 0,
-                    'courriel' => $courriel,
-                    'maven_key' => $data->maven_key,
-                    'version' => $data->version,
-                    'date_version' => $data->date_version
+                'favori' => 0,
+                'courriel' => $courriel,
+                'maven_key' => $data->maven_key,
+                'version' => $data->version,
+                'date_version' => $data->date_version
             ];
 
             $result = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
@@ -898,9 +921,9 @@ class ApiSuiviController extends AbstractController
                     'preference' => $preference
                 ]);
                 return new JsonResponse([
-                'code' => $result['code'],
-                'message' => "Une erreur est survenue lors de la mise à jour des favoris",
-                'trace' => $result['erreur'] ?? self::$noData
+                    'code' => $result['code'],
+                    'message' => "Une erreur est survenue lors de la mise à jour des favoris",
+                    'trace' => $result['erreur'] ?? self::$noData
                 ], Response::HTTP_OK);
             }
             // On rafraîchit $preference avec la version mise à jour (suivi_version préservée)
