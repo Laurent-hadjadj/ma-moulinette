@@ -9,6 +9,7 @@ Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 ### Corrigé
 
 - **CronTab** : Correction de l'heure du commentaire de collecte dans la crontab (01h30).
+- **Pile e2e** : Correction de la version pour php_version 8.5.12-fpm-trixie (le service php-fpm utilisait une image cli)"
 
 ## [2.8.0] - 15-11-2026
 
