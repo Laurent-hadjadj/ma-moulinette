@@ -460,7 +460,7 @@ class AccueilController extends AbstractController
      */
     #[Route('/api/secure/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_GESTIONNAIRE'])]
     #[IsGranted('ROLE_GESTIONNAIRE')]
-    private function getListeFavoriProjet(): JsonResponse
+    public function getListeFavoriProjet(): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
@@ -525,7 +525,7 @@ class AccueilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/accueil/favori/liste/version', name: 'accueil_favori_liste_version')]
-    private function getListeFavoriVersion(): JsonResponse
+    public function getListeFavoriVersion(): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
