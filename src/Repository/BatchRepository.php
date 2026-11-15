@@ -3,12 +3,12 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -39,7 +39,7 @@ class BatchRepository extends ServiceEntityRepository
    *
    * Created at: 26/10/2025 12:19:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
@@ -70,7 +70,7 @@ class BatchRepository extends ServiceEntityRepository
    *
    * Created at: 22/05/2024 18:04:17 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function selectBatchByStatut(): array
   {
@@ -96,7 +96,7 @@ class BatchRepository extends ServiceEntityRepository
    *
    * Created at: 26/10/2025 13:05:57 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updatePortefeuille(array $map): array
   {

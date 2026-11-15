@@ -3,12 +3,12 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -75,7 +75,7 @@ class PropertiesRepository extends ServiceEntityRepository
    *
    * Created at: 27/10/2023 14:06:11 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function getProperties($type): array
   {
@@ -103,7 +103,7 @@ class PropertiesRepository extends ServiceEntityRepository
    *
    * Created at: 27/10/2023 15:14:39 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function insertProperties(array $map): array
   {
@@ -152,7 +152,7 @@ class PropertiesRepository extends ServiceEntityRepository
    *
    * Created at: 27/10/2023 15:23:33 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updatePropertiesProjet(array $map): array
   {
@@ -188,7 +188,7 @@ class PropertiesRepository extends ServiceEntityRepository
    *
    * Created at: 27/10/2023 15:23:09 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updatePropertiesProfiles(array $map): array
   {

@@ -3,12 +3,12 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Actuator;
@@ -68,7 +68,7 @@ class ActuatorController extends AbstractController
      *
      * Created at: 21/12/2024 20:50:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -92,7 +92,7 @@ class ActuatorController extends AbstractController
      *
      * Created at: 23/07/2026 16:05:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/actuator', name: 'actuator', methods: 'GET')]
     public function actuator(Request $request): Response
@@ -164,7 +164,7 @@ class ActuatorController extends AbstractController
      *
      * Created at: 23/07/2026 16:04:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/actuator/info', name: 'actuator_info', methods: ['GET', 'POST'])]
     public function actuatorInfo(Request $request): Response
@@ -227,7 +227,7 @@ class ActuatorController extends AbstractController
      *
      * Created at: 23/07/2026 16:04:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/actuator/{id}/modifier', name: 'actuator_modifier', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
     public function actuatorModifier(int $id, Request $request): Response
@@ -307,7 +307,7 @@ class ActuatorController extends AbstractController
      *
      * Created at: 24/07/2026 19:34:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function completerUrlActuator(string $url): string
     {
@@ -332,7 +332,7 @@ class ActuatorController extends AbstractController
      *
      * Created at: 24/07/2026 19:33:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function urlActuatorEstJoignable(string $url): bool
     {
@@ -373,7 +373,7 @@ class ActuatorController extends AbstractController
      *
      * Created at: 23/07/2026 16:06:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/actuator/{id}/supprimer', name: 'actuator_supprimer', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function actuatorSupprimer(int $id, Request $request): Response

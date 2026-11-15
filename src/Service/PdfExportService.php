@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service;
@@ -61,7 +61,7 @@ class PdfExportService
      *
      * Created at: 13/11/2025 21:05:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateRapportPdf(BatchExecution $batchExecution, ?string $document_type = null): string
     {
@@ -222,7 +222,7 @@ class PdfExportService
      *
      * Created at: 11/05/2026 18:40:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function renderSuiviSubPdf(string $template, array $rapport, string $documentType, string $orientation): string
     {
@@ -264,7 +264,7 @@ class PdfExportService
      *
      * Created at: 11/05/2026 18:41:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function mergeSuiviSubPdfs(
         array $pdfBinaries,
@@ -392,7 +392,7 @@ class PdfExportService
      *
      * Created at: 11/05/2026 00:17:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateOwaspPdf(array $data, ?string $document_type = null): string
     {
@@ -469,7 +469,7 @@ class PdfExportService
      *
      * Created at: 11/05/2026 00:17:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateDcPdf(array $data, ?string $document_type = null, ?bool $watermarkOverride = null): string
     {
@@ -519,7 +519,7 @@ class PdfExportService
      *
      * Created at: 11/05/2026 19:05:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function renderDcSubPdf(string $template, array $data, string $orientation): string
     {
@@ -556,7 +556,7 @@ class PdfExportService
      *
      * Created at: 11/05/2026 19:07:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function mergeDcSubPdfs(
         array $pdfBinaries,
@@ -728,7 +728,7 @@ class PdfExportService
      *
      * Created at: 19/05/2026 09:32:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateCleanCodeSynthesePdf(array $data, ?string $document_type = null): string
     {
@@ -792,7 +792,7 @@ class PdfExportService
      *
      * Created at: 20/07/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateUserRoleLogPdf(array $lignes, ?string $filtreLabel = null, ?string $document_type = null): string
     {
@@ -856,7 +856,7 @@ class PdfExportService
      *
      * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateActivityPdf(array $data, ?string $document_type = null): string
     {
@@ -917,7 +917,7 @@ class PdfExportService
      *
      * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateZapPdf(array $data, ?string $document_type = null): string
     {
@@ -975,7 +975,7 @@ class PdfExportService
      *
      * Created at: 11/05/2026 19:10:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function toLatin1(string $utf8): string
     {

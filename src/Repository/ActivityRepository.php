@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -65,7 +65,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectActivity(int|string $year): array
     {
@@ -95,7 +95,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function insertActivity(array $data): array
     {
@@ -138,7 +138,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function nombreJourAnneeDonnee(int|string $year): array
     {
@@ -163,7 +163,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function tempsExecutionMax(int|string $year): array
     {
@@ -188,7 +188,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function nombreStatus(int|string $year, string $status): array
     {
@@ -216,7 +216,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function nombreAnalyse(int|string $year): array
     {
@@ -242,7 +242,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function dernierDate(int|string|null $year = null): array
     {
@@ -279,7 +279,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function premiereDate(int|string|null $year = null): array
     {
@@ -326,7 +326,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeProjectAnalyse(int|string|null $year = null): array
     {
@@ -358,7 +358,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeAnalyseJour(int|string|null $year = null): array
     {
@@ -389,7 +389,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeAnalyseProjet(int|string|null $year = null): array
     {
@@ -426,7 +426,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeAnalyseProjetPeriode(\DateTimeImmutable $debut): array
     {
@@ -458,7 +458,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function countProjetsDistinctsPeriode(\DateTimeImmutable $debut): array
     {
@@ -487,7 +487,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function top10PicsAnalyse(int $limit = 10): array
     {
@@ -520,7 +520,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function topProjetsPeriode(\DateTimeImmutable $debut, int $limit = 10): array
     {
@@ -552,7 +552,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function countOlderThan(int $days): int
     {
@@ -576,7 +576,7 @@ class ActivityRepository extends ServiceEntityRepository
      *
      * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function purge(int $days): int
     {

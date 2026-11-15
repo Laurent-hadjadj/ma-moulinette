@@ -1,5 +1,16 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2026.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  https://www.gnu.org/licenses/agpl-3.0.html
+*/
+
 namespace App\Repository;
 
 use App\Entity\ActuatorInfo;
@@ -27,7 +38,7 @@ class ActuatorInfoRepository extends ServiceEntityRepository
      *
      * Created at: 26/06/2024 21:06:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function findActuatorInfoById(array $map): array
     {

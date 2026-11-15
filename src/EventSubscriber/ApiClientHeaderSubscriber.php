@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\EventSubscriber;
@@ -55,7 +55,7 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      *
      * Created at: 21/10/2025 09:30:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function getSubscribedEvents(): array
     {
@@ -73,7 +73,7 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      *
      * Created at: 20/10/2025 22:45:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function onKernelRequest(RequestEvent $event): void
     {
@@ -153,7 +153,7 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      *
      * Created at: 10/11/2025 12:33:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function isAllowedOrigin(string $url): bool
     {

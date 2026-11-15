@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2024.
+ *  Copyright (c) 2024-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -38,7 +38,7 @@ class ExceptionListener
      *
      * Created at: 17/09/2024 17:13:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function onKernelException(ExceptionEvent $event): void
     {
@@ -65,7 +65,7 @@ class ExceptionListener
      *
      * Created at: 20/10/2025 20:38:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function maskSensitive(string $content): string
     {

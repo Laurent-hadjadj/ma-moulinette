@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025..
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -33,7 +33,7 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
      *
      * Created at: 18/09/2024 08:01:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function __invoke(LogRecord $record): LogRecord
     {
@@ -76,7 +76,7 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
      *
      * Created at: 05/02/2026 14:56:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function maskSensitiveData(string $data, array $patterns): string
     {
@@ -98,7 +98,7 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
      *
      * Created at: 05/02/2026 14:56:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function maskSensitiveDataArray(array $data, array $patterns): array
     {

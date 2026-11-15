@@ -3,12 +3,12 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -39,7 +39,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 26/10/2025 12:19:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
@@ -70,7 +70,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 16/11/2025 15:21:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function getGlobalKpi(): array
   {
@@ -104,7 +104,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 16/11/2025 21:00:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findGlobalSummary(string $indicateur, int $limit = 10): array
   {
@@ -154,7 +154,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 16/11/2025 15:10:36 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findLatest(int $limit = 10): array
   {
@@ -172,7 +172,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 16/11/2025 15:10:29 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findStatsByPortefeuille(): array
   {
@@ -195,7 +195,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 16/11/2025 15:10:26 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findWeeklyStats(): array
   {
@@ -218,7 +218,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 16/11/2025 15:10:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findMonthlyStats(): array
   {
@@ -241,7 +241,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 16/11/2025 15:10:18 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findUsersStats(): array
   {
@@ -266,7 +266,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 20/07/2026 00:00:00 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function countOlderThan(int $days): int
   {
@@ -291,7 +291,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * Created at: 20/07/2026 00:00:00 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function purge(int $days = 90): int
   {

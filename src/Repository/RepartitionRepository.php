@@ -1,5 +1,16 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2026.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  https://www.gnu.org/licenses/agpl-3.0.html
+*/
+
 namespace App\Repository;
 
 use App\Entity\Repartition;
@@ -37,7 +48,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * Created at: 12/02/2025 18:50:03 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
@@ -75,7 +86,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * Created at: 14/02/2025 12:32:54 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function selectOrUpdateRepartitionInitial(array $map): array
   {
@@ -193,7 +204,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * Created at: 30/07/2025 09:11:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updateRepartition(array $map): array
   {
@@ -306,7 +317,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * Created at: 30/07/2025 09:23:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findLatestSetupByMavenKey(string $maven_key): array
   {
@@ -344,7 +355,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * Created at: 28/08/2025 10:31:46 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findLatestMavenKeyWithControl(string $maven_key): array
   {

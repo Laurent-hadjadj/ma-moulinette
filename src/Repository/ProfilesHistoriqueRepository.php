@@ -3,12 +3,12 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -75,7 +75,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    *
    * Created at: 21/02/2024 08:41:24 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function insertProfilesHistorique(array $map): array
   {
@@ -120,7 +120,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    *
    * Created at: 21/02/2024 09:43:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function selectProfilesHistoriqueAction(array $map): array
   {
@@ -148,7 +148,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    *
    * Created at: 21/02/2024 10:01:56 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function selectProfilesHistoriqueDateTri(array $map): array
   {
@@ -184,7 +184,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    *
    * Created at: 21/02/2024 13:57:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function selectProfilesHistoriqueDateCourteGroupeBy(array $map): array
   {
@@ -213,7 +213,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    *
    * Created at: 21/02/2024 14:08:47 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function selectProfilesHistoriqueLangageDateCourte(array $map): array
   {

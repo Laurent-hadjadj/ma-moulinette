@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Batch;
@@ -62,7 +62,7 @@ class BatchAutoController extends AbstractController
      *
      * Created at: 08/11/2025 19:17:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/public/traitement/automatique/liste', name: 'public_traitement_liste', methods: ['POST'])]
     public function traitementListe(Request $request): JsonResponse
@@ -128,7 +128,7 @@ class BatchAutoController extends AbstractController
      *
      * Created at: 10/04/2024 07:48:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/public/traitement/automatique/start', name: 'traitement_automatique_start', methods: ['POST'])]
     public function traitementAuto(Request $request): JsonResponse

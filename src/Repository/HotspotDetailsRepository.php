@@ -3,12 +3,12 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -41,7 +41,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
    *
    * Created at: 21/12/2024 19:54:41 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
@@ -74,7 +74,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
    *
    * Created at: 03/03/2024 12:44:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
     public function selectHotspotDetailsByStatus(array $map): array
   {
@@ -103,7 +103,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
    *
    * Created at: 14/03/2024 09:42:33 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
     public function deleteHotspotDetailsMavenKey(array $map): array
   {
@@ -133,7 +133,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
    *
    * Created at: 31/05/2024 14:43:52 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
     public function insertHotspotDetails(array $map): array
   {

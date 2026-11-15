@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -63,7 +63,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 15/12/2022, 22:35:41 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/liste/v1.0/version', name: 'liste_v1_version', methods: ['POST'])]
     public function listeVersionV1(Request $request): JsonResponse
@@ -135,7 +135,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 12/07/2026 21:34:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/liste/v2.0/version', name: 'liste_v2_version', methods: ['POST'])]
     public function listeVersionV2(Request $request): JsonResponse
@@ -247,7 +247,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 15/12/2022, 22:36:17 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/get/version', name: 'get_version', methods: ['POST'])]
     public function getVersion(Request $request): JsonResponse
@@ -355,7 +355,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 15/12/2022, 22:37:32 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
     public function suiviMiseAJour(Request $request): JsonResponse
@@ -482,7 +482,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 15/12/2022, 22:38:29 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/liste', name: 'suivi_version_liste', methods: ['POST'])]
     public function suiviVersionListe(Request $request): JsonResponse
@@ -572,7 +572,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 26/07/2024 11:34:08 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function getFavoriVersions(array $version, string $app_key): array
     {
@@ -595,7 +595,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 15/12/2022, 22:39:11 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/favori', name: 'suivi_projet_favori', methods: ['PUT'])]
     public function suiviVersionFavori(Request $request): JsonResponse
@@ -673,7 +673,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 15/12/2022, 22:40:34 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
     public function suiviVersionReference(Request $request): JsonResponse
@@ -743,7 +743,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 2026-06-11 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/suivi', name: 'suivi_version_suivi', methods: ['POST'])]
     public function suiviVersionSuivi(Request $request): JsonResponse
@@ -819,7 +819,7 @@ class ApiSuiviController extends AbstractController
      *
      * Created at: 15/12/2022, 22:41:09 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
     public function suiviVersionPoubelle(Request $request): JsonResponse

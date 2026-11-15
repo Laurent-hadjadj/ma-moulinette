@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Security;
@@ -59,7 +59,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * Created at: 31/01/2024 14:57:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function authenticate(Request $request): Passport
     {
@@ -251,7 +251,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * Created at: 31/01/2024 14:56:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
@@ -273,7 +273,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * Created at: 11/02/2026 16:26:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function onAuthenticationFailure(
     Request $request,
@@ -307,7 +307,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * Created at: 26/09/2025 10:08:42 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function getLoginUrl(Request $request): string
     {
@@ -324,7 +324,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * Created at: 26/09/2025 10:08:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
@@ -351,7 +351,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * Created at: 11/02/2026 15:56:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function createPassport(string $courriel, Utilisateur $user, Request $request): Passport
     {

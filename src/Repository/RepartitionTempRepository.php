@@ -1,5 +1,16 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2026.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  https://www.gnu.org/licenses/agpl-3.0.html
+*/
+
 namespace App\Repository;
 
 use App\Entity\RepartitionTemp;
@@ -35,7 +46,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
      *
      * Created at: 14/02/2025 11:31:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -68,7 +79,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
      *
      * Created at: 14/02/2025 16:16:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function batchInsertIssuesSQL(array $issues): array
     {
@@ -131,7 +142,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
      *
      * Created at: 14/02/2025 18:34:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function deleteOldRecords(array $map): array
     {
@@ -179,7 +190,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
      *
      * Created at: 12/02/2025 19:01:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectRepartitionByTypeAndSeverity(array $map): array
     {
@@ -212,7 +223,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
      *
      * Created at: 27/08/2025 15:57:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function checkExistData(array $map): array
     {

@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -48,7 +48,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 21/12/2024 19:59:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -83,7 +83,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 16/02/2024 12:08:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function countHistoriqueProjet(array $map): array
     {
@@ -113,7 +113,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 27/10/2023 15:37:32 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getProjetFavori(string $mavenKey, array $versions): array
     {
@@ -158,7 +158,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 16/02/2024 10:57:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function updateHistoriqueReference(array $map): array
     {
@@ -212,7 +212,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 14/02/2024 10:29:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function deleteHistoriqueProjet(array $map): array
     {
@@ -246,7 +246,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 25/02/2024 10:13:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectUnionHistoriqueProjet(array $map): array
     {
@@ -375,7 +375,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 06/05/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueProjetForRapport(array $map): array
     {
@@ -444,7 +444,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 20/01/2025 11:28:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectUnionHistoriqueMesure(array $map): array
     {
@@ -495,7 +495,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 25/02/2024 12:38:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectUnionHistoriqueAnomalie(array $map): array
     {
@@ -544,7 +544,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 25/02/2024 12:48:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectUnionHistoriqueDetails(array $map): array
     {
@@ -758,7 +758,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 25/02/2024 17:31:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueAnomalieGraphique(array $map): array
     {
@@ -801,7 +801,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 16/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueAnomalieGraphiqueParVersions(array $map): array
     {
@@ -847,7 +847,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 25/02/2024 17:34:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     /**
      * Whitelist exhaustive des colonnes de la table historique alignées sur les
@@ -1285,7 +1285,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function selectLatestDateVersionForVersion(string $mavenKey, string $version): ?string
     {
@@ -1317,7 +1317,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function comparerDateVersion(string $a, string $b): int
     {
@@ -1362,7 +1362,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 27/02/2024 19:08:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueProjetByDate(array $map): array
     {
@@ -1394,7 +1394,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 29/02/2024 18:15:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     /**
      * Dernier JSON actuator_info connu pour un projet (colonne JSONB), pour la
@@ -1407,7 +1407,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 23/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueActuatorInfo(array $map): array
     {
@@ -1474,7 +1474,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 29/02/2024 18:49:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueProjetReference(array $map): array
     {
@@ -1510,7 +1510,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 27/03/2024 19:07:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueProjetFavori(array $map): array
     {
@@ -1570,7 +1570,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 18/06/2024 21:12:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueIsValide(array $map): array
     {
@@ -1604,7 +1604,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 24/09/2024 16:47:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectHistoriqueIndicateurs(array $mavenKeys): array
     {
@@ -1657,7 +1657,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * Created at: 19/05/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     /* MODIF 2026-05-19 : synthèse multi-projets, dernière collecte par projet */
     public function selectHistoriqueCleanCodeSynthese(array $mavenKeys): array

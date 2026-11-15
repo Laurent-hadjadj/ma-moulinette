@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Auth;
@@ -58,7 +58,7 @@ class LoginController extends AbstractController
      *
      * Created at: 29/10/2024 20:14:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -81,7 +81,7 @@ class LoginController extends AbstractController
      *
      * Created at: 15/12/2022, 22:33:09 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/', name: 're_login')]
     public function reLogin(): Response
@@ -117,7 +117,7 @@ class LoginController extends AbstractController
      *
      * Created at: 15/12/2022, 22:33:25 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/login', name: 'login')]
     public function login(): Response
@@ -152,7 +152,7 @@ class LoginController extends AbstractController
      *
      * Created at: 02/01/2023, 18:20:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/logout', name: 'logout')]
     public function logout(): RedirectResponse
@@ -169,7 +169,7 @@ class LoginController extends AbstractController
      *
      * Created at: 09/06/2026 07:32:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/logout/au-revoir', name: 'logout_au_revoir')]
     public function logoutExit(): Response
