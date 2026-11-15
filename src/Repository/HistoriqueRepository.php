@@ -1199,6 +1199,14 @@ class HistoriqueRepository extends ServiceEntityRepository
          * doublon à la date exactement identique). Une version non parsable
          * (format inattendu) est traitée comme SNAPSHOT par prudence : on ne
          * supprime jamais de données sur une classification incertaine. */
+        /* MODIF 2026-11-15 : app:historique:rebuild fournit `date_version` sous forme de DateTime (les autres flux, une
+         * chaîne). Le cast (string) ci-dessous et le bindValue plus bas échouaient avec « Object of class DateTime could
+         * not be converted to string » dès qu'une ligne existait déjà pour la version. On normalise comme pour
+         * `date_enregistrement`. */
+        if (($map['date_version'] ?? null) instanceof \DateTimeInterface) {
+            $map['date_version'] = $map['date_version']->format('Y-m-d H:i:sO');
+        }
+
         $qualifier = MavenVersionComparator::parse((string) ($map['version'] ?? ''))['qualifier'] ?? 'SNAPSHOT';
         $estSnapshot = ($qualifier === 'SNAPSHOT');
         $existing = null;
@@ -1321,6 +1329,27 @@ class HistoriqueRepository extends ServiceEntityRepository
         } catch (\Throwable) {
             return strcmp($a, $b) <=> 0;
         }
+    }
+
+    /**
+     * Une ligne d'historique existe-t-elle déjà pour cette analyse SonarQube ?
+     *
+     * `date_version` est un VARCHAR : la même analyse écrite en UTC par la collecte et en heure locale par la
+     * reconstruction n'est pas vue comme un doublon par la clé primaire, et la version « not provided » (ou tout
+     * SNAPSHOT) n'est volontairement pas dé-dupliquée par version. La clé d'analyse SonarQube, elle, est univoque.
+     *
+     * @param string $mavenKey    clé Maven du projet
+     * @param string $analyseKey  clé d'analyse SonarQube
+     */
+    public function analyseExiste(string $mavenKey, string $analyseKey): bool
+    {
+        $stmt = $this->getEntityManager()->getConnection()->prepare(
+            'SELECT 1 FROM ma_moulinette.historique WHERE maven_key = :maven_key AND analyse_key = :analyse_key LIMIT 1'
+        );
+        $stmt->bindValue('maven_key', $mavenKey);
+        $stmt->bindValue('analyse_key', $analyseKey);
+
+        return $stmt->executeQuery()->fetchOne() !== false;
     }
 
     /**

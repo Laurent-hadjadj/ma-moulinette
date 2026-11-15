@@ -108,4 +108,96 @@ class HistoriqueRepositoryTest extends TestCase
         $this->assertSame(500, $response['code']);
         $this->assertStringContainsString('SQL syntax error', $response['erreur']);
     }
+    /**
+     * Non-régression : app:historique:rebuild passe `date_version` en DateTime. Avant correction, le cast (string) de la
+     * comparaison avec la ligne existante levait « Object of class DateTime could not be converted to string ».
+     */
+    public function testInsertHistoriqueAjoutProjetAccepteUneDateVersionDateTimeQuandLaVersionExisteDeja(): void
+    {
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchFirstColumn')->willReturn(['2026-11-15 12:17:15+01']);
+
+        $response = $this->repo->insertHistoriqueAjoutProjet([
+            'maven_key' => 'fr.ma.moulinette:track-logger-method',
+            'version' => '2.1.0-RELEASE',
+            'date_version' => new \DateTime('2026-11-15 12:17:15+01:00'),
+        ], []);
+
+        $this->assertSame(23505, $response['code']);
+    }
+
+    public function testInsertHistoriqueAjoutProjetRemplaceLaLigneExistanteSiLaDateVersionDateTimeEstPlusRecente(): void
+    {
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchFirstColumn')->willReturn(['2026-11-14 08:00:00+01']);
+
+        $liaisons = [];
+        $this->statement->method('bindValue')->willReturnCallback(
+            function (string|int $param, mixed $valeur) use (&$liaisons): bool {
+                $liaisons[(string) $param] = $valeur;
+                return true;
+            }
+        );
+
+        $response = $this->repo->insertHistoriqueAjoutProjet([
+            'maven_key' => 'fr.ma.moulinette:track-logger-method',
+            'version' => '2.1.0-RELEASE',
+            'date_version' => new \DateTime('2026-11-15 12:17:15+01:00'),
+        ], []);
+
+        $this->assertSame(200, $response['code']);
+        $this->assertSame('2026-11-15 12:17:15+0100', $liaisons[':date_version']);
+    }
+
+    public function testInsertHistoriqueAjoutProjetLaisseUneDateVersionTexteInchangee(): void
+    {
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchFirstColumn')->willReturn([]);
+
+        $liaisons = [];
+        $this->statement->method('bindValue')->willReturnCallback(
+            function (string|int $param, mixed $valeur) use (&$liaisons): bool {
+                $liaisons[(string) $param] = $valeur;
+                return true;
+            }
+        );
+
+        $response = $this->repo->insertHistoriqueAjoutProjet([
+            'maven_key' => 'fr.ma.moulinette:track-logger-method',
+            'version' => '2.1.0-RELEASE',
+            'date_version' => '2026-11-15T12:17:15+0100',
+        ], []);
+
+        $this->assertSame(200, $response['code']);
+        $this->assertSame('2026-11-15T12:17:15+0100', $liaisons[':date_version']);
+    }
+
+    public function testAnalyseExisteRendVraiQuandUneLigneCorrespond(): void
+    {
+        $liaisons = [];
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('bindValue')->willReturnCallback(
+            function (string|int $param, mixed $valeur) use (&$liaisons): bool {
+                $liaisons[(string) $param] = $valeur;
+                return true;
+            }
+        );
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchOne')->willReturn(1);
+
+        $this->assertTrue($this->repo->analyseExiste('fr.ma:projet', 'AK-1'));
+        $this->assertSame(['maven_key' => 'fr.ma:projet', 'analyse_key' => 'AK-1'], $liaisons);
+    }
+
+    public function testAnalyseExisteRendFauxQuandAucuneLigneNeCorrespond(): void
+    {
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchOne')->willReturn(false);
+
+        $this->assertFalse($this->repo->analyseExiste('fr.ma:projet', 'AK-inconnue'));
+    }
 }

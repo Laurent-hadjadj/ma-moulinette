@@ -19,6 +19,7 @@ use App\Command\Maintenance\RebuildHistoriqueCommand;
 use App\Exception\SonarApiException;
 use App\Repository\HistoriqueRepository;
 use App\Service\CommandRebuildHistorique\{BuildMapHistoryService, SonarAnalysisFetcherService, SonarMetricsFetcherService};
+use App\Service\GetSonarVersionService;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -34,6 +35,8 @@ class RebuildHistoriqueCommandTest extends TestCase
     private $buildMapHistory;
     /** @var HistoriqueRepository&\PHPUnit\Framework\MockObject\MockObject */
     private $historiqueRepos;
+    /** @var GetSonarVersionService&\PHPUnit\Framework\MockObject\MockObject */
+    private $sonarVersion;
 
     private CommandTester $tester;
 
@@ -43,12 +46,15 @@ class RebuildHistoriqueCommandTest extends TestCase
         $this->metricsFetcher = $this->createMock(SonarMetricsFetcherService::class);
         $this->buildMapHistory = $this->createMock(BuildMapHistoryService::class);
         $this->historiqueRepos = $this->createMock(HistoriqueRepository::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
+        $this->sonarVersion->method('getSonarQubeVersion')->willReturn('26.11.0.134175');
 
         $cmd = new RebuildHistoriqueCommand(
             $this->analysisFetcher,
             $this->metricsFetcher,
             $this->buildMapHistory,
             $this->historiqueRepos,
+            $this->sonarVersion,
         );
         $this->tester = new CommandTester($cmd);
     }
@@ -137,5 +143,113 @@ class RebuildHistoriqueCommandTest extends TestCase
         // Aucune ligne insérée (toutes les analyses ont échoué en amont) mais pas de crash.
         $this->assertSame(0, $exit);
         $this->assertStringContainsString('indisponible', $this->tester->getDisplay());
+    }
+    /**
+     * Non-régression : une version déjà présente (code 23505, ex. enregistrée par la collecte qui précède) n'est pas
+     * un échec. Avant correction, elle faisait retourner FAILURE et masquait les vraies erreurs.
+     */
+    public function testVersionDejaPresenteNEstPasUnEchec(): void
+    {
+        $this->stubTwoAnalyses();
+        $this->historiqueRepos->method('insertHistoriqueAjoutProjet')
+            ->willReturn(['code' => 23505, 'erreur' => 'Les informations existent déjà.']);
+
+        $exit = $this->tester->execute(['--project' => 'mon-projet']);
+
+        $this->assertSame(0, $exit);
+        $output = $this->tester->getDisplay();
+        $this->assertStringContainsString('0 ligne(s) insérée(s), 2 déjà présente(s)', $output);
+        $this->assertStringNotContainsString('échec', $output);
+    }
+
+    public function testVersionDejaPresenteEtVraieErreurRestentDistinguees(): void
+    {
+        $this->stubTwoAnalyses();
+        $this->historiqueRepos->method('insertHistoriqueAjoutProjet')
+            ->willReturnOnConsecutiveCalls(
+                ['code' => 23505, 'erreur' => 'existe déjà'],
+                ['code' => 500, 'erreur' => 'boom']
+            );
+
+        $exit = $this->tester->execute(['--project' => 'mon-projet']);
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('0 ligne(s) insérée(s), 1 déjà présente(s), 1 échec(s)', $this->tester->getDisplay());
+    }
+
+    /**
+     * Non-régression : la carte de reconstruction n'a pas `sonarqube_server_version` (colonne NOT NULL de `historique`) ;
+     * l'insertion échouait en SQLSTATE 23502. La commande doit la compléter.
+     */
+    public function testLaVersionDuServeurSonarQubeEstAjouteeALaCarteInseree(): void
+    {
+        $this->stubTwoAnalyses();
+        $recues = [];
+        $this->historiqueRepos->method('insertHistoriqueAjoutProjet')->willReturnCallback(
+            function (array $map) use (&$recues): array {
+                $recues[] = $map['sonarqube_server_version'] ?? '(absente)';
+                return ['code' => 200, 'erreur' => ''];
+            }
+        );
+
+        $exit = $this->tester->execute(['--project' => 'mon-projet']);
+
+        $this->assertSame(0, $exit);
+        $this->assertSame(['26.11.0.134175', '26.11.0.134175'], $recues);
+    }
+
+    public function testLaVersionDuServeurInconnueDonneInconnuEtNeBloquePas(): void
+    {
+        $sonar = $this->createMock(GetSonarVersionService::class);
+        $sonar->method('getSonarQubeVersion')->willReturn(['code' => 503]);
+        $cmd = new RebuildHistoriqueCommand(
+            $this->analysisFetcher,
+            $this->metricsFetcher,
+            $this->buildMapHistory,
+            $this->historiqueRepos,
+            $sonar,
+        );
+        $this->stubTwoAnalyses();
+        $recues = [];
+        $this->historiqueRepos->method('insertHistoriqueAjoutProjet')->willReturnCallback(
+            function (array $map) use (&$recues): array {
+                $recues[] = $map['sonarqube_server_version'] ?? '(absente)';
+                return ['code' => 200, 'erreur' => ''];
+            }
+        );
+
+        $exit = (new CommandTester($cmd))->execute(['--project' => 'mon-projet']);
+
+        $this->assertSame(0, $exit);
+        $this->assertSame(['inconnu', 'inconnu'], $recues);
+    }
+
+    /**
+     * Non-régression : la même analyse déjà en base (collecte en UTC, reconstruction en heure locale, version
+     * « not provided » non dé-dupliquée par version) créait une 2e ligne d'historique pour une seule analyse.
+     */
+    public function testUneAnalyseDejaEnBaseNEstPasReinseree(): void
+    {
+        $this->stubTwoAnalyses();
+        $this->historiqueRepos->method('analyseExiste')->willReturn(true);
+        $this->historiqueRepos->expects($this->never())->method('insertHistoriqueAjoutProjet');
+
+        $exit = $this->tester->execute(['--project' => 'mon-projet']);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('0 ligne(s) insérée(s), 2 déjà présente(s)', $this->tester->getDisplay());
+    }
+
+    public function testSeuleLAnalyseAbsenteDeLaBaseEstInseree(): void
+    {
+        $this->stubTwoAnalyses();
+        $this->historiqueRepos->method('analyseExiste')->willReturnOnConsecutiveCalls(true, false);
+        $this->historiqueRepos->expects($this->once())->method('insertHistoriqueAjoutProjet')
+            ->willReturn(['code' => 200, 'erreur' => '']);
+
+        $exit = $this->tester->execute(['--project' => 'mon-projet']);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('1 ligne(s) insérée(s), 1 déjà présente(s)', $this->tester->getDisplay());
     }
 }
