@@ -4,6 +4,12 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.8.1] - en cours
+
+### Corrigé
+
+- **CronTab** : Correction de l'heure du commentaire de collecte dans la crontab (01h30).
+
 ## [2.8.0] - 15-11-2026
 
 ### Ajouté
