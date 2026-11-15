@@ -1,0 +1,32 @@
+# Pile de PRÉPARATION des données de démonstration : un PostgreSQL jetable, isolé de la production, du développement
+# et de la démo. La commande `app:demo:preparer` (dev) y collecte les projets publics ; docker/demo/preparer-donnees.sh
+# exporte ensuite docker/demo/donnees/demo.sql.gz, que restaurer-demo.sh charge dans l'instance de démonstration.
+#
+# Publiée sur 127.0.0.1:5435 SEULEMENT : c'est le port que la commande exige (garde-fou contre une écriture dans une
+# autre base). Aucun conteneur applicatif, aucun cron.
+#
+# Usage : bash docker/demo/preparer-donnees.sh   (démarre cette pile, collecte, exporte)
+name: ma-moulinette-prepa
+
+services:
+  postgres-prepa:
+    image: postgres:18-bookworm
+    container_name: postgres-ma-moulinette-prepa
+    environment:
+      - POSTGRES_PASSWORD=${DEMO_PREPA_POSTGRES_PASSWORD:?à définir dans docker/demo/.env}
+      - DB_USER_PASSWORD=${DEMO_PREPA_DB_USER_PASSWORD:?à définir dans docker/demo/.env}
+    ports:
+      - "127.0.0.1:5435:5432"
+    volumes:
+      - ma-moulinette-prepa-pgdata:/var/lib/postgresql
+      - ../../migrations/POSTGRESQL:/migrations:ro
+      - ./assembler-schema.sh:/assembler-schema.sh:ro
+      - ./init-schema.sh:/docker-entrypoint-initdb.d/10-init-schema.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ma_moulinette"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  ma-moulinette-prepa-pgdata:
