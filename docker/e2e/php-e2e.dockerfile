@@ -8,11 +8,11 @@
 # en écriture) reste sur un volume Docker nommé (cf. docker-compose.e2e.yml).
 #
 # Build context attendu : la racine du depot (../.. depuis docker/e2e/).
-ARG php_version=8.5-fpm-bookworm
+ARG php_version=8.5.12-fpm-trixie
 FROM php:${php_version}
 
-LABEL maintainer "laurent HADJADJ <laurent_h@me.com>"
-LABEL environnement "e2e"
+LABEL maintainer="Laurent HADJADJ <laurent_h@me.com>"
+LABEL environnement="e2e"
 
 ENV LANG=fr_FR.UTF-8
 ENV LC_ALL=fr_FR.UTF-8
