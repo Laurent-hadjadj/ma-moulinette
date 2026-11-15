@@ -20,6 +20,7 @@
 --- 2026-09-19 : Laurent HADJADJ - Mise à jour de la table des versions.
 --- 2026-11-01 : Laurent HADJADJ - Mise à jour de la table des versions.
 --- 2026-11-03 : Laurent HADJADJ - Mise à jour de la table des versions.
+--- 2026-11-15 : Laurent HADJADJ - Mise à jour de la table des versions.
 
 -- MODIF 2026-07-22 : \c ma_moulinette db_user remplacé par \c - db_user
 -- (conserve la base courante, ne change que le rôle) — le nom de base en dur
@@ -54,7 +55,8 @@ VALUES
 ('2.4.0', '2026-10-27', NOW()),
 ('2.5.0', '2026-11-01', NOW()),
 ('2.6.0', '2026-11-04', NOW()),
-('2.7.0', '2026-11-07', NOW());
+('2.7.0', '2026-11-07', NOW()),
+('2.8.0', '2026-11-15', NOW());
 
 -- =====================================================================
 -- Table : ma_moulinette.utilisateur
