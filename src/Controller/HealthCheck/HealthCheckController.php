@@ -28,6 +28,9 @@ use App\Service\HealthCheckService;
  */
 class HealthCheckController extends AbstractController
 {
+    /** Seul message renvoyé au public quand le contrôle échoue ; le détail va dans les journaux. */
+    private const MESSAGE_PUBLIC_INDISPONIBLE = 'Le service est temporairement indisponible.';
+
     public function __construct(
         #[Autowire(service: 'limiter.healthcheck')]
         private RateLimiterFactoryInterface $healthcheckLimiter,
@@ -67,11 +70,20 @@ class HealthCheckController extends AbstractController
         // Healthcheck métier
         $errors = $this->healthCheckService->check();
 
-        $status = empty($errors) ? 200 : 503;
+        if (empty($errors)) {
+            return $this->json(['codeRetour' => 'OK', 'listMessage' => []], 200);
+        }
+
+        // Le détail (état de la base, nom d'une table…) reste dans les journaux : cette route est PUBLIQUE, elle ne
+        // doit pas décrire l'infrastructure à un visiteur anonyme.
+        $this->logger->warning('[HealthCheck] ⚠️ contrôle en échec', [
+            'erreurs' => $errors,
+            'client_ip' => $key,
+        ]);
 
         return $this->json([
-            'codeRetour' => empty($errors) ? 'OK' : 'KO',
-            'listMessage' => $errors,
-        ], $status);
+            'codeRetour' => 'KO',
+            'listMessage' => [self::MESSAGE_PUBLIC_INDISPONIBLE],
+        ], 503);
     }
 }

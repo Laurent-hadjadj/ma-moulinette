@@ -185,6 +185,23 @@ Dans les 3 cas, le jeton n'est jamais lu ni décodé, qu'il soit valide, forgé 
 
 Un attaquant capable de forger un jeton valide (après rétro-ingénierie du JS, triviale avec les outils de développement du navigateur) n'obtient donc **rien de plus** qu'un utilisateur qui taperait l'URL à la main : il lui faut de toute façon une session authentifiée légitime, et cette session reste bornée à son propre périmètre par les contrôles du point 2.
 
+## 🛡️ Routes publiques et jeton client (`/api/public/*`)
+
+Les routes `/api/public/*` sont ouvertes (`PUBLIC_ACCESS`) : celles qui déclenchent un traitement (`/api/public/traitement/automatique/liste`, `/api/public/traitement/automatique/start`) sont protégées par le jeton `API_CLIENT_TOKEN` transmis dans le corps JSON (`token`).
+La vérification est centralisée dans `AppSecurityClientTokenVerifier` (retour `ResultatJeton`) :
+
+| Situation | Résultat | Réponse HTTP |
+| --- | --- | --- |
+| Jeton attendu absent, vide ou égal à `changeme` | `Desactive` (**échec fermé**) | `503`, journal `critical` |
+| Jeton fourni absent, vide ou différent | `Refuse` | `403`, journal `error` (adresse IP seule) |
+| Jeton identique | `Valide` | traitement exécuté |
+| Corps JSON qui n'est pas un objet | — | `400` (plus d'erreur 500) |
+
+- **Comparaison à temps constant** (`hash_equals`) : l'ancienne comparaison `!==` laissait passer la chaîne vide face à un jeton attendu vide, et faisait fuiter des informations par le temps de réponse.
+- **Le jeton fourni n'est jamais écrit dans les journaux** : la charge utile journalisée est copiée sans la propriété `token`.
+- **Même valeur sentinelle** (`changeme`) que les dépôts de rapports (Dependency-Check, ZAP) : un seul comportement « fermé » dans toute l'application (test de contrat dans `ClientTokenVerifierTest`).
+- **Healthcheck public** (`/api/public/healthcheck/status`) : en cas d'échec, la réponse est `503` avec un message générique (« Le service est temporairement indisponible. ») ; le détail (état de la base, nom de table) n'est écrit que dans les journaux, la route étant visible de tout visiteur anonyme.
+
 ## 🔑 Hachage des mots de passe
 
 Algorithme **bcrypt**, coût 13 en production/développement (`config/packages/security.yaml`). En environnement de test, le coût est abaissé au minimum (`cost: 4`) pour ne pas ralentir la suite de tests — voir [Tests unitaires](test-unitaire.md).

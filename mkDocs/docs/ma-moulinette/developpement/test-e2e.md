@@ -664,8 +664,7 @@ sequenceDiagram
 
 !!! caution "🐛 Prérequis de données : le flux spec 06 ne suffit pas"
     Contrairement à Clean Code, `/projet/cosui` a deux prérequis que la collecte manuelle standard ne produit jamais :
-
-    - une ligne `historique` avec `initial = true` (« version de référence ») — la fixture SonarQube (`project_analyses`) ne produit qu'__une seule analyse__, donc jamais de 2e version à marquer comme référence ;
+    - une ligne `historique` avec `initial = true` (« version de référence ») — la fixture SonarQube (`project_analyses`) ne produit qu'**une seule analyse**, donc jamais de 2e version à marquer comme référence ;
     - une ligne `repartition` avec `control <> 'initial'` — le flux de la spec 06 ne déclenche jamais l'action « Répartition par module ».
 
     Sans ces deux prérequis, la page reste en mode « valeurs par défaut » (pas d'erreur bloquante, mais rien d'intéressant à vérifier). Seed dédié : `migrations/POSTGRESQL/95_e2e/seed-after-spec-14-cosui-tetris.sql` (2 lignes historique avec notes/compteurs réels + 1 ligne repartition `control='complet (100%)'`), via `resetAndSeedForCosui()`.
@@ -676,7 +675,8 @@ sequenceDiagram
 !!! caution "🐛 Bug réel trouvé et corrigé : compteur Hotspot toujours à 0"
     `HistoriqueRepository::selectHistoriqueProjetLast/Reference` sélectionnait `menace_potentielle_totale` sans alias `AS nombre_hotspot` — le compteur Hotspot (`#hotspot-01`) affichait donc toujours 0 quelle que soit la donnée en base (la note lettre `#note-04`, elle, fonctionnait correctement — alimentée par `security_review_rating AS note_hotspot`, un alias distinct). Corrigé en ajoutant l'alias aux deux requêtes ; couvert par deux assertions `assertArrayHasKey('nombre_hotspot', ...)` dans `HistoriqueRepositoryTest`.
 
-    Un second bug, distinct, est apparu en corrigeant le premier : le compteur Hotspot de la **modale** "Version de référence" (`#initial_hotspot-01`) restait lui aussi à 0. `ProjetCosuiService::injectNotesReference()` duplique génériquement chaque clé `initial_*` en `modal_initial_*`, mais la donnée de référence garde la clé `initial_nombre_hotspot` (nécessaire telle quelle pour le calcul `evolution_hotspot`), alors que le template de la modale attend `modal_initial_hotspot` (la donnée courante, elle, est déjà renommée en simplement `hotspot`). Corrigé par une affectation explicite dans `injectNotesReference()` ; couvert par `ProjetCosuiServiceTest::testGenerateRenderHappyPathWhenSetupIsNaN()`.
+    Un second bug, distinct, est apparu en corrigeant le premier : le compteur Hotspot de la **modale** "Version de référence" (`#initial_hotspot-01`) restait lui aussi à 0. `ProjetCosuiService::injectNotesReference()` duplique génériquement chaque clé `initial_*` en `modal_initial_*`, mais la donnée de référence garde la clé `initial_nombre_hotspot` (nécessaire telle quelle pour le calcul `evolution_hotspot`), alors que le template de la modale attend `modal_initial_hotspot` (la donnée courante, elle, est déjà renommée en simplement `hotspot`).
+    Corrigé par une affectation explicite dans `injectNotesReference()` ; couvert par `ProjetCosuiServiceTest::testGenerateRenderHappyPathWhenSetupIsNaN()`.
 
 ### Spec 15 — Répartition
 
@@ -943,6 +943,8 @@ sequenceDiagram
     Health-->>PW: 429 {codeRetour: "KO", listMessage: [...]}
 ```
 
+**Réponse en échec** : un contrôle KO renvoie `503` avec un message générique unique (« Le service est temporairement indisponible. ») ; le détail des erreurs n'est écrit que dans les journaux (la route est publique). La spec ne couvre que les cas 200 et 429.
+
 **`HealthCheckService::check()`** vérifie deux choses, résultat mis en cache 5 secondes (`cache.get('healthcheck_result', ...)`) :
 
 - Connexion DB (`SELECT 1`)
@@ -1047,7 +1049,9 @@ Le script :
 !!! caution "🐛 `symfony serve --daemon` peut échouer sur un verrou transitoire Windows"
     Sous Windows, `symfony serve --daemon` peut échouer avec `log\<hash>.log: The process cannot access the file because it is being used by another process.` — un verrou interne à `symfony-cli` lui-même, sans lien avec un process applicatif. Contournement : `-UseBuiltinServer`, qui bascule sur le serveur web intégré de PHP (`php -S`) piloté par `bin/e2e/test-router.php`.
 
-    Ce routeur est **obligatoire**, pas un simple confort : `php -S` ne recopie pas les variables d'environnement du shell dans `$_SERVER`/`$_ENV` (contrairement au SAPI CLI) — seul `getenv()` les voit. Or Symfony résout `APP_ENV` via `$_SERVER`, jamais via `getenv()` : sans ce pont, `$env:APP_ENV='test'; php -S ...` démarre un process où `getenv('APP_ENV')` vaut `'test'`, mais Symfony charge quand même `.env`/`.env.local` (`APP_ENV=dev`) et se connecte à la **vraie base de dev** (`ma_moulinette`) au lieu de `ma_moulinette_test`, silencieusement. `bin/console --env=test` n'est pas affecté (le flag `--env` force l'environnement indépendamment de `$_SERVER`). `test-router.php` fait le pont explicitement (`$_SERVER['APP_ENV'] = getenv('APP_ENV')`) avant de charger `public/index.php`, et sert directement les fichiers statiques existants sans repasser par le kernel Symfony (sinon chaque asset re-démarre inutilement le kernel).
+    Ce routeur est **obligatoire**, pas un simple confort : `php -S` ne recopie pas les variables d'environnement du shell dans `$_SERVER`/`$_ENV` (contrairement au SAPI CLI) — seul `getenv()` les voit.
+    Or Symfony résout `APP_ENV` via `$_SERVER`, jamais via `getenv()` : sans ce pont, `$env:APP_ENV='test'; php -S ...` démarre un process où `getenv('APP_ENV')` vaut `'test'`, mais Symfony charge quand même `.env`/`.env.local` (`APP_ENV=dev`) et se connecte à la **vraie base de dev** (`ma_moulinette`) au lieu de `ma_moulinette_test`, silencieusement.
+    `bin/console --env=test` n'est pas affecté (le flag `--env` force l'environnement indépendamment de `$_SERVER`). `test-router.php` fait le pont explicitement (`$_SERVER['APP_ENV'] = getenv('APP_ENV')`) avant de charger `public/index.php`, et sert directement les fichiers statiques existants sans repasser par le kernel Symfony (sinon chaque asset re-démarre inutilement le kernel).
 
 ### Méthode manuelle (debug fin)
 

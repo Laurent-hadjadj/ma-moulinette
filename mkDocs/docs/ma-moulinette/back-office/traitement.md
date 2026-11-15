@@ -85,6 +85,9 @@ Filtres disponibles : par portefeuille, par traitement, par statut, par mode, pa
 - **Manuel** : l'utilisateur clique sur « Lancer maintenant » depuis l'UI. Un script JS (`pendingWorker.js`) interroge en polling `GET /api/secure/traitement/pending`, et le déclenchement (`POST /api/secure/traitement/start`) exécute la collecte **de façon synchrone** dans une boucle PHP, en mettant à jour l'état (`pending`/`in_progress`/`success`) dans `batch_traitement`. Si un traitement est déjà en cours, une nouvelle demande est simplement marquée `pending` (file d'attente logique en base, pas de queue applicative).
 - **Automatique** : une commande console dédiée (`app:collecte:run`) est planifiée par **Supercronic** dans le conteneur `cron-ma-moulinette` (chaque nuit à 01h30 — voir [Environnement d'exécution](../architecture/architecture-technique.md#-environnement-dexécution)). Elle appelle en HTTP l'API publique de l'application elle-même (`/api/public/traitement/automatique/{liste,start}`, protégée par token applicatif), qui exécute la collecte avec la même logique synchrone que le mode manuel — l'utilisateur de collecte est alors identifié comme un compte robot dédié.
 
+!!! caution "🔐 Jeton `API_CLIENT_TOKEN` du mode automatique"
+    Si `API_CLIENT_TOKEN` n'est pas configuré côté serveur (vide ou `changeme`), les routes `/api/public/traitement/*` répondent **503** (échec fermé) au lieu d'accepter n'importe quel appel ; un jeton faux répond **403**. Détail : [Gestion de la sécurité](../developpement/securite.md).
+
 ## 📚 Pour aller plus loin
 
 - [Portefeuilles](portefeuille.md) : prérequis à la création d'un traitement.

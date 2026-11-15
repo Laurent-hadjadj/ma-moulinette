@@ -24,6 +24,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\Batch\CollecteController;
 use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal, BatchProfiling};
+use App\Security\{ClientTokenVerifier, ResultatJeton};
 use App\Service\ListeProjetPortefeuilleService;
 
 /**
@@ -33,6 +34,7 @@ class BatchAutoController extends AbstractController
 {
     private static string $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
     private static string $erreur403 = "🚫 Vous n'êtes pas autorisé à acceder à ce service. (Erreur 403).";
+    private static string $erreur503 = "🔒 Service désactivé : le jeton d'API n'est pas configuré côté serveur (Erreur 503).";
     private static string $noMessage = 'Aucun message remonté.';
     private static string $noError = 'Aucune erreur remontée.';
     private static string $noData = 'Pas de données';
@@ -72,9 +74,11 @@ class BatchAutoController extends AbstractController
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
 
-        if ($data === null || !property_exists($data, 'token')) {
+        // `!is_object` : un corps JSON qui n'est pas un objet (entier, tableau…) faisait lever une TypeError à
+        // property_exists(), donc une erreur 500 sur une route publique.
+        if (!\is_object($data) || !property_exists($data, 'token')) {
             $this->logger->error("[Traitement-Automatique] ❌ Requête invalide : clé 'token' manquante ou JSON mal formé.", [
-                'payload' => $data
+                'payload' => $this->chargeUtileSansJeton($data)
             ]);
 
             return new JsonResponse([
@@ -84,16 +88,10 @@ class BatchAutoController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        // Vérification du token
-        $token = $this->params->get('api.client_token');
-        if ($data->token !== $token) {
-            $this->logger->error("[Traitement-Automatique] 🚫 Vous n'êtes pas autorisé à acceder à ce service.", ['token' => $data->token]);
-
-            return new JsonResponse([
-                'code' => 403,
-                'type' => 'error',
-                'message' => self::$erreur403
-            ], Response::HTTP_FORBIDDEN);
+        // Vérification du token (temps constant, échec fermé, valeur fournie jamais journalisée)
+        $refus = $this->refuserSiJetonInvalide($request, $data->token);
+        if ($refus !== null) {
+            return $refus;
         }
 
         /** On récupère la liste des traitements Automatique */
@@ -143,7 +141,7 @@ class BatchAutoController extends AbstractController
         $data = json_decode($request->getContent());
 
         if (
-            $data === null ||
+            !\is_object($data) ||
             !property_exists($data, 'token') ||
             !property_exists($data, 'nom_traitement') ||
             !property_exists($data, 'portefeuille') ||
@@ -151,7 +149,7 @@ class BatchAutoController extends AbstractController
         ) {
             $this->logger->error("[Traitement-Automatique] ❌ Requête invalide : clé 'token', 'nom_traitement', 'portefeuille' ou 'traitement_id' manquante ou JSON mal formé.", [
                 'mode' => 'TRAITEMENT AUTOMATIQUE',
-                'payload' => $data
+                'payload' => $this->chargeUtileSansJeton($data)
             ]);
 
             return new JsonResponse([
@@ -161,19 +159,10 @@ class BatchAutoController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        // Vérification du token
-        $token = $this->params->get('api.client_token');
-        if ($data->token !== $token) {
-            $this->logger->error(
-                "[Traitement-Automatique] 🚫 Vous n'êtes pas autorisé à acceder à ce service.",
-                ['token' => $data->token]
-            );
-
-            return new JsonResponse([
-                'code' => 403,
-                'type' => 'error',
-                'message' => self::$erreur403
-            ], Response::HTTP_FORBIDDEN);
+        // Vérification du token (temps constant, échec fermé, valeur fournie jamais journalisée)
+        $refus = $this->refuserSiJetonInvalide($request, $data->token);
+        if ($refus !== null) {
+            return $refus;
         }
         // MODIF 2026-06-10 — $data->portefeuille = groupe_fonctionnel (slug) → critère de recherche
         $les_projets = $this->listeProjetService->listeProjet($data->nom_traitement, $data->portefeuille);
@@ -436,5 +425,67 @@ class BatchAutoController extends AbstractController
             'code' => 200,
             'message' => 'Collecte terminée avec succès',
         ], Response::HTTP_OK);
+    }
+
+    /**
+     * Contrôle le jeton client des routes publiques de traitement automatique.
+     *
+     * - jeton attendu non configuré (absent, vide ou `changeme`) : 503, service fermé (échec fermé) ;
+     * - jeton fourni absent, vide ou différent : 403 ;
+     * - sinon `null` : la requête peut continuer.
+     *
+     * La comparaison est faite en temps constant par {@see ClientTokenVerifier}. Le jeton fourni n'est JAMAIS écrit
+     * dans les journaux (il pourrait être l'ancien jeton valide, ou le bon jeton envoyé par erreur) : seule l'adresse
+     * du client est conservée.
+     *
+     * @param mixed $jetonFourni valeur de la clé `token` du corps JSON
+     */
+    private function refuserSiJetonInvalide(Request $request, mixed $jetonFourni): ?JsonResponse
+    {
+        $resultat = ClientTokenVerifier::verifier($this->params->get('api.client_token'), $jetonFourni);
+
+        if ($resultat === ResultatJeton::Valide) {
+            return null;
+        }
+
+        if ($resultat === ResultatJeton::Desactive) {
+            $this->logger->critical(
+                "[Traitement-Automatique] 🔴 API_CLIENT_TOKEN absent ou non configuré (changeme), service désactivé.",
+                ['client_ip' => $request->getClientIp()]
+            );
+
+            return new JsonResponse([
+                'code' => 503,
+                'type' => 'critical',
+                'message' => self::$erreur503
+            ], Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+
+        $this->logger->error(
+            "[Traitement-Automatique] 🚫 Vous n'êtes pas autorisé à acceder à ce service.",
+            ['client_ip' => $request->getClientIp()]
+        );
+
+        return new JsonResponse([
+            'code' => 403,
+            'type' => 'error',
+            'message' => self::$erreur403
+        ], Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     * Charge utile décodée, sans la clé `token`, pour qu'un journal d'erreur ne contienne jamais le jeton
+     * (un client légitime qui envoie le bon jeton avec un JSON incomplet le voyait écrit en clair).
+     */
+    private function chargeUtileSansJeton(mixed $data): mixed
+    {
+        if (!\is_object($data)) {
+            return $data;
+        }
+
+        $copie = clone $data;
+        unset($copie->token);
+
+        return $copie;
     }
 }
