@@ -2,9 +2,9 @@ ARG php_version=8.5.12-fpm-trixie
 
 FROM php:${php_version}
 
-LABEL maintainer "laurent HADJADJ <laurent_h@me.com>"
-LABEL environnement "prd"
-LABEL version "php-8.5.12"
+LABEL maintainer="Laurent HADJADJ <laurent_h@me.com>"
+LABEL environnement="prd"
+LABEL version="php-8.5.12"
 
 ENV GIT_USER="Laurent HADJADJ"
 ENV GIT_COURRIEL="laurent_h@me.com"
@@ -24,7 +24,8 @@ WORKDIR /app
 
 # Use the default configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && apt-get update && apt-get install -y --no-install-recommends unzip locales libicu-dev libonig-dev libzip-dev git libxslt-dev \
+    && apt-get update && apt-get install -y --no-install-recommends unzip locales libicu-dev \
+                libonig-dev libzip-dev git libxslt-dev \
     && sed -i '/fr_FR.UTF-8/s/^ # //g' /etc/locale.gen \
     && locale-gen \
     # Install PHP extensions for PostgreSQL and SQLite
@@ -39,7 +40,8 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && docker-php-ext-configure ldap \
     && docker-php-ext-install -j$(nproc) intl zip xsl calendar pdo_sqlite pdo_pgsql fileinfo ldap\
     && apt autoremove -y \
-    && apt-get purge -y libicu-dev libonig-dev libzip-dev libxslt-dev libfreetype-dev libjpeg62-turbo-dev libpng-dev libldap2-dev \
+    && apt-get purge -y libicu-dev libonig-dev libzip-dev libxslt-dev libfreetype-dev \
+                libjpeg62-turbo-dev libpng-dev libldap2-dev \
     && apt-get clean \
     && rm -rf /tmp/pear /var/lib/apt/lists/*
 
