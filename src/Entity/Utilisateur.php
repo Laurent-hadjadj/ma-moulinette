@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -202,7 +202,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 14/02/2023, 00:10:16 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getCourriel(): ?string
     {
@@ -218,7 +218,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 14/02/2023, 00:10:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setCourriel(string $courriel): \App\Entity\Utilisateur
     {
@@ -235,7 +235,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 14/02/2023, 00:10:26 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getUserIdentifier(): string
     {
@@ -257,7 +257,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:11:49 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setRoles(array $roles): \App\Entity\Utilisateur
     {
@@ -273,7 +273,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:11:51 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPassword(): ?string
     {
@@ -289,7 +289,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:11:53 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setPassword(string $password): \App\Entity\Utilisateur
     {
@@ -307,7 +307,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:11:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setActif(bool $actif): \App\Entity\Utilisateur
     {
@@ -358,7 +358,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:11:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getDateModification(): ?\DateTimeInterface
     {
@@ -374,7 +374,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 04/09/2025 08:46:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setDateModification(\DateTimeInterface $dateModification): \App\Entity\Utilisateur
     {
@@ -393,7 +393,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
     {
@@ -409,7 +409,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:02 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): \App\Entity\Utilisateur
     {
@@ -446,7 +446,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function isActif(): ?bool
     {
@@ -460,7 +460,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:12 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPrenom(): ?string
     {
@@ -476,7 +476,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:14 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setPrenom(string $prenom): \App\Entity\Utilisateur
     {
@@ -492,7 +492,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:18 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getNom(): ?string
     {
@@ -508,7 +508,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:22 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setNom(string $nom): \App\Entity\Utilisateur
     {
@@ -524,7 +524,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:24 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPersonne(): ?string
     {
@@ -538,7 +538,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:26 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getAvatar(): ?string
     {
@@ -554,7 +554,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:27 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setAvatar(?string $avatar): \App\Entity\Utilisateur
     {
@@ -570,7 +570,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 02/01/2023, 18:12:29 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getAvatarUrl(): ?string
     {
@@ -606,7 +606,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 28/03/2023, 08:18:42 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPreference(): array
     {
@@ -622,7 +622,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * Created at: 28/03/2023, 08:18:51 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setPreference(array $preference): \App\Entity\Utilisateur
     {

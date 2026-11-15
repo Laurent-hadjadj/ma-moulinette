@@ -1,5 +1,16 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2026.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  https://www.gnu.org/licenses/agpl-3.0.html
+*/
+
 namespace App\Repository;
 
 use App\Entity\Actuator;
@@ -32,7 +43,7 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * Created at: 07/07/2025 09:36:59 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
@@ -66,7 +77,7 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * Created at: 23/06/2024 14:56:24 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
     public function deleteActuatorUrl(array $map): array
   {
@@ -108,7 +119,7 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * Created at: 23/06/2024 14:56:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
     public function findActuatorOrderBy(string $sortColumn, string $sortDirection): array
   {
@@ -137,7 +148,7 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * Created at: 23/06/2024 14:56:13 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
     public function findActuatorOrderByDate(string $sortDirection): array
   {
@@ -167,7 +178,7 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * Created at: 26/06/2024 18:57:59 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
     public function findActuatorMavenKey(array $map): array
   {

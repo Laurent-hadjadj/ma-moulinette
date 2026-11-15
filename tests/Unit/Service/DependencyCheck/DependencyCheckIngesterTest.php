@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -213,6 +213,44 @@ class DependencyCheckIngesterTest extends TestCase
 
         $deps = array_values(array_filter($this->persisted, fn($e) => $e instanceof DcDependency));
         $this->assertCount(1, $deps, 'Meme sha1 = 1 seule DcDependency');
+    }
+
+    /**
+     * Régression 2026-11-15 : BUG CORRIGÉ en conditions réelles — un même
+     * fichier (même sha1) peut apparaître 2 fois dans le rapport (ex. un
+     * .jar présent seul et imbriqué dans un .war qui le bundle), chaque
+     * occurrence listant indépendamment la même CVE. Avant le fix : 2
+     * DcFinding (dependency, cve) identiques créés -> violation de la
+     * contrainte unique `uq_dc_finding_triplet` (scan_id, dependency_id,
+     * cve_id) au flush, qui n'est jamais exercée en Unit (EntityManager
+     * mocké) donc jamais détectée avant une vraie ingestion.
+     */
+    public function testSameDependencyAppearingTwiceWithSameCveProducesOnlyOneFinding(): void
+    {
+        $this->scanRepo->method('findByProjectVersionDate')->willReturn(null);
+        $this->cveRepo->method('findByCveId')->willReturn(null);
+        $this->depRepo->method('findBySha1')->willReturn(null);
+
+        $sameSha1 = str_repeat('a', 40);
+        $report = $this->minimalReport([
+            'dependencies' => [
+                [
+                    'sha1' => $sameSha1, 'fileName' => 'guava-19.0.jar',
+                    'vulnerabilities' => [['name' => 'CVE-2023-2976', 'severity' => 'MEDIUM']],
+                ],
+                [
+                    'sha1' => $sameSha1, 'fileName' => 'webapp.war: guava-19.0.jar',
+                    'vulnerabilities' => [['name' => 'CVE-2023-2976', 'severity' => 'MEDIUM']],
+                ],
+            ],
+        ]);
+
+        $scan = $this->ingester->ingest($this->buildQueue($report));
+
+        $findings = array_values(array_filter($this->persisted, fn($e) => $e instanceof DcFinding));
+        $this->assertCount(1, $findings, '1 seul finding malgre 2 occurrences JSON de la meme dependance');
+        $this->assertSame(1, $scan->getCveCountMedium());
+        $this->assertSame(1, $scan->getCveCountTotal());
     }
 
     public function testReusesExistingCveFromDatabaseAndUpdatesLastSeen(): void

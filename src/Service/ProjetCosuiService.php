@@ -1,5 +1,16 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2026.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  https://www.gnu.org/licenses/agpl-3.0.html
+*/
+
 namespace App\Service;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -201,7 +212,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 19:40:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function initialRender(): array
     {
@@ -225,7 +236,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 19:39:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -259,7 +270,7 @@ class ProjetCosuiService
      *
      * Created at: 30/07/2025 15:12:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function chartDataRender(): array
     {
@@ -280,7 +291,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 20:09:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function initializeNotesRender(): array
     {
@@ -341,7 +352,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 20:10:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function initializeReferenceRender(): array
     {
@@ -394,7 +405,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 20:12:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function initializeEvolutionRender(): array
     {
@@ -426,7 +437,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 20:14:44 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function initializeChartRender(): array
     {
@@ -451,7 +462,7 @@ class ProjetCosuiService
      *
      * Created at: 30/07/2025 15:14:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function injectNotesActuelles(array &$render, array $n): void
     {
@@ -490,7 +501,7 @@ class ProjetCosuiService
      *
      * Created at: 30/07/2025 15:14:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function injectNotesReference(array &$render, array $nn): void
     {
@@ -524,7 +535,7 @@ class ProjetCosuiService
      *
      * Created at: 30/07/2025 15:14:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function injectRepartition(array &$render, array $map): void
     {
@@ -542,7 +553,7 @@ class ProjetCosuiService
      *
      * Created at: 30/07/2025 15:11:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function calculerEvolutions(array &$render): void
     {
@@ -566,7 +577,7 @@ class ProjetCosuiService
      *
      * Created at: 30/07/2025 15:11:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function construireRadarChart(array &$render): void
     {
@@ -600,7 +611,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 19:55:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function setup(string $maven_key): array
     {
@@ -647,7 +658,7 @@ class ProjetCosuiService
      *
      * Created at: 16/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function controlToPercent(?string $control): ?int
     {
@@ -670,7 +681,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 19:41:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function note2point(string $note): int
     {
@@ -740,7 +751,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 20:00:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function notes(string $maven_key): array
     {
@@ -818,7 +829,7 @@ class ProjetCosuiService
      *
      * Created at: 29/07/2025 20:02:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function reference(string $maven_key): array
     {
@@ -887,7 +898,7 @@ class ProjetCosuiService
      *
      * Created at: 15/12/2022, 22:17:46 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function traitement(string $maven_key, string $setup, string $module, string $prefix, string $severity): array
     {

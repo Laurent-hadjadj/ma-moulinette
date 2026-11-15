@@ -52,19 +52,20 @@ services:
       context: ../..
       dockerfile: docker/e2e/php-e2e.dockerfile
       args:
-        - php_version=8.5-fpm-bookworm
+        - php_version=8.5.12-cli-trixie
     container_name: php-fpm-ma-moulinette-e2e
-    environment:
+    # Ancrage réutilisé par supercron-e2e (même environnement exactement : base, jetons d'ingestion, APP_ENV=test).
+    environment: &e2e-environment
       - APP_ENV=test
       # APP_DEBUG=1 est OBLIGATOIRE ici, pas juste une question de confort :
       # le service dynamique d'AssetMapper (toutes les URLs /assets/*.js|css
-      # avec hash) est conditionne par kernel.debug, pas par l'environnement.
+      # avec hash) est conditionné par kernel.debug, pas par l'environnement.
       # En debug=0, TOUS les assets renvoient 404 (page Symfony custom, pas
       # une erreur nginx) -> page vide, aucun JS ne charge. Mesure en
       # pratique APRES avoir bake vendor/src dans l'image (plus de
       # bind-mount Windows) : debug=true ne coûte plus que ~0.05-0.2s/requête
       # (contre 20-40s avant ce fix) — le coût mesure plus tot venait du
-      # bind-mount, pas de debug=true lui-meme. Alternative plus propre mais
+      # bind-mount, pas de debug=true lui-même. Alternative plus propre mais
       # non implémentée : `asset-map:compile` au build pour servir des
       # fichiers statiques reels (compatible debug=false) — pas nécessaire
       # vu que la perf est deja bonne avec debug=true.
@@ -85,7 +86,7 @@ services:
       - ZAP_INGEST_TOKEN=test-zap-ingest-token-32chars-aaa
       # Pas de .env.test.local dans l'image (cf. commentaire plus haut) : toutes
       # les variables normalement définies par ce fichier gitignore sont
-      # redéfinies ici avec des valeurs volontairement factices, committables.
+      # redéfinies ici avec des valeurs volontairement factices, commit-tables.
       - SECRET=test-secret-not-for-prod
       - CIPHERS=DEFAULT:!DH
       - VERIFY_HOST=0
@@ -164,6 +165,28 @@ services:
     ports:
       - "8080:80"
     depends_on:
+      - php-fpm-e2e
+    networks:
+      - e2e-net
+
+  # Sidecar supercronic : traite les files d'ingestion Dependency-Check et ZAP (crontab : docker/e2e/ma-moulinette).
+  # L'image part de php-fpm-e2e (contexte « php ») : code, vendor/ et extensions déjà présents, rien n'est monté
+  # depuis l'hôte. Même environnement et même volume var/ que php-fpm-e2e.
+  #   docker compose -f docker/e2e/docker-compose.e2e.yml build supercron-e2e
+  #   docker compose -f docker/e2e/docker-compose.e2e.yml up -d supercron-e2e
+  supercron-e2e:
+    build:
+      context: ../..
+      dockerfile: docker/e2e/supercronic-e2e.dockerfile
+      additional_contexts:
+        php: service:php-fpm-e2e
+    container_name: supercronic-ma-moulinette-e2e
+    environment: *e2e-environment
+    volumes:
+      - e2e-var:/var/www/var
+      - ./php-e2e.ini:/usr/local/etc/php/conf.d/99-e2e.ini:ro
+    depends_on:
+      - postgres-e2e
       - php-fpm-e2e
     networks:
       - e2e-net

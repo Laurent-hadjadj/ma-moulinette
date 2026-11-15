@@ -3,12 +3,12 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -45,7 +45,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * Created at: 06/07/2025 12:50:49 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
@@ -81,7 +81,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * Created at: 17/02/2024 23:05:33 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updateUtilisateurFavoriVersion(array $preference, array $map): array
   {
@@ -218,7 +218,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * Created at: 26/03/2024 17:00:51 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updateUtilisateurFavoriProjet(array $preference, array $map): array
   {
@@ -339,7 +339,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * Created at: 03/04/2024 19:34:48 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   /**
    * [Description for updateUtilisateurSuiviVersion]
@@ -352,7 +352,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * Created at: 2026-06-11 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updateUtilisateurSuiviVersion(array $preference, array $map): array
   {
@@ -447,7 +447,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * Created at: 09/06/2026 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   // MODIF 2026-06-09 : méthode manquante pour UserAgentReportingService
   public function countUtilisateurActif(): array
@@ -471,7 +471,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * Created at: 09/06/2026 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   // MODIF 2026-06-09 : méthode manquante pour UserAgentReportingService
   public function countUtilisateurDisponible(): array

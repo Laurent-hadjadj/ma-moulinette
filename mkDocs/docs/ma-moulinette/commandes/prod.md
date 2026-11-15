@@ -124,6 +124,9 @@ Les deux critères sont paramétrables dans `config/packages/sonar_tags.yaml` (`
 | `--dry-run` | flag | — | Simulation — le démarrage est simulé, mais la récupération de la liste reste un appel réel |
 | `--debug` | flag | — | Détail des appels API |
 
+!!! note "Codes de réponse du jeton"
+    Un jeton refusé par le serveur donne un **403** ; un serveur dont `API_CLIENT_TOKEN` n'est pas configuré (vide ou `changeme`) répond **503** : corriger la configuration du serveur, pas la commande.
+
 ```bash
 php bin/console app:collecte:run --url="https://ma.moulinette.exemple.fr" --token="..." --flush=5 --dry-run
 ```

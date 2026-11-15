@@ -76,6 +76,7 @@
 \ir 20_tables/no_sonar.sql
 \ir 20_tables/owasp.sql
 \ir 20_tables/owasp_dast.sql
+\ir 20_tables/owasp_details.sql
 \ir 20_tables/owasp_top10.sql
 \ir 20_tables/portefeuille.sql
 \ir 20_tables/portefeuille_historique.sql

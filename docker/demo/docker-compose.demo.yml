@@ -1,0 +1,148 @@
+# Pile Docker de la DÉMONSTRATION publique de Ma-Moulinette — distincte de la production et des tests e2e.
+#
+# Principes (voir mkDocs/docs/ma-moulinette/application/demo.md) :
+#   - instance séparée : base, réseau et volumes propres, aucun lien avec la production ;
+#   - AUCUN conteneur cron : pas de traitement batch, pas de purge de journaux ;
+#   - aucun jeton d'ingestion ni de client configuré : les routes /api/public/traitement/* et les dépôts de rapports
+#     répondent 503 (échec fermé) ;
+#   - SonarQube injoignable (adresse invalide) : aucune collecte possible ;
+#   - nginx n'est publié que sur 127.0.0.1 ; la publication passe par le reverse proxy de l'hôte.
+#
+# ⚠️ NE PAS EXPOSER sur Internet tant que le mode démo applicatif (APP_MODE_DEMO, liste blanche de routes) n'est pas
+#    livré : à ce jour la variable est posée mais l'application ne l'applique pas encore.
+#
+# Usage :
+#   cp docker/demo/.env.exemple docker/demo/.env      (puis remplacer les valeurs)
+#   docker compose -f docker/demo/docker-compose.demo.yml up -d --build
+#   bash docker/demo/restaurer-demo.sh                (remise à l'état de référence)
+#   http://127.0.0.1:8081
+name: ma-moulinette-demo
+
+services:
+  postgres-demo:
+    image: postgres:18-bookworm
+    container_name: postgres-ma-moulinette-demo
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${DEMO_POSTGRES_PASSWORD:?à définir dans docker/demo/.env}
+      - DB_USER_PASSWORD=${DEMO_DB_USER_PASSWORD:?à définir dans docker/demo/.env}
+    volumes:
+      - demo-pgdata:/var/lib/postgresql
+      - ../../migrations/POSTGRESQL:/migrations:ro
+      - ./assembler-schema.sh:/assembler-schema.sh:ro
+      - ./init-schema.sh:/docker-entrypoint-initdb.d/10-init-schema.sh:ro
+    networks:
+      - demo-net
+
+  php-fpm-demo:
+    build:
+      context: ../..
+      dockerfile: docker/demo/php-demo.dockerfile
+    container_name: php-fpm-ma-moulinette-demo
+    restart: unless-stopped
+    depends_on:
+      - postgres-demo
+    environment:
+      - APP_ENV=prod
+      - APP_DEBUG=0
+      - APP_SECRET=${DEMO_APP_SECRET:?à définir dans docker/demo/.env}
+      - SECRET=${DEMO_APP_SECRET}
+      - APP_MODE_DEMO=1
+      - DATABASE_URL=postgresql://db_user:${DEMO_DB_USER_PASSWORD}@postgres-demo:5432/ma_moulinette?serverVersion=18&charset=utf8
+      - TRACK_LOGGER_METHOD=true
+      - CREEDENGO_ENABLED=true
+      - ACTUATOR_CIPHER_KEY=${DEMO_APP_SECRET}
+      # Jetons volontairement vides : routes d'ingestion et de traitement automatique fermées (503).
+      - DC_INGEST_TOKEN=
+      - ZAP_INGEST_TOKEN=
+      - APP_CLIENT_TOKEN=
+      - API_CLIENT_TOKEN=
+      # Pas d'annuaire LDAP dans la démo : hôte invalide, seul le compte local reste utilisable.
+      - LDAP_HOST=ldap-indisponible.invalid
+      - LDAP_PORT=389
+      - LDAP_ENCRYPTION=none
+      - LDAP_X_TLS_REQUIRE_CERT=0
+      - CIPHERS=DEFAULT:!DH
+      - VERIFY_HOST=1
+      - VERIFY_PEER=1
+      - PROXY=
+      # SonarQube : compte « ma-moulinette-demo » en lecture seule (Browse sur les projets publics), jeton à durée limitée.
+      # Valeurs dans docker/demo/.env (ignoré par git) : l'adresse interne ne doit jamais figurer dans un fichier publiable.
+      - SONAR_URL=${DEMO_SONAR_URL:-http://sonarqube-indisponible.invalid}
+      - SONAR_TOKEN=${DEMO_SONAR_TOKEN:-}
+      - SONAR_USER=
+      - SONAR_PASSWORD=
+      - SONAR_VERSION=26
+      - SONAR_ACTIVITY_TOKEN=
+      - SONAR_ACTIVITY_USER=
+      - SONAR_ACTIVITY_PASSWORD=
+      - SONAR_ORGANIZATION=
+      - SONAR_PROFILES=
+      - MAILER_DSN=null://null
+      - TRUSTED_PROXIES=127.0.0.1,::1,172.16.0.0/12
+      - NOMBRE_FAVORI=20
+      - USER_AGENT_BATCH_MANUEL=25
+      - USER_AGENT_BATCH_AUTOMATIQUE=500
+      - TRUST_HOST1=localhost
+      - TRUST_HOST2=127.0.0.1
+      - MAJ_PROJET=0
+      - MAJ_PROFIL=0
+      - SALT=${DEMO_APP_SECRET}
+      - AUDIT=/var/audit
+      - PATH_AUDIT=/var/audit
+      - ENVIRONNEMENT=DEMO
+      - MODULE_FRONTEND=presentation,webapp,front,angular,templates,styles,css,js,ts,vue,react,svelte,scss,less,html,xhtml
+      - MODULE_BACKEND=metier,back,controller,api,service,common,dao,dto,sql,liquibase,changelog,middleoffice,rest,soap,entite,entity,repository,interface,converter,serviceweb,serviceweb-client
+      - MODULE_AUTRE=batch,rdd,etl,pipeline,processing
+      - MARQUE_ENTREPRISE_SHORT=Démo
+      - MARQUE_ENTREPRISE_LONG=Ma-Moulinette — démonstration
+      - LOGO_ENTREPRISE=logo-entreprise.png
+      - RGAA=partiellement
+      - CGU_EDITEUR=Ma Moulinette (démonstration)
+      - CGU_ADRESSE=106 rue de la République, 75011 Paris, France
+      - CGU_SIRET=false
+      - CGU_SIREN=false
+      - CGU_NUMERO_SIRET=
+      - CGU_NUMERO_SIREN=
+      - CGU_DIRECTEUR_PUBLICATION=Laurent HADJADJ
+      - CGU_SOURCE_URL=https://github.com/Laurent-hadjadj/ma-moulinette
+      - CGU_SOURCE_SCM=github
+      - CGU_HEBERGEMENT=
+      - CGU_URL_SITE=http://localhost:8081
+      - APP_ALLOWED_ORIGINS=localhost,127.0.0.1
+      - RAPPORT_PDF_WATERMARK_MODE=confidential
+      - MAMOUL_CLI_CIPHERS=DEFAULT:!DH
+      - MAMOUL_CLI_PROXY_URL=
+      - MAMOUL_CLI_PROXY_USER_PWD=
+      - MAMOUL_CLI_NO_PROXY=localhost,127.0.0.1
+    volumes:
+      - demo-var:/var/www/var
+    # Le cache Symfony (prod) n'est jamais recalculé tout seul : on le purge à chaque démarrage pour que le code de l'image soit celui servi.
+    entrypoint: ["sh", "-c", "rm -rf /var/www/var/cache/* && mkdir -p /var/www/var/cache /var/www/var/log /var/www/var/sessions /var/www/var/share && chown -R www-data:www-data /var/www/var && exec docker-php-entrypoint php-fpm"]
+    networks:
+      - demo-net
+
+  nginx-demo:
+    build:
+      context: ../..
+      dockerfile: docker/demo/nginx-demo.dockerfile
+      additional_contexts:
+        php: service:php-fpm-demo
+    container_name: nginx-ma-moulinette-demo
+    restart: unless-stopped
+    depends_on:
+      - php-fpm-demo
+    ports:
+      - "127.0.0.1:8081:80"
+    networks:
+      - demo-net
+
+networks:
+  demo-net:
+    name: ma-moulinette-demo-net
+
+volumes:
+  demo-pgdata:
+    name: ma-moulinette-demo-pgdata
+  demo-var:
+    name: ma-moulinette-demo-var

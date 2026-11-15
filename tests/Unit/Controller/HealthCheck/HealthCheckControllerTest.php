@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -91,7 +91,7 @@ class HealthCheckControllerTest extends TestCase
         );
     }
 
-    public function testStatusReturns503AndCodeRetourKoWhenHealthCheckReportsErrors(): void
+    public function testStatusReturns503AndGenericMessageWhenHealthCheckReportsErrors(): void
     {
         $this->expectRateLimiterAccepts(self::TEST_IP_ERROR);
 
@@ -100,15 +100,69 @@ class HealthCheckControllerTest extends TestCase
             ->method('check')
             ->willReturn($errors);
 
-        $this->logger->expects($this->never())->method('warning');
+        // Le détail des erreurs est journalisé, pas renvoyé au public.
+        $this->logger->expects($this->once())
+            ->method('warning')
+            ->with(
+                '[HealthCheck] ⚠️ contrôle en échec',
+                ['erreurs' => $errors, 'client_ip' => self::TEST_IP_ERROR]
+            );
 
         $response = $this->controller->status($this->buildRequest(self::TEST_IP_ERROR));
 
         $this->assertSame(503, $response->getStatusCode());
         $this->assertSame(
-            ['codeRetour' => 'KO', 'listMessage' => $errors],
+            ['codeRetour' => 'KO', 'listMessage' => ['Le service est temporairement indisponible.']],
             json_decode((string) $response->getContent(), true)
         );
+    }
+
+    /**
+     * Cette route est PUBLIQUE : en cas d'échec, la réponse ne doit décrire ni l'état de la base, ni le nom d'une table,
+     * ni le préfixe interne des messages (non-régression : le détail des erreurs était renvoyé tel quel à tout visiteur).
+     */
+    public function testStatusNeLaissePasFuirLeDetailDesErreursInternes(): void
+    {
+        $this->expectRateLimiterAccepts(self::TEST_IP_ERROR);
+
+        $this->healthCheckService->expects($this->once())
+            ->method('check')
+            ->willReturn([
+                '[HealthCheck] ❌ La base de données est indisponible',
+                "[HealthCheck] ⚠️ La table 'ma_moulinette' n'existe pas",
+                '[HealthCheck] ❌ La vérification du schéma a échoué',
+            ]);
+
+        // Le détail part dans les journaux (voir le test précédent pour son contenu exact).
+        $this->logger->expects($this->once())->method('warning');
+
+        $response = $this->controller->status($this->buildRequest(self::TEST_IP_ERROR));
+        $corps = (string) $response->getContent();
+
+        $this->assertSame(503, $response->getStatusCode());
+        $this->assertStringNotContainsString('base de données', $corps);
+        $this->assertStringNotContainsString('ma_moulinette', $corps);
+        $this->assertStringNotContainsString('schéma', $corps);
+        $this->assertStringNotContainsString('HealthCheck', $corps);
+    }
+
+    public function testStatusRenvoieUnSeulMessagePublicQuelQueSoitLeNombreDErreurs(): void
+    {
+        $this->expectRateLimiterAccepts(self::TEST_IP_ERROR);
+
+        $this->healthCheckService->expects($this->once())
+            ->method('check')
+            ->willReturn(['a', 'b', 'c', 'd']);
+
+        $this->logger->expects($this->once())->method('warning');
+
+        $payload = json_decode(
+            (string) $this->controller->status($this->buildRequest(self::TEST_IP_ERROR))->getContent(),
+            true
+        );
+
+        $this->assertSame('KO', $payload['codeRetour']);
+        $this->assertCount(1, $payload['listMessage']);
     }
 
     public function testStatusReturns429WhenRateLimiterRejects(): void

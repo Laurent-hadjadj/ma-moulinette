@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service;
@@ -70,7 +70,7 @@ class ClientService
      *
      * Created at: 30/12/2024 08:05:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function handleTimeoutException(TimeoutException $e): array {
         $this->logger->error("[handleTimeoutException] ❌ ". self::$erreur504, [
@@ -95,7 +95,7 @@ class ClientService
      *
      * Created at: 30/12/2024 08:05:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function handleTransportException(TransportException $e): array {
         $errorMessage = "Erreur 503|504 de transport non spécifiée.";
@@ -136,7 +136,7 @@ class ClientService
      *
      * Created at: 30/12/2024 08:05:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function handleClientException(HttpExceptionInterface $e): array {
         $response = $e->getResponse();
@@ -204,7 +204,7 @@ class ClientService
      *
      * Created at: 30/12/2024 08:05:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function handleServerException(ServerException $e): array {
         $response = $e->getResponse();
@@ -244,7 +244,7 @@ class ClientService
      *
      * Created at: 19/10/2025 09:09:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function handleGenericException(\Throwable $e): array {
         $this->logger->error("Une erreur inattendue du serveur s'est produite : " . $e->getMessage());
@@ -272,7 +272,7 @@ class ClientService
      *
      * Created at: 30/10/2024 17:43:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function genericHeaders(): array
     {
@@ -293,7 +293,7 @@ class ClientService
      *
      * Created at: 17/04/2024 18:46:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function httpSonarQube(string $url): array
     {
@@ -396,7 +396,7 @@ class ClientService
      *
      * Created at: 27/06/2024 21:02:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function httpActuator(string $url, string $user, string $password): array
     {
@@ -475,7 +475,7 @@ class ClientService
      *
      * Created at: 22/05/2024 15:03:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function httpActivity(string $url): array
     {

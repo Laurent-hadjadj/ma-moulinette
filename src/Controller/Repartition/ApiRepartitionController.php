@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Repartition;
@@ -37,7 +37,7 @@ class ApiRepartitionController extends AbstractController
      *
      * Created at: 04/12/2022, 09:00:38 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -57,7 +57,7 @@ class ApiRepartitionController extends AbstractController
      *
      * Created at: 04/12/2022, 09:04:35 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/repartition/collecte', name: 'api_repartition_collecte', methods: ['PUT'])]
     public function apiRepartitionCollecte(Request $request): JsonResponse
@@ -138,7 +138,7 @@ class ApiRepartitionController extends AbstractController
      *
      * Created at: 04/12/2022, 09:05:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/repartition/analyse', name: 'repartition_analyse', methods: ['PUT'])]
     public function apiRepartitionAnalyse(Request $request): JsonResponse
@@ -273,7 +273,7 @@ class ApiRepartitionController extends AbstractController
      *
      * Created at: 01/09/2025 11:19:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/repartition/historique', name: 'repartition_historique', methods: ['PUT'])]
     public function apiRepartitionHistorique(Request $request): JsonResponse
@@ -368,7 +368,7 @@ class ApiRepartitionController extends AbstractController
      *
      * Created at: 18/02/2025 09:14:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/repartition/analyse/mise-a-jour', name: 'repartition_analyse_maj', methods: ['PUT'])]
     public function apiRepartitionAnalyseMaj(Request $request): JsonResponse

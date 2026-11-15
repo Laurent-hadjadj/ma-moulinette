@@ -3,12 +3,12 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Profiling;
@@ -49,7 +49,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 16/11/2025 09:08:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function formatChartData(
         array $rows,
@@ -128,7 +128,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 12/07/2026 10:01:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/profiling/indicateur', name: 'profiling_indicateur', methods: ['POST'])]
     public function indicateur(Request $request): JsonResponse
@@ -192,7 +192,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 16/11/2025 20:12:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/profiling/summary', name: 'profiling_summary', methods: ['GET'])]
     public function summary(): JsonResponse
@@ -227,7 +227,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 16/11/2025 20:11:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/profiling/latest', name: 'latest', methods: ['GET'])]
     public function latest(): JsonResponse
@@ -262,7 +262,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 16/11/2025 20:12:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/profiling/weekly/all', name: 'weekly_all', methods: ['GET'])]
     public function weekly(): JsonResponse
@@ -303,7 +303,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 16/11/2025 20:12:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/profiling/monthly/all', name: 'monthly_all', methods: ['GET'])]
     public function monthlyAll(): JsonResponse
@@ -344,7 +344,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 16/11/2025 20:12:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/profiling/users/all', name: 'users_all', methods: ['GET'])]
     public function users(): JsonResponse
@@ -385,7 +385,7 @@ class ProfilingApiController extends AbstractController
      *
      * Created at: 16/11/2025 20:12:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/profiling/portefeuille/all', name: 'portefeuille_all', methods: ['GET'])]
     public function allPortefeuille(): JsonResponse

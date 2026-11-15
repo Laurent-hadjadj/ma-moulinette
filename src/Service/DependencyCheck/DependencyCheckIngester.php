@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\DependencyCheck;
@@ -64,6 +64,21 @@ class DependencyCheckIngester
     /** @var array<string, DcDependency> */
     private array $depCache = [];
 
+    /**
+     * MODIF 2026-11-15 : BUG CORRIGÉ — un même fichier (même sha1) peut
+     * apparaître plusieurs fois dans le rapport DependencyCheck (ex. un .jar
+     * présent à la fois seul et imbriqué dans un .war qui le bundle,
+     * confirmé en conditions réelles). findOrCreateDependency()/findOrCreateCve()
+     * dé-dupliquent déjà les entités Dependency/CVE elles-mêmes, mais rien
+     * n'empêchait de créer le couple (dependency, cve) une 2e fois quand il
+     * provient d'une 2e occurrence JSON de la même dépendance — violation de
+     * la contrainte unique `uq_dc_finding_triplet` (scan_id, dependency_id,
+     * cve_id) au flush.
+     *
+     * @var array<string, true>
+     */
+    private array $findingCache = [];
+
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly DcCveRepository $cveRepository,
@@ -96,6 +111,7 @@ class DependencyCheckIngester
         // Reset des caches locaux pour cette ingestion
         $this->cveCache = [];
         $this->depCache = [];
+        $this->findingCache = [];
 
         $jsonString = $this->extractJson($queue);
         $parsed = $this->parseJson($jsonString);
@@ -145,6 +161,16 @@ class DependencyCheckIngester
 
                     $cveEntity = $this->findOrCreateCve($vulnRaw);
 
+                    // MODIF 2026-11-15 : voir le commentaire de $findingCache —
+                    // 1 seul finding par couple (dépendance, CVE) pour ce scan,
+                    // même si la même dépendance apparaît plusieurs fois dans le
+                    // rapport (ex. jar bundelé à la fois seul et dans un .war).
+                    $findingKey = spl_object_id($depEntity) . '|' . $cveEntity->getCveId();
+                    if (isset($this->findingCache[$findingKey])) {
+                        continue;
+                    }
+                    $this->findingCache[$findingKey] = true;
+
                     $severity = $this->normalizeSeverity((string) ($vulnRaw['severity'] ?? 'UNKNOWN'));
                     $stats[$severity] = ($stats[$severity] ?? 0) + 1;
 
@@ -152,7 +178,8 @@ class DependencyCheckIngester
                         ? (string) $vulnRaw['cvssv3']['baseScore']
                         : null;
 
-                    /* MODIF 2026-05-12 : retrait de
+                    /**
+                     * MODIF 2026-05-12 : retrait de
                      * setFixedVersion. La source disponible (versionEndExcluding
                      * du JSON DC) n'est pas la fix recommandée fiable, et
                      * l'heuristique Upgrade vs Mitigation qui en dépendait a
@@ -194,7 +221,8 @@ class DependencyCheckIngester
                 'cve_high'        => $scan->getCveCountHigh(),
             ]);
 
-            /* MODIF 2026-05-14 : MAJ des flags
+            /**
+             * MODIF 2026-05-14 : MAJ des flags
              * is_latest_overall / is_latest_release sur le couple (group, artifact)
              * apres ingestion réussie. Place HORS de la transaction principale :
              * un échec ici ne doit pas annuler l'ingestion (le drift sera rattrape
@@ -240,7 +268,8 @@ class DependencyCheckIngester
         if (is_resource($gz)) {
             $gz = stream_get_contents($gz);
         }
-        /* MODIF 2026-05-12 : exceptions dédiées au lieu
+        /**
+         * MODIF 2026-05-12 : exceptions dédiées au lieu
          * de \RuntimeException brut. Permet au worker / aux tests de discriminer
          * les causes (payload vide vs gzip corrompu vs JSON invalide vs structure
          * inattendue) sans regex sur le message. Tous héritent de DcPayloadException
@@ -320,7 +349,8 @@ class DependencyCheckIngester
         array $parsed,
         array $scanInfo,
     ): DcScan {
-        /* MODIF 2026-05-12 : propage les métadonnées
+        /**
+         * MODIF 2026-05-12 : propage les métadonnées
          * d'archetype/parent reçues a l'upload depuis la queue vers le scan
          * (donnee historique pour le dashboard). */
         return (new DcScan())
@@ -450,6 +480,10 @@ class DependencyCheckIngester
         if ($cveId === '') {
             throw new DcInvalidStructureException('vulnerability sans "name" (cve_id manquant).');
         }
+        // MODIF 2026-11-15 : voir le commentaire de DcCve::$cveId — `name`
+        // n'est pas toujours un identifiant court (titre libre Retire.js).
+        // Troncature défensive en plus de l'élargissement de la colonne.
+        $cveId = substr($cveId, 0, 255);
 
         // Cache local d'abord (meme CVE peut apparaitre dans N deps du meme rapport)
         if (isset($this->cveCache[$cveId])) {

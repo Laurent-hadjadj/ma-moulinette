@@ -15,22 +15,25 @@
 # minute. Si une row reste "processing" plus de 5 min sans flush, la commande
 # `process` la requeue (cf reclaimStaleProcessing).
 
-ARG php_version=8.3.6-cli-bullseye
+ARG php_version=8.5.12-cli-trixie
 FROM php:${php_version}
 
 LABEL maintainer="Laurent HADJADJ <laurent_h@me.com>"
-LABEL component="cron-ma-moulinette"
-LABEL purpose="OWASP DependencyCheck queue worker (supercronic)"
+LABEL component="supercronic-ma-moulinette"
+LABEL purpose="Orchestration des tâches (supercronic)"
 
 ENV LANG=fr_FR.UTF-8
 ENV LC_ALL=fr_FR.UTF-8
 ENV LANGUAGE=fr_FR.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Version Supercronic + checksum a verifier en prod
-# https://github.com/aptible/supercronic/releases
+# Version Supercronic et somme SHA1 de supercronic-linux-amd64 pour CETTE version.
+# La somme est celle publiée par le projet dans les notes de la release (section « supercronic-linux-amd64 ») :
+#   https://github.com/aptible/supercronic/releases/tag/v0.2.30
+# À RECALCULER À CHAQUE CHANGEMENT DE VERSION : une somme d'une autre version fait échouer le build (« FAILED »).
+# MODIF 2026-11-15 : la valeur précédente (9aeb41e0...) ne correspondait pas à ce binaire, le build échouait.
 ARG SUPERCRONIC_VERSION=v0.2.30
-ARG SUPERCRONIC_SHA1SUM=9aeb41e00cc7b71d30d33c57a2333f2c2581a201
+ARG SUPERCRONIC_SHA1SUM=9f27ad28c5c57cd133325b2a66bba69ba2235799
 
 WORKDIR /var/www
 
@@ -56,9 +59,10 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/memory_limit = .*/memory_limit = 512M/" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/;date.timezone =/date.timezone = Europe\/Paris/" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/display_errors = on/display_errors = off/" "$PHP_INI_DIR/php.ini" \
-    # Cleanup
+    # Cleanup : on purge les paquets -dev et curl SEULEMENT. Pas de « apt autoremove » : il supprimait aussi les
+    # bibliothèques d'exécution (libicu, libzip), arrivées comme dépendances des -dev, et les extensions intl et zip
+    # ne se chargeaient plus (« Unable to load dynamic library »). MODIF 2026-11-15.
     && apt-get purge -y libicu-dev libzip-dev libonig-dev curl \
-    && apt autoremove -y \
     && apt-get clean \
     && rm -rf /tmp/* /var/lib/apt/lists/*
 
@@ -71,9 +75,10 @@ COPY etc/cron/ma-moulinette /etc/supercronic/ma-moulinette
 # www-data existe deja dans l'image PHP officielle, on s'en sert tel quel.
 USER www-data
 
-# Healthcheck : Supercronic vivant ? (process listing simple)
+# Healthcheck : Supercronic vivant ? pidof est fourni par l'image de base ; pgrep (procps) n'y est pas installé,
+# le healthcheck précédent échouait donc toujours. MODIF 2026-11-15.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD pgrep -f supercronic > /dev/null || exit 1
+    CMD pidof supercronic > /dev/null || exit 1
 
 # -quiet : pas de log par tick (juste les commandes)
 # -passthrough-logs : merge stdout/stderr de la commande dans ceux de supercronic

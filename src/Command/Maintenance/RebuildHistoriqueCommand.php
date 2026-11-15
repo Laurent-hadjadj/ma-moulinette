@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Command\Maintenance;
@@ -26,6 +26,7 @@ use App\Service\CommandRebuildHistorique\{
     BuildMapHistoryService
 };
 use App\Repository\HistoriqueRepository;
+use App\Service\GetSonarVersionService;
 use App\Exception\SonarApiException;
 
 /**
@@ -43,6 +44,7 @@ public function __construct(
         private SonarMetricsFetcherService $metricsFetcher,
         private BuildMapHistoryService $buildMapHistory,
         private HistoriqueRepository $historiqueRepos,
+        private GetSonarVersionService $getSonarVersionService,
     ) {
         parent::__construct();
 
@@ -59,7 +61,7 @@ public function __construct(
      *
      * Created at: 17/03/2026 04:23:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function configure(): void
     {
@@ -81,7 +83,7 @@ public function __construct(
      *
      * Created at: 17/03/2026 04:23:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -111,11 +113,18 @@ public function __construct(
             return Command::SUCCESS;
         }
 
+        /* MODIF 2026-11-15 : la carte de reconstruction (BuildMapHistoryService::metricsRebuild) ne contient pas
+         * `sonarqube_server_version`, colonne NOT NULL de `historique` : l'insertion échouait (SQLSTATE 23502).
+         * On la lit une fois, comme la collecte (CollecteController) et la page Suivi. */
+        $versionServeur = $this->getSonarVersionService->getSonarQubeVersion();
+        $sonarqubeServerVersion = (empty($versionServeur) || is_array($versionServeur)) ? 'inconnu' : $versionServeur;
+
         $progressBar = new ProgressBar($output, $total);
         $progressBar->start();
 
         $inserted = 0;
         $errors = 0;
+        $existantes = 0;
 
         foreach ($analyses as $analysis) {
 
@@ -185,9 +194,23 @@ public function __construct(
                  * atteint en pratique à cause du dd() ci-dessous), et la sortie de
                  * boucle appelait HistoriqueRepository::batchInsert(), une méthode
                  * qui n'existe pas sur ce repository. */
+                $map['sonarqube_server_version'] ??= $sonarqubeServerVersion;
+
+                /* MODIF 2026-11-15 : même analyse déjà en base (ex. enregistrée par la collecte, avec une date écrite
+                 * autrement ou une version « not provided » non dédupliquée par version) : on ne la réinsère pas. */
+                if ($this->historiqueRepos->analyseExiste($project_key, (string) ($map['analyse_key'] ?? ''))) {
+                    $existantes++;
+                    $progressBar->advance();
+                    continue;
+                }
+
                 $result = $this->historiqueRepos->insertHistoriqueAjoutProjet($map, []);
                 if (($result['code'] ?? null) === 200) {
                     $inserted++;
+                } elseif (($result['code'] ?? null) === 23505) {
+                    /* MODIF 2026-11-15 : la version est déjà en base avec la même date (ex. la collecte vient de
+                     * l'enregistrer). Reconstruire est idempotent : ce n'est pas un échec. */
+                    $existantes++;
                 } else {
                     $errors++;
                     $io->warning(sprintf(
@@ -206,8 +229,9 @@ public function __construct(
 
         if (!$dryRun) {
             $io->success(sprintf(
-                '%d ligne(s) insérée(s)%s',
+                '%d ligne(s) insérée(s)%s%s',
                 $inserted,
+                $existantes > 0 ? sprintf(', %d déjà présente(s)', $existantes) : '',
                 $errors > 0 ? sprintf(', %d échec(s)', $errors) : ''
             ));
         } else {

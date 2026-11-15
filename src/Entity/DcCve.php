@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -42,14 +42,23 @@ class DcCve
     )]
     private int|string|null $id = null;
 
+    /* MODIF 2026-11-15 : BUG CORRIGÉ — longueur portée de 64 à 255. Le champ
+     * `name` d'une vulnerability DependencyCheck n'est pas toujours un
+     * identifiant court (CVE-YYYY-NNNNN/GHSA-...) : l'analyseur Retire.js
+     * (dépendances JS, ex. fichiers .js imbriqués dans un .war) y met un
+     * titre libre (confirmé en conditions réelles, jusqu'à 74 caractères :
+     * "ReDoS vulnerability in Autolink plugin and Advanced Tab for Dialogs
+     * plugin") — violation `value too long for type character varying(64)`
+     * à l'ingestion. */
     #[ORM\Column(
         name: 'cve_id',
         type: Types::STRING,
-        length: 64,
+        length: 255,
         unique: true,
         nullable: false
     )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private string $cveId;
 
     #[ORM\Column(

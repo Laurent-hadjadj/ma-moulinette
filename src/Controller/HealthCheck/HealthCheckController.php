@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\HealthCheck;
@@ -28,6 +28,9 @@ use App\Service\HealthCheckService;
  */
 class HealthCheckController extends AbstractController
 {
+    /** Seul message renvoyé au public quand le contrôle échoue ; le détail va dans les journaux. */
+    private const MESSAGE_PUBLIC_INDISPONIBLE = 'Le service est temporairement indisponible.';
+
     public function __construct(
         #[Autowire(service: 'limiter.healthcheck')]
         private RateLimiterFactoryInterface $healthcheckLimiter,
@@ -45,7 +48,7 @@ class HealthCheckController extends AbstractController
      *
      * Created at: 21/04/2026 19:50:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/public/healthcheck/status', name: 'healthcheck_status', methods: ['GET'])]
     public function status(Request $request): JsonResponse
@@ -67,11 +70,20 @@ class HealthCheckController extends AbstractController
         // Healthcheck métier
         $errors = $this->healthCheckService->check();
 
-        $status = empty($errors) ? 200 : 503;
+        if (empty($errors)) {
+            return $this->json(['codeRetour' => 'OK', 'listMessage' => []], 200);
+        }
+
+        // Le détail (état de la base, nom d'une table…) reste dans les journaux : cette route est PUBLIQUE, elle ne
+        // doit pas décrire l'infrastructure à un visiteur anonyme.
+        $this->logger->warning('[HealthCheck] ⚠️ contrôle en échec', [
+            'erreurs' => $errors,
+            'client_ip' => $key,
+        ]);
 
         return $this->json([
-            'codeRetour' => empty($errors) ? 'OK' : 'KO',
-            'listMessage' => $errors,
-        ], $status);
+            'codeRetour' => 'KO',
+            'listMessage' => [self::MESSAGE_PUBLIC_INDISPONIBLE],
+        ], 503);
     }
 }

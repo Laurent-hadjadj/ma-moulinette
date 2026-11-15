@@ -14,6 +14,7 @@ nav:
         - Base de données: ma-moulinette/architecture/architecture-base-de-donnees.md
         - Processus de récupération d'activité: ma-moulinette/architecture/processus-activity.md
         - Traitement quotidien d'activité: ma-moulinette/architecture/processus-batch-activity.md
+        - Instance de démonstration: ma-moulinette/architecture/demo.md
     - Développement:
         - Ouvrir l'application: ma-moulinette/developpement/ouvrir_mon_application.md
         - Environnement de développement: ma-moulinette/developpement/pour_bien_demarrer.md
