@@ -1,6 +1,6 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.7.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.8.0-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.7.0 Release on November 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.8.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -46,7 +46,9 @@ _
 > | `2025` | 25.12.0 | Clôturée |
 > | `2026` | *(en cours — pas encore de LTA finale)* | Année en cours, voir ci-dessus |
 >
-> ⚠️ À mettre à jour lors du passage à l'année 2027 : ajouter une ligne `2027` et fixer la LTA finale de la ligne 2026 dans ce tableau.
+> ⚠️ À mettre à jour lors du passage à l'année 2027 :\
+> Ajouter une ligne `2027` et fixer la LTA finale de la ligne 2026 dans ce tableau.
+> Pour le moment la version 2026.4 est la dernière LTA connue, mais elle n'est pas encore LTA finale.
 
 ## 💡 Philosophie du projet
 
@@ -82,27 +84,27 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 07/11/2026)
+> [!NOTE] Information sur le projet (relevé du 15/11/2026)
 >
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-|  PHP      |  323      | 56112  | 24890        | 10199 | 91201 |
+|  PHP      |  328      | 56559  | 25150        | 10301 | 92010 |
 |  HTML    |  157      | 28592  | 1156         | 2041  | 31789 |
 |  JS      |  93       | 11222  | 4673         | 1826  | 17721 |
 |  CSS     |  39       | 6640   | 1382         | 1403  | 9425 |
-|  SQL     |  84       | 3346   | 1760         | 772   | 5878 |
-|  MIGRATION |  20     | 1145   | 337          | 222   | 1704 |
+|  SQL     |  84       | 3347   | 1760         | 772   | 5879 |
+|  MIGRATION |  21     | 1165   | 351          | 226   | 1742 |
 
-### 📊 Qualité du code (relevé du 07/11/2026)
+### 📊 Qualité du code (relevé du 15/11/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 528** tests / 9 654 assertions |
+| Tests unitaires (`tests/Unit`) | **3 955** tests / 10 209 assertions |
 | Tests d'intégration (`tests/Integration`) | **703** tests / 1 772 assertions |
-| **Total** | **4 231** tests / **11 426** assertions |
+| **Total** | **4 658** tests / **11 981** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **81,13 %** |
+| Couverture — lignes | **81,24 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
@@ -111,7 +113,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.7.0** corrige un bug critique introduit en 2.6.0 et ajoute un compteur de projets collectés/à collecter sur la page Projet (voir [CHANGELOG.md](CHANGELOG.md)).
+La **version 2.8.0** corrige un bug critique introduit en 2.7.0 et ajoute un mode démo (voir [CHANGELOG.md](CHANGELOG.md)).
 
 ### ✅ Fonctionnalités disponibles
 
@@ -125,24 +127,28 @@ La **version 2.7.0** corrige un bug critique introduit en 2.6.0 et ajoute un com
 - [x] **Collecte asynchrone** des indicateurs manuellement ou via un batch PHP ;
 - [x] **Historisation** des résultats et métriques en base ;
 - [x] Intégration des **indicateurs SonarQube 10.x** ;
-- [x] Ingestion des rapport Owasp Dependency-Check ;
+- [x] Ingestion des rapports Owasp Dependency-Check ;
+- [x] Ingestion des rapports Zap Scan (mode Gore) ;
 - [x] Gestion des **sessions utilisateurs** et **sécurisation** de l’application ;
 - [x] Tableaux de bord et **visualisation** des indicateurs, avec **filtrage** et **tri** pour les mesures Legacy et SonarQube 10.x ;
 - [x] Tableaux de bord pour les indicateurs OWASP Dependency-Check ;
-- [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
+- [x] Tableaux de bord pour les indicateurs ZAP Scan ;
+- [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check et ZAP Scan ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 231 tests, 11 426 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 658 tests, 11 981 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
+- [x] Ajout des tests End-to-End avec Playwright (22 suites, cf. tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout de la collecte des indicateurs SonarQube 2026.14 (LTA) et des versions ultérieures ;
+- [x]  Ajout du mode démo pour les utilisateurs non authentifiés (cf. [CHANGELOG.md](CHANGELOG.md)) ;
 
 ### 🧱 Fonctionnalités en cours de finalisation
-
-- [ ] Développement du support multi-projet filtré par groupe fonctionnel ;
 
 Liste des évolutions restantes :
 
 - [ ] Finalisation de la récupération "j'ai oublié mon mot de passe" ;
 - [ ] Migration des Security Hotspots SonarQube (`/api/hotspots/*`), dépréciés depuis la version SonarQube 2026.4, vers `issues/search` ;
+- [ ] Ajout du de l'authentification MFA ;
 
 ## 🔐 Compte administrateur
 

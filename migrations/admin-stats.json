@@ -1,12 +1,12 @@
 {
-    "generated_at": "2026-11-07T19:52:32+00:00",
+    "generated_at": "2026-11-15T15:13:55+00:00",
     "cloc": {
         "php": {
-            "fichier": 323,
-            "code": 56112,
-            "comment": 24890,
-            "vide": 10199,
-            "total": 91201
+            "fichier": 328,
+            "code": 56559,
+            "comment": 25150,
+            "vide": 10301,
+            "total": 92010
         },
         "html": {
             "fichier": 157,
@@ -31,22 +31,22 @@
         },
         "sql": {
             "fichier": 84,
-            "code": 3346,
+            "code": 3347,
             "comment": 1760,
             "vide": 772,
-            "total": 5878
+            "total": 5879
         },
         "migration": {
-            "fichier": 20,
-            "code": 1145,
-            "comment": 337,
-            "vide": 222,
-            "total": 1704
+            "fichier": 21,
+            "code": 1165,
+            "comment": 351,
+            "vide": 226,
+            "total": 1742
         }
     },
     "tests": {
         "unit": {
-            "count": 3528
+            "count": 3955
         },
         "integration": {
             "count": 703
