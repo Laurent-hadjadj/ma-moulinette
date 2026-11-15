@@ -1,6 +1,6 @@
 # Image PHP-FPM de la démo : APP_ENV=prod, sans debug, sans dépendances de développement, sans .env.local.
 # Contexte : racine du dépôt. Aucun secret n'est copié : tout vient des variables d'environnement du compose.
-ARG php_version=8.5-fpm-bookworm
+ARG php_version=8.5.12-fpm-trixie
 FROM php:${php_version}
 
 LABEL environnement="demo"
