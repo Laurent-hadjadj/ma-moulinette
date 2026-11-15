@@ -65,6 +65,9 @@ parameters:
     env(ACTIVITY_RETENTION_DAYS): '365'
     env(USER_AGENT_RETENTION_DAYS): '180'
 
+    # Mode démonstration (voir App\Security\ModeDemo) : '0' par défaut, '1' uniquement sur l'instance de démo.
+    env(APP_MODE_DEMO): '0'
+
     # Domaine de repli utilisé pour reconstruire l'adresse à partir d'un identifiant
     # court (« prenom.nom ») lors de l'authentification. Valeur de démonstration :
     # à surcharger via LDAP_UPN_SUFFIX en .env.local sur une instance réelle.
@@ -192,6 +195,14 @@ services:
     App\EventSubscriber\ZapIngestTokenSubscriber:
         arguments:
             $expectedToken: '%zap.ingest.token%'
+
+    # MODIF 2026-11-15 : gestion du mode démonstration (voir App\Security\ModeDemo).
+    # Liste blanche de routes, refus par défaut (voir App\Security\ModeDemo).
+    # Désactivé tant que APP_MODE_DEMO n'est pas à 1 (production et développement : aucun effet).
+    App\EventSubscriber\DemoModeSubscriber:
+        arguments:
+            $modeDemo: '%env(bool:APP_MODE_DEMO)%'
+
     # Téléchargement des logs
     App\Service\LogArchive\LogArchiveService:
         arguments:
