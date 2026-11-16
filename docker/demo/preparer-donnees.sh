@@ -115,5 +115,8 @@ tmp="donnees/demo.sql.gz.tmp"
 mv "$tmp" donnees/demo.sql.gz
 
 echo "[prepa] donnees/demo.sql.gz : $(du -h donnees/demo.sql.gz | cut -f1), $lignes ligne(s) d'historique"
-psql_prepa -c "SELECT maven_key, count(*) AS lignes_historique FROM ma_moulinette.historique GROUP BY maven_key ORDER BY 1"
+psql_prepa -c "SELECT h.maven_key, h.lignes_historique, COALESCE(c.lignes_clean_code, 0) AS lignes_clean_code
+    FROM (SELECT maven_key, count(*) AS lignes_historique FROM ma_moulinette.historique GROUP BY maven_key) h
+    LEFT JOIN (SELECT maven_key, count(*) AS lignes_clean_code FROM ma_moulinette.clean_code GROUP BY maven_key) c USING (maven_key)
+    ORDER BY 1"
 echo "[prepa] terminé. Charger dans la démo : bash docker/demo/restaurer-demo.sh"

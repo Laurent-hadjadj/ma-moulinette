@@ -17,6 +17,7 @@ namespace App\Tests\Unit\Command\Dev;
 
 use App\Command\Dev\DemoPreparerCommand;
 use App\Controller\Accueil\ApiAccueilController;
+use App\Controller\Batch\BatchCollecteCleanCodeController;
 use App\Controller\Batch\CollecteController;
 use App\Controller\Profil\ApiProfilController;
 use App\Repository\ListeProjetRepository;
@@ -129,6 +130,7 @@ class DemoPreparerCommandTest extends TestCase
             $accueil,
             $this->createStub(ApiProfilController::class),
             $this->createStub(CollecteController::class),
+            $this->createStub(BatchCollecteCleanCodeController::class),
             $this->createStub(TokenStorageInterface::class),
             $env
         );
@@ -167,10 +169,88 @@ class DemoPreparerCommandTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed>|\Throwable $resultatCollecte
+     * Non-régression : la table clean_code n'est alimentée que par la collecte interactive de la page projet, pas par
+     * CollecteController. Sans cet appel, la page Clean Code de la démonstration restait vide.
      */
-    private function commandeComplete(array|\Throwable $resultatCollecte): DemoPreparerCommand
+    public function testLesIndicateursCleanCodeSontCollectesPourChaqueProjet(): void
     {
+        $cleanCode = $this->createMock(BatchCollecteCleanCodeController::class);
+        $cleanCode->expects($this->once())
+            ->method('BatchCollecteCleanCode')
+            ->with('a:projet', 'COLLECTE', DemoPreparerCommand::COURRIEL_COLLECTE)
+            ->willReturn(['code' => 200]);
+        $tester = new CommandTester($this->commandeComplete(['code' => 200], ['code' => 200], $cleanCode));
+
+        $exit = $tester->execute(['--sans-historique' => true]);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('Clean Code', $tester->getDisplay());
+    }
+
+    /**
+     * Une analyse déjà à jour (202) peut n'avoir aucune ligne clean_code : la collecte Clean Code doit quand même tourner.
+     */
+    public function testLesIndicateursCleanCodeSontCollectesMemeSiLAnalyseEstDejaAJour(): void
+    {
+        $cleanCode = $this->createMock(BatchCollecteCleanCodeController::class);
+        $cleanCode->expects($this->once())->method('BatchCollecteCleanCode')->willReturn(['code' => 200]);
+        $tester = new CommandTester($this->commandeComplete(['code' => 202], ['code' => 200], $cleanCode));
+
+        $exit = $tester->execute(['--sans-historique' => true]);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('À JOUR', $tester->getDisplay());
+    }
+
+    public function testPasDeCollecteCleanCodeQuandLaCollecteEchoue(): void
+    {
+        $cleanCode = $this->createMock(BatchCollecteCleanCodeController::class);
+        $cleanCode->expects($this->never())->method('BatchCollecteCleanCode');
+        $tester = new CommandTester($this->commandeComplete(['code' => 500], ['code' => 200], $cleanCode));
+
+        $exit = $tester->execute(['--sans-historique' => true]);
+
+        $this->assertSame(1, $exit);
+    }
+
+    /**
+     * @return iterable<string, array{array<string, mixed>|\Throwable, int, string}>
+     */
+    public static function resultatsCleanCodeProvider(): iterable
+    {
+        yield 'collectés' => [['code' => 200], 0, 'OK'];
+        /* SonarQube < 10 : l'application l'ignore sans bruit (code 200, « skipped »), ce n'est pas un échec. */
+        yield 'serveur sans facettes 10+' => [['code' => 200, 'skipped' => true], 0, 'NON SUPPORTÉ'];
+        yield 'échec (500)' => [['code' => 500, 'erreur' => 'x'], 1, 'ÉCHEC'];
+        yield 'exception' => [new \RuntimeException('Sonar injoignable'), 1, 'ÉCHEC'];
+    }
+
+    /**
+     * @param array<string, mixed>|\Throwable $resultat
+     */
+    #[DataProvider('resultatsCleanCodeProvider')]
+    public function testCompteRenduDeLaCollecteCleanCode(array|\Throwable $resultat, int $codeSortieAttendu, string $etatAttendu): void
+    {
+        $tester = new CommandTester($this->commandeComplete(['code' => 200], $resultat));
+
+        $exit = $tester->execute(['--sans-historique' => true]);
+
+        $this->assertSame($codeSortieAttendu, $exit);
+        $this->assertStringContainsString($etatAttendu, $tester->getDisplay());
+        if ($resultat instanceof \Throwable) {
+            $this->assertStringContainsString('clean code : Sonar injoignable', $tester->getDisplay());
+        }
+    }
+
+    /**
+     * @param array<string, mixed>|\Throwable $resultatCollecte
+     * @param array<string, mixed>|\Throwable $resultatCleanCode
+     */
+    private function commandeComplete(
+        array|\Throwable $resultatCollecte,
+        array|\Throwable $resultatCleanCode = ['code' => 200],
+        ?BatchCollecteCleanCodeController $cleanCode = null
+    ): DemoPreparerCommand {
         $connexion = $this->createStub(Connection::class);
         $connexion->method('getParams')->willReturn(['host' => '127.0.0.1', 'port' => DemoPreparerCommand::PORT_PREPARATION]);
         $connexion->method('fetchOne')->willReturn(1);
@@ -195,6 +275,15 @@ class DemoPreparerCommandTest extends TestCase
             $collecte->method('collecte')->willReturn($resultatCollecte);
         }
 
-        return new DemoPreparerCommand($em, $accueil, $profil, $collecte, $this->createStub(TokenStorageInterface::class), 'dev');
+        if ($cleanCode === null) {
+            $cleanCode = $this->createStub(BatchCollecteCleanCodeController::class);
+            if ($resultatCleanCode instanceof \Throwable) {
+                $cleanCode->method('BatchCollecteCleanCode')->willThrowException($resultatCleanCode);
+            } else {
+                $cleanCode->method('BatchCollecteCleanCode')->willReturn($resultatCleanCode);
+            }
+        }
+
+        return new DemoPreparerCommand($em, $accueil, $profil, $collecte, $cleanCode, $this->createStub(TokenStorageInterface::class), 'dev');
     }
 }

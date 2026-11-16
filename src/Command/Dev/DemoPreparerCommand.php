@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace App\Command\Dev;
 
 use App\Controller\Accueil\ApiAccueilController;
+use App\Controller\Batch\BatchCollecteCleanCodeController;
 use App\Controller\Batch\CollecteController;
 use App\Controller\Profil\ApiProfilController;
 use App\Entity\ListeProjet;
@@ -36,8 +37,9 @@ use Symfony\Component\Security\Core\User\InMemoryUser;
  * Alimente la base de PRÉPARATION de l'instance de démonstration (docker/demo/docker-compose.prepa.yml) :
  *   1. rafraîchit la liste des projets visibles par le compte SonarQube de lecture (liste_projet) ;
  *   2. rafraîchit les profils de qualité ;
- *   3. pour chaque projet dont un tag commence par le préfixe demandé : collecte complète puis reconstruction de
- *      l'historique par version.
+ *   3. pour chaque projet dont un tag commence par le préfixe demandé : collecte complète, collecte des indicateurs
+ *      Clean Code (table clean_code, alimentée par la page projet et non par la collecte batch : sans cette étape la
+ *      page Clean Code de la démo reste vide), puis reconstruction de l'historique par version.
  * L'export vers docker/demo/donnees/demo.sql.gz est fait par docker/demo/preparer-donnees.sh.
  *
  * Garde-fous : environnement `dev` uniquement ET connexion obligatoirement dirigée vers la pile de préparation
@@ -71,6 +73,7 @@ class DemoPreparerCommand extends Command
         private readonly ApiAccueilController $accueil,
         private readonly ApiProfilController $profil,
         private readonly CollecteController $collecte,
+        private readonly BatchCollecteCleanCodeController $cleanCode,
         private readonly TokenStorageInterface $tokenStorage,
         #[Autowire('%kernel.environment%')]
         private readonly string $appEnv,
@@ -208,22 +211,25 @@ class DemoPreparerCommand extends Command
             $io->writeln(sprintf('<info>%s</info>', $cle));
             $etatCollecte = $this->collecter($cle);
             $collecteOk = $etatCollecte !== null;
+            /* Indépendant de l'état « À JOUR » : une analyse déjà collectée peut n'avoir aucune ligne clean_code. */
+            $etatCleanCode = $collecteOk ? $this->collecterCleanCode($cle) : null;
             $historiqueOk = null;
             if ($collecteOk && !$input->getOption('sans-historique')) {
                 $historiqueOk = $this->reconstruireHistorique($cle);
             }
-            if (!$collecteOk || $historiqueOk === false) {
+            if (!$collecteOk || $etatCleanCode === 'ÉCHEC' || $historiqueOk === false) {
                 ++$erreurs;
             }
             $lignes[] = [
                 $cle,
                 $etatCollecte ?? 'ÉCHEC',
+                $etatCleanCode ?? '-',
                 $historiqueOk === null ? '-' : ($historiqueOk ? 'OK' : 'ÉCHEC'),
                 (string) $this->compterHistorique($cle),
             ];
         }
 
-        $io->table(['Projet', 'Collecte', 'Historique', 'Lignes historique'], $lignes);
+        $io->table(['Projet', 'Collecte', 'Clean Code', 'Historique', 'Lignes historique'], $lignes);
         foreach ($this->messages as $cle => $message) {
             $io->writeln(sprintf('<error> %s </error> %s', $cle, $message));
         }
@@ -278,6 +284,34 @@ class DemoPreparerCommand extends Command
         }
 
         return 'OK';
+    }
+
+    /**
+     * Collecte les indicateurs Clean Code (SonarQube 10+) dans la table clean_code.
+     *
+     * @return string « OK », « NON SUPPORTÉ » (serveur SonarQube sans facettes 10+ : silencieux dans l'application, ce
+     *                n'est pas un échec) ou « ÉCHEC »
+     */
+    private function collecterCleanCode(string $cle): string
+    {
+        try {
+            $resultat = $this->cleanCode->BatchCollecteCleanCode($cle, 'COLLECTE', self::COURRIEL_COLLECTE);
+        } catch (\Throwable $e) {
+            $this->ajouterMessage($cle, 'clean code : ' . $e->getMessage());
+            return 'ÉCHEC';
+        }
+
+        if (($resultat['code'] ?? null) !== 200) {
+            $this->ajouterMessage($cle, sprintf('clean code : code %s', (string) ($resultat['code'] ?? '?')));
+            return 'ÉCHEC';
+        }
+
+        return empty($resultat['skipped']) ? 'OK' : 'NON SUPPORTÉ';
+    }
+
+    private function ajouterMessage(string $cle, string $message): void
+    {
+        $this->messages[$cle] = isset($this->messages[$cle]) ? $this->messages[$cle] . ' ; ' . $message : $message;
     }
 
     private function reconstruireHistorique(string $cle): bool
