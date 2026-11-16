@@ -99,6 +99,8 @@ security:
         - { path: ^/plan-du-site, roles: PUBLIC_ACCESS }
         - { path: ^/mention-legal, roles: PUBLIC_ACCESS }
         - { path: ^/donnees-personnelles, roles: PUBLIC_ACCESS }
+        # Instance de démonstration : page « Action indisponible » (voir DemoController).
+        - { path: ^/demo/indisponible, roles: PUBLIC_ACCESS }
 
         # Web (privé)
         - { path: ^/admin, roles: ROLE_UTILISATEUR }
