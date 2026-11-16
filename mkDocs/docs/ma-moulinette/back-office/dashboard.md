@@ -9,12 +9,13 @@ Le back-office (`/admin`) s'appuie sur **EasyAdmin 5**. `Admin\DashboardControll
     Contrairement aux pages applicatives (asset-mapper), EasyAdmin sert ses propres CSS/JS déjà compilés depuis `public/bundles/easyadmin/` — un dossier gitignored, jamais créé automatiquement, à régénérer via `php bin/console assets:install` après le premier clone ou toute mise à jour du bundle.
     Détail dans [Pour bien démarrer](../developpement/pour_bien_demarrer.md), section « Assets publics des bundles tiers ».
 
-## 🗺️ Cartographie — un hub de redirection filtrée par rôle
+## 1️⃣ 🗺️ Cartographie — un hub de redirection filtrée par rôle
 
 `/admin` ne rend aucun contenu propre : c'est un point d'entrée unique qui distribue vers ~13 destinations différentes selon les rôles de l'utilisateur connecté, via deux mécanismes distincts (cartes de la page d'accueil + menu latéral EasyAdmin, qui se recoupent partiellement). Un seul graphe global serait illisible — le détail est donc découpé par groupe de cartes, dans le même ordre que sur la page.
 
 **Ligne 1 — Gestion** (`ROLE_INTERNAL` / `ROLE_GESTIONNAIRE`)
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     Home["🏠 Accueil /admin"] -->|ROLE_INTERNAL| Log["📄 Logs"]
@@ -25,11 +26,13 @@ flowchart LR
     Menu -.-> GroupU
     Menu -.-> GroupF
 ```
+<!-- markdownlint-enable MD046 -->
 
 *Logs n'est accessible que par la carte — absent du menu latéral.*
 
 **Ligne 2 — Traitement** (`ROLE_BATCH`)
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     Home["🏠 Accueil /admin"] -->|ROLE_BATCH| Portefeuille["💼 Portefeuilles CRUD"]
@@ -38,11 +41,13 @@ flowchart LR
     Menu["🗂️ Menu latéral"] -.-> Portefeuille
     Menu -.-> Batch
 ```
+<!-- markdownlint-enable MD046 -->
 
 *Suivi Traitements n'est accessible que par la carte — absent du menu latéral.*
 
 **Ligne 3 — Statistiques** (aucun rôle, sauf Activité SonarQube)
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     Home["🏠 Accueil /admin"] --> StatDash["📊 Dashboard"]
@@ -55,16 +60,19 @@ flowchart LR
     Menu -.-> StatProj
     Menu -.-> StatUser
 ```
+<!-- markdownlint-enable MD046 -->
 
 *Activité SonarQube n'est accessible que par la carte — absente du menu latéral.*
 
 **Ligne 4 — Espace personnel** (aucun rôle, sauf Actuator)
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     Home["🏠 Accueil /admin"] --> Pref["🔧 Réglages personnels<br/>/preferences"]
     Home -->|ROLE_ACTUATOR| Actuator["🌱 Actuator<br/>/actuator"]
 ```
+<!-- markdownlint-enable MD046 -->
 
 *Aucune des deux cartes de cette ligne n'apparaît dans le menu latéral.*
 
@@ -73,7 +81,7 @@ flowchart LR
     Le menu latéral est filtré en amont par EasyAdmin lui-même (les `MenuItem::linkTo(...)` vers un `CrudController` héritent du contrôle d'accès défini dans ce contrôleur ; les `MenuItem::linkToRoute(...)` vers les pages Statistiques ne sont, eux, protégés par aucun rôle spécifique).
     Les deux listes se recoupent mais ne sont **pas strictement identiques** : le menu n'expose ni « Suivi Traitements », ni « Activité SonarQube », ni « Réglages personnels », ni « Actuator », ni « Logs » — uniquement accessibles depuis les cartes.
 
-## 🧭 Chemin de fer de la page d'accueil
+## 2️⃣ 🧭 Chemin de fer de la page d'accueil
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -105,7 +113,7 @@ Page d'accueil back-office (/admin)
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 🃏 Page d'accueil (cartes)
+## 3️⃣ 🃏 Page d'accueil (cartes)
 
 | Carte | Rôle requis | Cible |
 | --- | --- | --- |
@@ -122,7 +130,7 @@ Page d'accueil back-office (/admin)
 
 Ces cartes sont les principaux points d'entrée de l'interface vers ces pages, en complément de la page « Plan du site » (voir [Accueil](../application/accueil.md#-haut-de-page)).
 
-## 🗂️ Menu latéral
+## 4️⃣ 🗂️ Menu latéral
 
 Le menu latéral d'EasyAdmin (distinct des cartes de la page d'accueil) reprend les mêmes CRUD que les cartes « Gestion utilisateur » et « Traitement », plus les 4 pages Statistiques.
 Les libellés du menu ne reprennent pas toujours mot pour mot ceux des cartes (ex. « Batch » dans le menu vs « Traitements de données » sur la carte — même cible) :
@@ -133,7 +141,7 @@ Les libellés du menu ne reprennent pas toujours mot pour mot ceux des cartes (e
 | Traitement | Portefeuilles, Batch | [Portefeuilles](portefeuille.md), [Traitements](traitement.md) |
 | Application | Dashboard, Ma-Moulinette, Activité utilisateur, Projets | Statistiques (dashboard, rapport SonarQube, activité utilisateur, projets) |
 
-## 📊 Statistiques d'administration
+## 5️⃣ 📊 Statistiques d'administration
 
 Les indicateurs affichés sur `/statistiques/dashboard` (`StatistiqueController::adminDashboard()`, rôle `ROLE_INTERNAL`) proviennent directement de PostgreSQL :
 

@@ -11,7 +11,7 @@
 
 Laurent HADJADJ
 https://github.com/Laurent-hadjadj/ma-moulinette
-© 2024 - CC BY-SA-NC 4.0
+© 2015-2026 - code : AGPL-3.0-or-later ; documentation : CC BY-SA 4.0
 -->
 {# Chargement de la section HEAD #}
 <html lang="fr" dir="ltr">
@@ -99,25 +99,36 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     préalable, un lien (y compris profond) vers les informations diffusées sur ma-moulinette.fr</p>
 
                 <div class="callout alert-callout-border primary">
-                    <p class="open-sans inline-block">
+                    <p class="open-sans">
                         <a class="source-link" href="https://github.com/Laurent-hadjadj/ma-moulinette"
                             rel="external">{{ app_name }}</a>
                         de
                         <span>Laurent HADJADJ</span>
-                        est sous licence
-                        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank"
-                            rel="license noopener noreferrer">
-                            <span class="show-for-small-only"><br></span>
-                            <span class="source-link"><span aria-hidden="true">🔗</span>CC BY-NC-SA 4.0</span>
-                            <img class="cc" src="{{ asset('images/cc-64x64.min.svg') }}" alt="Creative Commons">
-                            <img class="by" src="{{ asset('images/by-64x64.min.svg') }}"
-                                alt="Attribution : signature de l’auteur initial">
-                            <img class="nc" src="{{ asset('images/nc-64x64.min.svg') }}"
-                                alt="Non Commercial : interdiction de tirer un profit commercial de l’œuvre sans autorisation de l'auteur">
-                            <img class="sa" src="{{ asset('images/sa-64x64.min.svg') }}"
-                                alt="Share alike : partage de l’œuvre, avec obligation de rediffuser selon la même licence ou une licence similaire">
-                        </a>
+                        est distribué sous deux licences :
                     </p>
+                    <ul class="open-sans">
+                        <li><strong>le code source</strong> est sous licence
+                            <a href="https://www.gnu.org/licenses/agpl-3.0.fr.html" target="_blank"
+                                rel="license noopener noreferrer">
+                                <span class="source-link"><span aria-hidden="true">🔗</span>GNU AGPL 3.0 ou ultérieure</span></a>
+                            (<code>AGPL-3.0-or-later</code>). C'est une licence à copyleft : le logiciel reste ouvert,
+                            y compris lorsqu'il est proposé comme service web&nbsp;;</li>
+                        <li><strong>la documentation</strong> est sous licence
+                            <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank"
+                                rel="license noopener noreferrer">
+                                <span class="source-link"><span aria-hidden="true">🔗</span>CC BY-SA 4.0</span>
+                                <img class="cc" src="{{ asset('images/cc-64x64.min.svg') }}" alt="Creative Commons">
+                                <img class="by" src="{{ asset('images/by-64x64.min.svg') }}"
+                                    alt="Attribution : signature de l’auteur initial">
+                                <img class="sa" src="{{ asset('images/sa-64x64.min.svg') }}"
+                                    alt="Share alike : partage de l’œuvre, avec obligation de rediffuser selon la même licence ou une licence similaire">
+                            </a>.</li>
+                    </ul>
+                    <p class="open-sans text-justify">
+                        Jusqu'à la version 2.5.0 incluse, le code était publié sous licence CC BY-NC-SA 4.0 : ces
+                        versions restent sous cette licence. Certains en-têtes de fichiers antérieurs au 4 novembre 2026
+                        la mentionnent encore ; en cas de contradiction, le fichier <code>LICENSE</code> du dépôt
+                        prévaut.</p>
                 </div>
                 <p class="open-sans text-justify">
                     Sauf mention de propriété intellectuelle détenue par des tiers (notamment

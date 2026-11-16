@@ -4,7 +4,7 @@ Détail bloc par bloc des 2 pages de comparaison et de mutualisation cross-proje
 
 Sur ces 2 pages, aucun bouton n'est conditionné par un `is_granted(...)` Twig : la sécurité repose sur l'attribut de classe `ROLE_SECURITY` et sur `isProjectAccessible()` (anti-IDOR) pour la sélection des applications.
 
-## ⚖️ Comparaison
+## 1️⃣ ⚖️ Comparaison
 
 `GET /dependency-check/comparer` (`dc_comparer`) — `DependencyCheckPageController::comparer()`.
 
@@ -47,7 +47,7 @@ Aucun appel `showMessage()` dans `index-dependency-check-comparer.js` (le seul r
 | `error` | Échec de `listLatestPerCoupleForView()` (chargement des applications disponibles dans les sélecteurs) | ❌ La récupération listLatestPerCoupleForView a échoué (Erreur {code}). {erreur} |
 | `error` | Échec de `findCommonCvesForScans()` (calcul des CVE communes) | ❌ La récupération findCommonCvesForScans a échoué (Erreur {code}). {erreur} |
 
-## 🔗 Mutualisables
+## 2️⃣ 🔗 Mutualisables
 
 `GET /dependency-check/mutualisables` (`dc_mutualisables`) — `DependencyCheckPageController::mutualisables()`.
 
@@ -98,7 +98,7 @@ Aucun appel `showMessage()` dans `index-dependency-check-mutualisables.js` (le s
 | `error` | Échec de `listLatestPerCoupleForView()` (construction des socles disponibles et du périmètre) | ❌ La récupération listLatestPerCoupleForView a échoué (Erreur {code}). {erreur} |
 | `error` | Échec de `topMutualisableDependencies()` (requête d'agrégation) | ❌ La récupération topMutualisableDependencies a échoué (Erreur {code}). {erreur} |
 
-## 📚 Pour aller plus loin
+## 3️⃣ 📚 Pour aller plus loin
 
 - [Pages et navigation](pages.md) : cartographie d'ensemble, rôles, filtres socle/vue.
 - [Index, Détail scan et Export PDF](pages-index-projet.md), [Executive summary et Historique](pages-executive-history.md), [Dashboard et KPI](pages-dashboard-kpi.md) : détail des 6 autres pages.

@@ -2,7 +2,7 @@
 
 Ma-Moulinette est une application open source sous licence GNU AGPL 3.0 ou ultérieure. Le code source ne suffit pas à lui seul : il faut un environnement d'exécution (PHP, PostgreSQL) et, en développement, quelques outils complémentaires.
 
-## 🧰 Prérequis
+## 1️⃣ 🧰 Prérequis
 
 | Composant | Développement | Production |
 | --- | --- | --- |
@@ -17,7 +17,7 @@ Ma-Moulinette est une application open source sous licence GNU AGPL 3.0 ou ulté
     Depuis la migration vers **Symfony asset-mapper** (v2.0.0), il n'y a plus de compilation Webpack/Encore ni de dépendance Node.js pour builder les assets applicatifs — ils sont servis directement.
     Node.js n'est nécessaire que pour la suite de tests End-to-End Playwright.
 
-## 📁 Fichiers d'environnement
+## 2️⃣ 📁 Fichiers d'environnement
 
 | Fichier | Rôle | Suivi Git |
 | --- | --- | --- |
@@ -38,7 +38,7 @@ APP_ENV=dev
 APP_DEBUG=1
 ```
 
-## 🏷️ Personnalisation du nom affiché
+## 3️⃣ 🏷️ Personnalisation du nom affiché
 
 Le nom affiché dans l'interface (titre des pages, en-tête, pied de page, rapports PDF…) est piloté par la variable d'environnement `MA_MOULINETTE_NAME`, avec `Ma-Moulinette` comme valeur par défaut
 (`config/services.yaml`). Pour l'adapter à un déploiement spécifique, sans toucher au code :
@@ -51,7 +51,7 @@ MA_MOULINETTE_NAME=Mon-TicTac
 Cette variable est exposée à tous les templates Twig via la variable globale `app_name` (`config/packages/twig.yaml`), sans injection manuelle dans chaque contrôleur. À ne pas confondre avec `MARQUE_ENTREPRISE_SHORT`/`MARQUE_ENTREPRISE_LONG` : ces deux variables désignent l'**auteur/éditeur**
 affiché dans les mentions légales et le copyright, pas le nom du produit.
 
-## 🖥️ Démarrer en développement
+## 4️⃣ 🖥️ Démarrer en développement
 
 Deux façons de démarrer l'environnement de développement, selon les habitudes :
 
@@ -79,7 +79,7 @@ Le dossier `bin/` regroupe les scripts par outil :
 | `bin/git/` | Utilitaires Git (réécriture d'historique) |
 | `bin/php-conf/` | `php.ini` de référence pour la version PHP utilisée |
 
-## 🎨 Assets publics des bundles tiers (`public/bundles/`)
+## 5️⃣ 🎨 Assets publics des bundles tiers (`public/bundles/`)
 
 L'application sert ses propres assets (JS/CSS applicatifs) via **Symfony asset-mapper**, sans étape de build (voir la note ci-dessus). Mais certains bundles tiers — **EasyAdmin en premier lieu** — embarquent leurs propres CSS/JS déjà compilés (ex. `app.db37a8e3.css`, `app.c2478f67.js`) dans leur dossier `Resources/public/` (ou `public/` côté bundle).
 Ces fichiers ne passent **pas** par asset-mapper : ils doivent être publiés dans `public/bundles/<nom-du-bundle>/` via la commande classique Symfony :
@@ -94,7 +94,7 @@ php bin/console assets:install --symlink --relative
     Sans `public/bundles/easyadmin/`, le navigateur réclame des fichiers introuvables comme `http://localhost:8000/bundles/easyadmin/app.db37a8e3.css` (404) — la page `/admin` (et toutes les pages EasyAdmin : CRUD utilisateurs, groupes, portefeuilles…) s'affiche alors sans mise en forme et avec des erreurs JS bloquantes, ce qui peut ressembler à tort à un problème de cache navigateur ou d'asset-mapper.
     Sur Windows sans privilèges pour les liens symboliques, `assets:install` bascule automatiquement sur une copie des fichiers (`--symlink` échoue silencieusement en `copy`, sans erreur bloquante) — c'est normal, il suffit de relancer la commande après chaque mise à jour du bundle.
 
-## 🔑 Fichier JS local `secrets.local.js`
+## 6️⃣ 🔑 Fichier JS local `secrets.local.js`
 
 Trois entrées JS (`accueil/index-accueil.js`, `profil/index-profil.js`, `projet/peinture.js`) importent dynamiquement `assets/js/common/secrets.local.js`, un fichier personnel non commité (`**/secrets.local.js` dans `.gitignore`). Après un premier clone, copier le gabarit fourni :
 
@@ -105,11 +105,11 @@ cp assets/js/common/secrets.local.js.dist assets/js/common/secrets.local.js
 !!! caution "⚠️ Symptôme si oublié : erreur 500 sur toutes les pages"
     Le code JS gère bien l'absence de ce module au chargement dans le navigateur (`.catch()`), mais Symfony **AssetMapper** analyse statiquement l'`importmap` au rendu de la page côté serveur et lève une exception fatale si le fichier n'existe pas physiquement sur le disque — indépendamment de ce `.catch()`. Sans ce fichier, toute page utilisant le layout de base (donc la quasi-totalité de l'application, y compris `tests/Integration`) répond en 500.
 
-## 🧪 Base de données de développement
+## 7️⃣ 🧪 Base de données de développement
 
 Voir [Architecture — base de données](../architecture/architecture-base-de-donnees.md) pour le détail du schéma et [Migration PostgreSQL](guide-migration.md) pour la procédure d'installation complète d'un nouvel environnement.
 
-## 📦 Déploiement en production
+## 8️⃣ 📦 Déploiement en production
 
 ```bash
 # Passage en mode production
@@ -127,7 +127,7 @@ symfony composer dump-autoload --no-dev --classmap-authoritative
 php bin/console asset-map:compile
 ```
 
-## ✉️ Convention de rédaction des messages (logs, flash, JS)
+## 9️⃣ ✉️ Convention de rédaction des messages (logs, flash, JS)
 
 Trois canaux de message coexistent dans l'application, chacun avec ses propres règles de forme — à respecter pour tout nouveau code :
 
@@ -139,7 +139,7 @@ Trois canaux de message coexistent dans l'application, chacun avec ses propres r
 
 Un même texte de message ne doit donc **jamais** être réutilisé tel quel entre un appel logger et un message utilisateur (flash ou JS) : construire deux chaînes distinctes si besoin, comme le fait `ProjetPerimetreGuard::verifierPerimetreProjet()`.
 
-## 📚 Pour aller plus loin
+## 🔟 📚 Pour aller plus loin
 
 - [Architecture technique](../architecture/architecture-technique.md) : stack, conteneurs Docker, variables d'environnement.
 - [Gestion de la sécurité](securite.md) : rôles, hôtes de confiance.

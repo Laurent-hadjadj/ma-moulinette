@@ -65,6 +65,7 @@ avant toute persistance en base — jamais au rendu. La liste blanche se limite 
 
 `config/packages/security.yaml` définit la hiérarchie de rôles suivante :
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     NONE["ROLE_NONE<br/>(compte désactivé, aucun privilège)"]
@@ -79,6 +80,7 @@ flowchart TD
     GESTIONNAIRE --> INTERNAL[ROLE_INTERNAL]
     U --> ACTIVITY[ROLE_ACTIVITY]
 ```
+<!-- markdownlint-enable MD046 -->
 
 !!! note "🧬 Hiérarchie à plat, pas en cascade"
     Contrairement à une hiérarchie classique où un rôle hériterait des droits d'un autre rôle métier, ici **tous les rôles fonctionnels héritent uniquement de `ROLE_UTILISATEUR`** — `ROLE_BATCH` n'inclut pas `ROLE_COLLECTE` par exemple. Seules deux chaînes existent : `ROLE_SECURITY_ANALYTICS → ROLE_SECURITY` et `ROLE_INTERNAL → ROLE_GESTIONNAIRE`.

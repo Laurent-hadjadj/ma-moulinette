@@ -2,7 +2,7 @@
 
 La page Projet est **le cœur de l'application** : c'est ici qu'un projet SonarQube est sélectionné, collecté, visualisé, puis enregistré dans l'historique — et c'est le point de départ vers tous les autres tableaux de bord (OWASP, Clean Code, COSUI, Suivi, Répartition, DependencyCheck).
 
-## 🗺️ Cartographie — pages accessibles depuis Projet
+## 1️⃣ 🗺️ Cartographie — pages accessibles depuis Projet
 
 Le **bandeau commun** (logo, Préférences, Déconnexion, courriel) est identique sur toutes les pages — voir [Page d'accueil › Bandeau commun](accueil.md#bandeau-commun-present-sur-toutes-les-pages).
 
@@ -22,7 +22,7 @@ flowchart TD
 
 Deux façons de naviguer : un vrai lien `<a href>` (fil d'Ariane « Accueil », bouton « Dependency-Check ») ou un bouton piloté par JavaScript qui construit l'URL cible avec un jeton obfusqué (ROT13+Base64, pas une signature — confort de navigation, la vraie sécurité vient du pare-feu et des contrôles de rôle/périmètre serveur) et la clé du projet sélectionné (`Répartition`, `Suivi`, `COSUI`, `OWASP`, `Clean Code`) — dans les deux cas, un projet doit être sélectionné au préalable.
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 L'écran se découpe en quatre zones, dans l'ordre où elles apparaissent :
 
@@ -54,12 +54,12 @@ Page Projet
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📰 Zone Journal
+## 3️⃣ 📰 Zone Journal
 
 Un journal d'activité (`<textarea readonly>`) affiche en direct la trace des appels effectués par la page (collecte, peinture, erreurs).
 Le bouton 🧹 (icône gomme) le vide sans rien envoyer au serveur — c'est un affichage purement local, rien n'est conservé après un rechargement de la page.
 
-## 🔎 Zone Sélection du projet
+## 4️⃣ 🔎 Zone Sélection du projet
 
 !!! note "✅ Ajout d'une pastille de collecte (29/10/2026)"
     Chaque projet du sélecteur dispose d'une pastille de couleur grise
@@ -106,11 +106,11 @@ Au-dessus du tableau, un badge 🎯 rappelle chaque groupe fonctionnel auquel l'
     Les badges (`span.label.success/.warning/.alert`) affichaient les couleurs **par défaut de Foundation** (vert vif, orange ambré, rouge brique), jamais alignées sur la palette du reste de l'application — recolorés sur `#077e07`/`#ed7d20`/`#d4333f` (portée limitée au tableau de cette page, pour ne pas toucher le message d'erreur de la page de connexion qui utilise aussi `.label.alert`).
     Leur largeur dépendait aussi du nombre de chiffres affichés (`47` et `104 337` prenaient des largeurs très différentes dans la même colonne) — largeur désormais fixe par colonne : Fiabilité/Sécurité restent étroites (violations corrigées en priorité, rarement plus de 10 000), Maintenabilité est plus large (10 000 à 100 000 courant).
 
-## ⚙️ Zone des actions
+## 5️⃣ ⚙️ Zone des actions
 
 | Bouton | Visible si | Action |
 | --- | --- | --- |
-| **Collecte des données** | `ROLE_COLLECTE` | Lance la chaîne complète de collecte (20 appels SonarQube séquentiels — voir [flux ci-dessous](#-le-flux-collecte--peinture--sauvegarde)). Sert aussi bien à **rafraîchir** un projet déjà connu qu'à **collecter pour la première fois** un projet jamais analysé — c'est le même bouton et le même flux dans les deux cas. |
+| **Collecte des données** | `ROLE_COLLECTE` | Lance la chaîne complète de collecte (20 appels SonarQube séquentiels — voir [flux ci-dessous](#6️⃣--le-flux-collecte--peinture--sauvegarde)). Sert aussi bien à **rafraîchir** un projet déjà connu qu'à **collecter pour la première fois** un projet jamais analysé — c'est le même bouton et le même flux dans les deux cas. |
 | **Afficher** | toujours | « Peinture » : relit les tables déjà en base pour la **dernière collecte connue** et remplit l'affichage — sans appeler SonarQube |
 | **Enregistrer** | `ROLE_COLLECTE` | Verse la version actuellement affichée dans l'historique (`historique`), **si elle n'y existe pas déjà** — sinon message d'erreur (violation d'unicité) |
 | **Mes projets** | toujours | Ouvre la page [Mes projets](#-bouton--mes-projets-) (tableau de tous les projets du groupe fonctionnel) |
@@ -136,9 +136,11 @@ Trois blocs (« triptyque ») plus un bandeau, tous initialement vides et rempli
 !!! note "✅ Tuiles enrichies avec des métriques déjà collectées (25/10/2026)"
     Plusieurs tuiles affichent désormais des métriques déjà collectées et persistées par SonarQube, mais jamais montrées jusqu'ici (ni en tuiles, ni en présentation classique) :
 
+    <!-- markdownlint-disable MD046 -->
     - **Tests & Violations** : statut du cycle de vie des violations (ouvertes / confirmées / réouvertes), en plus des violations déjà triées (acceptées / faux positifs) — et, parmi les acceptées, celles à fort impact (blocker/high).
     - **Qualité interne** : détail de la couverture (lignes, branches, conditions non couvertes) et de la duplication (lignes, blocs, fichiers dupliqués), avec une barre de progression pour chacune des deux mesures globales (masquée tant qu'aucune donnée n'a été peinte à l'écran).
     - **Complexité** : en plus des ratios déjà affichés (pour 1000 lignes de code — **ce ne sont pas des pourcentages**), le nombre total de points de complexité cyclomatique et cognitive (nouvelle section « Points de complexité »).
+    <!-- markdownlint-enable MD046 -->
 
     Ces ajouts sont disponibles dans les deux présentations.
 
@@ -223,7 +225,9 @@ Aucun seuil de couleur n'est codé en dur dans les templates : les badges de not
 !!! note "✅ Nouveau bloc Accessibilité (27/10/2026)"
      Affiche le nombre d'anomalies accessibilité (OPEN) détectées par SonarQube via le tag `accessibility` (122 règles couvrant les langages CSS / Web (HTML) / JavaScript / TypeScript), avec une note A-E — même méthode SQALE que RCI et Empreinte Écologique (dette estimée ÷ (ncloc × 30 min), seuils 5/10/20/50 %) — globale **et** par langage (4 lignes de détail affichées directement sous la ligne globale, sans modale).
 
+    <!-- markdownlint-disable MD046 -->
     Pas de facette WCAG officielle côté SonarQube (confirmé : `/api/issues/search?facets=wcag` renvoie 400 et liste exhaustivement les facettes supportées — aucune dédiée à l'accessibilité). Le tag `wcag` existe mais ne couvre que 6 règles très récentes ; le tag `accessibility`, bien plus représentatif, a été retenu comme filtre. Pas de numéro de critère WCAG (1.4.3, 2.4.4…) exploitable via l'API : seulement un détail par règle/sévérité/langage.
+    <!-- markdownlint-enable MD046 -->
 
     Contrairement à l'Empreinte Écologique (plugins tiers Creedengo, activable via `CREEDENGO_ENABLED`), les règles d'accessibilité sont intégrées aux plugins de langage standards de SonarQube — il n'est pas de nécessaire d'activer un feature-flag, elle est toujours collectée.
 
@@ -233,9 +237,11 @@ Aucun seuil de couleur n'est codé en dur dans les templates : les badges de not
 !!! note "✅ Distinction « 0 mesuré » / « non calculable »"
     Quand un langage n'a aucune ligne de code dans le projet (absent de `ncloc_language_distribution`), le nombre d'anomalies et la note affichent un tiret grisé plutôt que `0` : `0` reste réservé au cas réellement mesuré (le langage existe, zéro anomalie trouvée). Dans ce cas, `BatchCollecteaccessibilityController` n'effectue même pas l'appel `/api/issues/search` pour ce langage (langage absent détecté avant l'appel).
 
+    <!-- markdownlint-disable MD046 -->
     Disponible dans les deux présentations (classique 3 colonnes et tuiles).
+    <!-- markdownlint-enable MD046 -->
 
-## 🔄 Le flux Collecte → Peinture → Sauvegarde
+## 6️⃣ 🔄 Le flux Collecte → Peinture → Sauvegarde
 
 Trois opérations bien distinctes, souvent confondues :
 
@@ -244,6 +250,7 @@ Ces tables ne contiennent **que la dernière collecte** — ce ne sont pas des t
 - 🎨 **Peinture** = relit ces tables déjà en base (**aucun appel SonarQube**) et remplit l'affichage. Fonctionne pour **n'importe quelle collecte antérieure**, par n'importe quel utilisateur, à tout moment — pas seulement celle qui vient d'être lancée dans la session courante.
 - 💾 **Sauvegarde (Enregistrement)** = copie ce qui est actuellement affiché dans la table **`historique`**, versionnée celle-là (une ligne par version de projet). C'est la seule étape qui alimente durablement [Suivi](suivi.md) et les graphiques de tendance.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor U as Utilisateur
@@ -270,6 +277,7 @@ sequenceDiagram
         Enr-->>JS: « Cette version existe déjà dans l'historique »
     end
 ```
+<!-- markdownlint-enable MD046 -->
 
 ### 🎬 Cas à connaître
 
@@ -293,12 +301,13 @@ sequenceDiagram
     .
     Ce genre de 403 vient le plus souvent d'un `SONAR_TOKEN` du **mauvais type** (jeton d'analyse au lieu de jeton personnel) — voir [Jetons d'authentification SonarQube](../developpement/securite.md#-jetons-dauthentification-sonarqube).
 
-## 🤖 Deux pipelines de collecte : interactif et batch/cron
+## 7️⃣ 🤖 Deux pipelines de collecte : interactif et batch/cron
 
 Le schéma « Collecte → Peinture → Sauvegarde » ci-dessus ne décrit que le **pipeline interactif** (bouton « Collecte » de la page Projet, piloté par `ApiCollecteController`). Il existe un **second pipeline**, totalement séparé, pour la collecte automatique/manuelle en masse (cron nocturne, file de traitement) — les deux s'appuient sur les **mêmes classes métier** (`Batch*Controller`), mais via des orchestrateurs et des chemins de persistance différents.
 
 ### 🚦 Qui déclenche quoi
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     U["🖱️ Utilisateur<br/>page Projet"] -->|clic Collecte| ACC["ApiCollecteController"]
@@ -311,12 +320,14 @@ flowchart LR
     BMC --> CC
     CRC --> CC
 ```
+<!-- markdownlint-enable MD046 -->
 
 - **Pipeline interactif** : `ApiCollecteController` expose une méthode par indicateur (`apiCollecteRci()`, `apiCollecteOwasp()`, …), appelées une à une en séquence par `index-projet.js` — c'est la seule voie qui peut être suivie visuellement, indicateur par indicateur, dans le navigateur.
 - **Pipeline batch/cron** : trois déclencheurs différents (cron, file de traitement, commande console de dev) convergent tous vers **une seule méthode**, `CollecteController::collecte()`, qui enchaîne elle-même tous les indicateurs dans un seul appel serveur.
 
 ### 🔗 Une seule logique métier, deux points d'entrée
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     ACC["ApiCollecteController<br/>apiCollecteRci()"] --> BCRC["BatchCollecteRciController<br/>buildRciMeasures()"]
@@ -324,6 +335,7 @@ flowchart LR
 
     BCRC -->|DELETE puis INSERT| RCI[("table rci")]
 ```
+<!-- markdownlint-enable MD046 -->
 
 `BatchCollecteRciController::buildRciMeasures()` calcule **et** persiste le RCI de façon autonome (elle ne dépend d'aucune autre collecte préalable) — c'est pour cela qu'elle peut être appelée indifféremment par l'un ou l'autre pipeline, avec un résultat identique.
 
@@ -332,7 +344,7 @@ flowchart LR
 - **Interactif** : `CollecteController` n'intervient pas — les indicateurs sont écrits dans les tables brutes (dont `rci`) un par un. Pour la plupart des indicateurs (dont RCI), le clic **« Enregistrer »** ne relit rien côté serveur : `enregistrement.js` reprend les valeurs déjà chargées dans le DOM par la peinture et les envoie dans le payload à `ApiEnregistrementController`, qui se contente de les reporter dans `historique`. `clean_code` est l'exception : son contrôleur relit directement sa table en base à cet instant. Voir « Cas à connaître » plus haut : sans le clic Enregistrer, `historique` reste inchangé dans tous les cas.
 - **Batch/cron** : `CollecteController::collecte()` écrit dans les tables brutes **et** dans `historique` au sein du même appel — pas d'étape « Enregistrer » séparée, la collecte automatique est toujours historisée.
 
-## ⚠️ Messages remontés par la page
+## 8️⃣ ⚠️ Messages remontés par la page
 
 Cette page n'a **aucun flash serveur** au chargement (`ProjetController::index()` n'appelle jamais `addFlash`) — tous les retours viennent des appels AJAX déclenchés par les actions, via `showMessage()` de `messageHelper.js`.
 
@@ -360,7 +372,7 @@ La page `/projet/mes-projets` a ses propres messages Flash, distincts de la page
 | `warning` | Aucun projet trouvé pour le groupe fonctionnel | ⚠️ Je n'ai pas trouvé de projets pour ton groupe fonctionnel. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406). |
 | `error` | Échec de la lecture de l'historique | ⚠️ Tu dois être rattaché à un groupe fonctionnel (Erreur 404). *(message générique réutilisé, trace technique en `debug`)* |
 
-## 📚 Pour aller plus loin
+## 9️⃣ 📚 Pour aller plus loin
 
 - [OWASP](owasp.md) — analyse des vulnérabilités.
 - [Clean Code](clean-code.md) — indicateurs SonarQube 10+.

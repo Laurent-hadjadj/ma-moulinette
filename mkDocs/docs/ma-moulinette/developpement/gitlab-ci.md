@@ -10,12 +10,14 @@ Le pipeline GitLab CI (`.gitlab-ci.yml`) automatise la compilation et le déploi
     Noms d'hôtes de déploiement, chemins serveur, clés SSH : ces valeurs vivent exclusivement dans les variables CI/CD protégées de GitLab (`Settings → CI/CD → Variables`).
     Ne jamais les copier dans `.gitlab-ci.yml` en clair ni dans la documentation.
 
-## 🪜 Stages
+## 1️⃣ 🪜 Stages
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     A[pre-quality] --> B[build] --> C[deploy]
 ```
+<!-- markdownlint-enable MD046 -->
 
 | Stage | État | Rôle |
 | --- | --- | --- |
@@ -23,7 +25,7 @@ flowchart LR
 | `build` | `build_ma_moulinette_job` | Installation des dépendances, compilation des assets, packaging |
 | `deploy` | `deploy_ma_moulinette_job` | Déploiement manuel (`when: manual`) vers le serveur cible |
 
-## 🏗️ Job de build
+## 2️⃣ 🏗️ Job de build
 
 Exécuté dans une image `composer:lts`, avec un service PostgreSQL éphémère lié (`postgres:18.1-alpine3.22`, alias `postgresql-ma-moulinette` — doit correspondre au host attendu par `DATABASE_URL`).
 
@@ -37,7 +39,7 @@ Exécuté dans une image `composer:lts`, avec un service PostgreSQL éphémère 
 
 Le résultat est publié comme artefact GitLab (durée de vie 30 min), récupéré par le job de déploiement.
 
-## 🚀 Job de déploiement
+## 3️⃣ 🚀 Job de déploiement
 
 Manuel (`when: manual`), déclenché uniquement sur événement `web`. Récupère l'artefact du job de build via l'API GitLab, puis :
 
@@ -45,11 +47,11 @@ Manuel (`when: manual`), déclenché uniquement sur événement `web`. Récupèr
 2. Déploie la nouvelle version par SSH/SCP.
 3. Pousse les scripts SQL d'évolution (`migrations/POSTGRESQL/updates/`) et les exécute côté serveur via `docker exec ... execute_sql_files.sh` sur le conteneur PostgreSQL — voir [Installation d'un environnement PostgreSQL](guide-migration.md) pour le détail de ce script.
 
-## 🎛️ Paramétrage par environnement
+## 4️⃣ 🎛️ Paramétrage par environnement
 
 Le pipeline utilise les [inputs GitLab CI](https://docs.gitlab.com/ee/ci/inputs/) (`spec.inputs`) pour choisir l'environnement cible au déclenchement manuel : serveur de déploiement, `APP_ENV` (`dev`/`prod`), `APP_DEBUG`, et les hôtes de confiance (`TRUST_HOST1`/`TRUST_HOST2`, voir [Gestion de la sécurité](securite.md#-filtrage-par-hostproxy)).
 
-## 📚 Pour aller plus loin
+## 5️⃣ 📚 Pour aller plus loin
 
 - [Pour bien démarrer](pour_bien_demarrer.md) : mise en place d'un environnement local (hors CI).
 - [Installation d'un environnement PostgreSQL](guide-migration.md) : détail du mécanisme d'exécution des scripts SQL, réutilisé en déploiement.

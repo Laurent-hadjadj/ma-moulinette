@@ -1,6 +1,6 @@
 # 🗂️ Organisation du code et des environnements
 
-## 📦 Environnements
+## 1️⃣ 📦 Environnements
 
 L'application distingue plusieurs environnements Symfony (`APP_ENV`) : `dev`, `test` et `prod`. Chacun a ses fichiers `.env` dédiés — voir [Pour bien démarrer](../developpement/pour_bien_demarrer.md#-fichiers-denvironnement) pour la liste complète et la règle « jamais de secret commité ».
 
@@ -16,7 +16,7 @@ APP_DEBUG=0
 
 `APP_SECRET` (chiffrement CSRF, session) doit être une valeur unique et aléatoire par environnement, générée à l'installation — jamais réutilisée entre dev/test/prod, jamais copiée depuis un exemple de documentation.
 
-## 🌳 Organisation des dossiers (`src/`)
+## 2️⃣ 🌳 Organisation des dossiers (`src/`)
 
 Le code applicatif suit l'arborescence Symfony standard, avec un regroupement des controllers par domaine fonctionnel plutôt qu'à plat :
 
@@ -45,7 +45,7 @@ src/
 
 Ce regroupement par domaine (`Controller/<Domaine>/`) facilite la navigation lorsque le nombre de controllers augmente — voir [Architecture technique](architecture-technique.md) pour la vue d'ensemble applicative.
 
-## ⚙️ Installation des dépendances
+## 3️⃣ ⚙️ Installation des dépendances
 
 ```bash
 composer install
@@ -53,7 +53,7 @@ composer install
 
 Aucune dépendance Node.js n'est nécessaire pour l'application elle-même (asset-mapper) — voir la note dans [Pour bien démarrer](../developpement/pour_bien_demarrer.md). Node.js n'est requis que pour la suite de tests E2E Playwright (`tests/e2e/`).
 
-## 📚 Pour aller plus loin
+## 4️⃣ 📚 Pour aller plus loin
 
 - [Architecture technique](architecture-technique.md) : stack, conteneurs, sécurité API.
 - [Pour bien démarrer](../developpement/pour_bien_demarrer.md) : mise en place d'un environnement de développement.

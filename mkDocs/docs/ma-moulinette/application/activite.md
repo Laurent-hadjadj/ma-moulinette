@@ -2,7 +2,7 @@
 
 La page Activité est un **tableau de bord en lecture seule** de l'historique des tâches d'exécution SonarQube (background tasks, `api/ce/activity`), agrégé **par année**. L'accès à la page (affichage) et les deux actions (recalcul, graphiques) exigent tous le rôle **`ROLE_ACTIVITY`**.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 Le **bandeau commun** (logo, Préférences, Déconnexion, courriel) est identique sur toutes les pages — voir [Page d'accueil › Bandeau commun](accueil.md#bandeau-commun-present-sur-toutes-les-pages). Contenu propre à la page :
 
@@ -16,7 +16,7 @@ flowchart TD
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -41,7 +41,7 @@ Page Activité
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📊 Le tableau annuel
+## 3️⃣ 📊 Le tableau annuel
 
 Une ligne par année, issue de `activity_historique` :
 
@@ -58,11 +58,11 @@ Une ligne par année, issue de `activity_historique` :
 
 Le bouton **« Recalculer les statistiques »** (re)génère ce tableau à partir de la table `activity` — il ne collecte rien depuis SonarQube.
 
-## 📈 Les graphiques
+## 4️⃣ 📈 Les graphiques
 
 Trois séries temporelles (analyses/jour, projets/jour, ou les deux) tracées dans un canvas via Chart.js, sur les données de l'**année courante** (`activity`). Le tracé se fait à la demande au clic sur un bouton (appel `POST /api/secure/activity/dessin`).
 
-## ⚙️ Comment la page est alimentée
+## 5️⃣ ⚙️ Comment la page est alimentée
 
 !!! note "🏗️ La collecte n'est plus déclenchée depuis l'UI"
     Historiquement, cette page comparait les tâches SonarQube à la base et **lançait la collecte directement**.
@@ -91,7 +91,7 @@ flowchart LR
     - **Reprise** (table déjà peuplée) : la collecte repart de la **dernière date connue en base** (+ 1 jour) jusqu'à hier.
     - **Initialisation** (table vide) : **backfill de tout l'historique** — on part de la **date la plus éloignée** (option `--init-days`, ~3 ans par défaut) jusqu'à hier, découpé en fenêtres de `--catch-up-days` jours (7 par défaut, `1` possible). Ce découpage est **volontaire** : l'API `api/ce/activity` **plafonne à 10 000 résultats par requête** (`p × ps ≤ 10000`) ; des fenêtres étroites restent sous ce plafond et garantissent de **tout récupérer**.
 
-## ⚠️ Messages remontés par la page
+## 6️⃣ ⚠️ Messages remontés par la page
 
 Deux canaux distincts (mécanisme commun dans [Gestion des messages](../erreur/gestion-messages.md)).
 
@@ -118,11 +118,12 @@ Deux canaux distincts (mécanisme commun dans [Gestion des messages](../erreur/g
 | *(réponse API 500)* | Échec de l'écriture en base lors du recalcul | ❌ Échec de l'enregistrement des statistiques : *{erreur}* |
 | *(inline)* | Tableau vide | Aucune donnée disponible. |
 
-## ✅ Corrections apportées (2026-07-14)
+## 7️⃣ ✅ Corrections apportées (2026-07-14)
 
 !!! note "✅ Passage en rapport « lecture seule » assumé + fiabilisation"
     Suite à la migration qui a retiré la collecte directe, la page a été fiabilisée :
 
+    <!-- markdownlint-disable MD046 -->
     - **Bouton renommé** « Mise à jour de la liste » → **« Recalculer les statistiques »** (ré-agrégation, pas de collecte).
     - **Colonnes corrigées** : « Analyse » conserve le **total** ; « Moyenne » est enfin **alimentée** (analyses/jour) ; « Échec » n'est plus perdu (clé `failed`) ; **taux = succès/total, borné à 100 %** (formule était inversée).
     - **Recalcul réparé** : la réponse renvoyait la clé `liste` mais le contrôleur/JS lisaient `request` — le tableau ne se remplissait jamais. Aligné sur `liste`.
@@ -133,11 +134,12 @@ Deux canaux distincts (mécanisme commun dans [Gestion des messages](../erreur/g
     - **Messages pragmatiques** : plus d'invite à « mettre à jour la liste » (impossible depuis l'UI) ; message d'action unique quand le tableau n'est pas encore généré.
     - **Collecte fiabilisée** (`app:activity:collecte`) : URL sans double slash, dates ISO 8601, backfill complet sur table vide, colonnes `activity` élargies (UUID 36 car.), pagination corrigée, erreurs 403/plafond signalées.
     - **Page reliée au back-office** : nouvelle carte **« Activité SonarQube »** sur `admin/home.html.twig` (gated `ROLE_ACTIVITY`) — voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes). La page reste aussi accessible depuis le plan du site. En cohérence, l'**affichage de la page** (pas seulement ses actions) est désormais protégé par `#[IsGranted('ROLE_ACTIVITY')]` sur la route `/activity`.
+    <!-- markdownlint-enable MD046 -->
 
 !!! caution "⚠️ Limitation résiduelle connue"
     Code mort restant à nettoyer : `ActivityRepository::insertActivity()`, `ActivityRepository::nombreJourAnneeDonnee()` (orphelins), et `src/Schedule.php` (planificateur vide, remplacé par le cron).
 
-## 📚 Pour aller plus loin
+## 8️⃣ 📚 Pour aller plus loin
 
 - [Processus de récupération des tâches](../architecture/processus-activity.md) et [Traitement quotidien](../architecture/processus-batch-activity.md) : le mécanisme de collecte (cron + commande).
 - [Gestion de la sécurité](../developpement/securite.md) : `ROLE_ACTIVITY`.

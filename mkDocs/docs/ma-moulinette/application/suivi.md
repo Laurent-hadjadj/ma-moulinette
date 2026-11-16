@@ -12,7 +12,7 @@ Historique des versions d'un projet, avec tendances et comparaison à une versio
 
 Un projet doit déjà avoir **au moins une version enregistrée** dans l'historique (bouton « Enregistrer » de la page Projet, ou « Ajouter une analyse » ci-dessous) pour que cette page affiche quelque chose ; sinon un message invite à sauvegarder une collecte au préalable.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 <!-- markdownlint-disable MD046 -->
 ```mermaid
@@ -24,7 +24,7 @@ flowchart LR
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -60,7 +60,7 @@ Page Suivi
     Contrairement à [Projet](projet.md)/[Répartition](repartition_details.md), aucun des 3 boutons du menu d'outils (PDF/Ajouter/Modifier) n'est masqué par Twig selon le rôle — ils sont **toujours visibles** pour tout utilisateur ayant accès à la page.
     `ROLE_SUIVI` n'est vérifié qu'à l'intérieur de la modale « Modifier les versions », sur 2 des 4 actions possibles (voir tableau ci-dessous).
 
-## 🔐 Rôles — correction importante
+## 3️⃣ 🔐 Rôles — correction importante
 
 !!! caution "Le rôle réel est `ROLE_SUIVI`, pas `ROLE_GESTIONNAIRE`"
     Seules deux actions sont réellement protégées par un rôle, et c'est **`ROLE_SUIVI`** (branche indépendante de `ROLE_UTILISATEUR`, sans lien avec `ROLE_GESTIONNAIRE` — voir [Gestion de la sécurité](../developpement/securite.md#-rôles-et-hiérarchie)) :
@@ -74,7 +74,7 @@ Page Suivi
 | **Ajouter une analyse** | Aucun |
 | **Export PDF** | Aucun |
 
-## 📊 Tableaux et graphiques affichés
+## 4️⃣ 📊 Tableaux et graphiques affichés
 
 Chaque tableau ci-dessous présente une colonne par version affichée, avec un marqueur « (collecte) » ou « (reconstitué) » selon l'origine de la donnée (voir [flux « Ajouter une analyse »](#-ajouter-une-analyse--appel-sonarqube-direct) ci-dessous), et un repère visuel sur la version de référence :
 
@@ -101,12 +101,12 @@ Il est recommandé de **ne pas dépasser 10 versions** (1 version de référence
     Quand une liste de suivi personnalisée est active pour ce projet, tous les tableaux basculent sur exactement les versions choisies (`SuiviController::suivi()`, requêtes `*ParVersions`) — mais le graphique de courbe cumulée continuait d'utiliser `selectHistoriqueAnomalieGraphique()` sans aucun filtre (elle ne prenait même pas le `LIMIT` en compte : elle remontait tout l'historique du projet). Le graphique pouvait donc afficher un jeu de versions différent de celui des tableaux juste au-dessus.
     Corrigé par l'ajout d'une variante `selectHistoriqueAnomalieGraphiqueParVersions()` (même filtre `initial = true OR version IN (...)` que les autres requêtes `*ParVersions`), appelée à la place de la version sans filtre quand `$modeVersionsChoisies` est actif.
 
-## ⭐ Liste de suivi personnalisée (max 15 versions)
+## 5️⃣ ⭐ Liste de suivi personnalisée (max 15 versions)
 
 Stockée dans les préférences JSON de l'utilisateur (`utilisateur.preference['suivi_version'][maven_key]`, un tableau de numéros de version par projet).
 Le bouton **Suivi** de chaque ligne, dans la modale « Modifier les versions », l'ajoute/le retire ; un compteur `(0/15)` affiche la progression. La limite de 15 est vérifiée **à la fois côté JS** (avant l'appel réseau, message immédiat) **et côté serveur** (`UtilisateurRepository::updateUtilisateurSuiviVersion()`, code 400 si la limite est atteinte) — double contrôle redondant mais cohérent.
 
-## ➕ Ajouter une analyse — appel SonarQube direct
+## 6️⃣ ➕ Ajouter une analyse — appel SonarQube direct
 
 !!! caution "Ce n'est pas une simple relecture de l'historique"
     Contrairement à ce que son nom suggère, « Ajouter une analyse » **interroge directement le serveur SonarQube** (deux appels : `api/project_analyses/search` puis `api/measures/search_history`), pas seulement la base locale.
@@ -117,7 +117,7 @@ Le bouton **Suivi** de chaque ligne, dans la modale « Modifier les versions »,
 
 Si la version existe déjà dans l'historique, un message l'indique sans dupliquer la ligne.
 
-## 🗑️ Modifier les paramètres d'une version
+## 7️⃣ 🗑️ Modifier les paramètres d'une version
 
 Depuis la modale dédiée : bascule du **favori** (personnel), de la **version de référence** (partagée, `ROLE_SUIVI`), de l'inclusion dans la **liste de suivi personnalisée** (max 15 versions), ou **suppression** de la version (`ROLE_SUIVI`). Chaque bascule échouée côté serveur revient visuellement en arrière (rollback JS de l'interrupteur).
 
@@ -128,7 +128,7 @@ Depuis la modale dédiée : bascule du **favori** (personnel), de la **version d
     modales rechargent désormais la page automatiquement à leur fermeture, quelle que soit la façon de la
     fermer (bouton « Fermer », touche Échap, clic à l'extérieur).
 
-## 📄 Export PDF
+## 8️⃣ 📄 Export PDF
 
 Bouton « Éditer en PDF » — accessible sans rôle spécifique, ouvre le rapport dans un nouvel onglet.
 
@@ -138,7 +138,7 @@ Bouton « Éditer en PDF » — accessible sans rôle spécifique, ouvre le rapp
 
     Corrigé : `rapportPdf()` appelle désormais le même contrôle `listeProjet()` que la route web, avec les mêmes réponses 404 (absence de groupe fonctionnel, ou projet hors périmètre) — cohérent avec le fait que cette route lève déjà des `NotFoundHttpException` pour ses autres cas d'erreur (clé manquante, historique vide).
 
-## ⚠️ Messages remontés par la page
+## 9️⃣ ⚠️ Messages remontés par la page
 
 ### Flash serveur (au chargement, `SuiviController::suivi()`)
 
@@ -164,7 +164,7 @@ Bouton « Éditer en PDF » — accessible sans rôle spécifique, ouvre le rapp
 | `info` | Favori / référence / suivi mis à jour avec succès | ℹ️ Confirmation |
 | `warning` | Code 403 explicite sur suppression (rôle manquant) | ⚠️ Rôle `ROLE_SUIVI` requis |
 
-## 📚 Pour aller plus loin
+## 🔟 📚 Pour aller plus loin
 
 - [Projet](projet.md) : lancement d'une collecte complète et enregistrement.
 - [COSUI](cosui.md) : compare la version courante à la version de référence définie ici.

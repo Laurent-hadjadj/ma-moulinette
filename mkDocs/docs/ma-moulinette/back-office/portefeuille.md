@@ -2,8 +2,9 @@
 
 CRUD EasyAdmin (`Admin\PortefeuilleCrudController`) permettant de regrouper un ensemble de projets SonarQube en vue d'une collecte automatique ou manuelle — le rattachement à un [portefeuille](portefeuille.md) est un préalable pour créer un [traitement](traitement.md).
 
-## 🗺️ Cartographie — cycle de vie
+## 1️⃣ 🗺️ Cartographie — cycle de vie
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Home["🏠 /admin<br/>carte Portefeuilles<br/>ROLE_BATCH"] --> Index["📋 Liste des portefeuilles"]
@@ -23,8 +24,9 @@ flowchart TD
     CheckDelete -->|oui| FlashDelete["🚫 Flash danger,<br> suppression bloquée"]
     CheckDelete -->|non| DoDelete[("🗑️ suppression")]
 ```
+<!-- markdownlint-enable MD046 -->
 
-## 🧭 Chemin de fer
+## 2️⃣ 🧭 Chemin de fer
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -44,7 +46,7 @@ Formulaire (Créer / Modifier)
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📋 Champs
+## 3️⃣ 📋 Champs
 
 | Champ | Détail |
 | --- | --- |
@@ -66,7 +68,7 @@ Formulaire (Créer / Modifier)
     `PortefeuilleCrudController` n'imposait aucune restriction de rôle côté serveur — seule la carte de la page d'accueil du back-office masquait l'accès (`is_granted('ROLE_BATCH')`).
     **Corrigé** par l'ajout de `#[IsGranted('ROLE_BATCH', statusCode: 403)]` sur le contrôleur (même correctif appliqué à [Batch](traitement.md)) — voir [Gestion des utilisateurs](utilisateur.md) et [Gestion de la sécurité](../developpement/securite.md) pour le détail complet de ce renforcement.
 
-## 🗑️ Suppression
+## 4️⃣ 🗑️ Suppression
 
 La suppression d'un portefeuille est bloquée si un [traitement](traitement.md) y fait encore référence — il faut d'abord supprimer ou réaffecter les traitements concernés.
 

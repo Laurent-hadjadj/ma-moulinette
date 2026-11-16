@@ -1,21 +1,17 @@
-# Pile Docker de la DÉMONSTRATION publique de Ma-Moulinette — distincte de la production et des tests e2e.
+# Pile Docker de la DÉMONSTRATION publique de Ma-Moulinette : distincte de la production et des tests e2e.
 #
-# Principes (voir mkDocs/docs/ma-moulinette/application/demo.md) :
+# Principes (détails : mkDocs/docs/ma-moulinette/architecture/demo.md) :
 #   - instance séparée : base, réseau et volumes propres, aucun lien avec la production ;
+#   - le code n'est PAS dans les images (comme la production) : il est construit dans un dossier « app » (DEMO_APP_DIR,
+#     défaut ../../../app, à côté du clone), monté en lecture seule dans php-fpm et nginx ;
+#   - mode démo applicatif (APP_MODE_DEMO=1) : liste blanche de routes, refus par défaut (App\Security\ModeDemo) ;
 #   - AUCUN conteneur cron : pas de traitement batch, pas de purge de journaux ;
 #   - aucun jeton d'ingestion ni de client configuré : les routes /api/public/traitement/* et les dépôts de rapports
 #     répondent 503 (échec fermé) ;
-#   - SonarQube injoignable (adresse invalide) : aucune collecte possible ;
+#   - SonarQube : adresse et jeton de lecture seule dans .env (vides = aucun appel sortant) ;
 #   - nginx n'est publié que sur 127.0.0.1 ; la publication passe par le reverse proxy de l'hôte.
 #
-# ⚠️ NE PAS EXPOSER sur Internet tant que le mode démo applicatif (APP_MODE_DEMO, liste blanche de routes) n'est pas
-#    livré : à ce jour la variable est posée mais l'application ne l'applique pas encore.
-#
-# Usage :
-#   cp docker/demo/.env.exemple docker/demo/.env      (puis remplacer les valeurs)
-#   docker compose -f docker/demo/docker-compose.demo.yml up -d --build
-#   bash docker/demo/restaurer-demo.sh                (remise à l'état de référence)
-#   http://127.0.0.1:8081
+# Déploiement et mise à jour : bash docker/demo/deployer-demo.sh <tag> (documentation : mkDocs/docs/ma-moulinette/architecture/demo/installation.md et mise-a-jour.md).
 name: ma-moulinette-demo
 
 services:
@@ -35,9 +31,11 @@ services:
       - demo-net
 
   php-fpm-demo:
+    # Même image que la production (extensions PHP, php.ini) ; elle ne contient aucun code.
+    image: ma-moulinette-php-demo:8.5.12
     build:
-      context: ../..
-      dockerfile: docker/demo/php-demo.dockerfile
+      context: ..
+      dockerfile: php-custom.dockerfile
     container_name: php-fpm-ma-moulinette-demo
     restart: unless-stopped
     depends_on:
@@ -96,7 +94,7 @@ services:
       - MODULE_AUTRE=batch,rdd,etl,pipeline,processing
       - MARQUE_ENTREPRISE_SHORT=Démo
       - MARQUE_ENTREPRISE_LONG=Ma-Moulinette — démonstration
-      - LOGO_ENTREPRISE=logo-entreprise.png
+      - LOGO_ENTREPRISE=logo-demo.png
       - RGAA=partiellement
       - CGU_EDITEUR=Ma Moulinette (démonstration)
       - CGU_ADRESSE=106 rue de la République, 75011 Paris, France
@@ -116,18 +114,18 @@ services:
       - MAMOUL_CLI_PROXY_USER_PWD=
       - MAMOUL_CLI_NO_PROXY=localhost,127.0.0.1
     volumes:
+      - ${DEMO_APP_DIR:-../../../app}:/var/www:ro
       - demo-var:/var/www/var
-    # Le cache Symfony (prod) n'est jamais recalculé tout seul : on le purge à chaque démarrage pour que le code de l'image soit celui servi.
+    # Le cache Symfony (prod) n'est jamais recalculé tout seul : on le purge à chaque démarrage pour que le code monté soit celui servi.
     entrypoint: ["sh", "-c", "rm -rf /var/www/var/cache/* && mkdir -p /var/www/var/cache /var/www/var/log /var/www/var/sessions /var/www/var/share && chown -R www-data:www-data /var/www/var && exec docker-php-entrypoint php-fpm"]
     networks:
       - demo-net
 
   nginx-demo:
-    build:
-      context: ../..
-      dockerfile: docker/demo/nginx-demo.dockerfile
-      additional_contexts:
-        php: service:php-fpm-demo
+    image: nginx:1.27-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${DEMO_APP_DIR:-../../../app}/public:/var/www/public:ro
     container_name: nginx-ma-moulinette-demo
     restart: unless-stopped
     depends_on:

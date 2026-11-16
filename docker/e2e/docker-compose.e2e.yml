@@ -52,7 +52,7 @@ services:
       context: ../..
       dockerfile: docker/e2e/php-e2e.dockerfile
       args:
-        - php_version=8.5.12-cli-trixie
+        - php_version=8.5.12-fpm-trixie
     container_name: php-fpm-ma-moulinette-e2e
     # Ancrage réutilisé par supercron-e2e (même environnement exactement : base, jetons d'ingestion, APP_ENV=test).
     environment: &e2e-environment

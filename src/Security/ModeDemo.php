@@ -21,12 +21,12 @@ namespace App\Security;
  * **Refus par défaut** : une route absente de cette liste est interdite, y compris une route ajoutée plus tard. Il ne
  * suffit pas de filtrer par méthode HTTP, car de nombreuses routes de lecture sont en `POST` (`/api/secure/peinture/*`,
  * `/api/secure/liste/...`) tandis que certaines routes `GET` écrivent (`/profil/details`, `/repartition`,
- * `/api/secure/utilisateur/change-me`).
+ * `/api/secure/utilisateur/change-me`, qui n'est autorisée qu'en `POST`, voir {@see self::MOTIFS_POST_SESSION}).
  *
  * Chaque motif a été retenu après lecture du contrôleur (aucune écriture en base, aucun appel sortant autre que vers
  * `SONAR_URL`, invalide en démo). Les routes de collecte, d'enregistrement, d'administration, de dépôt de rapports,
  * de préférences et de changement de mot de passe ne figurent volontairement PAS ici ; voir
- * `mkDocs/docs/ma-moulinette/architecture/demo.md` pour le détail.
+ * `mkDocs/docs/ma-moulinette/architecture/demo/securite.md` pour le détail.
  */
 final class ModeDemo
 {
@@ -42,10 +42,12 @@ final class ModeDemo
         '#^/$#',
         '#^/(login|logout|logout/au-revoir|error)$#',
         '#^/(plan-du-site|mention-legale|donnees-personnelles)$#',
+        '#^/demo/indisponible$#',
         '#^/\.well-known/[A-Za-z0-9._-]+$#',
         '#^/accueil$#',
         '#^/accueil/favori/liste/version$#',
         '#^/api/secure/accueil/favori/liste/projet$#',
+        '#^/api/secure/preference/category$#',
         '#^/projet(/mes-projets|/cosui)?$#',
         '#^/suivi(/set|/rapport/pdf)?$#',
         '#^/owasp(/detail/[^/]+|/rapport/pdf)?$#',
@@ -76,9 +78,33 @@ final class ModeDemo
         '#^/api/secure/(status|health|system/info)$#',
     ];
 
-    /** Seule écriture tolérée : l'ouverture de session (formulaire de connexion). */
+    /**
+     * Écritures tolérées : l'ouverture de session (formulaire de connexion) et deux réglages qui ne touchent que le compte
+     * de l'utilisateur connecté, sans gravité sur une instance dont la base est restaurée chaque nuit :
+     * - le changement d'avatar ;
+     * - les préférences (`PreferenceController::apiPreferenceStatut`, catégories d'une liste fermée : vue par défaut de
+     *   la page projet, suivi, favoris) ; la suppression de favoris n'est volontairement pas incluse.
+     *
+     * Le changement d'avatar (`ChangeMeController`) ne modifie que l'avatar de l'utilisateur connecté, avec un motif
+     * validé côté serveur (dossier connu + numéro) ; sans gravité sur une instance dont la base est restaurée chaque nuit.
+     * `POST` uniquement : la route n'impose pas de méthode, mais l'interface n'utilise que `POST`.
+     */
     private const MOTIFS_POST_SESSION = [
         '#^/login$#',
+        '#^/api/secure/utilisateur/change-me$#',
+        '#^/api/secure/preference/statut$#',
+    ];
+
+    /**
+     * Écritures en `PUT` tolérées : le choix de la version de référence d'un projet (page de suivi, modale de modification).
+     * Elle met à jour la table `historique` : c'est une donnée PARTAGÉE, visible de tous les visiteurs jusqu'à la restauration
+     * nocturne. La route exige `ROLE_SUIVI`. Les autres `PUT` de la page (corbeille = suppression, favori, mise à jour
+     * depuis SonarQube) restent interdits.
+     *
+     * @var list<string>
+     */
+    private const MOTIFS_PUT = [
+        '#^/api/secure/suivi/version/reference$#',
     ];
 
     private function __construct()
@@ -110,6 +136,10 @@ final class ModeDemo
         if ($methode === 'POST') {
             return self::correspond($chemin, self::MOTIFS_POST_LECTURE)
                 || self::correspond($chemin, self::MOTIFS_POST_SESSION);
+        }
+
+        if ($methode === 'PUT') {
+            return self::correspond($chemin, self::MOTIFS_PUT);
         }
 
         return false;

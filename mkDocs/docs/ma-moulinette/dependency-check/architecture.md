@@ -1,6 +1,6 @@
 # 🛡️ DependencyCheck — architecture d'ingestion
 
-## 🎯 Contexte et objectif
+## 1️⃣ 🎯 Contexte et objectif
 
 Les applications Java sont scannées en CI par **OWASP DependencyCheck** (rapport JSON, ~3 Mo pour une stack Spring/Angular typique), qui recense les CVE détectées sur chaque dépendance. Avant ce module, ces rapports n'étaient consultables qu'en HTML statique, sans agrégation cross-projet, sans historique, sans déduplication des CVE entre applications partageant un socle commun.
 
@@ -11,8 +11,9 @@ Le module **DC-Ingest** centralise ces rapports dans Ma-Moulinette pour :
 - 📅 l'historique des scans par projet et version ;
 - 🧮 un **plan de remédiation chiffré** (effort en jours-homme) pour prioriser les correctifs — voir [Référence](reference.md#-formule-jh-effort-de-remediation).
 
-## 🏗️ Pipeline d'ingestion
+## 2️⃣ 🏗️ Pipeline d'ingestion
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     CI[🦊 CI GitLab] -->|"POST + X-DependencyCheck-Token<br/>JSON / gzip / zip / tgz, max 10 Mo"| Sub[🔐 DependencyCheckTokenSubscriber<br/>priorité 25]
@@ -28,9 +29,11 @@ flowchart TD
     Tables --> Pages[🌐 Pages web + PDF]
     Q -->|cron quotidien 03h| Purge[🧹 app:dependency-check:purge<br/>done/failed uniquement]
 ```
+<!-- markdownlint-enable MD046 -->
 
 La table `dc_processing_queue` ne connaît que 4 statuts : `queued`/`processing`/`done`/`failed` — il n'existe pas de statut `requeue` intermédiaire. Deux mécanismes distincts ramènent une row en `queued`, à ne pas confondre :
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 stateDiagram-v2
     [*] --> queued: POST accepté
@@ -42,6 +45,7 @@ stateDiagram-v2
     done --> [*]
     failed --> [*]
 ```
+<!-- markdownlint-enable MD046 -->
 
 1. **Échec applicatif** (JSON invalide, erreur d'ingestion...) avec `attempts < 3` : la row repasse **immédiatement** en `queued` et sera reprise dès le batch suivant, sans délai d'attente.
 2. **Crash du worker** : une row reste bloquée en `processing` parce que le process est mort avant de la clôturer (jamais explicitement requeue). `reclaimStaleProcessing()` détecte ces rows orphelines après 5 minutes et les repasse en `queued`.
@@ -49,7 +53,7 @@ stateDiagram-v2
 !!! caution "⚠️ `queued`/`processing` ne sont jamais purgés automatiquement"
     La purge quotidienne ne supprime que les rows `done`/`failed` de plus de N jours. Une entrée `queued` ancienne (> 15 min) est une anomalie à investiguer manuellement — voir [Exploitation — reprise après incident](exploitation.md#-reprise-après-incident).
 
-## 🧭 Décisions d'architecture clés
+## 3️⃣ 🧭 Décisions d'architecture clés
 
 **Job table + cron court, pas Symfony Messenger.** Un worker `messenger:consume` long-running a déjà causé des fuites mémoire et des redémarrages fréquents sur d'autres déploiements. Un process court qui traite un batch puis `exit` élimine cette classe de bug à la racine : pas de fuite possible puisque le process meurt après chaque batch. La reprise après crash se fait via `reclaimStaleProcessing()` (requeue les `processing` orphelins après 5 min), et le multi-instance est géré nativement par `FOR UPDATE SKIP LOCKED` (PostgreSQL ≥ 9.5).
 
@@ -61,7 +65,7 @@ stateDiagram-v2
 
 **Modèle 4 tables dédupliquées.** `dc_cve` (clé `cve_id`) et `dc_dependency` (clé `sha1`) ne stockent chacune qu'une ligne par CVE/dépendance unique, quel que soit le nombre de projets touchés — ce qui permet directement les requêtes cross-projets ("combien de projets sont touchés par CVE-X ?"). `dc_finding` matérialise la jointure ternaire (scan × dépendance × CVE) avec un **snapshot** de la sévérité/CVSS au moment du scan, pour rester traçable même si NVD requalifie une CVE ultérieurement. Voir [Architecture — base de données](../architecture/architecture-base-de-donnees.md#-dependencycheck-owasp) pour le schéma détaillé.
 
-## 📚 Pour aller plus loin
+## 4️⃣ 📚 Pour aller plus loin
 
 - [Pages et navigation](pages.md) : parcours utilisateur, filtres socle/vue.
 - [Exploitation](exploitation.md) : configuration, supervision, incidents.

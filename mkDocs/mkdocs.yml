@@ -3,7 +3,7 @@ site_name: Documentation Ma-Moulinette
 extra:
   generator: false
 
-copyright: Copyright &copy; 2015 - 2024 Lilmod & Lelamed
+copyright: CC 4.0 - Copyright &copy; 2015 - 2026 Ma-Moulinette by Lilmod & Lelamed
 
 nav:
     - Accueil: index.md
@@ -14,7 +14,15 @@ nav:
         - Base de données: ma-moulinette/architecture/architecture-base-de-donnees.md
         - Processus de récupération d'activité: ma-moulinette/architecture/processus-activity.md
         - Traitement quotidien d'activité: ma-moulinette/architecture/processus-batch-activity.md
-        - Instance de démonstration: ma-moulinette/architecture/demo.md
+        - Instance de démonstration:
+            - Vue d'ensemble: ma-moulinette/architecture/demo.md
+            - Installation initiale: ma-moulinette/architecture/demo/installation.md
+            - Mise à jour: ma-moulinette/architecture/demo/mise-a-jour.md
+            - Préparer les données: ma-moulinette/architecture/demo/donnees.md
+            - Référence des scripts: ma-moulinette/architecture/demo/scripts.md
+            - Étapes détaillées: ma-moulinette/architecture/demo/etapes-detaillees.md
+            - Sécurité et mode démo: ma-moulinette/architecture/demo/securite.md
+            - Dépannage et reste à faire: ma-moulinette/architecture/demo/depannage.md
     - Développement:
         - Ouvrir l'application: ma-moulinette/developpement/ouvrir_mon_application.md
         - Environnement de développement: ma-moulinette/developpement/pour_bien_demarrer.md

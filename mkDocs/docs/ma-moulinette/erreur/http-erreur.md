@@ -12,7 +12,7 @@ Les pages d'erreur HTTP (`templates/bundles/TwigBundle/Exception/error*.html.twi
 | 503 | Service indisponible | Serveur SonarQube injoignable, ou endpoint volontairement désactivé (ex. token non configuré) |
 | 504 | Passerelle expirée | Le serveur SonarQube ou un service dépendant ne répond pas dans les temps |
 
-## 🔒 Journalisation
+## 1️⃣ 🔒 Journalisation
 
 `App\EventListener\ExceptionListener` journalise systématiquement les exceptions non-HTTP ou de statut ≥ 500 (fichier, ligne, trace), avec un **masquage automatique** des valeurs sensibles détectées dans le message ou la trace (`password=`, `secret=`, `token=`, `key=`, remplacées par `***MASKED***`) avant écriture dans les logs.
 Les erreurs HTTP 4xx classiques (400/401/403/404) ne génèrent pas cette journalisation détaillée — elles sont considérées comme des cas d'usage attendus, pas des anomalies applicatives.

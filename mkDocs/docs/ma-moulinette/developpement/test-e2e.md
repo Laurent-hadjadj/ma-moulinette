@@ -65,6 +65,7 @@ Les specs construisent l'état pour la suivante (DB build-up). On simule le parc
 
 ### Vue globale du build-up
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 graph TB
     Start([DB rebuilt<br/>5 users E2E disabled])
@@ -89,6 +90,7 @@ graph TB
     class S06 collecte
     class S07 suivi
 ```
+<!-- markdownlint-enable MD046 -->
 
 | # | Spec | Acteur | Action |
 | --- | --- | --- | --- |
@@ -128,6 +130,7 @@ graph TB
 
 Quatre séquences pour valider l'infrastructure (Symfony serve up + APP_ENV=test + fixtures-e2e.sql chargées).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright
@@ -160,11 +163,13 @@ sequenceDiagram
     Auth-->>PW: stay /login
     end
 ```
+<!-- markdownlint-enable MD046 -->
 
 ### Spec 02 — Bootstrap des groupes utilisateur
 
 L'internal crée les 5 groupes utilisateur via l'UI EasyAdmin.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (interne)
@@ -187,11 +192,13 @@ sequenceDiagram
     PW->>CRUD: GET /index
     CRUD-->>PW: liste avec admin, consultation, collecte, gestionnaire metier, gestionnaire applicatif
 ```
+<!-- markdownlint-enable MD046 -->
 
 ### Spec 03 — Activation des rôles
 
 L'internal active chaque user et lui assigne ses rôles cibles via le formulaire EasyAdmin (case `actif` + checkboxes rôles).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (interne)
@@ -213,6 +220,7 @@ sequenceDiagram
         CRUD->>DB: UPDATE actif=true, roles=[...]
     end
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Affectations cibles** :
 
@@ -231,6 +239,7 @@ Scindé en deux cas indépendants le 2026-07-26 (voir [Cas A mis de côté](#cas
 
 **Cas B** — Update projets + collecte profils, seedé directement en état post-reset (via `resetAndSeedAfterSpec04()`) : ne dépend pas du succès du cas A.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Aurélie)
@@ -274,6 +283,7 @@ sequenceDiagram
     Profil->>DB: INSERT profiles (×28)
     end
 ```
+<!-- markdownlint-enable MD046 -->
 
 #### Cas A (reset password) mis de côté — `test.fixme`
 
@@ -291,6 +301,7 @@ Malgré ces trois correctifs, environ un run sur deux voit encore le champ "Anci
 
 Aurélie crée le groupe fonctionnel et affecte chaque user à son groupe utilisateur.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Aurélie)
@@ -319,6 +330,7 @@ sequenceDiagram
         end
     end
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Affectations groupe utilisateur** :
 
@@ -334,6 +346,7 @@ sequenceDiagram
 
 Nathan lance la collecte SonarQube complète sur tetris:TetrisGame. C'est le test le plus long (~2 min) car il enchaîne ~13 phases d'API.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -378,6 +391,7 @@ sequenceDiagram
     Projet->>DB: POST /api/secure/enregistrement → UPSERT historique
     end
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Sentinel de fin** : on attend `(13) La collecte des données est terminée.` dans `<textarea id="log">.value` (timeout 90s).
 
@@ -389,6 +403,7 @@ sequenceDiagram
 
 Sophie (COLLECTE+SUIVI) navigue vers la page de suivi, puis modifie l'historique du projet (version de référence, suppression d'une version) depuis la modale "Modifier les paramètres".
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Sophie)
@@ -422,6 +437,7 @@ sequenceDiagram
     PW->>Suivi: reload + réouvre la modale
     Suivi-->>PW: version absente = suppression confirmée
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Suppression d'historique et version de référence** (implémenté) :
 
@@ -443,6 +459,7 @@ sequenceDiagram
 
 Indépendant du scénario d'onboarding 01-07 (son propre reset+seed). Vérifie que chaque rôle métier protège effectivement les pages/actions qui lui sont associées, dans les deux mécanismes de contrôle présents dans l'app :
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright
@@ -473,6 +490,7 @@ sequenceDiagram
     Souple-->>PW: 200, pas de flash de refus<br/>(un flash "aucune donnée" reste possible et légitime)
     end
 ```
+<!-- markdownlint-enable MD046 -->
 
 | Mécanisme | Comportement | Rôles couverts | Test négatif (sans le rôle) | Test positif (avec le rôle) |
 | --- | --- | --- | --- | --- |
@@ -493,6 +511,7 @@ Sélecteur du flash pour le contrôle souple : `.js-flash-box .callout-message` 
 
 EasyAdmin, `ROLE_BATCH` (protège les deux CRUD, pas de rôle "portefeuille" dédié). Nathan cumule ce rôle via le seed dédié `resetAndSeedForCrudTransverse()`.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -514,6 +533,7 @@ sequenceDiagram
     PW->>BCRUD: submit
     BCRUD->>DB: INSERT batch
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Ordre imposé par une dépendance de données** : le `ChoiceField` "portefeuille" du formulaire Batch est peuplé depuis `SELECT groupe_fonctionnel FROM ma_moulinette.portefeuille` — sans Portefeuille existant, seul le placeholder "Aucun" est disponible. D'où l'ordre Portefeuille → Batch.
 
@@ -523,6 +543,7 @@ sequenceDiagram
 
 Contrôleur custom (`ActuatorController`, pas EasyAdmin), `ROLE_ACTUATOR`. Nathan cumule ce rôle via le même seed `resetAndSeedForCrudTransverse()`.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -540,6 +561,7 @@ sequenceDiagram
     Info->>DB: INSERT actuator (password chiffré)
     Info-->>PW: redirect /actuator + flash succès
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Problèmes rencontrés** :
 
@@ -552,6 +574,7 @@ sequenceDiagram
 
 Nathan (`ROLE_COLLECTE`, pas de rôle transverse nécessaire).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -569,6 +592,7 @@ sequenceDiagram
     Note over PW,Owasp: 3. Vérification (sélecteurs DOM, pas le canvas)
     PW->>Owasp: assert #nombre-faille-owasp, #a1..#a10, #tbody visibles
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Point clé** : il n'existe **aucun déclenchement OWASP isolé** côté UI. Le bouton `#bouton-analyse-owasp` sur `/projet` ne fait que naviguer vers `/owasp?token=...` (token = ROT13+base64 de `salt|maven_key`, généré côté template) — la collecte OWASP fait partie de l'orchestration unique de collecte générale (mêmes phases que la spec 06 : "Collecte des menaces OWASP" / "...potentielles"). Ce test rejoue donc le flux complet de la spec 06 avant de vérifier `/owasp`, ce qui le rend aussi long (~1-2 min).
 
@@ -580,6 +604,7 @@ sequenceDiagram
 
 Nathan (`ROLE_SECURITY`, cumulé via `resetAndSeedForDependencyCheck()` — module transverse comme dans les spec 08/09/10, aucun des 5 users n'a ce rôle nativement dans le récit d'onboarding).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (simulateur CI)
@@ -606,6 +631,7 @@ sequenceDiagram
     Nathan->>Dash: GET /dependency-check/dashboard
     Dash-->>Nathan: badge-scope "tetris-game"
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Ingestion asynchrone en 2 étapes, pas un simple POST** : `POST /api/secure/dependency-check/upload` ne fait qu'enqueuer le rapport (`dc_processing_queue`, statut `queued`) — un worker séparé (`bin/console app:dependency-check:process`) doit ensuite tourner pour produire les `dc_scan`/`dc_finding`/`dc_dependency`/`dc_cve` que les pages lisent réellement. Aucun cron ne tourne dans la stack e2e (contrairement à la prod) : la spec invoque le worker directement via `processDcQueue()` (`tests/e2e/helpers/dc.ts` → `bin/e2e/process-dc-queue.ps1`, `APP_ENV=test`).
 
@@ -618,6 +644,7 @@ sequenceDiagram
 
 Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que pour la spec 06/11).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -636,6 +663,7 @@ sequenceDiagram
     PW->>Synth: click #bouton-synthese-portefeuille
     Synth-->>PW: tag "tetris-game", ligne TetrisGame + badge de risque
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Bouton masqué en e2e, token reconstruit côté test** : le bouton "Clean Code" sur `/projet` n'apparaît que si `version_serveur_sonar != 8` (`templates/projet/index.html.twig`), or `SONAR_VERSION` vaut `8` en `.env.test.local`. Changer cette valeur globalement pour révéler le bouton risquait de perturber d'autres specs qui dépendent implicitement du comportement v8 — plus sûr de reconstruire le token côté test. Le token est un `rot13(base64("salt|maven_key"))` où `salt` est un hash "sdbm" (`hash*65599 + charCode`, calculé avec les opérateurs bitwise JS natifs) — **le salt n'est en réalité jamais vérifié côté serveur** (`decodeToken()` ne lit que la 2e partie après le `|`), donc sa valeur exacte importe peu tant que le format est respecté. Reproduit dans `tests/e2e/helpers/token.ts::buildProjetToken()`, réutilisable pour toute future spec sur Suivi/OWASP/Répartition/COSUI qui voudrait éviter de cliquer le bouton correspondant.
 
@@ -649,6 +677,7 @@ sequenceDiagram
 
 Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que pour la spec 06/11/13). Token de navigation réutilisé tel quel depuis `buildProjetToken()` (spec 13).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -661,6 +690,7 @@ sequenceDiagram
     PW->>Cosui: click #affiche-projet-reference
     Cosui-->>PW: modale — notes de la version de référence (plus mauvaises)
 ```
+<!-- markdownlint-enable MD046 -->
 
 !!! caution "🐛 Prérequis de données : le flux spec 06 ne suffit pas"
     Contrairement à Clean Code, `/projet/cosui` a deux prérequis que la collecte manuelle standard ne produit jamais :
@@ -682,6 +712,7 @@ sequenceDiagram
 
 Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que pour la spec 06/11/13/14). Token identique aux autres pages signées.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -695,6 +726,7 @@ sequenceDiagram
     Repart-->>PW: mode=Historique, setup seedé, 4 tableaux (synthèse + Fiabilité/Sécurité/Maintenabilité)
     Note over PW,Repart: IdC = "---" sur chaque ligne (bug corrigé, voir ci-dessous)
 ```
+<!-- markdownlint-enable MD046 -->
 
 !!! caution "🐛 Cycle Collecte → Analyse non jouable avec les fixtures actuelles"
     Comme COSUI, le cycle réel (collecte → analyse) ne peut pas produire de données exploitables avec les fixtures e2e actuelles : `BatchCollecteRepartitionController` attend une facette `severities` que `tests/fixtures/sonarqube/issues/search.json` ne fournit pas (enrichie pour le spec 13 avec `cleanCodeAttributeCategories`, pas `severities`) — le total lu au chargement de la page est donc toujours 0, et chaque bouton de collecte affiche juste « pas de données à collecter » sans jamais appeler l'API. Cette spec teste uniquement le bouton **Historique** (lecture pure d'une ligne déjà complète), via un seed direct en base (`seed-after-spec-15-repartition-tetris.sql`, `resetAndSeedForRepartition()`) — pas le cycle collecte/analyse en direct.
@@ -706,6 +738,7 @@ sequenceDiagram
 
 Nathan (`ROLE_COLLECTE`, groupe tetris-game). Aucune des 5 pages du module n'exige de rôle spécifique (seul `ROLE_UTILISATEUR` implicite) — seul le bouton "Analyse UserAgent"/"Relancer l'analyse" (route `runBatchAnalysis`) exige `ROLE_INTERNAL`, absent du DOM pour Nathan (`{% if is_granted('ROLE_INTERNAL') %}` côté template, pas juste masqué en CSS).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -730,6 +763,7 @@ sequenceDiagram
     PW->>User: goto /statistiques/utilisateur
     User-->>PW: canvas présents (masqués sans activité trackée), bouton batch absent
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Seed réutilisé, pas de nouveau seed dédié** : `/statistiques/projet` lit `historique` sans jointure (`HistoriqueRepository::selectAllProjetsDerniereSynthese()`) — le seed déjà existant pour la spec 07 (`resetAndSeedForSuiviHistorique()`, 2 lignes historique minimales pour tetris:TetrisGame) suffit à y afficher une ligne, sans relancer une vraie collecte (~180s). Les colonnes non peuplées par ce seed minimal (notes, coverage…) s'affichent en `–`, sans bloquer la page.
 
@@ -746,6 +780,7 @@ sequenceDiagram
 
 Nathan (rôle transverse `ROLE_ACTIVITY`, cumulé par le seed de la spec 08 — aucun user du parcours narratif ne le porte nativement). Le contrôle d'accès négatif (403 pour un user sans ce rôle) est déjà couvert par la spec 08, non reproduit ici : cette spec exerce le workflow fonctionnel réel de la page.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -764,6 +799,7 @@ sequenceDiagram
     PW->>Api: click 3 boutons de tracé (POST /dessin)
     Api-->>PW: pas d'erreur (canvas Chart.js redessiné)
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Seed direct en base, pas de collecte** : depuis la migration de mai 2026, `activity` n'est plus alimentée que par le cron `app:activity:collecte` — ni l'UI, ni le flux de collecte manuelle de la spec 06 ne l'alimentent. Le seed insère directement 3 lignes (2 SUCCESS, 1 FAILED, dates construites via `CURRENT_DATE` plutôt que figées, pour rester valides indéfiniment) pour tetris:TetrisGame, sans peupler `activity_historique` : la page démarre donc en état "pas encore de statistiques", et le clic sur "Recalculer" exerce la vraie agrégation (`ApiActivityController::sauvegardeHistorique()`), pas un simple mock de lecture.
 
@@ -777,6 +813,7 @@ sequenceDiagram
 
 Nathan (`ROLE_UTILISATEUR` implicite, aucun rôle spécifique requis). Le seed peuple ses préférences pour tetris:TetrisGame sur les 3 catégories (`suivi_projet`, `favori_projet`, `favori_version` avec 2 versions) — sans ce seed, les 5 users e2e démarrent tous avec des listes vides, rendant les 3 modales triviales à vérifier (rien à afficher ni à supprimer).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -798,6 +835,7 @@ sequenceDiagram
     PW->>Api: bascule interrupteur Projet (POST /statut)
     Api-->>PW: reload confirme l'état désactivé persisté
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Modales Foundation Reveal, pas `<dialog>` natif** : `modalSafe.open()`/`close()` (`assets/js/common/safeModal.js`) pilotent `$(modal).foundation('open'|'close')` — `.toBeVisible()`/`.toBeHidden()` suffisent (même mécanisme observé et validé pour la spec 07), pas besoin de vérifier l'attribut `open` du DOM.
 
@@ -809,6 +847,7 @@ sequenceDiagram
 
 Interne (`ROLE_INTERNAL`, actif nativement dans `fixtures-e2e.sql` — pas de seed dédié au-delà d'un reset, même approche que pour la spec 01). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par la spec 08 : cette spec exerce le fonctionnement réel de la page.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (interne)
@@ -830,6 +869,7 @@ sequenceDiagram
     PW->>Api: téléchargement sans sélection → avertissement, pas de requête
     PW->>Api: téléchargement avec sélection → confirm() + POST → ZIP réel
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Seed direct sur le filesystem, pas en base** : `AdminLogController`/`LogArchiveService::listLogs()` lisent `var/log/` via `scandir()`, sans table DB. Aucun flux applicatif ne produit ces fichiers de façon fiable en e2e : le handler `main` de `when@test` (`monolog.yaml`) est un `fingers_crossed` qui ne flushe que sur une vraie erreur Doctrine, et les handlers `request`/`messenger`/`deprecation`/`application` n'existent même pas sous `when@test`. `helpers/logs.ts` écrit directement 5 fichiers sur le filesystem avant le test (`seedAdminLogFiles()`) et les supprime après (`cleanupAdminLogFiles()`), avec des noms garantis synthétiques (jamais produits par la vraie config Monolog de l'appli, cf. commentaire du helper) pour ne jamais interférer avec de vrais fichiers de log.
 
@@ -844,6 +884,7 @@ sequenceDiagram
 
 Interne (`ROLE_INTERNAL`). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par la spec 08.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (interne)
@@ -867,6 +908,7 @@ sequenceDiagram
     PW->>Api: rapport PDF de la ligne de Nathan → PDF réel
     PW->>Api: supprimer la ligne de Nathan → confirm() + CSRF → 200, ligne disparue
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Pas de seed direct — données produites par de vraies éditions UI** : `user_role_log` n'est alimentée que par un vrai passage dans `UtilisateurCrudController::updateEntity()` (via `UserRoleLoggerService`), et seulement si les rôles OU le statut actif changent réellement. Les seeds SQL directs (`seed-after-spec-0X-*.sql`) ne font que des `UPDATE` bruts sur `utilisateur`, sans jamais passer par ce contrôleur — `resetAndSeedAfterSpec05()` seul laisse donc `user_role_log` vide. Contrairement aux specs 14/15/19, cette spec ne seed rien directement : elle exécute deux vraies éditions via l'UI EasyAdmin (même idiome que la spec 03 — `roleCheckbox()`, extraction du href d'édition) pour produire elle-même les deux lignes qu'il consulte ensuite, ce qui a l'avantage de tester aussi, en creux, que `UserRoleLoggerService` capture bien les deux types de transition (changement de rôle pur, et bascule Actif pure).
 
@@ -880,6 +922,7 @@ sequenceDiagram
 
 Nathan (`ROLE_COLLECTE` natif + `ROLE_BATCH` cumulé via `resetAndSeedForCrudTransverse()`, groupe fonctionnel "tetris-game" déjà existant). Le contrôle d'accès négatif sur `/traitement/profiling` (Sophie, sans `ROLE_BATCH`) est testé ici pour la première fois — la spec 08 ne couvrait que `/traitement/suivi` et `/actuator`.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright (Nathan)
@@ -899,6 +942,7 @@ sequenceDiagram
     PW->>Suivi: ouvre la modale Information (détails + sélection journal)
     PW->>Profiling: goto — dashboard alimenté par la ligne batch_profiling produite
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Contexte** : `/traitement/suivi` n'est PAS la collecte testée par la spec 06 (bouton `/projet`, un seul projet, `ApiCollecteController`). C'est un système séparé, à l'échelle du **portefeuille** : `BatchManuelController::traitementManuel()` (`POST /api/secure/traitement/start`) boucle sur tous les projets d'un Portefeuille et appelle en interne le même `CollecteController::collecte()` — de façon **synchrone**, malgré la présence de `pendingWorker.js` (qui ne sert qu'à mettre une 2ᵉ demande en file d'attente si un traitement tourne déjà, pas à paralléliser). C'est cette exécution qui produit les lignes `batch_profiling` que le dashboard Profiling consulte — jamais exercée avant cette spec (seul son accès 403/flash souple était couvert, spec 08).
 
@@ -921,6 +965,7 @@ sequenceDiagram
 
 Endpoint public (`/api/public/healthcheck/status`, aucun firewall authentifié) : pas de login, appels directs via `page.request` plutôt qu'une navigation.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor PW as Playwright
@@ -942,6 +987,7 @@ sequenceDiagram
     Limiter-->>Health: refusé (quota dépassé)
     Health-->>PW: 429 {codeRetour: "KO", listMessage: [...]}
 ```
+<!-- markdownlint-enable MD046 -->
 
 **Réponse en échec** : un contrôle KO renvoie `503` avec un message générique unique (« Le service est temporairement indisponible. ») ; le détail des erreurs n'est écrit que dans les journaux (la route est publique). La spec ne couvre que les cas 200 et 429.
 

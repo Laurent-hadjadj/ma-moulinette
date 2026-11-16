@@ -5,7 +5,7 @@ Consultation des informations personnelles et personnalisation du suivi de proje
 !!! note "🔗 Accès"
     Cette page n'a pas d'icône dédiée dans le bandeau commun (voir [Accueil](accueil.md#-haut-de-page)) : elle est accessible depuis la carte « Réglages personnels » de la page d'accueil du back-office (`/admin`, voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes)), ou depuis la page « Plan du site » (lien en bas de page).
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 <!-- markdownlint-disable MD046 -->
 ```mermaid
@@ -30,7 +30,7 @@ flowchart TD
 
 L'icône ℹ️ (ouvre la modale, lecture) et l'interrupteur (bascule le statut, écriture) d'une même ligne sont deux actions indépendantes — cliquer l'un ne déclenche pas l'autre.
 
-## 🧭 Chemin de fer
+## 2️⃣ 🧭 Chemin de fer
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -57,18 +57,18 @@ Page Préférences (/preferences)
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 👤 Informations personnelles
+## 3️⃣ 👤 Informations personnelles
 
 Affiche en lecture seule : avatar, nom/prénom, adresse courriel, rôles, groupe utilisateur (organisation de rattachement, un seul) et groupes fonctionnels (périmètre applicatif, un ou plusieurs).
 
 !!! note "✅ ajout du groupe utilisateur"
     Cette page n'affichait auparavant que les groupes fonctionnels. Le groupe utilisateur (`Utilisateur::getGroupeUtilisateur()`, une seule valeur possible) est désormais affiché en complément, avec `Aucun` comme valeur par défaut si l'utilisateur n'en a pas.
 
-## 🌱 Lien vers Actuator
+## 4️⃣ 🌱 Lien vers Actuator
 
 Un bouton « Accéder à l'inventaire Actuator » est affiché sur cette page uniquement pour les utilisateurs disposant du rôle `ROLE_ACTUATOR` — voir [Actuator](actuator.md). La carte « Actuator » de la page d'accueil du back-office (même rôle requis) offre un second point d'entrée équivalent.
 
-## ⭐ Tableau des préférences (4 interrupteurs)
+## 5️⃣ ⭐ Tableau des préférences (4 interrupteurs)
 
 | Option affichée | Clé réelle | Description affichée |
 | --- | --- | --- |
@@ -89,11 +89,11 @@ La page « Ajouter une préférence » (orpheline, non routée, bouton « Valide
 
 Les 3 modales (Favoris/Projets/Versions) utilisent désormais un élément `<dialog>` avec gestion du focus à l'ouverture/fermeture (retour sur le bouton déclencheur), pour un fonctionnement correct au clavier et avec un lecteur d'écran.
 
-## 💾 Enregistrement
+## 6️⃣ 💾 Enregistrement
 
 Les préférences sont persistées en base (table `utilisateur`, colonne `preference` au format JSON). Chaque bascule d'interrupteur déclenche un enregistrement immédiat via une requête asynchrone.
 
-## ⚠️ Messages remontés par la page
+## 7️⃣ ⚠️ Messages remontés par la page
 
 `index-preference.js` utilise désormais `showMessage()`/`hideMessage()` (`assets/js/common/messageHelper.js`) pour chacun des 5 appels vers `/api/secure/preference/*` — voir [Gestion des messages](../erreur/gestion-messages.md).
 Un message de succès s'affiche après une bascule d'interrupteur ou une suppression réussie (disparaît après 5 secondes) ; un message d'erreur reprend le `type`/`message` renvoyé par l'API en cas d'échec métier, ou un message générique en cas d'erreur réseau/serveur inattendue.
@@ -114,7 +114,7 @@ Un message de succès s'affiche après une bascule d'interrupteur ou une suppres
     Les listes lues via `apiPreferenceCategory` (Favoris/Projets/Versions) affichent aussi un message d'erreur si la lecture échoue, au lieu de laisser la modale s'ouvrir vide en silence.
     Pour les suppressions, la ligne n'est masquée côté écran qu'après confirmation du succès par le serveur — elle ne l'était auparavant que côté client, avant même l'appel réseau.
 
-## 📚 Pour aller plus loin
+## 8️⃣ 📚 Pour aller plus loin
 
 - [Projet](projet.md) : bouton « cœur » pour gérer un favori-projet.
 - [Accueil](accueil.md#-bloc-des-favoris) : affichage des favoris.

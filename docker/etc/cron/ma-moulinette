@@ -48,7 +48,7 @@
 # Injecte via docker-compose (cron-ma-moulinette.environment)
 30 0 * * * php /var/www/bin/console app:sonar:update-tags --url=${SONAR_URL} --token=${SONAR_TOKEN} --no-interaction --env=prod
 
-# Lancement des batchs de collecte Ma-Moulinette chaque nuit a 00h30
+# Lancement des batchs de collecte Ma-Moulinette chaque nuit a 01h30
 # - MAMOUL_URL   : URL de l'application Ma-Moulinette (ex. https://ma.moulinette.serveur.fr)
 # - MAMOUL_TOKEN : token d'accès généré dans Ma-Moulinette (Profil → Tokens)
 # Injecte via docker-compose (cron-ma-moulinette.environment)

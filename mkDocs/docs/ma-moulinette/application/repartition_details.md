@@ -98,6 +98,7 @@ Le bouton **Historique** relit la **dernière analyse strictement complète** (1
 
 ## 🔄 Le flux Collecte → Analyse → Historique
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 sequenceDiagram
     actor U as Utilisateur
@@ -129,6 +130,7 @@ sequenceDiagram
     Batch->>DB: SELECT dernière ligne control = "complet (100%)"
     Batch-->>JS: mode / setup / date + tableaux déjà calculés
 ```
+<!-- markdownlint-enable MD046 -->
 
 ## 🗃️ Deux tables, deux rôles bien distincts
 

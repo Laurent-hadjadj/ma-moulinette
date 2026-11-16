@@ -1,0 +1,48 @@
+{% set title = 'Action indisponible' %}
+{% set description = app_name ~ ' - action indisponible dans l\'instance de démonstration.' %}
+{% set bottom="footer-fixed" %}
+<!DOCTYPE html>
+{# © 2015-2026 - code : AGPL-3.0-or-later ; documentation : CC BY-SA 4.0 #}
+{# Chargement de la section HEAD #}
+<html lang="fr" dir="ltr">
+
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Page d'information sans comportement propre : on réutilise le code de la page « mentions légales » #}
+        {% block importmap %}
+        {{ importmap('footer-mention-legal') }}
+        {% endblock %}
+    </head>
+
+    <body>
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
+        <br>
+
+        <main id="main-content" class="grid-container grid-x align-center text-center margin-top-3">
+            <section class="cell small-12 medium-10 large-8" aria-labelledby="titre-demo">
+                <img src="{{ asset('images/' ~ logo_entreprise) }}" width="300" height="165"
+                    alt="Logo de l'instance de démonstration de {{ app_name }}">
+                <h2 id="titre-demo" class="h2 claire-hand margin-top-1">{{ message }}</h2>
+
+                <div class="callout alert-callout-border primary text-left">
+                    <p class="open-sans text-justify">
+                        Cette fonction modifie des données ou fait appel à un service extérieur : elle est volontairement désactivée dans la démonstration. Les modifications que vous pouvez faire (changer d'avatar, choisir la version de référence par exemple) sont effacées chaque nuit, quand la base est remise dans son état de référence.</p>
+                    <p class="open-sans text-justify">
+                        Pour utiliser toutes les fonctions de {{ app_name }}, installez votre propre instance :
+                        <a class="source-link" href="https://github.com/Laurent-hadjadj/ma-moulinette" rel="external">
+                            <span aria-hidden="true">🔗</span>code source et documentation</a>.</p>
+                </div>
+
+                <p>
+                    <a class="button" href="{{ path('accueil', {}) }}">Retour à l'accueil</a>
+                </p>
+            </section>
+        </main>
+
+        {# Chargement de la section footer #}
+        {{ include('footer.html.twig') }}
+    </body>
+
+</html>
