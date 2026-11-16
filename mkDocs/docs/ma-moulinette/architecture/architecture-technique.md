@@ -2,7 +2,7 @@
 
 Ma-Moulinette est une application web développée en PHP/Symfony, qui collecte, historise et restitue les indicateurs qualité issus de SonarQube (et, depuis la v2.0.0, de rapports OWASP DependencyCheck) pour un portefeuille de projets.
 
-## 🧱 Stack technique
+## 1️⃣ 🧱 Stack technique
 
 | Composant | Version | Rôle |
 | --- | --- | --- |
@@ -12,8 +12,7 @@ Ma-Moulinette est une application web développée en PHP/Symfony, qui collecte,
 | PostgreSQL | 18 | Base de données (unique — SQLite a été décommissionné en v2.0.0) |
 | Symfony asset-mapper | 8.0.\* | Compilation des assets JS/CSS (remplace webpack Encore, décommissionné) |
 | EasyAdmin | 5.0 | Back-office d'administration (CRUD Utilisateur, Groupe, Portefeuille, Batch) |
-| Symfony LDAP | 8.0.\* | Authentification via annuaire LDAP/AD, en complément du compte local |
-| Symfony Messenger | 8.0.\* | Bus de messages (transport Doctrine — voir [Traitements asynchrones](#-traitements-asynchrones-et-messenger)) |
+| Symfony LDAP | 8.0.\* | Authentification via annuaire LDAP/AD, en complément du compte local [Traitements asynchrones](#3️⃣--traitements-asynchrones-et-messenger) |
 | Symfony Scheduler | 8.0.\* | Planification des tâches internes (cron applicatif) |
 | Twig | 3.24 | Moteur de templates |
 | dompdf / FPDF+FPDI | — | Génération de rapports PDF (dont les rapports multi-orientation DependencyCheck) |
@@ -22,7 +21,7 @@ Ma-Moulinette est une application web développée en PHP/Symfony, qui collecte,
 
 Ces versions sont extraites de `composer.json` ; se référer à ce fichier pour l'état exact à un instant donné.
 
-## 🔭 Vue d'ensemble applicative
+## 2️⃣ 🔭 Vue d'ensemble applicative
 
 ```mermaid
 flowchart TD
@@ -64,7 +63,7 @@ Il est donc important de ne pas confondre le rôle de la CI (pousser les rapport
 
 Le détail du pipeline DependencyCheck (file d'attente, idempotence, cycle de vie d'un rapport, modèle des 4 tables `dc_scan/dc_dependency/dc_cve/dc_finding`) est couvert par la section dédiée [DependencyCheck — architecture d'ingestion](../dependency-check/architecture.md). Le schéma complet de la base de données est couvert par [Architecture — base de données](architecture-base-de-donnees.md).
 
-## 🔄 Traitements asynchrones et Messenger
+## 3️⃣ 🔄 Traitements asynchrones et Messenger
 
 Symfony Messenger est configuré avec un transport **Doctrine** (`MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0`) : les messages en attente sont stockés dans une table PostgreSQL, pas dans un broker externe. Les DSN AMQP/Redis figurent encore en commentaire dans `.env` mais ne sont plus utilisés.
 
@@ -73,7 +72,7 @@ En pratique, le routing Messenger (`config/packages/messenger.yaml`) est aujourd
 !!! note "🐇 RabbitMQ décommissionné"
     Jusqu'à la v1.x, les traitements batch/collecte transitaient par un serveur **RabbitMQ** dédié. Il a été entièrement retiré en v2.0.0 au profit du transport Doctrine ci-dessus (cf. `CHANGELOG.md`).
 
-## 🔐 Sécurité et rôles
+## 4️⃣ 🔐 Sécurité et rôles
 
 La gestion des accès repose sur les rôles Symfony définis dans `config/packages/security.yaml` : `ROLE_UTILISATEUR`, `ROLE_COLLECTE`, `ROLE_SUIVI`, `ROLE_BATCH`, `ROLE_ACTUATOR`, `ROLE_SECURITY`, `ROLE_SECURITY_ANALYTICS`, `ROLE_GESTIONNAIRE`, `ROLE_INTERNAL`. Le détail de la hiérarchie de rôles et du mapping rôle ↔ page est couvert par [Gestion de la sécurité](../developpement/securite.md).
 
@@ -104,7 +103,7 @@ Règles effectives (`src/EventSubscriber/ApiClientHeaderSubscriber.php`) :
 !!! caution "⚠️ Route DependencyCheck hors périmètre de ce subscriber"
     `/api/secure/dependency-check/*` est **explicitement exclu** de ce subscriber : ces endpoints sont appelés machine-à-machine par la CI GitLab et protégés séparément par `DependencyCheckTokenSubscriber` (validation d'un token bearer, pas d'Origin/Referer). Ne pas supposer que ces routes sont couvertes par le filtrage Origin/`X-Internal-Front` décrit ci-dessus — c'est un mécanisme de sécurité entièrement différent, à auditer séparément.
 
-## 🐳 Environnement d'exécution
+## 5️⃣ 🐳 Environnement d'exécution
 
 En développement comme en production, l'application tourne dans 4 conteneurs Docker (`docker/docker-compose.yml`) :
 
@@ -122,7 +121,7 @@ Les variables Docker/infra (mots de passe PostgreSQL, tokens `DC_INGEST_TOKEN`/`
 !!! warning "🔒 Pas de secrets dans la doc"
     Aucune valeur de secret (token, mot de passe, clé) ne doit jamais être copiée dans cette documentation, y compris à titre d'exemple. Ne référencer que les **noms** des variables d'environnement, jamais leur contenu.
 
-## 📚 Pour aller plus loin
+## 6️⃣ 📚 Pour aller plus loin
 
 - [Architecture — base de données](architecture-base-de-donnees.md) : schéma PostgreSQL détaillé.
 - [Architecture — organisation du code](architecture-organisation.md) : arborescence `src/`, conventions.

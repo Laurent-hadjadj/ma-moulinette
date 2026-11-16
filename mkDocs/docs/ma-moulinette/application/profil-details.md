@@ -7,8 +7,9 @@ Contrairement à [Profil](profil.md), cette page n'est pas de la lecture pure : 
     Le paramètre `?token=` (langage + nom de profil encodés en `rot13(base64(...))`) n'est **jamais revérifié cryptographiquement** côté serveur — c'est un simple obscurcissement d'URL, pas une signature.
     Un token absent affiche silencieusement une page minimale (`profil = 'NC'`, aucun message) ; un token présent mais mal formé (mauvais nombre de segments) affiche un message d'erreur.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Profil["📋 Page Profil<br/>icône ℹ️ d'un profil"] -->|"lien signé rot13/base64"| Details["🔍 /profil/details"]
@@ -17,8 +18,9 @@ flowchart TD
     Insert -->|"contrainte d'unicité<br/>(language, date, rule, action)"| Historique[(profiles_historique)]
     Historique --> Render["🧾 Rendu : compteurs + accordéon par date"]
 ```
+<!-- markdownlint-enable MD046 -->
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -43,7 +45,7 @@ Page Profil — Détails
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📅 Contenu
+## 3️⃣ 📅 Contenu
 
 Bandeau de synthèse : date de première analyse, date de dernière modification, nombre total de changements, nombre de règles activées / modifiées / désactivées.
 Puis un menu accordéon groupé par date, chaque changement affichant : statut (A/D/U), nom de la règle, description, auteur, et détail technique (paramètres SonarQube) masqué sur mobile.
@@ -51,11 +53,11 @@ Puis un menu accordéon groupé par date, chaque changement affichant : statut (
 !!! note "✅ La réinsertion en doublon à chaque consultation a été corrigée"
     Ajout d'une contrainte d'unicité `(language, date, rule, action)` sur la table : une insertion en doublon est désormais silencieusement rejetée par `insertProfilesHistorique()` (code retour `23505`, déjà géré par `handleDatabaseException()`), sans casser la boucle d'insertion des événements suivants.
 
-## 📏 Limite d'affichage
+## 4️⃣ 📏 Limite d'affichage
 
 Seuls les **500 premiers changements** remontés par SonarQube sont affichés (limite de pagination fixe, pas un vrai plafond calculé) — l'avertissement à l'écran est affiché systématiquement, qu'il y ait effectivement plus de 500 changements ou non.
 
-## ⚠️ Messages remontés par la page
+## 5️⃣ ⚠️ Messages remontés par la page
 
 Flash serveur uniquement (`ApiProfilController::profilDetails()`) — cette page n'a pas d'appel AJAX.
 
@@ -66,7 +68,7 @@ Flash serveur uniquement (`ApiProfilController::profilDetails()`) — cette page
 | `warning` | Langage décodé non reconnu (ni référentiel SonarQube, ni alias Ma-Moulinette) | ⚠️ Le langage sélectionné n'est pas supporté (Erreur 404). |
 | `error` | Échec de l'appel à `/api/qualityprofiles/changelog` | ❌ message d'erreur SonarQube dynamique |
 
-## 📚 Pour aller plus loin
+## 6️⃣ 📚 Pour aller plus loin
 
 - [Profil](profil.md) : liste des profils qualité par langage.
 

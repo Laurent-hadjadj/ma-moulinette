@@ -20,7 +20,7 @@ OWASP est la seule des pages « projet » à combiner **deux** sources de clé M
 !!! note "✅ Casse de la clé Maven préservée"
     `OwaspController::decodeToken()` appliquait un `strtolower()` sur la clé Maven décodée — absent de `SuiviController`/`CosuiController`. Une clé à casse mixte réelle (ex. `fr.ma-moulinette:Ma-Moulinette`) devenait `ma-moulinette` et ne correspondait plus (comparaison stricte `===`) à l'entrée `liste_projet`/`historique` : le projet était rejeté à tort en 406 alors qu'il appartenait bien au périmètre de l'utilisateur. Corrigé pour préserver la casse, comme le reste de l'application.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 <!-- markdownlint-disable MD046 -->
 ```mermaid
@@ -39,7 +39,7 @@ flowchart TD
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📅 Référentiel actif selon la version SonarQube
+## 2️⃣ 📅 Référentiel actif selon la version SonarQube
 
 Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SONAR_VERSION`), et non d'un choix utilisateur libre :
 
@@ -60,9 +60,11 @@ Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SON
 !!! bug "🔴 Cause racine trouvée le 27/10/2026 — la facette officielle SonarQube n'indexe jamais FindSecBugs"
     Vérifié en sur une instance SonarQube 26.10, en comparant les métadonnées serveur des deux familles de règles (`/api/rules/show`) :
 
+    <!-- markdownlint-disable MD046 -->
     - Les règles **SonarSource** (repo `java`, ex. `S2068`) portent un bloc structuré `securityStandards.OWASP`/`OWASP Top 10 2021` dans leur JSON de métadonnées — c'est ce bloc, et uniquement lui, qui alimente la facette officielle `owaspTop10`/`owaspTop10-2021`.
     - Les règles du plugin tiers **FindSecBugs** (repo `findsecbugs`, ex. `SQL_INJECTION_JPA`) n'ont **jamais** ce bloc — seulement un tag texte libre `owasp-aX` (`sysTags`), hérité de la classification OWASP **2013**, jamais migré vers 2021. Ce tag n'est jamais lu par la facette officielle.
     - Conséquence mesurée sur un vrai projet : 453 vulnérabilités d'injection SQL (`findsecbugs:SQL_INJECTION_JPA`, tag `owasp-a1`) — 0 d'entre elles visibles via `facets=owaspTop10`, qui n'en comptait que 5 (une seule règle core, `S4512`, sur la même catégorie).
+    <!-- markdownlint-enable MD046 -->
 
     Le mécanisme de secours par tag qui existait avant cette date comblait les compteurs globaux mais ne récupérait jamais le détail par sévérité d'une catégorie classée uniquement par FindSecBugs — tableau de détail vide côté page malgré un total non nul. Remplacé par le mécanisme ci-dessous.
 
@@ -74,12 +76,14 @@ Le référentiel proposé dépend du paramètre applicatif `sonar.version` (`SON
 !!! bug "🔴 Bug corrigé le 26/10/2026 — modale « Détail » d'une catégorie (sévérité hotspot)"
     `HotspotOwaspRepository::countHotspotOwaspMenaceByStatus()` (utilisée par la modale ouverte via l'icône 🔎 d'une ligne du tableau de synthèse) ne filtrait pas par `referential_owasp` — alors que `hotspot_owasp` porte une ligne distincte par (maven_key, menace, referential_owasp) pour 2017 **et** 2021. Les compteurs Élevée/Moyenne/Faible de la modale sommaient donc silencieusement les deux référentiels, affichant le même résultat quel que soit l'onglet 2017/2021 sélectionné. `referential_owasp` est désormais transmis de bout en bout (JS → `peintureOwaspSeverity()` → repository).
 
+    <!-- markdownlint-disable MD046 -->
     Deux autres défauts corrigés sur cette même modale :
+    <!-- markdownlint-enable MD046 -->
 
     - **Contenu non à jour au changement de catégorie** : le clic sur l'icône 🔎 ouvrait la modale **avant** la fin de l'appel AJAX de remplissage (fonction asynchrone non attendue) — elle affichait un instant le contenu de la catégorie précédemment consultée, avant de se mettre à jour. Le clic attend désormais la fin du chargement avant d'ouvrir la modale.
     - **Aucune donnée de vulnérabilité** : la modale n'a toujours affiché que la sévérité des **hotspots** (Élevée/Moyenne/Faible), jamais celle des **vulnérabilités** (Bloquant/Critique/Majeur/Mineur) — alors que la colonne « Faille » de la même ligne du tableau peut être non nulle. Une nouvelle section « Vulnérabilités » a été ajoutée dans la modale, réutilisant les données déjà renvoyées par `/api/secure/peinture/owasp/liste` à chaque changement de référentiel (pas de nouvel appel réseau).
 
-## 🗒️ Détail des vulnérabilités OWASP (page + export PDF)
+## 3️⃣ 🗒️ Détail des vulnérabilités OWASP (page + export PDF)
 
 Jusqu'au 28/10/2026, le seul tableau de détail ligne à ligne de la page (et du PDF) ne couvrait que les **Security Hotspots** — les vulnérabilités OWASP elles-mêmes n'avaient qu'un compteur par catégorie (tableau de synthèse A1-A10 + modale de détail par sévérité), jamais la liste des issues individuelles (règle, fichier, ligne, message).
 
@@ -98,7 +102,7 @@ Nouvelle table **`owasp_details`** (snapshot, réécrite en entier à chaque col
 !!! bug "🔴 Bug corrigé le 28/10/2026 — en-tête de colonne « Composant » mal stylé dans le PDF"
     La règle CSS `.col-component` du PDF (police à chasse fixe réduite, pensée pour les chemins de fichier des cellules) ciblait aussi bien les `<td>` que le `<th>` d'en-tête — la même classe étant posée sur les deux, l'en-tête « Composant »/« Component » s'affichait dans cette police minuscule au lieu du style d'en-tête normal (gras, taille standard). Restreint aux `<td>` uniquement, sur les deux tableaux de détail (vulnérabilités, hotspots).
 
-## 🧭 Chemin de fer de la page
+## 4️⃣ 🧭 Chemin de fer de la page
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -141,7 +145,7 @@ Page OWASP
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📋 Contenu de la page
+## 5️⃣ 📋 Contenu de la page
 
 - **Callout « nombre de règles »** : encart pédagogique indiquant, pour le référentiel actif, le nombre de règles (SonarQube elles-mêmes + plugin tiers FindSecBugs) sur lesquelles repose la classification locale — toujours visible, en tête de page, mis à jour à chaque changement de référentiel ;
 - **Tuiles compteur** (résultat en premier) : total + note A-E pour Vulnérabilités OWASP et pour Hotspot, badge `.stat-note`/`note-vertX` — même convention visuelle que les tuiles Accessibilité/RCI/Empreinte Écologique de la page [Projet](projet.md). La note Vulnérabilités OWASP retient la pire sévérité présente sur l'ensemble des catégories (Bloquant > Critique > Majeur > Mineur, A si aucune vulnérabilité) ; la note Hotspot reste le taux de validation déjà existant. Les 2 tuiles portent depuis le 30/10/2026 une bordure gauche (`.alert-callout-border`, même pattern que les tuiles de la page [Clean Code](clean-code.md)) colorée selon cette même note A-E, posée dynamiquement en JavaScript puisque la note n'est connue qu'après l'appel de peinture ;
@@ -164,7 +168,7 @@ Page OWASP
 !!! note "✅ Badge de note vide sur une catégorie à une seule anomalie (30/10/2026)"
     Le badge de note du tableau de synthèse A1-A10 pouvait s'afficher sans couleur ni lettre (`class="badge "`) dès qu'une catégorie comptait exactement 1 occurrence d'une seule sévérité (ex. une seule anomalie mineure) — l'initialisation par défaut ne retombait sur aucune valeur valide quand aucun des seuils de sévérité (`> 1`, au lieu de `>= 1`) ne matchait. Identifié lors de la correction : la catégorie A4 comparait ses propres compteurs à ceux de la catégorie A1 (copier-coller, *ah mais ou ai-je la tête !*). Les deux corrigés.
 
-## 📄 Export PDF
+## 6️⃣ 📄 Export PDF
 
 Génère un rapport PDF côté serveur à partir des mêmes données (aucun appel SonarQube au moment de l'export). Le bouton lit `maven_key` et le référentiel courant depuis `sessionStorage` (mêmes clés que les appels AJAX de la page).
 
@@ -173,15 +177,15 @@ Pages du rapport, dans l'ordre : informations projet + synthèse (vulnérabilit�
 !!! caution "⚠️ Le référentiel 2025 n'est pas supporté par l'export PDF"
     La validation du paramètre `referential_owasp` de l'export accepte uniquement `2017` et `2021` (repli silencieux sur 2021 si `2025` est demandé). Sans conséquence aujourd'hui puisque le bouton 2025 est désactivé côté page (SonarQube ne le supporte pas encore), mais à corriger le jour où 2025 sera réellement activé pour ne pas réintroduire ce repli silencieux.
 
-## 🔗 Dependency-Check
+## 7️⃣ 🔗 Dependency-Check
 
 Le bouton vers [DependencyCheck](../dependency-check/pages.md) est **indépendant** de l'état des référentiels OWASP : il s'affiche dès qu'un scan DependencyCheck existe pour le projet (peu importe que les référentiels OWASP soient vides), sous réserve du rôle `ROLE_SECURITY`.
 
-## 🔗 ZAP (DAST)
+## 8️⃣ 🔗 ZAP (DAST)
 
 Un second bouton, 👻 **ZAP (DAST)**, suit le même principe que le bouton Dependency-Check : affiché dès qu'un scan ZAP existe pour le projet, sous réserve du rôle `ROLE_SECURITY`, et **repasse le token déjà décodé** (pas de nouvel encodage côté client) vers [la page ZAP](zap.md). Contrairement à Dependency-Check (analyse statique de dépendances), ZAP est un scanner **dynamique** (DAST) — complémentaire, pas redondant, avec l'analyse SAST de cette page.
 
-## ⚠️ Messages remontés par la page
+## 9️⃣ ⚠️ Messages remontés par la page
 
 ### Messages JS (`index-owasp.js` → `showMessage()`)
 
@@ -207,7 +211,7 @@ Un second bouton, 👻 **ZAP (DAST)**, suit le même principe que le bouton Depe
 
 `OwaspController::rapportPdf()` (export PDF) lève une `NotFoundHttpException` (404 HTTP direct, pas de flash) en cas de clé Maven manquante, d'utilisateur sans groupe fonctionnel, ou de projet hors périmètre.
 
-## 📚 Pour aller plus loin
+## 🔟 📚 Pour aller plus loin
 
 - [Projet](projet.md) — point d'entrée vers OWASP.
 - [Suivi](suivi.md) / [COSUI](cosui.md) — même mécanisme de jeton et de filtrage par groupe fonctionnel côté page.

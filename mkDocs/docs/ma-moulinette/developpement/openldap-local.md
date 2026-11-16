@@ -1,6 +1,6 @@
 # 🔑 Annuaire OpenLDAP local
 
-## Pourquoi un LDAP local ?
+## 1️⃣ Pourquoi un LDAP local ?
 
 L'application `ma-moulinette` s'authentifie via l'`App\Security\CustomAuthenticator` qui interroge un annuaire LDAP. En production, il s'agit d'un Active Directory d'entreprise. Pour les tests unitaires et d'intégration, on monte un OpenLDAP local sur le poste développeur :
 
@@ -8,7 +8,7 @@ L'application `ma-moulinette` s'authentifie via l'`App\Security\CustomAuthentica
 - DIT (Directory Information Tree) maîtrisé et reproductible ;
 - jeu d'utilisateurs de test stable.
 
-## Distribution utilisée
+## 2️⃣ Distribution utilisée
 
 On utilise la build **OpenLDAP for Windows** de **Maxcrc** (binaire `slapd.exe`).
 
@@ -17,7 +17,7 @@ On utilise la build **OpenLDAP for Windows** de **Maxcrc** (binaire `slapd.exe`)
 
 > ⚠️ La build BDB de Maxcrc échoue au démarrage avec `bdb_db_open: alock_recover failed` même sur un répertoire `data/` vide. Le backend MDB fonctionne sans correctif et reste suffisant pour des tests.
 
-## Configuration `slapd.conf`
+## 3️⃣ Configuration `slapd.conf`
 
 Le fichier `c:\environnement\0_toolz\openLdap\slapd.conf` est ajusté ainsi :
 
@@ -39,7 +39,7 @@ index uid         eq
 
 Le mot de passe `rootpw` correspond à **`secret`** (hash SSHA généré avec `slappasswd.exe -s secret`).
 
-## Structure du DIT
+## 4️⃣ Structure du DIT
 
 ```plaintext
 dc=ma-moulinette,dc=fr
@@ -51,7 +51,7 @@ dc=ma-moulinette,dc=fr
       └── uid=nathan.jones
 ```
 
-## Bootstrap LDIF
+## 5️⃣ Bootstrap LDIF
 
 Le fichier `c:\environnement\0_toolz\openLdap\bootstrap-ma-moulinette.ldif` contient :
 
@@ -64,7 +64,7 @@ Le fichier `c:\environnement\0_toolz\openLdap\bootstrap-ma-moulinette.ldif` cont
   - `aurelie.petit-coeur` / `TestPassword!2` (gestionnaire)
   - `nathan.jones` / `TestPassword!3` (collecte)
 
-## Variables d'environnement
+## 6️⃣ Variables d'environnement
 
 À positionner dans `.env.local` :
 
@@ -79,7 +79,7 @@ LDAP_BIND_PASSWORD="secret"
 LDAP_X_TLS_REQUIRE_CERT=0
 ```
 
-## Démarrage du serveur
+## 7️⃣ Démarrage du serveur
 
 Depuis `c:\environnement\0_toolz\openLdap\` :
 
@@ -94,7 +94,7 @@ New-Item    data -ItemType Directory
 
 Pour un démarrage en service Windows, voir `install-slapd.cmd` fourni par Maxcrc.
 
-## Chargement du DIT de test
+## 8️⃣ Chargement du DIT de test
 
 Depuis `c:\environnement\0_toolz\openLdap\ClientTools\` :
 
@@ -107,7 +107,7 @@ ldapadd.exe -x -H ldap://localhost ^
 
 Sept entrées doivent être ajoutées (racine + 2 OU + 1 compte de service + 3 utilisateurs).
 
-## Vérifications
+## 9️⃣ Vérifications
 
 > Bind technique (compte de service)
 
@@ -127,7 +127,7 @@ ldapwhoami.exe -x -H ldap://localhost ^
                -w "TestPassword!1"
 ```
 
-## Vérification depuis Symfony (`app:ldap:test`)
+## 🔟 Vérification depuis Symfony (`app:ldap:test`)
 
 Une commande Symfony dédiée valide directement la configuration `.env.local` (`LDAP_HOST`, `LDAP_PORT`, `LDAP_ENCRYPTION`, `LDAP_BIND_DN`, `LDAP_BIND_PASSWORD`) en effectuant un *bind* technique :
 
@@ -145,7 +145,7 @@ En cas d'échec, la commande affiche le message d'erreur, le code retour LDAP et
 
 > Source : `src/Command/Dev/LdapTestCommand.php`.
 
-## Adaptation du `CustomAuthenticator`
+## 🔟+1️⃣ Adaptation du `CustomAuthenticator`
 
 L'authenticator actuel est calibré pour Active Directory :
 
@@ -167,7 +167,7 @@ LDAP_USER_FILTER_ATTR="uid"
 
 et reconstruire le filtre dans l'authenticator à partir de ces variables. Cette adaptation reste à faire et est suivie dans la phase de mise en place des tests d'intégration LDAP.
 
-## Limites connues
+## 🔟+2️⃣ Limites connues
 
 - pas de TLS (`LDAP_ENCRYPTION="none"`, port 389) ; suffisant pour des tests locaux ;
 - mots de passe utilisateurs stockés en clair dans le LDIF de bootstrap (acceptable car DIT recréé à chaque test) ;

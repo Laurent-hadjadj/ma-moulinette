@@ -5,7 +5,7 @@ Les 13 commandes de `src/Command/Prod/`. 10 d'entre elles tournent automatiqueme
 !!! note "✅ Logger dédié `cron` (2026-10-15)"
     11 des 13 commandes de ce dossier journalisent désormais sur un channel Monolog dédié `cron` (`#[Autowire(service: 'monolog.logger.cron')]` posé sur le `LoggerInterface $logger` du constructeur) plutôt que sur le logger applicatif générique — fichier `var/log/cron.log` en prod (`cron-dev.log` en dev), exclu du canal `app.log`, consultable aussi depuis la page back-office **Journal des logs** (filtre « Cron »). Les 2 exceptions restent sur le logger générique : `app:sonar:compare-metrics` (pas de `LoggerInterface` du tout, outil de diagnostic) et `app:dependency-check:reprocess` (outil de reprise manuelle, jamais planifié).
 
-## ⏱️ `app:dependency-check:process`
+## 1️⃣ ⏱️ `app:dependency-check:process`
 
 **Objectif** : worker qui traite par lots la file d'ingestion des rapports OWASP DependencyCheck (table `dc_processing_queue`) — réclame des lignes en attente, décompresse/parse le JSON, délègue l'ingestion complète.
 
@@ -29,7 +29,7 @@ Réclame aussi les lignes `processing` orphelines (worker mort) plus vieilles qu
     La commande retournait toujours `Command::SUCCESS`, même si des rapports individuels étaient passés en `failed` définitif après 3 tentatives.
     Elle retourne désormais `Command::FAILURE` dès qu'au moins un rapport a échoué définitivement sur l'exécution — sans effet sur la planification cron (Supercronic ne fait rien de spécial sur un code non nul, il relance à la minute suivante quoi qu'il arrive), seule la visibilité du log change (`docker logs cron-ma-moulinette`).
 
-## 🕷️ `app:zap:process`
+## 2️⃣ 🕷️ `app:zap:process`
 
 **Objectif** : worker qui traite par lots la file d'ingestion des rapports ZAP (DAST) (table `zap_processing_queue`) — même pattern exact que `app:dependency-check:process` ci-dessus (réclame les lignes en attente, décompresse/parse le JSON, délègue l'ingestion complète vers la table `owasp_dast`).
 
@@ -50,7 +50,7 @@ php bin/console app:zap:process --batch=10
 !!! note "✅ Commande existante mais absente du cron jusqu'au 2026-10-15"
     La commande (phase 1 du chantier ZAP) existait sans être planifiée : les rapports uploadés via `POST /api/secure/zap/upload` restaient en `queued` indéfiniment, faute de worker automatique. Ajoutée à `docker/etc/cron/ma-moulinette` le 2026-10-15, en pair exact avec `app:dependency-check:process`.
 
-## 🧹 `app:zap:purge`
+## 3️⃣ 🧹 `app:zap:purge`
 
 **Objectif** : purge les lignes terminées (`done` ou `failed`) de la file ZAP (DAST) plus anciennes que N jours. Même logique que `app:dependency-check:purge` ci-dessous — ne touche jamais les lignes `queued` ni `processing`.
 
@@ -69,7 +69,7 @@ php bin/console app:zap:purge --days=7 --dry-run
 
 Affiche systématiquement un décompte par statut (`queued`/`processing`/`done`/`failed`) après exécution, comme `app:dependency-check:purge`.
 
-## 🧹 `app:dependency-check:purge`
+## 4️⃣ 🧹 `app:dependency-check:purge`
 
 **Objectif** : purge les lignes terminées (`done` ou `failed`) de la file OWASP DependencyCheck plus anciennes que N jours. Ne touche jamais les lignes `queued` ni `processing` (celles-ci relèvent de `app:dependency-check:process`).
 
@@ -88,7 +88,7 @@ php bin/console app:dependency-check:purge --days=7 --dry-run
 
 Affiche systématiquement (dry-run ou non) un décompte par statut (`queued`/`processing`/`done`/`failed`) après exécution — utile pour surveiller la santé de la file à chaque passage.
 
-## 🏷️ `app:sonar:update-tags`
+## 5️⃣ 🏷️ `app:sonar:update-tags`
 
 **Objectif** : met à jour les tags SonarQube de tous les projets selon leur groupe de permissions (ou le tag `archive` pour le groupe "Archive"), et sauvegarde le mapping projet → groupe dans `var/mapping_projets_groupes.json`.
 
@@ -112,7 +112,7 @@ php bin/console app:sonar:update-tags --url="https://sonar.exemple.com" --token=
 La détection du "bon" groupe SonarQube pour un projet repose sur un critère précis : permissions strictement égales à `{codeviewer, securityhotspotadmin, user}` **et** description du groupe contenant un marqueur texte (`"2021"` par défaut) — une convention de nommage des groupes SonarQube.
 Les deux critères sont paramétrables dans `config/packages/sonar_tags.yaml` (`sonar_tags.group_permissions`, `sonar_tags.group_description_marker`), sans avoir à modifier le code PHP si cette convention évolue (ex. nouveaux groupes "2025").
 
-## 🔁 `app:collecte:run`
+## 6️⃣ 🔁 `app:collecte:run`
 
 **Objectif** : déclenche les traitements automatiques Ma-Moulinette en appelant l'API publique de l'application (récupère la liste des traitements non démarrés, puis démarre chacun). Pensé pour être piloté par un ordonnanceur externe via son code de retour.
 
@@ -137,7 +137,7 @@ php bin/console app:collecte:run --url="https://ma.moulinette.exemple.fr" --toke
 
 Configuration TLS/proxy des appels sortants via les variables `MAMOUL_CLI_*` (voir `docker/.env.template`) — vérification du certificat activée par défaut.
 
-## 📅 `app:activity:collecte`
+## 7️⃣ 📅 `app:activity:collecte`
 
 **Objectif** : collecte les tâches SonarQube CE "Activity" (historique des analyses lancées) via l'API `/api/ce/activity`, avec rattrapage automatique multi-fenêtres depuis la dernière date connue en base jusqu'à hier.
 
@@ -160,7 +160,7 @@ php bin/console app:activity:collecte --from-date=2026-05-01 --to-date=2026-05-2
 
 Pause de 5 secondes entre chaque page lors de la pagination (throttling volontaire). Si le nombre de résultats dépasse 10 000, un avertissement non bloquant invite à relancer avec un `--catch-up-days` plus petit. Retourne `Command::FAILURE` si au moins une fenêtre a échoué — adapté à la supervision cron.
 
-## 🧹 `app:batch-profiling:purge`
+## 8️⃣ 🧹 `app:batch-profiling:purge`
 
 **Objectif** : purge les lignes de la table `batch_profiling` (mesures de performance des traitements batch) plus anciennes que N jours, via la fonction PostgreSQL `ma_moulinette.purge_batch_profiling()`.
 
@@ -180,7 +180,7 @@ php bin/console app:batch-profiling:purge --days=30 --dry-run
 !!! note "✅ Fonction SQL désormais appelée"
     La fonction PostgreSQL `purge_batch_profiling()` existait en base sans jamais être appelée par le code applicatif (voir [Profiling](../back-office/profiling.md)). Cette commande, ajoutée le 2026-07-20, est la première à l'exploiter.
 
-## 🧹 `app:user-role-log:purge`
+## 9️⃣ 🧹 `app:user-role-log:purge`
 
 **Objectif** : purge le journal des modifications de rôle (`user_role_log`) plus ancien que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 1). La suppression manuelle ligne à ligne reste disponible depuis `/admin/journal-roles` (`ROLE_INTERNAL`).
 
@@ -197,7 +197,7 @@ php bin/console app:user-role-log:purge --days=180 --dry-run
 
 **Invocation** : cron, **quotidien à 4h15** — `--days=365 --no-interaction --env=prod`.
 
-## 🧹 `app:activity:purge`
+## 🔟 🧹 `app:activity:purge`
 
 **Objectif** : purge l'activité de collecte SonarQube (`activity` et `activity_historique`) plus ancienne que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 2). Les deux tables sont purgées sur le même seuil ; l'opération est idempotente (relancer la commande termine le travail restant en cas d'échec partiel).
 
@@ -216,7 +216,7 @@ php bin/console app:activity:purge --days=180 --dry-run
 
 Affiche systématiquement un décompte détaillé par table (`activity` / `activity_historique`) après exécution.
 
-## 🧹 `app:user-agent:purge`
+## 🔟+1️⃣ 🧹 `app:user-agent:purge`
 
 **Objectif** : purge les événements et analyses User-Agent (`user_agent_event` et `user_agent_analysis`, donnée purement statistique de la page Statistiques) plus anciens que N jours — corrige un écart RGPD (conservation illimitée jusqu'ici, voir [Conformité RGPD](../conformite/rgpd.md) section 13, action 3). Les deux tables sont purgées sur le même seuil ; l'opération est idempotente.
 
@@ -235,7 +235,7 @@ php bin/console app:user-agent:purge --days=90 --dry-run
 
 Affiche systématiquement un décompte détaillé par table (`user_agent_event` / `user_agent_analysis`) après exécution.
 
-## ♻️ `app:dependency-check:reprocess`
+## 🔟+2️⃣ ♻️ `app:dependency-check:reprocess`
 
 **Objectif** : re-traite manuellement un scan DependencyCheck déjà ingéré — le supprime puis le ré-ingère depuis le payload brut conservé en file, sans avoir à re-uploader le rapport JSON original. Utile pour appliquer rétroactivement une évolution du format d'ingestion.
 
@@ -259,7 +259,7 @@ Le payload n'est disponible en file que pendant la période de rétention géré
 !!! caution "⚠️ Pas de transaction englobant suppression et ré-ingestion"
     La suppression de l'ancien scan est validée avant que la ré-ingestion ne soit tentée. Si la ré-ingestion échoue après coup, l'ancien scan est déjà supprimé et aucun nouveau n'a été créé — le payload restant en file, il suffit de relancer la commande pour recréer le scan.
 
-## 📊 `app:sonar:compare-metrics`
+## 🔟+3️⃣ 📊 `app:sonar:compare-metrics`
 
 **Objectif** : compare deux jeux de métriques SonarQube (fichiers JSON exportés depuis deux versions de SonarQube) et produit un rapport de différences (ajouts, suppressions, modifications) avec un score d'impact pondéré — utile lors d'une montée de version SonarQube.
 
@@ -287,7 +287,7 @@ php bin/console app:sonar:compare-metrics metrics_8.9.9.json metrics_9.9.8.json 
     `--format` vaut `cli` par défaut, un format non géré par `--summary-only` (qui n'accepte que `md`/`html`/`json`) — un simple `--summary-only` sans préciser `--format` retourne donc systématiquement une erreur.
     Toujours combiner les deux options.
 
-## 📚 Pour aller plus loin
+## 🔟+4️⃣ 📚 Pour aller plus loin
 
 - [Vue d'ensemble des commandes](index.md)
 - [Commandes Maintenance](maintenance.md)

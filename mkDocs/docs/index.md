@@ -1,21 +1,21 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.7.0-blue)](CHANGELOG.md)
-[![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Version](https://img.shields.io/badge/version-2.9.0-blue)](CHANGELOG.md)
+[![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tests](https://img.shields.io/badge/tests-4231%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![Assertions](https://img.shields.io/badge/assertions-11426-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![Coverage](https://img.shields.io/badge/coverage-81.13%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
-[![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](https://www.gnu.org/licenses/agpl-3.0.html)
+[![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](LICENSE)
 
 ┏┓┏┓┏┓━┏━━┓━┏━━━┓
 ┃┃┃┃┃┃━┗┫┣┛━┃┏━┓┃
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛
 ┗┓┏┓┏┛━┏┫┣┓━┃┃
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.7.0 Release on November 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.9.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -45,7 +45,7 @@ Elle s’appuie sur les **API publiques** de SonarQube et est **compatible** ave
 
     ⚠️ À mettre à jour lors du passage à l'année 2027 : ajouter une ligne `2027` et fixer la LTA finale de la ligne 2026 dans ce tableau.
 
-## 💡 Philosophie du projet
+## 1️⃣ 💡 Philosophie du projet
 
 Conçue à la fois comme **outil de pilotage qualité** et **cadre pédagogique**, Ma-Moulinette est utilisée :
 
@@ -54,7 +54,7 @@ Conçue à la fois comme **outil de pilotage qualité** et **cadre pédagogique*
 
 Ce double objectif a guidé son développement : offrir une **application robuste, claire et documentée**, tout en restant **accessible aux étudiants et formateurs**.
 
-## 📜 Licence
+## 2️⃣ 📜 Licence
 
 Le code de Ma-Moulinette est distribué sous licence
 **[GNU AGPL 3.0 ou ultérieure](https://www.gnu.org/licenses/agpl-3.0.html)**, une licence à copyleft qui garantit que le logiciel reste ouvert, y compris lorsqu'il est proposé comme service web. Cette documentation est sous licence
@@ -68,7 +68,7 @@ Le code de Ma-Moulinette est distribué sous licence
 
 Jusqu’à la version 2.5.0 incluse, Ma-Moulinette était publiée sous licence CC BY-NC-SA 4.0 ; ces versions restent sous cette licence. Les en-têtes de fichiers antérieurs au 4 novembre 2026 mentionnent encore l’ancienne licence : en cas de contradiction, le fichier `LICENSE` prévaut. Le motif et la portée du changement sont expliqués dans `LICENSING.md`.
 
-## 📖 Histoire du projet
+## 3️⃣ 📖 Histoire du projet
 
 Le projet est né lors d’un échange avec mes étudiants en **stage PHP/Symfony**, autour de l’analyse de code et de la qualité logicielle avec **SonarQube**.
 L’idée initiale : concevoir une **application web simple** en **HTML5/JS**, illustrant les bonnes pratiques de développement et d’architecture.
@@ -82,11 +82,11 @@ Cette version légère et autonome permettait un **suivi local des projets Sonar
 
 Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**, permettant une architecture solide, une base de données centralisée et des traitements automatisés.
 
-## 🚀 État actuel
+## 4️⃣ 🚀 État actuel
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.7.0** corrige un bug critique introduit en 2.6.0 et ajoute un compteur de projets collectés/à collecter sur la page Projet (voir [CHANGELOG.md](CHANGELOG.md)).
+La **version 2.9.0** simplifie la procédure de gestion et de déploiement du projet de démonstration, introduit en 2.8.0 et améliore la documentation markdown (voir [CHANGELOG.md](CHANGELOG.md)).
 
 ### ✅ Fonctionnalités disponibles
 

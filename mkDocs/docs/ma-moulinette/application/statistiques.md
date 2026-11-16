@@ -4,6 +4,7 @@
 
 ## 🗺️ Cartographie
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Admin["🛠️ Back-office EasyAdmin<br/>menu 'Application'"] -->|"Dashboard"| Dash[🧭 Dashboard technique]
@@ -16,6 +17,7 @@ flowchart TD
     Index -.-> Proj
     Util -->|ROLE_INTERNAL| Batch[⚙️ Relancer l'analyse UserAgent]
 ```
+<!-- markdownlint-enable MD046 -->
 
 !!! note "✅ Confusion de nom avec la page Activité corrigée"
     L'entrée de menu EasyAdmin s'appelait **« Activité »** tout court et pointait vers `/statistiques/utilisateur` (statistiques de navigation des utilisateurs de l'application) — un nom identique à celui de la page [Activité](activite.md), qui suit elle les analyses SonarQube (deux fonctionnalités homonymes mais totalement distinctes). Renommée **« Activité utilisateur »** dans `DashboardController::configureMenuItems()` pour lever l'ambiguïté ; la page [Activité](activite.md) (côté SonarQube) garde son nom, elle n'est de toute façon pas liée depuis ce menu.
@@ -75,6 +77,7 @@ Page Statistiques utilisateur
 
 ### Pipeline de collecte
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     Nav[Navigation utilisateur] -->|tracking| Evt[(user_agent_event<br/>PENDING)]
@@ -85,6 +88,7 @@ flowchart LR
     Batch -->|DeviceDetector| Ana[(user_agent_analysis)]
     Ana --> Util
 ```
+<!-- markdownlint-enable MD046 -->
 
 !!! note "✅ Trois points de déclenchement automatiques, un seul réglage de taille de lot"
     `runBatch()` est appelé depuis **3 endroits** : à chaque visite de la page [Accueil](accueil.md) et de la page [Projet](projet.md) (taille de lot définie par `USER_AGENT_BATCH_AUTOMATIQUE`, `0` désactive le batch sur ces deux pages), et depuis le bouton « Relancer l'analyse » de cette page (taille définie par `USER_AGENT_BATCH_MANUEL`). Sur Accueil, l'échec éventuel du batch est uniquement journalisé (`[Accueil] ❌ ...`), sans message affiché à l'utilisateur — ce traitement est invisible pour lui, un message d'erreur serait hors de propos sur la page la plus visitée de l'application.

@@ -13,7 +13,7 @@ Aucun rôle métier spécifique n'est requis (`ROLE_UTILISATEUR` suffit).
     1. **Le pare-feu Symfony** (`config/packages/security.yaml`, `access_control` sur `^/api/secure/` → `ROLE_UTILISATEUR`) exige une session authentifiée valide pour atteindre la moindre route — un `curl` sans session (même avec un jeton parfaitement forgé après rétro-ingénierie du JS) est rejeté avant même d'atteindre le contrôleur.
     2. **`listeProjet()`**, appelée dans `projetCosui()` — 404 si l'utilisateur n'a aucun groupe fonctionnel, 406 si le projet n'appartient pas à son périmètre. La méthode vérifie que la clé Maven décodée appartient bien au **groupe fonctionnel** de l'utilisateur *authentifié* — donc même une session légitime ne peut pas afficher un projet hors de son périmètre, jeton ou pas.
 
-## 🗺️ Origine des données
+## 1️⃣ 🗺️ Origine des données
 
 <!-- markdownlint-disable MD046 -->
 ```mermaid
@@ -32,7 +32,7 @@ Si aucune version de référence n'a été définie, les valeurs par défaut son
 
 COSUI est une page **100 % SSR** (server-side rendering) : elle ne fait **aucun appel réseau à SonarQube**, ni côté PHP ni côté JavaScript — tout provient de `historique` et `repartition` en base locale, via `ProjetCosuiService`.
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -59,21 +59,21 @@ Page COSUI
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📊 Tableau de comparaison des notes
+## 3️⃣ 📊 Tableau de comparaison des notes
 
 Une colonne « référence » et une colonne « courante », avec pour chacune : version, date, notes de fiabilité/sécurité/maintenabilité/hotspot (badge coloré A-F), et le détail bloquant/critique/majeur par catégorie (bug, vulnérabilité, mauvaise pratique).
 Une icône ℹ️ à côté de la date de référence ouvre une fenêtre récapitulant en détail cette version de référence (les données sont déjà chargées côté serveur, aucun nouvel appel réseau).
 
 Un interrupteur **« Afficher les variations ? »** affiche/masque, purement côté navigateur (aucun rappel serveur), des flèches de tendance (▲/▼/=) à côté de chaque compteur, comparant référence et version courante.
 
-## 🧩 Répartition des défauts
+## 4️⃣ 🧩 Répartition des défauts
 
 Tableau croisé Maintenabilité/Fiabilité/Vulnérabilité × Présentation/Métier × Bloquant/Critique/Majeur — **pour la version courante uniquement** (pas de comparaison référence/courante ici, contrairement au tableau du dessus), alimenté par le dernier cycle de la page [Répartition par module](repartition_details.md).
 
 !!! note "✅ Colonne Fiabilité corrigée (2026-07-28)"
     `ProjetCosuiService::generateRender()` construit la clé de variable de rendu à partir du même identifiant interne (`bug`/`vulnerability`/`code_smell`) que celui utilisé pour retrouver la colonne en base (`frontendBugBlocker`, etc.). Le template attend cependant `nombre_metier_reliability_*`/`nombre_presentation_reliability_*` (label affiché : Fiabilité) — sans correspondance entre `bug` et `reliability`, la colonne Fiabilité du tableau affichait toujours **0**, quelle que soit la donnée réellement en base. Corrigé par une table de correspondance dédiée à la construction de la clé de rendu ; les colonnes Vulnérabilité/Maintenabilité n'étaient pas concernées (leur identifiant interne correspond déjà au label attendu). Trouvé en écrivant la couverture e2e du module.
 
-## 🕸️ Graphique radar
+## 5️⃣ 🕸️ Graphique radar
 
 Compare visuellement référence et version courante sur 6 axes : fiabilité, vulnérabilité, hotspots, maintenabilité, couverture de tests, dette technique (ratio inversé). Les notes lettres sont converties en points sur 100 pour permettre le tracé (`note2point()` côté serveur).
 
@@ -81,7 +81,7 @@ Compare visuellement référence et version courante sur 6 axes : fiabilité, vu
     Le serveur (`ProjetCosuiService::note2point()`) utilise des seuils fixes (A=100/B=80/C=60/D=30/E=10/F=0) pour construire les points du radar — et `construireRadarChart()` convertit bien l'axe **Hotspot** via cette même grille, au même titre que Fiabilité/Vulnérabilité/Maintenabilité.
     Les axes **Couverture** et **Dette** restent une bucketisation JS purement indicative (le serveur n'y calcule pas de note lettre, seulement une valeur numérique), donc rien à aligner pour eux.
 
-## ⚠️ Messages remontés par la page
+## 6️⃣ ⚠️ Messages remontés par la page
 
 COSUI n'utilise jamais `showMessage()` côté JavaScript (`index-cosui.js` ne contient aucun appel) — la page ne fait aucun appel AJAX propre, donc **tous les messages viennent du flash serveur** au chargement (`CosuiController::projetCosui()`).
 
@@ -94,7 +94,7 @@ COSUI n'utilise jamais `showMessage()` côté JavaScript (`index-cosui.js` ne co
 | *(dynamique, relayé du service)* | `ProjetCosuiService::generateRender()` retourne un code ≠ 200 (ex. aucune donnée de référence en base, échec de lecture du `setup`) | Le type et le message renvoyés par le service sont affichés tels quels (préfixés ❌) |
 | `critical` | Exception `RuntimeException` inattendue pendant la génération | 🔴 Erreur lors de la génération COSUI. |
 
-## 📚 Pour aller plus loin
+## 7️⃣ 📚 Pour aller plus loin
 
 - [Projet](projet.md) — point d'entrée vers COSUI.
 - [Suivi](suivi.md) — définit la version de référence (`historique.initial = true`) et l'historique complet.

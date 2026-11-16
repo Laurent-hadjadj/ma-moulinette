@@ -4,11 +4,11 @@
     Ce document a démarré comme une veille (11/10/2026) sur les outils capables d'alimenter un futur
     tableau de bord **OWASP API Security Top 10 (2023)** dans Ma-Moulinette. À l'issue de cette veille, **ZAP a été retenu** comme scanner DAST et l'angle d'exploitation a changé : plutôt qu'un hypothétique mapping API Top 10 2023 (confirmé introuvable, voir plus bas), les alertes ZAP portent nativement des tags **OWASP Top 10 web 2017/2021**, exactement les deux référentiels déjà utilisés par le module OWASP SAST (SonarQube) existant. Le chantier d'implémentation (ingestion de rapport + table d'agrégation `owasp_dast`, complément DAST du module SAST) est **terminé et vert** pour ce premier incrément (voir section dédiée plus bas) — reste hors périmètre : la page de restitution visuelle.
 
-## 🎯 Objectif de la veille
+## 1️⃣ 🎯 Objectif de la veille
 
 Partir de la liste communautaire [OWASP API Security Tools](https://community.owasp.org/api_security_tools), en retenir uniquement les outils **non-commerciaux** (licence open source réelle, pas un essai gratuit d'un produit commercial), et évaluer leur capacité à produire une sortie structurée (JSON de préférence) qu'un nouveau `Batch*Controller` pourrait collecter, de la même façon que la collecte Dependency-Check lit déjà un rapport JSON externe.
 
-## 📋 Outils non-commerciaux recensés
+## 2️⃣ 📋 Outils non-commerciaux recensés
 
 | Outil | Licence | Nature | Sortie exploitable ? |
 | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ Partir de la liste communautaire [OWASP API Security Tools](https://community.ow
 | openapi3-fuzzer, jerry-curl, Wfuzz, ffuf, ExploitSpec, Astra, httpie, http-tanker, Hurl, Hoppscotch, rest-assured, curl | diverses (GPL/MIT/BSD/Apache) | Briques génériques (clients HTTP, fuzzers bas niveau) | Pas des scanners « API Top 10 » clé en main |
 | Darkmoon | GPL-3.0 | Self-hosted, projet très jeune/peu connu | Risque de maturité insuffisante |
 
-## 🧭 Analyse
+## 3️⃣ 🧭 Analyse
 
 Deux outils se détachent *a priori* comme candidats les plus solides :
 
@@ -34,7 +34,7 @@ Les quatre outils marqués ⚠️ sont, sur le papier, plus directement pensés 
 
 Le reste de la liste (fuzzers génériques, clients HTTP bas niveau, outil GraphQL-only) est écarté pour cette première sélection : ce sont des briques utiles à un pentest manuel, pas des scanners clé en main produisant un rapport structuré exploitable par une collecte automatisée.
 
-## 🧪 POC — résultats (11/10/2026)
+## 4️⃣ 🧪 POC — résultats (11/10/2026)
 
 POC exécuté en local (Docker Desktop) contre trois cibles réelles démarrées pour l'occasion, afin de sortir du papier : **ma-moulinette** (PHP, la stack e2e déjà en place), **`swaggerapi/petstore`** (API Java officielle swagger.io, spec **Swagger 2.0** native) et deux services **SOAP** Java (`jeromeguillaume/ws-soap-calculator` puis `fosbsb/soap-ws`, le premier ayant révélé un bug WSDL — voir plus bas).
 
@@ -84,7 +84,7 @@ Les deux outils tournent sans spec (aucune n'existe encore côté ma-moulinette)
 
     **Conclusion revue à la baisse** : aucune source consultée à ce stade — ni outil gratuit, ni page marketing commerciale, ni documentation OWASP officielle elle-même — ne fournit une méthodologie de détection suffisamment concrète pour être transposée directement en règle de classification côté Ma-Moulinette. Le travail de mapping `cweid`/`pluginid` → `API1:2023`...`API10:2023` resterait à construire manuellement, catégorie par catégorie, par expertise interne plutôt que par copie d'une source existante.
 
-## 🔍 Vérification des 5 outils ⚠️ (dépôt GitHub, 11/10/2026)
+## 5️⃣ 🔍 Vérification des 5 outils ⚠️ (dépôt GitHub, 11/10/2026)
 
 Vérification directe via l'API GitHub (date du dernier push, archivage) et le README de chaque dépôt (mention explicite d'OWASP API Security, format de sortie) :
 
@@ -103,7 +103,7 @@ Vérification directe via l'API GitHub (date du dernier push, archivage) et le R
 - **WuppieFuzz est le seul des 5 activement maintenu** (push il y a 4 jours) — si un besoin de fuzzing guidé par couverture se présente un jour, c'est le seul candidat sérieux parmi les cinq, mais son format de sortie reste à vérifier en pratique (non documenté clairement dans le README).
 - **Pynt et Cherrybomb** sont dans un entre-deux (actifs mais ralentis, pas abandonnés) — pas prioritaires vu que ZAP couvre déjà mieux le périmètre Java/Swagger/SOAP testé dans le POC.
 
-## 🔗 Intégration CI/CD — bonnes pratiques recensées (sources externes, 11/10/2026)
+## 6️⃣ 🔗 Intégration CI/CD — bonnes pratiques recensées (sources externes, 11/10/2026)
 
 Deux articles externes (voir Référence) confirment indépendamment l'absence de mapping natif vers l'OWASP API Top 10 2023 côté ZAP (aucun des deux ne mentionne de numérotation `API1`...`API10`) et apportent des détails pratiques réutilisables si ZAP est retenu pour de la collecte automatisée :
 
@@ -113,7 +113,7 @@ Deux articles externes (voir Référence) confirment indépendamment l'absence d
 - **CI/CD** : `zaproxy/action-api-scan` (GitHub Actions) ou job direct avec l'image officielle (GitLab CI), `fail_action`/`allow_failure: false` pour bloquer un pipeline sur un `High` confirmé, artefact JSON+HTML conservé. Dans les deux cas l'API cible doit déjà être démarrée et joignable — même contrainte que le POC ci-dessus (DAST = application réelle en cours d'exécution, jamais le code source).
 - **Authentification** : utiliser un compte de test à droits limités (jamais un compte admin), token injecté en en-tête ou contexte ZAP exporté (`.context`) pour les API authentifiées — à prévoir si on scanne un jour les routes `/api/secure/...` de ma-moulinette elle-même plutôt que ses seules routes publiques.
 
-## 🧩 Exploration des add-ons, fonctionnalités et rapports ZAP (13/10/2026)
+## 7️⃣ 🧩 Exploration des add-ons, fonctionnalités et rapports ZAP (13/10/2026)
 
 Deuxième passe, cette fois centrée uniquement sur ZAP (retenu comme candidat le plus solide, cf. plus haut), sur trois axes : les **add-ons** disponibles au-delà de ce qui est bakė dans l'image `stable`, les **fonctionnalités** utilisables(règles de scan, Automation Framework), et la **structure réelle des rapports**. Vérifié en direct contre une instance ZAP en mode daemon (API REST, `ghcr.io/zaproxy/zaproxy:stable` 2.17.0) et contre le catalogue marketplace officiel (`ZapVersions-2.17.xml`, dépôt `zaproxy/zap-admin`).
 
@@ -162,7 +162,7 @@ Interrogé en direct (`/JSON/reports/view/templates/`) : 13 templates, add-on `R
   **Toujours aucun tag `API1:2023`...`API10:2023`** — confirme une troisième fois, sur un rapport réellement généré cette fois, la conclusion de l'encadré ci-dessus.
 - **`sarif-json`** : structure SARIF standard (`runs[].tool.driver.rules[]` avec `id`, `name`, `fullDescription`, `properties.references`) — les liens OWASP Cheat Sheet y sont repris —, et surtout `relationships[].target.toolComponent.name == "CWE"` : le mapping CWE est natif et structuré en SARIF, contrairement au JSON classique où `cweid` est un simple champ plat. Toujours rien côté API Top 10.
 
-## ✅ Implémentation — ingestion + indicateurs (13/10/2026)
+## 8️⃣ ✅ Implémentation — ingestion + indicateurs (13/10/2026)
 
 Décision prise : ZAP retenu, format `traditional-json` (léger). Module implémenté sur le gabarit **OWASP
 Dependency-Check** (seul précédent dans le code d'une donnée externe poussée en rapport plutôt que tirée
@@ -203,7 +203,7 @@ automatisées**, contrairement à d'autres très bien couvertes (A03 Injection n
 
 **Implication directe pour `owasp_dast`** : un compteur à `0` sur les catégories A07/A09/A10 ne signifie **pas** « rien trouvé, projet sain » mais plutôt « ZAP ne teste quasiment pas cette catégorie en mode automatisé » — une nuance d'interprétation à ne pas perdre lors de la conception de la future page de restitution (ne pas afficher ces catégories comme s'il s'agissait d'un signal de qualité au même titre que A01/A03/A05, qui sont elles réellement bien couvertes).
 
-## ❓ Questions encore ouvertes
+## 8️⃣ ❓ Questions encore ouvertes
 
 1. ~~Décision ZAP vs Nuclei~~ — **tranchée** : ZAP retenu (voir section Implémentation ci-dessus), pour les raisons déjà documentées (Swagger 2 refusé par Nuclei, SOAP non supporté).
 2. ~~Mapping `cweid`/`pluginid` ZAP → catégories OWASP API Top 10 2023~~ — confirmé à 4 reprises
@@ -218,7 +218,7 @@ automatisées**, contrairement à d'autres très bien couvertes (A03 Injection n
    bouton Dependency-Check) — chantier suivant explicitement différé, à concevoir en tenant compte du
    caveat de couverture inégale ci-dessus.
 
-## 📚 Référence
+## 9️⃣ 📚 Référence
 
 - Liste source : [OWASP API Security Tools](https://community.owasp.org/api_security_tools) (communauté OWASP).
 - [OWASP ZAP — Sécuriser une API REST (tech-insider.org)](https://tech-insider.org/fr/owasp-zap-securiser-api-rest-2026/)

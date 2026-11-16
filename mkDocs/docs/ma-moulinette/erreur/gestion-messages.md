@@ -2,7 +2,7 @@
 
 Depuis la v2.0.0, les messages destinés aux utilisateurs suivent une convention commune, qu'ils soient générés côté serveur (PHP/Symfony) ou côté client (JavaScript/jQuery).
 
-## 🏷️ Types de messages
+## 1️⃣ 🏷️ Types de messages
 
 | Type | Icône | Usage |
 | --- | --- | --- |
@@ -17,7 +17,7 @@ Depuis la v2.0.0, les messages destinés aux utilisateurs suivent une convention
 !!! note "🗑️ Deux types définis mais inatteignables via `showMessage()`"
     Le dictionnaire d'icônes de `messageHelper.js` définit aussi `delete` (🗑️) et `notAuthorize` (🚫), mais ces deux valeurs ne figurent pas dans la liste `allowedTypes` de `showMessage()` — un appel avec l'un de ces types retomberait donc sur `critical`. Aucun appel `showMessage('delete', ...)`/`showMessage('notAuthorize', ...)` n'existe dans le code actuel : ce sont des entrées résiduelles, pas des types utilisables aujourd'hui.
 
-## 🖥️ Messages flash côté Symfony
+## 2️⃣ 🖥️ Messages flash côté Symfony
 
 Convention utilisée par la majorité des controllers applicatifs : un seul type de flash Symfony (`notice`), portant un tableau structuré `type`/`message` :
 
@@ -34,7 +34,7 @@ Ces messages sont affichés par le partial commun `templates/_message.html.twig`
     - Les contrôleurs CRUD EasyAdmin (`GroupeUtilisateurCrudController`, `PortefeuilleCrudController`, `GroupeFonctionnelCrudController`) utilisent `addFlash('danger', 'Message brut')` — type `danger` et message en simple chaîne, affichés par le layout natif d'EasyAdmin plutôt que par `_message.html.twig`.
     - Cohérent fonctionnellement (EasyAdmin a son propre mécanisme de flash), mais hors de la convention `notice`/`type`/`message` décrite ci-dessus.
 
-## 🧩 Messages JS
+## 3️⃣ 🧩 Messages JS
 
 Le helper `assets/js/common/messageHelper.js` centralise l'affichage :
 
@@ -48,11 +48,11 @@ hideMessage();
 
 `showMessage(type, message, technicalDetails = null)` applique automatiquement l'icône et la classe CSS correspondant au type (repli sur `critical` si le type n'est pas reconnu), et adapte l'attribut ARIA `role` (`alert` pour les types `alert`/`error`/`critical`, `status` sinon).
 
-## 🈁 Localisation
+## 4️⃣ 🈁 Localisation
 
 Seule la langue **française** est actuellement fournie (`translations/*.fr.yml`) — pas de traduction anglaise disponible à ce jour.
 
-## ✅ Messages d'erreur des formulaires
+## 5️⃣ ✅ Messages d'erreur des formulaires
 
 Les messages générés par les contraintes de validation Symfony (`Assert\...`) sont affichés via `form_errors(...)`, sous forme d'une simple liste sous le champ concerné — sans classe CSS dédiée (pas de `is-invalid`/`invalid-feedback` dans le projet).
 

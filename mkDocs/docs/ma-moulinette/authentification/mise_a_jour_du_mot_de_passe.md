@@ -4,7 +4,7 @@
 
 Deux façons d'arriver sur ce formulaire (`/mot-de-passe/mise-a-jour`) : le changement est **forcé** à la connexion suivante tant que `utilisateur.reset_password = true` — c'est la valeur par défaut de tout nouveau compte (voir [Authentification](authentification.md)) — ou l'utilisateur **active lui-même** cette contrainte pour la prochaine connexion, via l'interrupteur de la modale « Informations personnelles » (icône ⚙️ du bandeau).
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 <!-- markdownlint-disable MD046 -->
 ```mermaid
@@ -23,7 +23,7 @@ flowchart TD
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -43,7 +43,7 @@ Page Mise à jour du mot de passe
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📝 Formulaire
+## 3️⃣ 📝 Formulaire
 
 Le formulaire demande : l'ancien mot de passe (pour confirmation), le nouveau mot de passe, et sa ressaisie. Le compte concerné est affiché mais non modifiable. Le nouveau mot de passe doit comporter entre **8 et 52 caractères** (`ResetPasswordFormType`, seule contrainte réellement vérifiée côté serveur).
 
@@ -54,11 +54,11 @@ L'encart « Recommandations » (12 caractères, complexité, éviter les informa
 
 En cas de succès, le mot de passe est mis à jour (haché), le compteur de tentatives est réinitialisé, l'indicateur `reset_password` est levé, et l'utilisateur est redirigé vers la page [Accueil](../application/accueil.md).
 
-## 🔁 Activer soi-même le changement à la prochaine connexion
+## 4️⃣ 🔁 Activer soi-même le changement à la prochaine connexion
 
 Indépendamment du formulaire ci-dessus, tout utilisateur peut **s'imposer lui-même** un changement de mot de passe à sa prochaine connexion : un interrupteur dans la modale « Informations personnelles » (icône ⚙️ du bandeau, `information.utilisateur.html.twig`) appelle `POST /api/secure/mot-de-passe/mise-a-jour` (`ResetPasswordController::apiResetMotDePasse()`), qui met à jour `utilisateur.reset_password` — sans jamais toucher au mot de passe lui-même. Au prochain login réussi, `CustomAuthenticator` redirige automatiquement vers ce formulaire au lieu de la page [Accueil](../application/accueil.md) tant que ce drapeau est levé.
 
-## ⚠️ Messages remontés par la page
+## 5️⃣ ⚠️ Messages remontés par la page
 
 ### Flash serveur (`ResetPasswordController::resetMotDePasse()`)
 
@@ -78,7 +78,7 @@ Ce message n'utilise pas le mécanisme habituel `showMessage()` — il est injec
 | Interrupteur activé avec succès | 📌 Vous devez vous reconnecter pour changer votre mot de passe. |
 | Interrupteur désactivé avec succès | *(message effacé)* |
 
-## 📚 Pour aller plus loin
+## 6️⃣ 📚 Pour aller plus loin
 
 - [Authentification](authentification.md) : flux de connexion complet, y compris LDAP.
 - [Gestion de la sécurité](../developpement/securite.md#-compte-administrateur) : cas du compte `admin`.

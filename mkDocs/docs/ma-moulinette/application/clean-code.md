@@ -13,8 +13,9 @@ Sur un serveur SonarQube antérieur à la version 10 (qui ne supporte pas ces fa
     Comme le token n'est qu'un `rot13(base64(...))` sans clé secrète côté serveur, on réutilise  le trait partagé `App\Controller\Traits\ProjetPerimetreGuard` (même mécanisme que OWASP/Suivi/COSUI).
     La page `/clean-code/synthese` n'était en revanche pas concernée : elle ne prend aucune clé Maven en paramètre, elle liste directement les projets de `MesProjets::liste($groupes)`.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Projet["📁 Page Projet<br/>bouton 'Clean Code'<br/>masqué si SonarQube = 8"] -->|lien signé rot13/base64| Index["✨ /clean-code<br/>dashboard 1 projet"]
@@ -23,11 +24,12 @@ flowchart TD
     Index -->|"#bouton-retour-projet"| Projet
     Synth -.->|"history.back() en JS"| Index
 ```
+<!-- markdownlint-enable MD046 -->
 
 !!! note "🔗 Navigation par lien signé, pas par rôle Symfony dédié"
     Comme OWASP/Répartition/COSUI/Profil, `/clean-code` n'est protégée par aucun rôle Symfony spécifique (seule la règle globale `ROLE_UTILISATEUR` s'applique) : le token est un `rot13(base64("hashcode(maven_key)|maven_key"))` généré côté page Projet — accessible uniquement à qui est passé par cette page, et désormais vérifié côté serveur contre le groupe fonctionnel (voir note ci-dessus). `/clean-code/synthese` repose uniquement sur l'appartenance à un groupe fonctionnel (`MesProjets::liste()`), pas sur un jeton.
 
-## 🧭 Chemin de fer de la page `/clean-code`
+## 2️⃣ 🧭 Chemin de fer de la page `/clean-code`
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -55,7 +57,7 @@ Page Clean Code
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📁 Page `/clean-code` — blocs détaillés
+## 3️⃣ 📁 Page `/clean-code` — blocs détaillés
 
 Si le token est absent, mal formé, ou que l'utilisateur n'a pas accès au projet (périmètre) ou qu'aucune donnée n'existe pour la clé maven (`CleanCodeRepository::selectCleanCode` renvoie vide) → callout unique (400, 404/406 périmètre, ou 404 données selon le cas) invitant à lancer une collecte depuis la page Projet, rien d'autre affiché.
 
@@ -73,7 +75,7 @@ Sinon :
 - **3 indicateurs de conformité** : OWASP Top 10 2021, SANS/CWE Top 25, CWE (total de références, peut cumuler plusieurs tags par issue).
 - **Tableau détail** : une ligne par catégorie d'attribut (signification, nb issues, % du total), ligne RESPONSIBLE surlignée si >0, total = 100 %.
 
-## 🧭 Chemin de fer de la page `/clean-code/synthese`
+## 4️⃣ 🧭 Chemin de fer de la page `/clean-code/synthese`
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -89,7 +91,7 @@ Page Clean Code — Synthèse
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📊 Page `/clean-code/synthese` — blocs détaillés
+## 5️⃣ 📊 Page `/clean-code/synthese` — blocs détaillés
 
 - Un tag 🎯 par groupe fonctionnel de l'utilisateur (rien affiché si aucun groupe — le flash serveur couvre déjà ce cas), composant partagé (`templates/_tags_groupe_fonctionnel.html.twig`) avec les pages Mes projets et Statistiques › Projets.
 - Cas d'absence de données, dans l'ordre de vérification : aucun groupe fonctionnel rattaché → inviter à contacter un gestionnaire ; aucun projet dans le périmètre → callout dédié ; aucune donnée Clean Code sur les projets du périmètre → callout dédié.
@@ -98,11 +100,11 @@ Page Clean Code — Synthèse
 !!! caution "⚠️ Le PDF de synthèse est moins riche que l'écran"
     L'export PDF (`clean_code_synthese_pdf`) ne reprend que 9 des 15 colonnes du tableau web : il omet le Quality Gate, les notes de complexité, le % RESPONSIBLE, le % de duplication et le nombre d'anomalies OWASP — à garder à l'esprit si le PDF est partagé comme référence unique.
 
-## 🗃️ Données stockées
+## 6️⃣ 🗃️ Données stockées
 
 Table `clean_code` (voir [Architecture — base de données](../architecture/architecture-base-de-donnees.md)) : clé maven, nombre total d'issues, compteurs par catégorie d'attribut, par qualité logicielle impactée, par sévérité d'impact, et les 3 indicateurs de conformité. Recopiés dans `historique` lors de l'enregistrement d'une version — voir [Suivi](suivi.md).
 
-## ⚠️ Messages remontés par la page
+## 7️⃣ ⚠️ Messages remontés par la page
 
 ### Page `/clean-code` (flash serveur, `CleanCodeController::index()`)
 
@@ -123,7 +125,7 @@ Table `clean_code` (voir [Architecture — base de données](../architecture/arc
 | `warning` | Aucun projet dans le périmètre de l'utilisateur | ⚠️ Aucun projet trouvé pour votre groupe fonctionnel — vérifiez le tag SonarQube (Erreur 406). |
 | `warning` | Aucun projet du périmètre ne dispose de données clean code dans l'historique | ⚠️ Aucun projet du portefeuille ne dispose encore de données clean code dans l'historique. |
 
-## 📚 Pour aller plus loin
+## 8️⃣ 📚 Pour aller plus loin
 
 - [Projet](projet.md) : point d'entrée du lien signé vers cette page.
 - [Profil](profil.md) : autre exemple de navigation par lien signé.

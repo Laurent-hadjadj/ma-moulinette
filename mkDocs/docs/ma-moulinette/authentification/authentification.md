@@ -9,7 +9,7 @@ C'est un simple formulaire (identifiant + mot de passe) qui, une fois validé, o
 
     Un compte est créé soit manuellement par un gestionnaire depuis le [back-office](../back-office/utilisateur.md), soit automatiquement lors d'une première tentative de connexion via l'annuaire LDAP (voir plus bas) — dans ce dernier cas le compte est créé **inactif**, en attente d'habilitation.
 
-## 🗺️ Cartographie — où mène l'authentification
+## 1️⃣ 🗺️ Cartographie — où mène l'authentification
 
 <!-- markdownlint-disable MD046 -->
 ```mermaid
@@ -32,7 +32,7 @@ flowchart TD
     Les identifiants de connexion sont sensibles. Veuillez les saisir avec précaution.
     Un compteur de tentatives est appliqué pour éviter les attaques par force brute — voir [Gestion de la sécurité](../developpement/securite.md#-firewalls).
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 L'écran est en deux colonnes : une **vidéo décorative** à gauche (sans rôle fonctionnel) et le **formulaire de connexion** à droite. En haut, le fil d'Ariane rappelle la position dans le site.
 
@@ -69,10 +69,11 @@ Page Authentification
     Si vous saisissez un **identifiant court** (`prenom.nom`) au lieu d'une adresse complète, l'application reconstitue l'adresse en lui ajoutant le **domaine de repli** configuré pour l'instance (variable `LDAP_UPN_SUFFIX`).
     Une adresse mèl complète est toujours acceptée telle quelle.
 
-## 🔀 Ce qui se passe quand on valide
+## 3️⃣ 🔀 Ce qui se passe quand on valide
 
 Au clic sur **✅ Valider**, `App\Security\CustomAuthenticator` tente les identifiants dans cet ordre : d'abord le **compte local**, puis, en cas d'échec, l'**annuaire LDAP**.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 stateDiagram-v2
     [*] --> Saisie : ouverture de la page
@@ -88,6 +89,7 @@ stateDiagram-v2
     NonHabilite --> Saisie : ⛔ contacter l'administrateur
     Erreur --> Saisie : 🚫 identifiant ou mot de passe incorrect
 ```
+<!-- markdownlint-enable MD046 -->
 
 - L'identifiant saisi est **normalisé en minuscules** ; il peut être une adresse courriel ou un identifiant court.
 - **Authentification locale** (tentée en premier) : recherche d'un compte par courriel **avec statut actif**, puis vérification du mot de passe (hash bcrypt). Un ancien mot de passe stocké dans un format non normalisé est ré-encodé automatiquement à la volée (message « Votre mot de passe a été automatiquement mis à jour »).
@@ -104,11 +106,11 @@ stateDiagram-v2
 
     Pour un compte purement local (jamais présent dans l'annuaire) et inactif, l'échec du bind LDAP renvoie le message générique « identifiant ou mot de passe incorrect » — sans indiquer qu'un compte existe réellement mais est désactivé.
 
-## 🔒 Protection contre le brute-force
+## 4️⃣ 🔒 Protection contre le brute-force
 
 Le firewall applique un **throttling** de connexion : 3 tentatives par tranche de 15 minutes — voir [Gestion de la sécurité](../developpement/securite.md#-firewalls).
 
-## ➡️ Après connexion
+## 5️⃣ ➡️ Après connexion
 
 | Situation | Page ouverte |
 | --- | --- |

@@ -4,7 +4,7 @@ Détail bloc par bloc des 2 pages d'analyse par version : la synthèse orientée
 
 Aucun bouton ni section de ces 2 pages n'est conditionné par un rôle Twig (`is_granted(...)`) : la sécurité repose entièrement sur l'attribut de classe `ROLE_SECURITY` et sur le contrôle de périmètre `isProjectAccessible()`. `ROLE_SECURITY_ANALYTICS` n'a aucun effet visible sur ces 2 pages (il ne sert qu'à contourner ce contrôle de périmètre, pas à changer l'affichage).
 
-## 🎯 Executive summary
+## 1️⃣ 🎯 Executive summary
 
 `GET /dependency-check/projet/{group}/{artifact}/{version}/executive` (`dc_projet_executive`) — `DependencyCheckPageController::executive()`.
 
@@ -72,7 +72,7 @@ Page Executive summary (/dependency-check/projet/{group}/{artifact}/{version}/ex
 | *(HTTP 403, pas un flash)* | Couple hors périmètre groupe_fonctionnel (`isProjectAccessible()`) | ⚠️ Projet {group}:{artifact} hors du périmètre groupe_fonctionnel. |
 | `critical` (JS) | Le JSON injecté pour les graphiques (`#dc-exec-data`) ne peut pas être parsé | 🔴 [DC executive] dataset JSON parse error (+ détails techniques repliables) |
 
-## 📈 Historique
+## 2️⃣ 📈 Historique
 
 `GET /dependency-check/projet/{group}/{artifact}/history` (`dc_projet_history`) — `DependencyCheckPageController::history()`. Route déclarée avant `dc_projet` pour que le segment `history` ne soit pas capturé par le paramètre `{version}`.
 
@@ -111,7 +111,7 @@ Page Historique (/dependency-check/projet/{group}/{artifact}/history)
 | *(HTTP 403, pas un flash)* | Couple hors périmètre groupe_fonctionnel (`isProjectAccessible()`) | ⚠️ Projet {group}:{artifact} hors du périmètre du groupe_fonctionnel. |
 | `critical` (JS) | Le JSON injecté pour le graphique (`#dc-history-data`) ne peut pas être parsé | 🔴 [DC History] JSON parse error (+ détails techniques repliables) |
 
-## 📚 Pour aller plus loin
+## 3️⃣ 📚 Pour aller plus loin
 
 - [Pages et navigation](pages.md) : cartographie d'ensemble, rôles, filtres socle/vue.
 - [Index, Détail scan et Export PDF](pages-index-projet.md), [Dashboard et KPI](pages-dashboard-kpi.md), [Comparaison et Mutualisables](pages-comparer-mutualisables.md) : détail des 6 autres pages.
