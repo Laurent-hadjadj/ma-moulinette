@@ -142,7 +142,7 @@ class BatchController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On va chercher les infos du traitement en utilisant traitement_id */
+        /** On va chercher les infos du traitement en utilisant traitement_id (Ulid) */
         $traitement_info = $batchTraitementRepos->selectBatchTraitementByTraitementId($data->traitement_id);
 
         if ($traitement_info['code'] !== 200) {
@@ -175,6 +175,18 @@ class BatchController extends AbstractController
                 'type' => 'error',
                 'message' => "Il n'est pas possible de récupérer les informations du traitement n°<strong>{$data->traitement_id}</strong> (Erreur {$find_job_id['code']}).",
                 'trace' => $find_job_id['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        if (empty($find_job_id['id'])) {
+            $this->logger->warning("[Information-Traitement] ⚠️ aucune donnée trouvée", [
+                'traitement_id' => $data->traitement_id
+            ]);
+
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => "Aucune donnée trouvée pour le traitement n°<strong>{$data->traitement_id}</strong> (Erreur 404).",
             ], Response::HTTP_OK);
         }
 
@@ -561,7 +573,11 @@ class BatchController extends AbstractController
             1
         )[0] ?? null;
 
+        // on vérifie si le batchExecution existe, sinon on renvoie une exception 404
         if (!$batchExecution) {
+            $this->logger->warning("[Information-Traitement] ⚠️ Aucun batch trouvé pour ce token.", [
+                'traitement_id' => $token
+            ]);
             throw $this->createNotFoundException('Aucun batch trouvé pour ce token.');
         }
 
@@ -572,7 +588,7 @@ class BatchController extends AbstractController
         $date = date('Y-m-d_H-i');
         $filename = "rapport_execution_$date.pdf";
 
-        return new Response($pdfContent, 200, [
+        return new Response($pdfContent, Response::HTTP_OK, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => $disposition . '; filename=' . $filename,
         ]);
