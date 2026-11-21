@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -37,10 +37,10 @@ import '../../auth/details.js';
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
 
-import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { content_type, dateOptions, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
+import { content_type, dateOptions, trois, http_200, troisMille } from '../../common/constante.js';
 
 /** on charge le service pendingWorker */
 import { pendingWorkerService } from '../batch/pendingWorkerService.js';
@@ -165,13 +165,13 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
     $(`#result-${id}`).html(result);
 
     const temps = t.temps_traitement;
-    const isZeroTime = /^0{2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(temps) && parseFloat(temps.replace(/[:.]/g, '')) === 0;
+    const isZeroTime = /^0{2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(temps) && Number.parseFloat(temps.replace(/[:.]/g, '')) === 0;
     const affiche_temps = isZeroTime ? "--:--.--" : temps;
     $(`#temps-execution-${id}`).html(affiche_temps);
     suppressClick = false;
 
-  } catch (erreur) {
-    const trace = prepareTechnicalDetails(erreur);
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
     showMessage('critical', "Erreur de lancement traitement", trace);
 
     $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-error');
@@ -217,7 +217,6 @@ const traitementInformation = async function(traitement_id){
 
   try{
     const t = await $.ajax(options);
-    console.log(t);
 
     // 📌 Vérification des erreurs
     if (t.code !== http_200){
@@ -241,16 +240,16 @@ const traitementInformation = async function(traitement_id){
     $('.js-mode-collecte').text(mode_collecte);
 
     // Statut
-    $('.js-statut')
-        .text(traitement.statut ? '✅ Succès' : '❌ Échec')
-        .removeClass('success failed')
-        .addClass(traitement.statut ? 'success' : 'failed');
+    $('.js-statut').text(traitement.statut ? '✅ Succès' : '❌ Échec');
+    $('.js-statut-tile')
+        .removeClass('info-tile-success info-tile-failed')
+        .addClass(traitement.statut ? 'info-tile-success' : 'info-tile-failed');
 
     // Activation
-    $('.js-activated')
-        .text(traitement.is_activated ? 'Oui' : 'Non')
-        .removeClass('active inactive')
-        .addClass(traitement.is_activated ? 'active' : 'inactive');
+    $('.js-activated').text(traitement.is_activated ? 'Oui' : 'Non');
+    $('.js-activated-tile')
+        .removeClass('info-tile-success info-tile-inactive')
+        .addClass(traitement.is_activated ? 'info-tile-success' : 'info-tile-inactive');
 
     // Dates
     $('.js-start-at').html(new Intl.DateTimeFormat('default', dateOptions)
@@ -261,7 +260,6 @@ const traitementInformation = async function(traitement_id){
     // Timeline : calcul progress si fin > début
     const start = new Date(traitement.start_at);
     const end = new Date(traitement.end_at);
-    const now = new Date();
 
     // on calcul la durée
     const diffMs = Math.abs(end - start);
@@ -276,7 +274,9 @@ const traitementInformation = async function(traitement_id){
     const ko = Number(traitement.nombre_ko);
     const oko = Number(traitement.nombre_oko);
 
-    const progress = total > 0 ? Math.round((ok + oko / total) * 100) : 0;
+    // MODIF 2026-11-19 : BUG CORRIGÉ — priorité d'opérateurs manquante
+    // (ok + oko / total) calculait ok + (oko / total), pas (ok + oko) / total.
+    const progress = total > 0 ? Math.round(((ok + oko) / total) * 100) : 0;
     let color = '#4CAF50';
     if (progress < 80) color = '#FFB300';
     if (progress < 40) color = '#E53935';
@@ -284,7 +284,11 @@ const traitementInformation = async function(traitement_id){
       .css('width', `${progress}%`)
       .css('background-color', color);
 
-    $('.js-nb-ok').text(ok - oko);
+    // MODIF 2026-11-19 : BUG CORRIGÉ — ok - oko pouvait devenir négatif
+    // (countBatchExecutionJournalCode() comptait ko et oko comme des
+    // ensembles non exclusifs). Les 3 valeurs sont désormais mutuellement
+    // exclusives côté SQL, plus besoin de soustraction ici.
+    $('.js-nb-ok').text(ok);
     $('.js-nb-ko').text(ko);
     $('.js-nb-oko').text(oko);
 
@@ -333,8 +337,12 @@ const traitementInformation = async function(traitement_id){
             color = '#bb1b10ff';
             label = 'Échec';
           } else if (status === 'oko' || status === 'standby') {
+            // MODIF 2026-11-19 : BUG CORRIGÉ — "En attente" suggérait à tort
+            // qu'il restait quelque chose à faire, alors que oko (code 202)
+            // signifie "déjà à jour" (collecte volontairement sautée), même
+            // sémantique que le statut "oko" utilisé dans le rapport PDF.
             color = '#ed7327ff';
-            label = 'En attente';
+            label = 'Déjà à jour';
           }
 
           // Élément visuel stylé
@@ -368,8 +376,8 @@ const traitementInformation = async function(traitement_id){
     }
     // Ouvrir modale
     modalSafe.open('#modal-traitement-information');
-  } catch(erreur) {
-    const trace = prepareTechnicalDetails(erreur);
+  } catch(error) {
+    const trace = prepareTechnicalDetails(error);
     showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
     return;
   }
@@ -445,11 +453,11 @@ const traitementManuel = async function(id, titre_portefeuille, portefeuille){
     $(`#result-${id}`).html(result);
 
     const temps = t.temps_traitement;
-    const isZeroTime = /^0{2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(temps) && parseFloat(temps.replace(/[:.]/g, '')) === 0;
+    const isZeroTime = /^0{2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(temps) && Number.parseFloat(temps.replace(/[:.]/g, '')) === 0;
     const affiche_temps = isZeroTime ? "--:--:--" : temps;
     $(`#temps-execution-${id}`).html(affiche_temps);
-  } catch(erreur) {
-      const trace = prepareTechnicalDetails(erreur);
+  } catch(error) {
+      const trace = prepareTechnicalDetails(error);
       setTimeout( () => {
         showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
       }, troisMille);
@@ -483,7 +491,7 @@ $('.js-outil-info').on('click', async (e) => {
     return;
   }
   /** On appelle l'API */
-  traitementInformation(traitement_id);
+  void traitementInformation(traitement_id);
 });
 
 /********************************************************/
@@ -523,8 +531,8 @@ $('.js-select-journal').on('select2:select', async function(e) {
 
     // Ouverture de la modale
     modalSafe.open('#modal-journal');
-  } catch (erreur) {
-    const trace = prepareTechnicalDetails(erreur);
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
     showMessage('critical', 'Impossible de charger le journal demandé.', trace);
   }
 });

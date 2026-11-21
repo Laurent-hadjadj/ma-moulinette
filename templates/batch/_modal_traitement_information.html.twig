@@ -33,16 +33,43 @@ BLOC : footer   → actions / bouton fermer
                 <p class="open-sans"><strong>Portefeuille :</strong> <span class="js-portefeuille color-noir">--</span>
                 </p>
             </div>
-            <div class="small-12 medium-8 large-6 cell">
-                <p class="open-sans"><strong>Nombre de projets :</strong> <span
-                        class="js-nombre-projet badge secondary">--</span></p>
-                <p class="open-sans"><strong>Mode de collecte :</strong> <span
-                        class="js-mode-collecte badge warning">--</span></p>
-                <p><strong>Durée :</strong> <span class="js-time-elapse badge">--</span></p>
+        </div>
+
+        <div class="batch-info-tiles grid-x grid-margin-x grid-margin-y">
+            <div class="small-6 medium-4 large-2 cell">
+                <div class="info-tile">
+                    <span class="info-tile-title">Nombre de projets</span>
+                    <span class="info-tile-divider" aria-hidden="true"></span>
+                    <span class="info-tile-value js-nombre-projet">--</span>
+                </div>
             </div>
-            <div class="small-12 medium-4 large-6 cell">
-                <p><strong>Résultat :</strong> <span class="js-statut badge">--</span></p>
-                <p><strong>Activé :</strong> <span class="js-activated badge">--</span></p>
+            <div class="small-6 medium-4 large-2 cell">
+                <div class="info-tile">
+                    <span class="info-tile-title">Mode de collecte</span>
+                    <span class="info-tile-divider" aria-hidden="true"></span>
+                    <span class="info-tile-value js-mode-collecte">--</span>
+                </div>
+            </div>
+            <div class="small-6 medium-4 large-2 cell">
+                <div class="info-tile">
+                    <span class="info-tile-title">Durée</span>
+                    <span class="info-tile-divider" aria-hidden="true"></span>
+                    <span class="info-tile-value js-time-elapse">--</span>
+                </div>
+            </div>
+            <div class="small-6 medium-4 large-3 cell">
+                <div class="info-tile js-statut-tile">
+                    <span class="info-tile-title">Résultat</span>
+                    <span class="info-tile-divider" aria-hidden="true"></span>
+                    <span class="info-tile-value js-statut">--</span>
+                </div>
+            </div>
+            <div class="small-6 medium-4 large-3 cell">
+                <div class="info-tile js-activated-tile">
+                    <span class="info-tile-title">Activé</span>
+                    <span class="info-tile-divider" aria-hidden="true"></span>
+                    <span class="info-tile-value js-activated">--</span>
+                </div>
             </div>
             <div class="small-12 timeline-container cell">
                 <h4 class="h5 claire-hand"><span aria-hidden="true">⏱️</span> Timeline</h4>
@@ -53,10 +80,16 @@ BLOC : footer   → actions / bouton fermer
                     </div>
                     <div class="timeline-end"><span class="js-end-at">--</span></div>
                 </div>
+                <div class="timeline-progress-legend">
+                    <span class="open-sans timeline-legend-title">Taux de réussite (succès + déjà à jour) :</span>
+                    <span class="timeline-legend-item"><span class="timeline-legend-dot timeline-legend-dot-ok" aria-hidden="true"></span> ≥ 80 %</span>
+                    <span class="timeline-legend-item"><span class="timeline-legend-dot timeline-legend-dot-warning" aria-hidden="true"></span> 40-79 %</span>
+                    <span class="timeline-legend-item"><span class="timeline-legend-dot timeline-legend-dot-error" aria-hidden="true"></span> &lt; 40 %</span>
+                </div>
                 <div class="timeline-summary">
-                    <span class="text-success">✔️ <span class="js-nb-ok"></span></span> /
-                    <span class="text-error">❌ <span class="js-nb-ko"></span></span> /
-                    <span class="text-error">⁉️ <span class="js-nb-oko"></span></span>
+                    <span class="text-success">✔️ <span class="js-nb-ok"></span> succès</span>
+                    <span class="text-error">❌ <span class="js-nb-ko"></span> erreur(s)</span>
+                    <span class="text-muted">⁉️ <span class="js-nb-oko"></span> déjà à jour</span>
                 </div>
             </div>
         </div>

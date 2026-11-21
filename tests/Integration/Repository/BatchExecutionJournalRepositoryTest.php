@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -85,12 +85,21 @@ class BatchExecutionJournalRepositoryTest extends KernelTestCase
         return (string) $this->job->getId();
     }
 
+    /**
+     * Régression 2026-11-19 : BUG CORRIGÉ — `ko` comptait `code != 200`, ce
+     * qui incluait aussi les `code = 202` comptés par ailleurs dans `oko` :
+     * les 3 valeurs n'étaient pas mutuellement exclusives (ok=2, ko=2, oko=1
+     * sur ce jeu de données avant le fix — alors que la somme ok+ko+oko doit
+     * être égale au nombre total d'entrées, 4 ici). Un `404` est ajouté pour
+     * confirmer que toute erreur hors 200/202 est bien comptée dans `ko`.
+     */
     public function testCountBatchExecutionJournalCodeAggregatesByStatus(): void
     {
         $this->persistJournalEntry('projet-a', 200);
         $this->persistJournalEntry('projet-b', 200);
         $this->persistJournalEntry('projet-c', 500);
         $this->persistJournalEntry('projet-d', 202);
+        $this->persistJournalEntry('projet-e', 404);
 
         $result = $this->repo->countBatchExecutionJournalCode($this->jobId());
 
