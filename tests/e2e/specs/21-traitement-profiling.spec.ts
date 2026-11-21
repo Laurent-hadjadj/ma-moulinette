@@ -184,6 +184,32 @@ test.describe('21 — Traitement & Profiling', () => {
       await expect(page.locator('#modal-traitement-information')).toBeHidden();
     });
 
+    /**
+     * Régression 2026-11-19 : « Afficher le rapport »/« Voir le journal »/
+     * « Télécharger le PDF » renvoyaient une 500 sur tout traitement réel —
+     * un traitement_id ULID était traité comme un simple string par les
+     * repositories Batch. « Voir le journal » est déjà exercé bout-en-bout à
+     * l'étape 6 ci-dessus ; cette étape couvre les 2 liens restants, jusqu'ici
+     * sans aucune couverture Unit/Integration/e2e (ce qui avait laissé passer
+     * le bug). Vérification par requête HTTP directe (mêmes cookies de
+     * session que la page) plutôt que par navigation complète, pour ne pas
+     * quitter la page de suivi en cours de test.
+     */
+    await test.step('6bis. Boutons « Afficher le rapport » et « Télécharger le PDF »', async () => {
+      const showHref = await page.locator('#outil-1 .pdf-view').getAttribute('href');
+      const downloadHref = await page.locator('#outil-1 .pdf-download').getAttribute('href');
+      expect(showHref).not.toBe('#');
+      expect(downloadHref).not.toBe('#');
+
+      const showResponse = await page.request.get(showHref!);
+      expect(showResponse.status()).toBe(200);
+      expect(showResponse.headers()['content-type']).toContain('application/pdf');
+
+      const downloadResponse = await page.request.get(downloadHref!);
+      expect(downloadResponse.status()).toBe(200);
+      expect(downloadResponse.headers()['content-type']).toContain('application/pdf');
+    });
+
     await test.step('7. Dashboard Profiling — consulte les données produites par le traitement', async () => {
       await page.goto('/traitement/profiling');
       await expect(page).toHaveURL(/\/traitement\/profiling$/);
