@@ -32,7 +32,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { dateOptions, content_type, zero, cent, mille, http_200, http_201, http_202, http_404, http_500} from '../../common/constante.js';
+import { dateOptions, content_type, cent, mille, http_200, http_201, http_202, http_404, http_500} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
 const maven_key = $('#titre-repartition').data('application');
@@ -207,7 +207,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
                   'X-Internal-Front': 'front-app'
       },
       beforeSend: () => setTimeout(() => startAnalyse(), 1),
-      complete: () => setTimeout(stopAnalyse(), 1)
+      complete: () => setTimeout(() => stopAnalyse(), 1)
   };
 
   // 🕵️‍♂️ Appel AJAX
@@ -259,7 +259,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       }
       const alertClass = (calculIdc * cent != 100 && idc.trim() !== '---') ? 'texte-rouge' : 'texte-vert';
 
-      let table, theadId, tableId;
+      let tableId;
 
       if (category === 'BUG') {
           tableId = 'mon-bo-tableau-1';
@@ -329,7 +329,7 @@ const historique = async function (maven_key) {
         'X-Internal-Front': 'front-app'
       },
       beforeSend: () => setTimeout(() => startHistorique(), 1),
-      complete: () => setTimeout(stopHistorique(), 1)
+      complete: () => setTimeout(() => stopHistorique(), 1)
   };
 
   // 🕵️‍♂️ Appel AJAX
@@ -595,11 +595,11 @@ $('#bouton-collecte-bug').on('click', async () => {
       { key: 'INFO', value: Number(document.getElementById('bug-info').dataset.nombreBugInfo) }
   ];
 
-  if (isNaN(severities[0]['value']) ||
-      isNaN(severities[1]['value']) ||
-      isNaN(severities[2]['value']) ||
-      isNaN(severities[3]['value']) ||
-      isNaN(severities[4]['value'])) {
+  if (Number.isNaN(severities[0]['value']) ||
+      Number.isNaN(severities[1]['value']) ||
+      Number.isNaN(severities[2]['value']) ||
+      Number.isNaN(severities[3]['value']) ||
+      Number.isNaN(severities[4]['value'])) {
         showMessage('error', "Impossible de récupérer les informations concernant cette catégorie.");
         $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
       return;
@@ -611,11 +611,8 @@ $('#bouton-collecte-bug').on('click', async () => {
 
   let counter = 0, tempo = 0;
 
-  // Trouver la dernière sévérité non vide
-  const lastSeverityIndex = severities.findLastIndex(sev => sev.value !== 0);
-
   // Parcours des niveaux de sévérité
-  for (let i = 0; i < severities.length; i++) {
+  for (const severity of severities) {
     let statut = sessionStorage.getItem('ma_moulinette_erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
@@ -624,12 +621,12 @@ $('#bouton-collecte-bug').on('click', async () => {
       return;
     }
 
-      const severity = severities[i];
-      if (severity.value !== 0) {
-          counter += severity.value;
-          tempo += Number(timerElement.dataset.timer);
-          const result = await collecte(maven_key, 'BUG', severity.key, counter, tempo);
-        }
+    if (severity.value !== 0) {
+      counter += severity.value;
+      tempo += Number(timerElement.dataset.timer);
+      // eslint-disable-next-line no-await-in-loop
+      await collecte(maven_key, 'BUG', severity.key, counter, tempo);
+    }
   }
 
   /** On réactive le bouton à la fin */
@@ -676,11 +673,11 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
     { key: 'INFO', value: Number(document.getElementById('vulnerability-info').dataset.nombreVulnerabilityInfo) }
   ];
 
-  if (isNaN(severities[0]['value']) ||
-      isNaN(severities[1]['value']) ||
-      isNaN(severities[2]['value']) ||
-      isNaN(severities[3]['value']) ||
-      isNaN(severities[4]['value'])) {
+  if (Number.isNaN(severities[0]['value']) ||
+      Number.isNaN(severities[1]['value']) ||
+      Number.isNaN(severities[2]['value']) ||
+      Number.isNaN(severities[3]['value']) ||
+      Number.isNaN(severities[4]['value'])) {
         showMessage('error', "Impossible de récupérer les informations concernant cette catégorie.");
         $boutonCollecteVulnerability.removeClass('clicked-true').addClass('clicked-false');
       return;
@@ -691,11 +688,8 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
 
   let counter = 0, tempo = 0;
 
-  // Calcul du total restant pour ajuster le dernier élément
-  const lastSeverityIndex = severities.findLastIndex(sev => sev.value !== 0);
-
   // Parcours des niveaux de sévérité
-  for (let i = 0; i < severities.length; i++) {
+  for (const severity of severities) {
     let statut = sessionStorage.getItem('ma_moulinette_erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
@@ -704,11 +698,11 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
       return;
     }
 
-    const severity = severities[i];
     if (severity.value !== 0) {
         counter += severity.value;
         tempo += Number(timerElement.dataset.timer);
-        const result = await collecte(maven_key, 'VULNERABILITY', severity.key, counter, tempo);
+        // eslint-disable-next-line no-await-in-loop
+        await collecte(maven_key, 'VULNERABILITY', severity.key, counter, tempo);
       }
     }
 
@@ -757,11 +751,11 @@ $('#bouton-collecte-code-smell').on('click', async () => {
     { key: 'INFO', value: Number(document.getElementById('code-smell-info').dataset.nombreCodeSmellInfo) }
   ];
 
-  if (isNaN(severities[0]['value']) ||
-      isNaN(severities[1]['value']) ||
-      isNaN(severities[2]['value']) ||
-      isNaN(severities[3]['value']) ||
-      isNaN(severities[4]['value'])) {
+  if (Number.isNaN(severities[0]['value']) ||
+      Number.isNaN(severities[1]['value']) ||
+      Number.isNaN(severities[2]['value']) ||
+      Number.isNaN(severities[3]['value']) ||
+      Number.isNaN(severities[4]['value'])) {
         showMessage('error', "Impossible de récupérer les informations concernant cette catégorie.");
         $boutonCollecteCodeSmell.removeClass('clicked-true').addClass('clicked-false');
         return;
@@ -772,11 +766,8 @@ $('#bouton-collecte-code-smell').on('click', async () => {
 
   let counter = 0, tempo = 0;
 
-  // Trouver la dernière sévérité non vide
-  const lastSeverityIndex = severities.findLastIndex(sev => sev.value !== 0);
-
   // Parcours des niveaux de sévérité
-  for (let i = 0; i < severities.length; i++) {
+  for (const severity of severities) {
     let statut = sessionStorage.getItem('ma_moulinette_erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
@@ -786,12 +777,12 @@ $('#bouton-collecte-code-smell').on('click', async () => {
       return;
     }
 
-    const severity = severities[i];
     if (severity.value !== 0) {
         // Mise à jour du cumul
         counter += severity.value;
         tempo += Number(timerElement.dataset.timer);
-        const result = await collecte(maven_key, 'CODE_SMELL', severity.key, counter, tempo);
+        // eslint-disable-next-line no-await-in-loop
+        await collecte(maven_key, 'CODE_SMELL', severity.key, counter, tempo);
       }
     }
     /** On réactive le bouton à la fin */
@@ -870,7 +861,7 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On met à jour */
   if (phase != 0){
-    updateRepartition(phase);
+    void updateRepartition(phase);
     showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
     setTimeout(function() { hideMessage();  }, 5000);
   }

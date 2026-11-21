@@ -87,9 +87,8 @@ async function fetchPending() {
     retryDelay = DELAY;
 
     // Si aucun in_progress et des pending, lancer automatiquement
-    if (data && data.in_progress === 0 && data.pending > 0) {
+    if (data?.in_progress === 0 && data?.pending > 0) {
       log('💡 Aucun en cours, pending dispo → possible lancement auto');
-      //TODO : await fetch('/api/secure/traitement/start-next-pending', { method: 'POST' });
     }
 
   } catch (error) {
@@ -146,7 +145,7 @@ onmessage = (event) => {
       if (intervalId) return; // déjà lancé
       postMessage({ type: 'status', message: 'Worker démarré' });
       log('▶️ Commande START reçue');
-      fetchPending();
+      void fetchPending();
       intervalId = setInterval(fetchPending, DELAY);
       break;
 

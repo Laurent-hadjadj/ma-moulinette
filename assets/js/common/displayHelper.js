@@ -29,7 +29,7 @@ const isNullish = (v) => v === null || v === undefined || (typeof v === 'number'
  */
 export const displayNumber = (v) => {
   if (isNullish(v)) return NO_DATA;
-  const n = typeof v === 'number' ? v : parseFloat(v);
+  const n = typeof v === 'number' ? v : Number.parseFloat(v);
   if (Number.isNaN(n)) return NO_DATA;
   return new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(n);
 };
@@ -43,7 +43,7 @@ export const displayNumber = (v) => {
  */
 export const displayPercent = (v) => {
   if (isNullish(v)) return NO_DATA;
-  const n = typeof v === 'number' ? v : parseFloat(v);
+  const n = typeof v === 'number' ? v : Number.parseFloat(v);
   if (Number.isNaN(n)) return NO_DATA;
   return new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(n / cent);
 };

@@ -133,7 +133,7 @@ export const enregistrement = async function (maven_key) {
      -> envoie null au backend, persisté tel quel dans historique.logger_breakdown. */
   let loggerBreakdown = null;
   const jsAfficheLoggerDetail = document.getElementById('js-affiche-logger-detail');
-  if (jsAfficheLoggerDetail && jsAfficheLoggerDetail.dataset.loggerBreakdown) {
+  if (jsAfficheLoggerDetail?.dataset.loggerBreakdown) {
     try {
       loggerBreakdown = JSON.parse(jsAfficheLoggerDetail.dataset.loggerBreakdown);
     } catch (e) {
@@ -148,7 +148,7 @@ export const enregistrement = async function (maven_key) {
    * historique.actuator_info. */
   let actuatorInfo = [];
   const jsActuatorPastille = document.getElementById('js-actuator-pastille');
-  if (jsActuatorPastille && jsActuatorPastille.dataset.actuatorJson) {
+  if (jsActuatorPastille?.dataset.actuatorJson) {
     try {
       actuatorInfo = JSON.parse(jsActuatorPastille.dataset.actuatorJson);
     } catch (e) {
@@ -163,7 +163,7 @@ export const enregistrement = async function (maven_key) {
    * lecture DOM, le payload porte ensuite les valeurs vers le backend. */
   let rciMesures = {};
   const jsRciAlertStatus = document.getElementById('js-rci-alert-status');
-  if (jsRciAlertStatus && jsRciAlertStatus.dataset.rciMesuresJson) {
+  if (jsRciAlertStatus?.dataset.rciMesuresJson) {
     try {
       rciMesures = JSON.parse(jsRciAlertStatus.dataset.rciMesuresJson) || {};
     } catch (e) {
@@ -176,7 +176,7 @@ export const enregistrement = async function (maven_key) {
    * même pattern que rciMesures.*/
   let accessibilityMesures = {};
   const jsAccessibilityAnomalies = document.getElementById('js-accessibility-anomalies');
-  if (jsAccessibilityAnomalies && jsAccessibilityAnomalies.dataset.accessibilityMesuresJson) {
+  if (jsAccessibilityAnomalies?.dataset.accessibilityMesuresJson) {
     try {
       accessibilityMesures = JSON.parse(jsAccessibilityAnomalies.dataset.accessibilityMesuresJson) || {};
     } catch (e) {
@@ -320,7 +320,7 @@ export const enregistrement = async function (maven_key) {
    *  aux clés SonarQube dans le payload PUT. */
   const data =
   {
-    ...(window.peintureData || {}),
+    ...window.peintureData,
     maven_key, 'project_name': project_name, 'analyse_key': analyseKey,
     'version_release': versionRelease, 'version_snapshot': versionSnapshot,
     'version_autre': versionAutre, version, 'date_version': dateVersion,

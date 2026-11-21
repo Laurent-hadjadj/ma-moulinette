@@ -97,6 +97,8 @@ const generateChart = function({
         '#acc236', '#166a8f', '#58595b', '#00a950'
     ];
 
+    const defaultBorderColor = color ? darkenColor(color) : 'rgba(75, 192, 192, 1)';
+
     const finalDatasets = (datasets ?? [{
         label: label,
         data: data
@@ -106,7 +108,7 @@ const generateChart = function({
             ?? (type === 'doughnut' ? defaultColors : (color || 'rgba(75, 192, 192, 0.2)')),
         borderColor: ds.borderColor
             ?? ((type === 'bar' || type === 'line')
-                ? (color ? darkenColor(color) : 'rgba(75, 192, 192, 1)')
+                ? defaultBorderColor
                 : undefined),
         borderWidth: ds.borderWidth ?? ((type === 'bar' || type === 'line') ? 2.5 : undefined),
         fill: ds.fill ?? (type === 'line'),
@@ -120,7 +122,6 @@ const generateChart = function({
 
     const hasDatasetData =
     Array.isArray(finalDatasets?.[0]?.data) &&
-    finalDatasets[0].data.length > 0 &&
     finalDatasets[0].data.some(p => p?.x !== undefined && p?.y !== undefined);
 
     // Cas sans données : on affiche le message HTML

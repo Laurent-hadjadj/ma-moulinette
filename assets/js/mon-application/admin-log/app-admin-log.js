@@ -34,11 +34,11 @@ import {serveur} from '../../common/properties.js';
 import { http_200, content_type } from '../../common/constante.js';
 
 /** On importe le gestionnaire de message */
-import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 // Appliquer les filtres sélectionnés
     $('#bouton-apply-filters').on('click', function () {
-        loadLogs(getFilters());
+        void loadLogs(getFilters());
     });
 
     // Téléchargement de la sélection
@@ -241,14 +241,14 @@ import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/
                         // survenue après l'appel serait téléchargée comme un faux ZIP ne
                         // contenant que le JSON d'erreur, sans que l'utilisateur soit prévenu.
                         if (contentType.includes('application/json')) {
-                                const reader = new FileReader();
-                                reader.onload = function() {
+                            data.text().then(function(text) {
                                         let t = null;
-                                        try { t = JSON.parse(reader.result); } catch (e) { t = null; }
+                                try { t = JSON.parse(text); } catch (e) { t = null; }
                                         const message = t?.message || "Une erreur inattendue est survenue lors du téléchargement (Erreur 500).";
                                         showMessage(t?.type || 'error', message);
-                                };
-                                reader.readAsText(data);
+                            }).catch(function() {
+                                showMessage('error', "Une erreur inattendue est survenue lors du téléchargement (Erreur 500).");
+                            });
                                 return;
                         }
 

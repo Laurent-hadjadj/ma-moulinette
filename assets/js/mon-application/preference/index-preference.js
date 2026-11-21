@@ -468,10 +468,10 @@ $('#js-switch-favori').on('click', ()=> {
   const ouinon = $('#js-switch-favori').is(':checked');
   if (ouinon === true) {
     /** on active l'option */
-    modifierStatut(true, 'favori_projet');
+    void modifierStatut(true, 'favori_projet');
   } else {
     /** on désactive l'option */
-    modifierStatut(false, 'favori_projet');
+    void modifierStatut(false, 'favori_projet');
   }
 });
 
@@ -483,10 +483,10 @@ $('#js-switch-projet').on('click', ()=> {
   const ouinon = $('#js-switch-projet').is(':checked');
   if (ouinon === true) {
     /** on active l'option */
-    modifierStatut(true, 'suivi_projet');
+    void modifierStatut(true, 'suivi_projet');
   } else {
     /** on désactive l'option */
-    modifierStatut(false, 'suivi_projet');
+    void modifierStatut(false, 'suivi_projet');
   }
 });
 
@@ -498,10 +498,10 @@ $('#js-switch-version').on('click', ()=> {
   const ouinon = $('#js-switch-version').is(':checked');
   if (ouinon===true) {
     /** on active l'option */
-    modifierStatut(true, 'favori_version');
+    void modifierStatut(true, 'favori_version');
   } else {
     /** on désactive l'option */
-    modifierStatut(false, 'favori_version');
+    void modifierStatut(false, 'favori_version');
   }
 });
 
@@ -513,10 +513,10 @@ $('#js-switch-presentation').on('click', ()=> {
   const ouinon = $('#js-switch-presentation').is(':checked');
   if (ouinon === true) {
     /** on active l'option (présentation en tuiles) */
-    modifierStatut(true, 'presentation_projet');
+    void modifierStatut(true, 'presentation_projet');
   } else {
     /** on désactive l'option (présentation classique en 3 colonnes) */
-    modifierStatut(false, 'presentation_projet');
+    void modifierStatut(false, 'presentation_projet');
   }
 });
 
@@ -527,14 +527,14 @@ $('.js-preference-information').on('click', e=> {
   /** On récupère l'ID du bouton. */
   switch(e.currentTarget.id) {
     case 'js-projet':
-      projet();
+      void projet();
       break;
     case 'js-favori':
-      favori();
+      void favori();
       break;
     case 'js-version':
-      version();
-    break;
+      void version();
+      break;
     default:
       sessionStorage.setItem('ma_moulinette_info', "Je n'ai pas trouvé la lumière.");
   }

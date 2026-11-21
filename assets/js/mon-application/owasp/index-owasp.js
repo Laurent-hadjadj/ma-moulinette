@@ -1205,15 +1205,15 @@ const selectAnalyseVersion = function (key, referential_owasp) {
   /** Libellés de catégorie du tableau de synthèse pour ce référentiel */
   updateCategoryLabels(referential_owasp);
   /** Affiche les vulnérabilités par criticité */
-  remplissageOwaspInfo(key, referential_owasp);
+  void remplissageOwaspInfo(key, referential_owasp);
   /** Affiche les hotspot par criticité */
-  remplissageHotspotInfo(key, referential_owasp);
+  void remplissageHotspotInfo(key, referential_owasp);
   /** On rempli le tableau avec les données des menaces owasp */
-  remplissageHotspotListe(key, referential_owasp);
+  void remplissageHotspotListe(key, referential_owasp);
   /** On rempli le tableau de détail des vulnérabilités OWASP (10 premières, triées par criticité) */
-  remplissageOwaspDetails(key, referential_owasp);
+  void remplissageOwaspDetails(key, referential_owasp);
   /** On rempli le tableau avec led données des hotspot */
-  remplissageHotspotDetails(key, referential_owasp);
+  void remplissageHotspotDetails(key, referential_owasp);
   //owaspPieChart.update();
 }
 

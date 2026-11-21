@@ -202,7 +202,7 @@ export const pendingWorkerService = {
     const $infoBulleWorkers = $(this.infoBulleWorkers);
     const $infoBulleWip = $(this.infoBulleWip);
 
-    if (!t || typeof t.pending === 'undefined') {
+    if (t?.pending === undefined) {
       $infoBulleWip.removeClass('bulle-ok').addClass('bulle-error').text('!').attr('title', 'Erreur de communication avec le worker.');
       $infoBulleWorkers.removeClass('bulle-ok bulle-retry').addClass('bulle-error').text('!').attr('title', 'Erreur de communication avec le worker.');
 

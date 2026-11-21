@@ -30,13 +30,13 @@ export const serveur_uri= async () => {
         const origin=location.origin;
 
         /** On fonction de la réponse on construit l'URL avec un préfixe ou non */
-        if (typeof xSubpathLocation !== 'undefined' &&  xSubpathLocation !== null  && xSubpathLocation !== '') {
+        if (xSubpathLocation !== undefined && xSubpathLocation !== null && xSubpathLocation !== '') {
             return origin + xSubpathLocation;
             } else {
                 return location.origin;
             }
-        } catch (erreur){
-            sessionStorage.setItem('ma_moulinette_error', `Error fetching data :  ${JSON.stringify(erreur, null, 2)}}`);
-            throw erreur;
+        } catch (error){
+            sessionStorage.setItem('ma_moulinette_error', `Error fetching data :  ${JSON.stringify(error, null, 2)}}`);
+            throw error;
         }
     };

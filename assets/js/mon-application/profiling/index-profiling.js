@@ -31,10 +31,10 @@ import '../../auth/details.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
-import { showMessage, hideMessage, prepareTechnicalDetails, escapeHtml } from '../../common/messageHelper.js';
+import { showMessage, prepareTechnicalDetails, escapeHtml } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { content_type, dateOptionsShort, http_200 } from '../../common/constante.js';
+import { content_type, dateOptionsShort } from '../../common/constante.js';
 
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -146,7 +146,6 @@ const createChart = function(ctx, data, type = 'line', datasetKey = 'datasetsTim
     }
 
     const fillEnabled = options.fill === true;
-    const suggestedMaxY = options.suggestedMaxY || undefined;
     const source = Array.isArray(data[datasetKey]) ? data[datasetKey] : [];
 
     const datasets = source.map(ds => {
@@ -210,7 +209,7 @@ const createChart = function(ctx, data, type = 'line', datasetKey = 'datasetsTim
                       title(ctx) {
                         const rawLabel = ctx[0].label;
                         // Si label = date valide → format YYYY-MM-DD
-                        if (!isNaN(Date.parse(rawLabel))) {
+                        if (!Number.isNaN(Date.parse(rawLabel))) {
                             const d = new Date(rawLabel);
                             return d.toISOString().split('T')[0];
                         }
@@ -276,7 +275,7 @@ const createChart = function(ctx, data, type = 'line', datasetKey = 'datasetsTim
                               return label;
                           }
 
-                          if (!isNaN(Date.parse(label))) {
+                          if (!Number.isNaN(Date.parse(label))) {
                               const d = new Date(label);
                               return d.toISOString().split('T')[0]; // YYYY-MM-DD
                           }
@@ -563,7 +562,7 @@ const initDashboard = async function() {
 
     // table summary (KPI)
     const data = await fetchJSON(`${serveur()}/api/secure/profiling/summary`, 'GET');
-    if (data && data.summary){
+    if (data?.summary){
       const summary = data.summary;
       fillSummaryTable('summaryTable', summary);
 

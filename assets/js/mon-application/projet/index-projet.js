@@ -220,11 +220,11 @@ const match = function (params, data) {
   if ((params.term || '').trim() === '') {
     return data;
   }
-  if (typeof data.text === 'undefined') {
+  if (data.text === undefined) {
     return null;
   }
 
-  if (data.text.indexOf(params.term.toLowerCase()) > -1) {
+  if (data.text.includes(params.term.toLowerCase())) {
     const modifiedData = $.extend({}, data, true);
     modifiedData.text += ' (trouvé)';
     return modifiedData;
@@ -1373,6 +1373,7 @@ const projetActuator = async function (maven_key) {
       }));
     }
   } catch (error) {
+    // Cette exception est volontairement absorbée : Actuator est facultatif et son échec ne doit pas bloquer la collecte du projet.
     log(' - ⚠️ (13) Collecte des informations Actuator en échec (exception) — non bloquant.');
     $actuatorPastille.attr('data-actuator-maven-key', maven_key);
     $actuatorPastille.attr('data-actuator-json', JSON.stringify({
@@ -1510,7 +1511,7 @@ const projetEmpreinteEcologique = async function (maven_key) {
       log(` - ⚠️ (15) Collecte de l'Empreinte Écologique en échec (Erreur ${t.code}) — non bloquant.`);
     }
   } catch (error) {
-    /* plugin non installé */
+    // plugin non installé
     log(` - ⚠️ (15) Collecte de l'Empreinte Écologique en échec (exception) — non bloquant.`);
   }
 };
@@ -1606,7 +1607,13 @@ const finCollecte = function (maven_key) {
 /* On dit bonjour */
 ditBonjour();
 /* On met ajour la liste des projets disponibles */
-selectProjet();
+try {
+  await selectProjet();
+} catch (error) {
+  const trace = prepareTechnicalDetails(error);
+  const message = "Une erreur inattendue s'est produite lors du chargement de la liste des projets.";
+  showMessage('critical', message, trace);
+}
 
 /*************************************************************/
 /************************** Events ***************************/
@@ -1755,7 +1762,7 @@ $('.js-analyse').on('click', function () {
   }
 
   /* On clean les données */
-  const bob = clean('collecte');
+  void clean('collecte');
 
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
@@ -1844,7 +1851,7 @@ $('.js-analyse').on('click', function () {
 $('.js-affiche-result').on('click', async () => {
   /* On clean les données */
 
-  const bob = clean('peinture');
+  void clean('peinture');
 
   /* On récupère la clé du projet. */
   const maven_key = $('#select-result').text().trim();
@@ -1895,7 +1902,7 @@ $('.js-enregistrement').on('click', () => {
   /* On récupère la clé du projet. */
   const maven_key = $('#select-result').text().trim();
   // On renvoie la maven_key en miniscule pour éviter les problèmes de casse dans le batch d'enregistrement.
-  enregistrement(maven_key);
+  void enregistrement(maven_key);
 });
 
 /******************************************************/
@@ -1912,7 +1919,7 @@ $('.js-tableau-de-bord').on('click', () => {
 
     /** on créé un hash avec la méthode reduce() comme clé de salt */
     const salt = maven_key.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+      return char.codePointAt(0) + (hash << 6) + (hash << 16) - hash;
     }, 0);
 
     /** on créé un token pour encoder les paramètres */
@@ -1938,7 +1945,7 @@ $('.js-cosui').on('click', () => {
 
     /** on créé un hash avec la méthode reduce() comme clé de salt */
     const salt = maven_key.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+      return char.codePointAt(0) + (hash << 6) + (hash << 16) - hash;
     }, 0);
 
     /** on créé un token pour encoder les paramètres */
@@ -1967,7 +1974,7 @@ $('.js-analyse-owasp').on('click', () => {
 
     /** on créé un hash avec la méthode reduce() comme clé de salt */
     const salt = maven_key.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+      return char.codePointAt(0) + (hash << 6) + (hash << 16) - hash;
     }, 0);
 
     /** on créé un token pour encoder les paramètres */
@@ -1986,7 +1993,7 @@ $('.js-analyse-clean-code').on('click', () => {
     const maven_key = $('#select-result').text().trim();
     sessionStorage.setItem('ma_moulinette_projet', maven_key);
     const salt = maven_key.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+      return char.codePointAt(0) + (hash << 6) + (hash << 16) - hash;
     }, 0);
     const param = `${salt}|${maven_key}`;
     const a = encode(btoa(param));
@@ -2005,7 +2012,7 @@ $('.js-repartition-module').on('click', () => {
     const maven_key = $('#select-result').text().trim();
     /** on créé un hash avec la méthode reduce() comme clé de salt */
     const salt = maven_key.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+      return char.codePointAt(0) + (hash << 6) + (hash << 16) - hash;
     }, 0);
 
     /** on créé un token pour encoder les paramètres */
@@ -2160,7 +2167,7 @@ let rciBarChartInstance = null;
 
 const readRciMesures = function () {
   const el = document.getElementById('js-rci-alert-status');
-  if (!el || !el.dataset || !el.dataset.rciMesuresJson) { return null; }
+  if (!el?.dataset?.rciMesuresJson) { return null; }
   try {
     return JSON.parse(el.dataset.rciMesuresJson);
   } catch (e) {
@@ -2260,7 +2267,7 @@ let scopeBarChartInstance = null;
 
 const readScopeMesures = function () {
   const el = document.getElementById('js-dette');
-  if (!el || !el.dataset || !el.dataset.scopeMesuresJson) { return null; }
+  if (!el?.dataset?.scopeMesuresJson) { return null; }
   try {
     return JSON.parse(el.dataset.scopeMesuresJson);
   } catch (e) {
@@ -2379,7 +2386,7 @@ const DT_LANG_FR_LOGGER = {
 
 const readLoggerBreakdown = function () {
   const el = document.getElementById('js-affiche-logger-detail');
-  if (!el || !el.dataset || !el.dataset.loggerBreakdown) { return null; }
+  if (!el?.dataset?.loggerBreakdown) { return null; }
   try {
     return JSON.parse(el.dataset.loggerBreakdown);
   } catch (e) {
@@ -2394,7 +2401,7 @@ const collectLoggerFrameworks = function (breakdown) {
     const byFw = breakdown[level] || {};
     for (const fw of Object.keys(byFw)) { set.add(fw); }
   }
-  return Array.from(set).sort();
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
 };
 
 /* Pré-init DataTable vide au chargement du module.
@@ -2437,7 +2444,7 @@ $(document).on('click', '#js-affiche-logger-detail', function () {
     let totalRows = 0;
     for (const level of loggerLevelLabels) {
       const byFw = breakdown[level] || {};
-      const frameworks = Object.keys(byFw).sort();
+      const frameworks = Object.keys(byFw).sort((a, b) => a.localeCompare(b));
       for (const fw of frameworks) {
         const nb = byFw[fw];
         if (nb > 0) {
@@ -2458,7 +2465,7 @@ $(document).on('click', '#js-affiche-logger-detail', function () {
   // 2. Injecter les lignes dans le DataTable via l'API (pas de innerHTML)
   const detailEl = document.getElementById('js-affiche-logger-detail');
   let details = [];
-  if (detailEl && detailEl.dataset && detailEl.dataset.loggerDetails) {
+  if (detailEl?.dataset?.loggerDetails) {
     try {
       details = JSON.parse(detailEl.dataset.loggerDetails);
     } catch (e) {
@@ -2504,7 +2511,7 @@ $('#js-affiche-graphique-logger').on('click', function () {
     const palette = loggerFrameworkPalette[idx % loggerFrameworkPalette.length];
     return {
       label: fw,
-      data: loggerLevelLabels.map(level => (breakdown[level] && breakdown[level][fw]) || 0),
+      data: loggerLevelLabels.map(level => breakdown?.[level]?.[fw] || 0),
       backgroundColor: palette.bg,
       borderColor: palette.border,
       borderWidth: 1
@@ -2615,7 +2622,9 @@ $('#js-graphique-version').on('click', () => {
   const version = document.getElementById('js-version-autre');
 
   modalSafe.open('#modal-autre-version');
-  (version.dataset.label === undefined) ? { label, dataset } = 0 : { label, dataset } = version.dataset;
+  if (version.dataset.label !== undefined) {
+    ({ label, dataset } = version.dataset);
+  }
   const canvasId = 'graphique-autre-version';
   const canvas = document.getElementById(canvasId);
   const emptyMessage = canvas?.nextElementSibling;
