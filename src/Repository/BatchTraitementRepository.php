@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -18,6 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\ParameterType;
 use App\Entity\BatchTraitement;
 use App\Repository\Traits\DoctrineParamHelperTrait;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @extends ServiceEntityRepository<BatchTraitement>
@@ -146,11 +147,11 @@ class BatchTraitementRepository extends ServiceEntityRepository
    *
    * @return array<int|string, mixed>
    *
-   * Created at: 10/11/2025 11:36:58 (Europe/Paris)
+   * Created at: 18/11/2026 20:32:21 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchTraitementByTraitementId(string $traitement_id): array
+  public function selectBatchTraitementByTraitementId(Ulid|string $traitement_id): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.batch_traitement
@@ -160,12 +161,12 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
     try {
           $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(':traitement_id', $traitement_id);
-          $traitement = $stmt->executeQuery()->fetchAllAssociative();
+            $this->bindUlidAsString($stmt, ':traitement_id', $traitement_id);
+          $traitement = $stmt->executeQuery()->fetchAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code' => 200, 'traitement' => $traitement[0], 'erreur' => ''];
+      return ['code' => 200, 'traitement' => $traitement, 'erreur' => ''];
   }
 
   /**
@@ -347,14 +348,15 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
   /**
    * [Description for deleteTraitement]
+   * $transaction_id peut être un Ulid ou une chaîne de caractères.
    *
    * @return array<int|string, mixed>
    *
-   * Created at: 29/10/2025 21:40:32 (Europe/Paris)
+   * Created at: 18/11/2026 19:54:15 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteTraitement(string $traitement_id): array
+  public function deleteTraitement(Ulid|string $traitement_id): array
   {
     $sql = "DELETE
             FROM ma_moulinette.batch_traitement

@@ -17,6 +17,7 @@ use App\Entity\BatchExecution;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Traits\DoctrineParamHelperTrait;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @extends ServiceEntityRepository<BatchExecution>
@@ -68,15 +69,15 @@ class BatchExecutionRepository extends ServiceEntityRepository
 
   /**
    * [Description for deleteTraitement]
-   *
+   * $transaction_id peut être un Ulid ou une chaîne de caractères.
    *
      * @return array<int|string, mixed>
    *
-   * Created at: 29/10/2025 21:22:32 (Europe/Paris)
+   * Created at: 18/11/2026 19:53:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function deleteTraitement(string $traitement_id): array
+    public function deleteTraitement(Ulid|string $traitement_id): array
   {
     $sql = "DELETE
             FROM ma_moulinette.batch_execution
@@ -104,11 +105,11 @@ class BatchExecutionRepository extends ServiceEntityRepository
    *
      * @return array<int|string, mixed>
    *
-   * Created at: 11/11/2025 14:17:43 (Europe/Paris)
+   * Created at: 18/11/2026 20:40:08 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function selectBatchExecutionLastTraitementId(string $traitement_id): array
+    public function selectBatchExecutionLastTraitementId(Ulid|string $traitement_id): array
   {
       $sql = "SELECT id
               FROM ma_moulinette.batch_execution
@@ -119,12 +120,13 @@ class BatchExecutionRepository extends ServiceEntityRepository
 
       try {
             $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':traitement_id', $traitement_id);
-            $find = $stmt->executeQuery()->fetchAllAssociative();
+              $this->bindUlidAsString($stmt, ':traitement_id', $traitement_id);
+            $find = $stmt->executeQuery()->fetchAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code' => 200, 'id' => $find[0]['id'], 'erreur' => ''];
+
+      return ['code' => 200, 'id' => $find['id'] ?? [], 'erreur' => ''];
   }
 
 }

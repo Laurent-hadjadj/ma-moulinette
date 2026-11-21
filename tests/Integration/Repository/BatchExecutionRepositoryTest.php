@@ -87,6 +87,25 @@ class BatchExecutionRepositoryTest extends KernelTestCase
         $this->assertNotSame($older->getId(), $result['id']);
     }
 
+    /**
+     * Régression 2026-11-19 : BUG CORRIGÉ — le bind ne convertissait pas un
+     * vrai objet Ulid via bindUlidAsString() (contrairement à
+     * deleteTraitement() de la même classe) ; passer l'objet Ulid brut
+     * (plutôt que sa représentation RFC4122 déjà en string) renvoyait 0
+     * ligne silencieusement (PHP convertit implicitement via __toString(),
+     * qui est le format base32 canonique, pas RFC4122).
+     */
+    public function testSelectBatchExecutionLastTraitementIdAcceptsRealUlidObject(): void
+    {
+        $traitementId = new Ulid();
+        $execution = $this->persistExecution($traitementId, new \DateTimeImmutable());
+
+        $result = $this->repo->selectBatchExecutionLastTraitementId($traitementId);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame($execution->getId(), $result['id']);
+    }
+
     public function testDeleteTraitementRemovesAllRowsForTraitementId(): void
     {
         $traitementId = new Ulid();

@@ -17,7 +17,7 @@ namespace App\Tests\Unit\Repository;
 
 use App\Entity\BatchTraitement;
 use App\Repository\BatchTraitementRepository;
-use Doctrine\DBAL\{Connection, Result, Statement};
+use Doctrine\DBAL\{Connection, ParameterType, Result, Statement};
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException,UniqueConstraintViolationException};
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +26,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * MODIF 2026-05-15 : tests Unit pour BatchTraitementRepository.
@@ -150,11 +151,48 @@ class BatchTraitementRepositoryTest extends TestCase
     {
         $row = ['traitement_id' => '01H...', 'mode_collecte' => 'TRAITEMENT MANUEL'];
         $this->connection->method('prepare')->willReturn($this->statement);
-        $this->statement->expects($this->once())->method('bindValue')->with(':traitement_id', '01H...');
+        $this->statement->expects($this->once())->method('bindValue')
+            ->with(':traitement_id', '01H...', ParameterType::STRING);
         $this->statement->method('executeQuery')->willReturn($this->result);
-        $this->result->method('fetchAllAssociative')->willReturn([$row]);
+        $this->result->method('fetchAssociative')->willReturn($row);
 
         $r = $this->repo->selectBatchTraitementByTraitementId('01H...');
+
+        $this->assertSame(200, $r['code']);
+        $this->assertSame($row, $r['traitement']);
+    }
+
+    public function testSelectBatchTraitementByTraitementIdReturnsFalseWhenNoRow(): void
+    {
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('bindValue');
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchAssociative')->willReturn(false);
+
+        $r = $this->repo->selectBatchTraitementByTraitementId('01H...');
+
+        $this->assertSame(200, $r['code']);
+        $this->assertFalse($r['traitement']);
+    }
+
+    /**
+     * Régression 2026-11-19 : BUG CORRIGÉ — le bind ne convertissait pas un
+     * vrai objet Ulid via bindUlidAsString() (contrairement à
+     * deleteTraitement() de la même classe), ce qui aurait silencieusement
+     * renvoyé 0 ligne (format base32 au lieu de RFC4122) pour tout futur
+     * appelant passant un Ulid plutôt qu'une string déjà au format RFC4122.
+     */
+    public function testSelectBatchTraitementByTraitementIdBindsUlidAsRfc4122String(): void
+    {
+        $ulid = new Ulid();
+        $row  = ['traitement_id' => $ulid->toRfc4122(), 'mode_collecte' => 'TRAITEMENT MANUEL'];
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->expects($this->once())->method('bindValue')
+            ->with(':traitement_id', $ulid->toRfc4122(), ParameterType::STRING);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchAssociative')->willReturn($row);
+
+        $r = $this->repo->selectBatchTraitementByTraitementId($ulid);
 
         $this->assertSame(200, $r['code']);
         $this->assertSame($row, $r['traitement']);
