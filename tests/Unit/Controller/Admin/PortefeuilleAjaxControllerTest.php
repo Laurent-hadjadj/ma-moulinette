@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -27,6 +27,10 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * MODIF 2026-06-03 : tests extraits de PortefeuilleCrudControllerTest
  * suite au déplacement de listProjets vers PortefeuilleAjaxController.
+ *
+ * MODIF 2026-11-19 : suppression du repli sur le périmètre complet quand
+ * aucun projet ne porte le tag — retrait des mocks fetchOne() devenus
+ * inutiles (le COUNT(*) intermédiaire n'existe plus).
  */
 #[AllowMockObjectsWithoutExpectations]
 class PortefeuilleAjaxControllerTest extends TestCase
@@ -50,9 +54,6 @@ class PortefeuilleAjaxControllerTest extends TestCase
 
     public function testListProjetsReturnsJsonForSingleGroupe(): void
     {
-        // fetchOne simule un tag correspondant → filtre appliqué
-        $this->connection->method('fetchOne')->willReturn(1);
-
         $statement = $this->createMock(Statement::class);
         $result    = $this->createMock(Result::class);
         $this->connection->expects($this->once())
@@ -71,27 +72,27 @@ class PortefeuilleAjaxControllerTest extends TestCase
         $this->assertSame('App1', $data[0]['name']);
     }
 
-    public function testListProjetsReturnsAllWhenTagHasNoMatches(): void
+    /**
+     * Régression 2026-11-19 : BUG CORRIGÉ — un groupe fonctionnel dont le tag
+     * SonarQube ne correspond à aucun projet (tag jamais posé, ou retiré
+     * entre-temps) renvoyait par repli le périmètre complet au lieu d'une
+     * liste vide. Un groupe sans projet doit afficher une liste vide.
+     */
+    public function testListProjetsReturnsEmptyWhenTagHasNoMatches(): void
     {
-        // fetchOne retourne 0 → tag sans correspondance → périmètre complet (Option A)
-        $this->connection->method('fetchOne')->willReturn(0);
-
         $statement = $this->createMock(Statement::class);
         $result    = $this->createMock(Result::class);
         $this->connection->expects($this->once())
             ->method('prepare')
-            ->with($this->logicalNot($this->stringContains('jsonb_exists')))
+            ->with($this->stringContains('jsonb_exists'))
             ->willReturn($statement);
         $statement->method('executeQuery')->willReturn($result);
-        $result->method('fetchAllAssociative')->willReturn([
-            ['name' => 'AppA', 'maven_key' => 'a'],
-            ['name' => 'AppB', 'maven_key' => 'b'],
-        ]);
+        $result->method('fetchAllAssociative')->willReturn([]);
 
         $response = $this->controller->listProjets(new Request(['groupe' => 'groupe-sans-tag']));
         $data = json_decode((string) $response->getContent(), true);
 
-        $this->assertCount(2, $data);
+        $this->assertCount(0, $data);
     }
 
     public function testListProjetsReturnsAllWhenNoGroupe(): void
@@ -116,8 +117,6 @@ class PortefeuilleAjaxControllerTest extends TestCase
 
     public function testListProjetsBindsTagParameter(): void
     {
-        $this->connection->method('fetchOne')->willReturn(1);
-
         $statement     = $this->createMock(Statement::class);
         $result        = $this->createMock(Result::class);
         $capturedBinds = [];
@@ -137,8 +136,6 @@ class PortefeuilleAjaxControllerTest extends TestCase
 
     public function testListProjetsLowercasesGroupeNames(): void
     {
-        $this->connection->method('fetchOne')->willReturn(1);
-
         $statement     = $this->createMock(Statement::class);
         $result        = $this->createMock(Result::class);
         $capturedBinds = [];
