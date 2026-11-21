@@ -8,7 +8,7 @@
 
 Laurent HADJADJ
 https://github.com/Laurent-hadjadj/ma-moulinette
-© 2024 - CC BY-SA-NC 4.0
+© 2024 - AGPL 3.0
 #}
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
@@ -95,11 +95,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
         .legend-mini {
             display: flex;
-            align-items:
-                center;
+            align-items: center;
             gap: 5px;
-            "
-
         }
 
         .legend-mini-status {
@@ -108,8 +105,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             background-color: #00445b;
             display: inline-block;
             border-radius: 2px;
-            "
-
         }
 
         /* --- Status badges --- */
@@ -219,7 +214,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
 <body>
     <!-- En-tête -->
-    {# WCAG 1.1.1 / 1.3.1 : ce template est un rapport PDF (pas d'include header.html.twig), le <h1> unique est donc conservé ; alt du logo plus explicite #}
     <header class="header">
         <div class="logo">
             <img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo {{ app_name }}"
@@ -231,7 +225,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             <div><strong>Mode :</strong> {{ batch.modeCollecte }}</div>
             <div><strong>Utilisateur :</strong> {{ batch.utilisateurCollecte ?: 'N/A' }}</div>
             <div><strong>Portefeuille :</strong> {{ batch.collectes|first.portefeuille ?: 'N/A' }}</div>
-            <div><strong>Date enregistrement :</strong> {{ batch.dateEnregistrement|date('d/m/Y H:i') }}</div>
+            <div><strong>Date enregistrement :</strong> {{ batch.dateEnregistrement }}</div>
         </div>
     </header>
 
@@ -287,7 +281,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     </span>
                     {% endif %}
                 </td>
-                <td class="date-column">{{ collecte.dateExecution|date('d/m/Y H:i') }}</td>
+                <td class="date-column">{{ collecte.dateExecution }}</td>
             </tr>
             {% endfor %}
         </tbody>

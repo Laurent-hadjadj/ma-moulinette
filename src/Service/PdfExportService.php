@@ -76,6 +76,7 @@ class PdfExportService
             ];
         })->toArray();
 
+
         $batchData = [
             'id' => $batchExecution->getId(),
             'nomTraitement' => $batchExecution->getNomTraitement(),
@@ -96,7 +97,7 @@ class PdfExportService
 
         $dompdf = new Dompdf($options);
         // --- Génération du HTML ---
-        $html = $this->twig->render('/rapport/rapport-zurb-foundation.html.twig', [
+        $html = $this->twig->render('/rapport/rapport-colleteuse.html.twig', [
             'batch' => $batchData,
             'logoBase64' => $this->logoBase64(),
             'document_type' => $document_type ?? self::$confidentiel,
@@ -154,7 +155,7 @@ class PdfExportService
     }
 
     /**
-     * Genere le rapport PDF de la page Suivi.
+     * Génère le rapport PDF de la page Suivi.
      *
      * MODIF 2026-05-11 : refonte sur le modèle
      * generateDcPdf. DomPDF ne supporte pas le changement d'orientation

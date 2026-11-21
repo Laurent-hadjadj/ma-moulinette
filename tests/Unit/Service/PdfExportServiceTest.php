@@ -107,7 +107,7 @@ class PdfExportServiceTest extends TestCase
         $this->twig->expects($this->once())
             ->method('render')
             ->with(
-                '/rapport/rapport-zurb-foundation.html.twig',
+                '/rapport/rapport-colleteuse.html.twig',
                 $this->callback(function (array $context) use (&$capturedContext) {
                     $capturedContext = $context;
                     return true;
