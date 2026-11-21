@@ -45,8 +45,6 @@ final class ModeDemo
         '#^/demo/indisponible$#',
         '#^/\.well-known/[A-Za-z0-9._-]+$#',
         '#^/accueil$#',
-        '#^/accueil/favori/liste/version$#',
-        '#^/api/secure/accueil/favori/liste/projet$#',
         '#^/api/secure/preference/category$#',
         '#^/projet(/mes-projets|/cosui)?$#',
         '#^/suivi(/set|/rapport/pdf)?$#',

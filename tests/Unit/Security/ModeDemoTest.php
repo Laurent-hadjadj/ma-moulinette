@@ -29,8 +29,8 @@ class ModeDemoTest extends TestCase
         foreach (
             [
                 '/', '/login', '/logout', '/logout/au-revoir', '/error', '/plan-du-site', '/mention-legale',
-                '/donnees-personnelles', '/demo/indisponible', '/.well-known/security.txt', '/accueil', '/accueil/favori/liste/version',
-                '/api/secure/accueil/favori/liste/projet', '/api/secure/preference/category', '/projet', '/projet/mes-projets', '/projet/cosui',
+                '/donnees-personnelles', '/demo/indisponible', '/.well-known/security.txt', '/accueil',
+                '/api/secure/preference/category', '/projet', '/projet/mes-projets', '/projet/cosui',
                 '/suivi', '/suivi/set', '/suivi/rapport/pdf', '/owasp', '/owasp/detail/42', '/owasp/rapport/pdf',
                 '/clean-code', '/clean-code/synthese', '/clean-code/synthese/pdf', '/dependency-check',
                 '/dependency-check/dashboard', '/dependency-check/projet/fr.ma/app/1.0.0',
