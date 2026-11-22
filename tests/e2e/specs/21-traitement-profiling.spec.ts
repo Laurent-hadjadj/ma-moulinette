@@ -134,6 +134,13 @@ test.describe('21 — Traitement & Profiling', () => {
         { timeout: 90_000 }
       );
       await humanButton.click();
+
+      // Spinner affiché dès le clic (classe .blink), avant même la réponse
+      // serveur — régression corrigée le 21/11/2026 : la classe n'était
+      // jamais ajoutée (seulement retirée), aucun retour visuel pendant
+      // que le traitement tournait.
+      await expect(humanButton).toHaveClass(/blink/);
+
       const response = await startResponse;
       expect(response.status()).toBe(200);
 
@@ -141,6 +148,12 @@ test.describe('21 — Traitement & Profiling', () => {
       await expect(page.locator('#message-box')).toContainText(
         `La collecte pour les projets de tetris-game est terminée`
       );
+
+      // Spinner retiré une fois le traitement terminé — régression corrigée
+      // le 21/11/2026 : le verrou anti-rejeu (suppressClick) restait bloqué
+      // à `true` dans certains chemins de sortie, désactivant le bouton
+      // définitivement jusqu'au rechargement de la page.
+      await expect(humanButton).not.toHaveClass(/blink/);
     });
 
     await test.step("5. Modale Information — détails du traitement", async () => {

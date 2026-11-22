@@ -298,15 +298,23 @@ tbody tr:nth-child(even) {
   transform: translateY(0);
 }
 
-/* clignotant */
+/* Spinner du bouton de lancement manuel (icône i-am-human) — pulsation
+ * douce pendant que le clic est pris en compte/le traitement démarre.
+ * MODIF 2026-11-21 : renommé en @keyframes blinkIcon (collision de nom
+ * avec @keyframes blink ci-dessus, utilisée par .bulle-retry — en CSS les
+ * noms de @keyframes sont globaux, la déclaration la plus basse du fichier
+ * gagnait pour LES DEUX usages, cassant silencieusement l'animation de
+ * .bulle-retry qui faisait un visibility toggle au lieu d'un fondu). Classe
+ * ajoutée/retirée depuis index-batch.js, jamais posée côté Twig.
+ */
 .blink {
-  animation: blink 1.5s steps(5, start) infinite;
+  animation: blinkIcon 1s ease-in-out infinite;
   fill: #c46e27;
 }
 
-@keyframes blink {
-  from { visibility: visible; }
-  to { visibility: hidden; }
+@keyframes blinkIcon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
 /* ==== SECTION INFORMATIONS ==== */

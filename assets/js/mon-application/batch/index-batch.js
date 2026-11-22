@@ -61,7 +61,7 @@ let suppressClick = false;
  *
  * Created at: 14/06/2024 16:23:54 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  */
 const workInProgress = async function(){
 
@@ -95,6 +95,8 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
       //console.debug( "⚠️ Impossible de récupérer l'état des traitements.");
       sessionStorage.setItem('ma_moulinette_batch', "⚠️ Impossible de récupérer l'état des traitements");
       showMessage('warning', `Impossible de récupérer l'état des traitements.`);
+      $(`#i-am-human-${id}`).removeClass('blink');
+      suppressClick = false;
       return
     }
 
@@ -109,6 +111,8 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
         data: JSON.stringify({traitement_id, titre_portefeuille, portefeuille }),
         contentType: content_type,
       });
+      $(`#i-am-human-${id}`).removeClass('blink');
+      suppressClick = false;
       return;
     }
 
@@ -146,6 +150,7 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
       const result = `<span class="show-for-small-only color-rouge"><strong>KO</strong></span>
                       <span class="show-for-medium color-rouge"><strong>Erreur</strong></span>`;
       $(`#result-${id}`).html(result);
+      suppressClick = false;
       return;
     }
 
@@ -164,6 +169,23 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
                     <span class="show-for-medium color-vert"><strong>Succès</strong></span>`;
     $(`#result-${id}`).html(result);
 
+    /**
+     * MODIF 22/11/2026 : les liens « Afficher le rapport »/« Télécharger le
+     * PDF » (#outil-${id}) sont rendus côté Twig à partir de
+     * `traitement.message` au moment du chargement de la page — figés sur
+     * href="#" tant qu'aucune exécution n'a encore eu lieu. Sans ce
+     * correctif, un traitement lancé ici (sans rechargement de page) reste
+     * cliqué sur "#" alors que le rapport existe déjà en base. `traitement_id`
+     * est stable (identifiant du Batch, pas de l'exécution) : on peut donc
+     * reconstruire la même URL que `rapport_execution_pdf`
+     * (BatchController::rapportExecutionPdf, route
+     * /api/public/traitement/rapport/pdf/{token}/{download}) sans appel
+     * réseau supplémentaire.
+     */
+    const rapportBase = `${serveur()}/api/public/traitement/rapport/pdf/${traitement_id}`;
+    $(`#outil-${id} .pdf-view`).attr('href', `${rapportBase}/0`);
+    $(`#outil-${id} .pdf-download`).attr('href', `${rapportBase}/1`);
+
     const temps = t.temps_traitement;
     const isZeroTime = /^0{2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(temps) && Number.parseFloat(temps.replace(/[:.]/g, '')) === 0;
     const affiche_temps = isZeroTime ? "--:--.--" : temps;
@@ -181,6 +203,7 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
     const result = `<span class="show-for-small-only color-rouge"><strong>KO</strong></span>
                       <span class="show-for-medium color-rouge"><strong>Erreur</strong></span>`;
     $(`#result-${id}`).html(result);
+    $(`#i-am-human-${id}`).removeClass('blink');
     suppressClick = false;
     return;
   }
@@ -198,7 +221,7 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
  *
  * Created at: 07/02/2023, 15:05:56 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  */
 const traitementInformation = async function(traitement_id){
   /** On lance le processus */
@@ -384,98 +407,6 @@ const traitementInformation = async function(traitement_id){
 
 }
 
-/**
- * [Description for traitementManuel]
- * Lance le traitement manuel
- *
- * @param string id
- * @param string portefeuille
- *
- * @return void
- *
- * Created at: 07/02/2023, 15:05:56 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-const traitementManuel = async function(id, titre_portefeuille, portefeuille){
-  /** On lance le processus */
-  const data = { id, titre_portefeuille, portefeuille };
-  const options = {
-    url: `${serveur()}/api/secure/traitement/manuel`,
-    type: 'POST',
-    dataType: 'json',
-    data: JSON.stringify(data),
-    contentType: content_type,
-    headers: {
-      'X-API-Custom-403': 'true',
-      'X-Internal-Front': 'front-app'
-    },
-  };
-
-  $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-start');
-  $('#info-bulle-tips').html('Un projet est en cours de traitement.');
-  $(infoBulle).html(1);
-
-  try{
-    const t = await $.ajax(options);
-
-    // 📌 Vérification des erreurs
-    if (t.code !== http_200){
-      const hasTrace = !!t.trace;
-      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-      setTimeout( () => { showMessage(t.type, t.message, trace); }, troisMille);
-      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
-      $(`#i-am-human-${id}`).removeClass('blink');
-
-      $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-error');
-      $('#info-bulle-tips').html('Traitement en échec.');
-      $(infoBulle).html('X');
-
-      const result = `<span class="show-for-small-only color-rouge"><strong>KO</strong></span>
-                      <span class="show-for-medium color-rouge"><strong>Erreur/strong></span>`;
-      $(`#result-${id}`).html(result);
-      return;
-    }
-
-    showMessage('primary',
-      `La collecte pour les projets de ${portefeuille} est terminée.<br>
-        Référence : <strong>${t.reference}</strong><br>
-        Temps total : ${t.temps_traitement}`);
-    $(`#i-am-human-${id}`).removeClass('blink');
-
-    /** On met à jour la bulle info */
-    $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-end');
-    $('#info-bulle-tips').html('Traitement terminé.');
-    $(infoBulle).html('-');
-
-    const result = `<span class="show-for-small-only color-vert"><strong>OK</strong></span>
-                    <span class="show-for-medium color-vert"><strong>Succès</strong></span>`;
-    $(`#result-${id}`).html(result);
-
-    const temps = t.temps_traitement;
-    const isZeroTime = /^0{2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(temps) && Number.parseFloat(temps.replace(/[:.]/g, '')) === 0;
-    const affiche_temps = isZeroTime ? "--:--:--" : temps;
-    $(`#temps-execution-${id}`).html(affiche_temps);
-  } catch(error) {
-      const trace = prepareTechnicalDetails(error);
-      setTimeout( () => {
-        showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
-      }, troisMille);
-
-      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
-      $(`#i-am-human-${id}`).removeClass('blink');
-
-      $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-error');
-      $('#info-bulle-tips').html('Traitement en échec.');
-      $(infoBulle).html('X');
-
-      const result = `<span class="show-for-small-only color-rouge"><strong>KO</strong></span>
-                      <span class="show-for-medium color-rouge"><strong>Erreur/strong></span>`;
-      $(`#result-${id}`).html(result);
-    return;
-  }
-}
-
 /********************************************************/
 /**               Bouton Information                   **/
 /********************************************************/
@@ -555,31 +486,10 @@ $('#modal-journal').on('closed.zf.reveal', function() {
 /********************************************************/
 /**                   Rapport PDF                      **/
 /********************************************************/
-
-/*document.addEventListener('DOMContentLoaded', () => {
-    const openPdf = (batchId, download) => {
-        const url = `/rapport/${batchId}?download=${download ? 1 : 0}`;
-        if (download) {
-            window.location.href = url; // téléchargement
-        } else {
-            window.open(url, '_blank'); // ouverture dans un nouvel onglet
-        }
-    };
-
-    document.querySelectorAll('.pdf-view').forEach(button => {
-        button.addEventListener('click', () => {
-            const id = button.dataset.id;
-            openPdf(id, false);
-        });
-    });
-
-    document.querySelectorAll('.pdf-download').forEach(button => {
-        button.addEventListener('click', () => {
-            const id = button.dataset.id;
-            openPdf(id, true);
-        });
-    });
-});*/
+/* Les liens .pdf-view/.pdf-download sont de vraies ancres <a href="...">
+ * (href posé côté Twig au chargement, rafraîchi côté JS après un traitement
+ * réussi — voir lancerTraitementSiPossible() ci-dessus) : la navigation
+ * native du navigateur suffit, aucun gestionnaire de clic n'est nécessaire. */
 
 $(document).ready(() => {
   const $bulle_wip = $('#info-bulle-in-progress');
@@ -611,6 +521,11 @@ $(document).ready(() => {
 
     const id = e.currentTarget.id;
     const idTab = id.split('-');
+
+    /* Spinner : indique visuellement que le clic a bien été pris en compte,
+     * dès le clic (avant même la réponse de workInProgress()). Retiré dans
+     * tous les chemins de sortie de lancerTraitementSiPossible(). */
+    $(e.currentTarget).addClass('blink');
 
     /** On récupère le titre du portefeuille et le portefeuille (ie. la liste des projets) */
     const element = document.getElementById(`portefeuille-${idTab[trois]}`);
