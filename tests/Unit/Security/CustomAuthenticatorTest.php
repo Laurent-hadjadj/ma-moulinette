@@ -5,28 +5,31 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Security;
 
-use App\Entity\Utilisateur;
+use App\Entity\{GroupeUtilisateur, Utilisateur};
 use App\Repository\UtilisateurRepository;
 use App\Security\CustomAuthenticator;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\{EntityManagerInterface, EntityRepository};
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, RedirectResponse, Request, Response, Session\SessionInterface};
 use Symfony\Component\Ldap\Adapter\AdapterInterface;
+use Symfony\Component\Ldap\Adapter\CollectionInterface;
 use Symfony\Component\Ldap\Adapter\ConnectionInterface as LdapConnectionInterface;
-use Symfony\Component\Ldap\Exception\InvalidCredentialsException;
+use Symfony\Component\Ldap\Adapter\QueryInterface;
+use Symfony\Component\Ldap\Entry;
+use Symfony\Component\Ldap\Exception\{ConnectionException, InvalidCredentialsException};
 use Symfony\Component\Ldap\Ldap;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -299,6 +302,163 @@ class CustomAuthenticatorTest extends TestCase
         }
 
         $this->assertSame('charlie@ma-moulinette.fr', $capturedDn);
+    }
+
+    /* ============ authenticate : chemins LDAP (bind OK) ============ */
+
+    public function testAuthenticateLdapBindSuccessWithExistingActiveUserReturnsPassport(): void
+    {
+        $request = $this->buildLoginRequest('dupont.jean@ma-moulinette.fr', 'secret', 'csrf-token');
+
+        $existingUser = new Utilisateur();
+        $existingUser->setCourriel('dupont.jean@ma-moulinette.fr');
+        $existingUser->setActif(true);
+
+        // 1er appel (avec filtre actif) : pas de compte local -> on tente LDAP.
+        // 2e appel (sans filtre actif, ligne 171) : le compte LDAP existe déjà.
+        $this->utilisateurRepo->method('findOneBy')->willReturnCallback(
+            fn (array $criteria) => isset($criteria['actif']) ? null : $existingUser
+        );
+
+        $this->mockSuccessfulLdapBindAndQuery('CN=Dupont Jean,OU=UTILISATEURS');
+
+        $passport = $this->authenticator->authenticate($request);
+
+        $this->assertSame('dupont.jean@ma-moulinette.fr', $passport->getUser()->getUserIdentifier());
+    }
+
+    public function testAuthenticateLdapBindSuccessWithExistingInactiveUserThrows(): void
+    {
+        $request = $this->buildLoginRequest('dupont.jean@ma-moulinette.fr', 'secret', 'csrf-token');
+
+        $existingUser = new Utilisateur();
+        $existingUser->setCourriel('dupont.jean@ma-moulinette.fr');
+        $existingUser->setActif(false);
+
+        $this->utilisateurRepo->method('findOneBy')->willReturnCallback(
+            fn (array $criteria) => isset($criteria['actif']) ? null : $existingUser
+        );
+
+        $this->mockSuccessfulLdapBindAndQuery('CN=Dupont Jean,OU=UTILISATEURS');
+
+        $this->expectException(CustomUserMessageAuthenticationException::class);
+        $this->expectExceptionMessage('pas encore habilité');
+
+        $this->authenticator->authenticate($request);
+    }
+
+    public function testAuthenticateLdapAutoProvisionsNewUserThenThrowsNotAuthorized(): void
+    {
+        $request = $this->buildLoginRequest('nouveau.user@ma-moulinette.fr', 'secret', 'csrf-token');
+
+        $this->utilisateurRepo->method('findOneBy')->willReturn(null);
+
+        $groupeRepo = $this->createMock(EntityRepository::class);
+        $groupeRepo->method('findOneBy')->willReturnCallback(
+            fn (array $criteria) => $criteria === ['groupeId' => '00000000000000000000000000']
+                ? $this->createMock(GroupeUtilisateur::class)
+                : null
+        );
+        $this->em->method('getRepository')->willReturn($groupeRepo);
+
+        $this->passwordHasher->method('hashPassword')->willReturn('hash-aleatoire');
+
+        $persisted = null;
+        $this->em->expects($this->once())->method('persist')->willReturnCallback(
+            function (object $entity) use (&$persisted): void { $persisted = $entity; }
+        );
+        $this->em->expects($this->once())->method('flush');
+
+        $this->mockSuccessfulLdapBindAndQuery('CN=Nouveau User,OU=UTILISATEURS');
+
+        $this->expectException(CustomUserMessageAuthenticationException::class);
+        $this->expectExceptionMessage('créé mais n’est pas encore autorisé');
+
+        try {
+            $this->authenticator->authenticate($request);
+        } finally {
+            $this->assertInstanceOf(Utilisateur::class, $persisted);
+            $this->assertSame('nouveau.user@ma-moulinette.fr', $persisted->getCourriel());
+            $this->assertSame(['ROLE_NONE'], $persisted->getRoles());
+            $this->assertFalse($persisted->isActif(), 'le compte auto-provisionné ne doit jamais être actif par défaut');
+        }
+    }
+
+    public function testAuthenticateLdapAutoProvisionThrowsWhenDefaultGroupMissing(): void
+    {
+        $request = $this->buildLoginRequest('nouveau.user@ma-moulinette.fr', 'secret', 'csrf-token');
+
+        $this->utilisateurRepo->method('findOneBy')->willReturn(null);
+
+        $groupeRepo = $this->createMock(EntityRepository::class);
+        $groupeRepo->method('findOneBy')->willReturn(null);
+        $this->em->method('getRepository')->willReturn($groupeRepo);
+        $this->em->expects($this->never())->method('persist');
+
+        $this->mockSuccessfulLdapBindAndQuery('CN=Nouveau User,OU=UTILISATEURS');
+
+        $this->expectException(CustomUserMessageAuthenticationException::class);
+        $this->expectExceptionMessage('groupe par défaut');
+
+        $this->authenticator->authenticate($request);
+    }
+
+    public function testAuthenticateLdapUserNotFoundInDirectoryThrowsGenericMessage(): void
+    {
+        $request = $this->buildLoginRequest('fantome@ma-moulinette.fr', 'secret', 'csrf-token');
+
+        $this->utilisateurRepo->method('findOneBy')->willReturn(null);
+
+        $collection = $this->createMock(CollectionInterface::class);
+        $collection->method('count')->willReturn(0);
+        $query = $this->createMock(QueryInterface::class);
+        $query->method('execute')->willReturn($collection);
+        $this->ldapAdapter->method('createQuery')->willReturn($query);
+
+        $ldapConn = $this->createMock(LdapConnectionInterface::class);
+        $this->ldapAdapter->method('getConnection')->willReturn($ldapConn);
+
+        $this->expectException(CustomUserMessageAuthenticationException::class);
+        $this->expectExceptionMessage('Identifiant ou mot de passe incorrect.');
+
+        $this->authenticator->authenticate($request);
+    }
+
+    public function testAuthenticateLdapGenericConnectionErrorThrowsAnnuaireMessage(): void
+    {
+        $request = $this->buildLoginRequest('qui.importe@ma-moulinette.fr', 'secret', 'csrf-token');
+
+        $this->utilisateurRepo->method('findOneBy')->willReturn(null);
+
+        $ldapConn = $this->createMock(LdapConnectionInterface::class);
+        $ldapConn->method('bind')->willThrowException(new ConnectionException('annuaire injoignable'));
+        $this->ldapAdapter->method('getConnection')->willReturn($ldapConn);
+
+        $this->expectException(CustomUserMessageAuthenticationException::class);
+        $this->expectExceptionMessage("Impossible de se connecter à l'annuaire d'entreprise.");
+
+        $this->authenticator->authenticate($request);
+    }
+
+    /**
+     * Configure un bind LDAP réussi (utilisateur + technique) et une requête
+     * LDAP retournant 1 entrée — pour tester les branches "utilisateur LDAP
+     * trouvé" (existant actif/inactif, ou auto-provisionné).
+     */
+    private function mockSuccessfulLdapBindAndQuery(string $dn): void
+    {
+        $ldapConn = $this->createMock(LdapConnectionInterface::class);
+        // bind() ne lève rien -> succès pour les 2 binds (utilisateur puis technique).
+        $this->ldapAdapter->method('getConnection')->willReturn($ldapConn);
+
+        $entry = new Entry($dn, ['sn' => ['Jean'], 'givenName' => ['Dupont']]);
+        $collection = $this->createMock(CollectionInterface::class);
+        $collection->method('count')->willReturn(1);
+        $collection->method('offsetGet')->willReturn($entry);
+
+        $query = $this->createMock(QueryInterface::class);
+        $query->method('execute')->willReturn($collection);
+        $this->ldapAdapter->method('createQuery')->willReturn($query);
     }
 
     /* ============ helpers ============ */
