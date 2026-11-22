@@ -1,0 +1,304 @@
+{# section 1 (portrait) — page de garde + Résumé + Tendance + Focus stratégique. #}
+{% set scan = data.scan %}
+{% set project_label = data.project_group ~ ':' ~ data.project_artifact ~ ':' ~ data.project_version %}
+{% set origin = data.origin_package_counts ?? {'prod': 0, 'dev': 0, 'unknown': 0} %}
+{% set history = data.history ?? [] %}
+{% set origin_chart = data.origin_chart ?? {'labels': [], 'severities': {}} %}
+{% set direct_chart = data.direct_chart ?? {'labels': [], 'severities': {}} %}
+{% set top_packages = data.top_packages ?? {'labels': [], 'counts': []} %}
+{% set severities_order = ['critical', 'high', 'moderate', 'low', 'info'] %}
+
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport npm audit — Portrait 1</title>
+    {{ include('rapport/npm-audit/_styles.html.twig') }}
+</head>
+
+<body>
+
+    {# === Page de garde === #}
+    <div class="cover">
+        <img class="logo-cover" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+        <h1>Rapport npm audit</h1>
+        <div class="subtitle">Vulnérabilités de dépendances npm (JS/TS)</div>
+
+        <div class="project-block">
+            <div class="pname">{{ data.project_artifact }}</div>
+            <div class="pgroup">{{ data.project_group }}</div>
+            <div class="pversion">Version {{ data.project_version }}</div>
+        </div>
+
+        {% if scan %}
+        <div class="meta">Scan effectué le {{ scan.scanDate|date('d/m/Y à H:i') }}</div>
+        {% endif %}
+        <div class="meta">Document généré le {{ "now"|date('d/m/Y à H:i') }}</div>
+    </div>
+
+    {% if scan %}
+
+    {# === 1. Résumé (nouvelle page) === #}
+    <div class="page-break-before">
+        <header class="header">
+            <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+            <div class="header-title">
+                <h2>Résumé</h2>
+                <div class="subtitle">{{ project_label }}</div>
+            </div>
+        </header>
+
+        {% if data.findings_error is defined and data.findings_error %}
+        <div class="warning-box">
+            <strong>⚠️ Données incomplètes.</strong> La récupération des vulnérabilités a échoué au moment de la
+            génération de ce rapport. Le détail par avis de sécurité peut être incomplet ou vide.
+        </div>
+        {% endif %}
+
+        <h2>Identification</h2>
+        <table class="info-grid">
+            <th></th>
+            <tr>
+                <td class="label">Projet</td>
+                <td><strong>{{ data.project_artifact }}</strong></td>
+            </tr>
+            <tr>
+                <td class="label">Groupe</td>
+                <td>{{ data.project_group }}</td>
+            </tr>
+            <tr>
+                <td class="label">Version</td>
+                <td>{{ data.project_version }}</td>
+            </tr>
+            <tr>
+                <td class="label">Date du scan</td>
+                <td>{{ scan.scanDate|date('d/m/Y H:i') }}</td>
+            </tr>
+        </table>
+
+        <h2>Paquets concernés</h2>
+        <p class="footnote">Paquets ayant au moins un avis de sécurité réel, par origine — pas le total brut de
+            npm audit (voir note en page Focus stratégique).</p>
+        <table class="tiles">
+            <tr>
+                <td>
+                    <span class="tile-title">Production</span>
+                    <span class="tile-value">{{ origin.prod }}</span>
+                </td>
+                <td>
+                    <span class="tile-title">Dev</span>
+                    <span class="tile-value">{{ origin.dev }}</span>
+                </td>
+                <td>
+                    <span class="tile-title">Indéterminé</span>
+                    <span class="tile-value">{{ origin.unknown }}</span>
+                </td>
+            </tr>
+        </table>
+
+        <h2>Répartition par sévérité</h2>
+        <table class="synthese">
+            <tr>
+                <th>Sévérité</th>
+                <th class="stat-value">Nombre</th>
+            </tr>
+            <tr>
+                <td><span class="sev sev-critical">CRITICAL</span></td>
+                <td class="stat-value">{{ scan.vulnCountCritical }}</td>
+            </tr>
+            <tr>
+                <td><span class="sev sev-high">HIGH</span></td>
+                <td class="stat-value">{{ scan.vulnCountHigh }}</td>
+            </tr>
+            <tr>
+                <td><span class="sev sev-moderate">MODERATE</span></td>
+                <td class="stat-value">{{ scan.vulnCountModerate }}</td>
+            </tr>
+            <tr>
+                <td><span class="sev sev-low">LOW</span></td>
+                <td class="stat-value">{{ scan.vulnCountLow }}</td>
+            </tr>
+            <tr>
+                <td><span class="sev sev-info">INFO</span></td>
+                <td class="stat-value">{{ scan.vulnCountInfo }}</td>
+            </tr>
+        </table>
+    </div>
+
+    {# === 2. Tendance (nouvelle page) === #}
+    <div class="page-break-before">
+        <header class="header">
+            <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+            <div class="header-title">
+                <h2>Tendance</h2>
+                <div class="subtitle">{{ project_label }}</div>
+            </div>
+        </header>
+
+        {% if history|length < 2 %}
+        <p class="empty">Un seul scan disponible pour ce projet — pas encore d'historique pour mesurer une
+            tendance.</p>
+        {% else %}
+        <p class="footnote">Évolution du nombre total de vulnérabilités sur les {{ history|length }} derniers
+            scans de ce projet (toutes versions confondues — npm n'a pas de socle de version stable).</p>
+
+        {% set chrono = history|reverse %}
+        {% set maxVal = 0 %}
+        {% for s in chrono %}
+            {% if s.vulnCountTotal > maxVal %}{% set maxVal = s.vulnCountTotal %}{% endif %}
+        {% endfor %}
+        <table class="histogram">
+            <th></th>
+            <tr>
+                {% for s in chrono %}
+                    {% set heightPx = (maxVal > 0 and s.vulnCountTotal > 0) ? ((s.vulnCountTotal / maxVal) * 90)|round : 0 %}
+                    <td class="bar-cell">
+                        <span class="bar-value">{{ s.vulnCountTotal }}</span>
+                        <span class="bar" style="height: {{ heightPx }}px;"></span>
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for s in chrono %}
+                    <td class="bar-label">{{ s.scanDate|date('d/m') }}<br>v{{ s.projectVersion }}</td>
+                {% endfor %}
+            </tr>
+        </table>
+
+        <h3>Détail et évolution</h3>
+        <table class="trend-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Version</th>
+                    <th>Total</th>
+                    <th>Critical</th>
+                    <th>High</th>
+                    <th>Moderate</th>
+                    <th>Low</th>
+                    <th>Info</th>
+                    <th>Évolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in history %}
+                    {% set previous = history[loop.index0 + 1] ?? null %}
+                    <tr>
+                        <td class="date-col">{{ s.scanDate|date('d/m/Y H:i') }}</td>
+                        <td>{{ s.projectVersion }}</td>
+                        <td><strong>{{ s.vulnCountTotal }}</strong></td>
+                        <td>{{ s.vulnCountCritical }}</td>
+                        <td>{{ s.vulnCountHigh }}</td>
+                        <td>{{ s.vulnCountModerate }}</td>
+                        <td>{{ s.vulnCountLow }}</td>
+                        <td>{{ s.vulnCountInfo }}</td>
+                        <td>
+                            {% if previous is null %}
+                                <span class="delta delta-flat">—</span>
+                            {% else %}
+                                {% set delta = s.vulnCountTotal - previous.vulnCountTotal %}
+                                {% if delta > 0 %}
+                                    <span class="delta delta-up">▲ +{{ delta }}</span>
+                                {% elseif delta < 0 %}
+                                    <span class="delta delta-down">▼ {{ delta }}</span>
+                                {% else %}
+                                    <span class="delta delta-flat">= 0</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+    {# === 3. Focus stratégique (nouvelle page) === #}
+    <div class="page-break-before">
+        <header class="header">
+            <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+            <div class="header-title">
+                <h2>Focus stratégique</h2>
+                <div class="subtitle">{{ project_label }}</div>
+            </div>
+        </header>
+
+        <h3>Impact par origine (Production / Dev / Indéterminé)</h3>
+        <p class="footnote">Nombre d'avis de sécurité de ce scan, croisés sévérité × origine. Limite connue :
+            npm audit ne distingue que production/non-production, pas <em>optional</em>/<em>peer</em>
+            séparément pour un avis donné.</p>
+        <table class="cross-table">
+            <thead>
+                <tr>
+                    <th>Sévérité</th>
+                    {% for label in origin_chart.labels %}<th>{{ label }}</th>{% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for sev in severities_order %}
+                <tr>
+                    <td class="sev-col"><span class="sev sev-{{ sev }}">{{ sev|upper }}</span></td>
+                    {% for i in 0..(origin_chart.labels|length - 1) %}
+                        <td>{{ origin_chart.severities[sev][i] ?? 0 }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Impact par type de dépendance (Direct / Transitif)</h3>
+        <table class="cross-table">
+            <thead>
+                <tr>
+                    <th>Sévérité</th>
+                    {% for label in direct_chart.labels %}<th>{{ label }}</th>{% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for sev in severities_order %}
+                <tr>
+                    <td class="sev-col"><span class="sev sev-{{ sev }}">{{ sev|upper }}</span></td>
+                    {% for i in 0..(direct_chart.labels|length - 1) %}
+                        <td>{{ direct_chart.severities[sev][i] ?? 0 }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if top_packages.labels|length > 0 %}
+        {% set maxCount = top_packages.counts|sort|last %}
+        <h3>Top {{ top_packages.labels|length }} des paquets vulnérables de ce scan</h3>
+        <table class="top-table">
+            <thead>
+                <tr>
+                    <th class="num">#</th>
+                    <th>Paquet</th>
+                    <th class="nb">Avis</th>
+                    <th class="bar-col">Poids</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for label in top_packages.labels %}
+                    {% set count = top_packages.counts[loop.index0] %}
+                    {% set pct = maxCount > 0 ? ((count / maxCount) * 100)|round : 0 %}
+                    <tr>
+                        <td class="num">{{ loop.index }}</td>
+                        <td><strong>{{ label }}</strong></td>
+                        <td class="nb">{{ count }}</td>
+                        <td class="bar-col">
+                            <div class="hbar-track"><div class="hbar-fill" style="width: {{ pct }}%;"></div></div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+    {% endif %}
+
+</body>
+
+</html>
