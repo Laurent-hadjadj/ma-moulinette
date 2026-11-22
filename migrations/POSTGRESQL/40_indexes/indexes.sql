@@ -289,6 +289,25 @@ CREATE INDEX IF NOT EXISTS idx_dc_scan_latest_release
   ON ma_moulinette.dc_scan (is_latest_release)
   WHERE is_latest_release = TRUE;
 
+-- 2026-11-20 : npm_vulnerability
+CREATE INDEX IF NOT EXISTS idx_npm_vulnerability_severity ON ma_moulinette.npm_vulnerability(severity);
+CREATE INDEX IF NOT EXISTS idx_npm_vulnerability_cwes ON ma_moulinette.npm_vulnerability USING GIN (cwes);
+
+-- npm_finding : Index pour les vues croisées
+CREATE INDEX IF NOT EXISTS idx_npm_finding_scan ON ma_moulinette.npm_finding(scan_id);
+CREATE INDEX IF NOT EXISTS idx_npm_finding_vulnerability ON ma_moulinette.npm_finding(vulnerability_id);
+CREATE INDEX IF NOT EXISTS idx_npm_finding_dependency ON ma_moulinette.npm_finding(dependency_id);
+CREATE INDEX IF NOT EXISTS idx_npm_finding_severity ON ma_moulinette.npm_finding(severity_at_scan);
+
+-- npm_processing_queue :
+CREATE INDEX IF NOT EXISTS idx_npm_queue_status_created ON ma_moulinette.npm_processing_queue(status, created_at) WHERE status IN ('queued', 'processing');
+CREATE INDEX IF NOT EXISTS idx_npm_queue_project ON ma_moulinette.npm_processing_queue(project_group, project_artifact, project_version);
+CREATE INDEX IF NOT EXISTS idx_npm_queue_created ON ma_moulinette.npm_processing_queue(created_at);
+
+-- npm_scan : Index pour recherche par projet (page projet / dashboard)
+CREATE INDEX IF NOT EXISTS idx_npm_scan_project ON ma_moulinette.npm_scan(project_group, project_artifact, project_version, scan_date DESC);
+CREATE INDEX IF NOT EXISTS idx_npm_scan_recent ON ma_moulinette.npm_scan(scan_date DESC);
+
 -- zap_rule : Index pour vues agrégées
 CREATE INDEX IF NOT EXISTS idx_zap_rule_cweid ON ma_moulinette.zap_rule(cweid);
 

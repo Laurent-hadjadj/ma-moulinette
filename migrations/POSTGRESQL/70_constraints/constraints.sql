@@ -203,6 +203,41 @@ ALTER TABLE ma_moulinette.dc_scan
     REFERENCES ma_moulinette.dc_processing_queue(id)
     ON DELETE SET NULL;
 
+-- npm_dependency
+ALTER TABLE ma_moulinette.npm_dependency
+  ADD CONSTRAINT uq_npm_dependency_name UNIQUE (name);
+
+-- npm_vulnerability
+ALTER TABLE ma_moulinette.npm_vulnerability
+  ADD CONSTRAINT uq_npm_vulnerability_advisory_id UNIQUE (advisory_id);
+
+-- npm_finding
+-- Pas de doublon : meme triplet = meme finding.
+-- FK : si on supprime un scan, on supprime ses findings (CASCADE).
+-- Les vulnerabilities et dependencies sont conservees (garde-fou : RESTRICT).
+ALTER TABLE ma_moulinette.npm_finding
+  ADD CONSTRAINT uq_npm_finding_triplet UNIQUE (scan_id, dependency_id, vulnerability_id),
+  ADD CONSTRAINT fk_npm_finding_scan FOREIGN KEY (scan_id)
+    REFERENCES ma_moulinette.npm_scan(id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk_npm_finding_dependency FOREIGN KEY (dependency_id)
+    REFERENCES ma_moulinette.npm_dependency(id) ON DELETE RESTRICT,
+  ADD CONSTRAINT fk_npm_finding_vulnerability FOREIGN KEY (vulnerability_id)
+    REFERENCES ma_moulinette.npm_vulnerability(id) ON DELETE RESTRICT;
+
+-- npm_processing_queue : Idempotence native : meme payload poste 2x = conflit gere par l'app
+ALTER TABLE ma_moulinette.npm_processing_queue
+  ADD CONSTRAINT uq_npm_payload_sha256 UNIQUE (payload_sha256);
+
+-- npm_scan :
+-- 1 scan unique par (projet, version, date) - eviter doublons.
+-- FK optionnelle vers la queue. ON DELETE SET NULL : si on purge la queue,
+-- on garde le scan en BDD metier.
+ALTER TABLE ma_moulinette.npm_scan
+  ADD CONSTRAINT uq_npm_scan_project_version_date UNIQUE (project_group, project_artifact, project_version, scan_date),
+  ADD CONSTRAINT fk_npm_scan_queue FOREIGN KEY (queue_id)
+    REFERENCES ma_moulinette.npm_processing_queue(id)
+    ON DELETE SET NULL;
+
 -- zap_rule
 -- MODIF 2026-10-15 : clé d'unicité réelle = alert_ref, pas pluginid (un
 -- pluginid peut regrouper plusieurs alertes distinctes, voir zap_rule.sql).
