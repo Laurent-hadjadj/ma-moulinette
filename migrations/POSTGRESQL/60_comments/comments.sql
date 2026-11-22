@@ -1310,3 +1310,51 @@ COMMENT ON COLUMN ma_moulinette.user_agent_analysis.session_id       IS 'Identif
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.visitor_id       IS 'Identifiant visiteur analytics long terme.';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.user_id          IS 'Identifiant de l''utilisateur authentifié. NULL si anonyme.';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.created_at       IS 'Date de création de l''analyse.';
+
+-- MODIF 2026-11-22 : commentaires pour les 5 tables du pipeline npm audit
+-- (npm_processing_queue, npm_scan, npm_dependency, npm_vulnerability,
+-- npm_finding) — manquaient depuis leur création le 20/11/2026, le script
+-- idempotent updates/23_create_npm_audit_tables.sql les posait déjà via ses
+-- propres DO $$ blocks, mais jamais dans ce fichier centralisé (install
+-- complet).
+-- ============================================
+-- TABLE npm_processing_queue
+-- ============================================
+
+COMMENT ON TABLE  ma_moulinette.npm_processing_queue IS 'Queue d''ingestion des rapports npm audit postés par la CI.';
+COMMENT ON COLUMN ma_moulinette.npm_processing_queue.ulid IS 'Identifiant public renvoyé au client (ULID Crockford base32).';
+COMMENT ON COLUMN ma_moulinette.npm_processing_queue.payload_sha256 IS 'sha256 du JSON décompressé - clé d''idempotence.';
+COMMENT ON COLUMN ma_moulinette.npm_processing_queue.project_group IS 'Identification projet fournie par la CI (en-tête X-Project-Group) - absente du payload npm audit lui-même.';
+COMMENT ON COLUMN ma_moulinette.npm_processing_queue.payload_gz IS 'JSON npm audit compressé (gzip niveau 6), enveloppe jusqu''à 3 rapports bruts ({"full": {...}, "prodOnly": {...}, "installed": {...}}) - prodOnly pour déterminer npm_finding.is_prod par croisement, installed pour résoudre la version réellement installée.';
+COMMENT ON COLUMN ma_moulinette.npm_processing_queue.status IS 'queued | processing | done | failed';
+
+-- ============================================
+-- TABLE npm_scan
+-- ============================================
+
+COMMENT ON TABLE  ma_moulinette.npm_scan IS '1 scan = 1 rapport npm audit pour (projet, version, date). Compteurs pré-calculés, repris directement de metadata du rapport.';
+COMMENT ON COLUMN ma_moulinette.npm_scan.queue_id IS 'Lien vers la row source dans npm_processing_queue (audit/retraitement).';
+COMMENT ON COLUMN ma_moulinette.npm_scan.vuln_count_moderate IS 'npm utilise "moderate", pas "medium" comme DependencyCheck - terminologie npm native conservée.';
+COMMENT ON COLUMN ma_moulinette.npm_scan.dep_count_prod IS 'metadata.dependencies.prod - sans équivalent DependencyCheck (pas de notion prod/dev pour un .jar Maven).';
+
+-- ============================================
+-- TABLE npm_dependency
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.npm_dependency IS 'Référentiel dédupliqué des paquets npm analysés - clé naturelle : name (pas de sha1, un paquet npm n''a pas de fichier binaire unique).';
+
+-- ============================================
+-- TABLE npm_vulnerability
+-- ============================================
+
+COMMENT ON TABLE  ma_moulinette.npm_vulnerability IS 'Référentiel global dédupliqué des avis de sécurité npm - clé naturelle : advisory_id (GHSA-ID extrait de via[].url).';
+COMMENT ON COLUMN ma_moulinette.npm_vulnerability.advisory_id IS 'GHSA-ID (ex. GHSA-27r3-jxmh-p828), plus stable que via[].source (id numérique interne à l''exécution npm).';
+
+-- ============================================
+-- TABLE npm_finding
+-- ============================================
+
+COMMENT ON TABLE  ma_moulinette.npm_finding IS 'Jointure scan x dependency x vulnerability. Snapshot severity/cvss au moment du scan.';
+COMMENT ON COLUMN ma_moulinette.npm_finding.range IS 'Plage de version vulnérable constatée (vulnerabilities[name].range) - PAS une version installée exacte, npm audit --json ne la restitue pas de façon fiable.';
+COMMENT ON COLUMN ma_moulinette.npm_finding.installed_version IS 'Version(s) réellement installée(s), si la CI a aussi envoyé un rapport "installed" (npm ls --all --json) dans l''enveloppe d''upload. NULL si absent. Plusieurs versions distinctes jointes par ", " en cas de conflit de résolution npm.';
+COMMENT ON COLUMN ma_moulinette.npm_finding.is_prod IS 'NULL = un seul rapport reçu pour l''instant (croisement avec le rapport prod-only pas encore fait) ; true/false = déterminé après croisement. Jamais une sous-estimation silencieuse du risque prod.';
