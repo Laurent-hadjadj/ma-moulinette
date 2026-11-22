@@ -99,6 +99,12 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
             return;
         }
 
+        /* MODIF 2026-11-20 : même exclusion pour /api/secure/npm-audit/ (CI,
+         * machine-to-machine, protégé par NpmAuditTokenSubscriber). */
+        if (str_starts_with($request->getPathInfo(), '/api/secure/npm-audit/')) {
+            return;
+        }
+
         $origin         = $request->headers->get('Origin') ?? '';
         $referer        = $request->headers->get('Referer') ?? '';
         $internalHeader = $request->headers->get($this->internalHeaderName);

@@ -54,7 +54,7 @@ Format accepté : `traditional-json` ZAP, brut (`application/json`) ou compress�
     ```
     Dependency-Check n'est **jamais** appelé pour ces deux stacks — seul ZAP s'applique, puisqu'il scanne    l'application en cours d'exécution, indépendamment du langage.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 <!-- markdownlint-disable MD046 -->
 ```mermaid
@@ -69,7 +69,7 @@ flowchart TD
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 🧭 Chemin de fer de la page
+## 2️⃣🧭 Chemin de fer de la page
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -109,14 +109,14 @@ Page ZAP (DAST)
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 🎯 Plusieurs cibles sous une même clé Maven (« lanes »)
+## 3️⃣ 🎯 Plusieurs cibles sous une même clé Maven (« lanes »)
 
 Une clé Maven peut recouvrir **plusieurs cibles DAST réelles** — par exemple le tier présentation et le tier métier d'une même application, suivis sous la même clé côté SonarQube mais scannés séparément par ZAP (2 `target_url` distinctes). Depuis le 26/10/2026, la page affiche une **lane** (bloc KPI +
 graphiques + tableaux + historique, entièrement indépendant) par `target_url` distincte détectée pour le projet (`ZapScanRepository::listDistinctTargetUrlsByMavenKey()`), plutôt que de mélanger leurs scans dans un seul historique — ce qui n'aurait aucun sens (comparer le volume d'alertes de deux applications différentes comme s'il s'agissait du même historique).
 
 S'il n'existe qu'une seule cible pour le projet, une seule lane s'affiche et son titre « Cible : ... » reste masqué (pas de bruit visuel inutile pour le cas, très majoritaire, d'une seule cible). S'il en existe plusieurs, chacune s'affiche à la suite des autres, la plus récemment scannée en premier.
 
-## 📋 Contenu de la page
+## 4️⃣ 📋 Contenu de la page
 
 - **Bandeau KPI** : date du dernier scan (+ version ZAP), cible scannée (URL), total d'alertes ;
 - **Répartition par risque** : 4 badges HIGH/MEDIUM/LOW/INFORMATIONAL (classes CSS `badge-level` réutilisées de `dependency-check.css`, les 4 niveaux de risque ZAP se mappant directement sur les 4 niveaux déjà stylés pour Dependency-Check) ;
@@ -131,12 +131,12 @@ Chaque bloc de graphique/tableau est accompagné d'un encart pédagogique bleu (
     D'après la documentation officielle ZAP (vérifié sur `docs/scanners.md` et le guide *Zapping the OWASP Top 10 2021*) : très peu de règles automatisées ZAP sont taguées **A07** (authentification — surtout des outils manuels : comparaison de sessions, Forced Browse, génération de token) ; **A09** (journalisation/surveillance) n'a **aucune règle de détection** (ZAP peut générer du trafic qui *pourrait* déclencher des logs, mais ne vérifie jamais leur qualité réelle) ; **A10** (SSRF) dépend entièrement de l'add-on OAST, non activé par défaut.
     Un compteur à 0 sur ces catégories signifie « peu testé », pas « sans faille ». La page reprend cet avertissement dans son propre `info_callout`.
 
-## 📅 Référentiels supportés
+## 5️⃣ 📅 Référentiels supportés
 
 Seuls **2017 et 2021** sont construit (`OwaspDast::getCategoryCount()`/`ZapPageController::categoryLabels()`) — **2025 n'est pas proposé**, ZAP ne taguant pas encore ses règles sur ce référentiel (voir [Exploration OWASP API Security](../developpement/exploration-owasp-api-security.md)). Si une alerte ne porte aucun tag `OWASP_(2017|2021)_A0?(\d{1,2})` reconnu, elle n'apparaît dans aucune catégorie — un
 callout dédié s'affiche alors à la place des graphiques/tableaux de catégorie (« Aucune des alertes de ce scan ne porte de tag OWASP 2017/2021 reconnu »).
 
-## ⚠️ Messages remontés par la page
+## 6️⃣ ⚠️ Messages remontés par la page
 
 | Sévérité | Déclencheur | Message |
 | --- | --- | --- |
@@ -145,11 +145,11 @@ callout dédié s'affiche alors à la place des graphiques/tableaux de catégori
 | `warning` | Projet hors périmètre du groupe fonctionnel (`ProjetPerimetreGuard`) | Message dynamique du garde-fou, préfixé `[ZAP]` |
 | — (pas de flash) | Aucun scan ZAP ingéré pour ce projet | Callout « Aucun scan ZAP disponible pour ce projet. Les rapports ZAP sont posés par la CI sur `POST /api/secure/zap/upload`. » |
 
-## 🔗 Point d'entrée unique
+## 7️⃣ 🔗 Point d'entrée unique
 
 Pas de bouton dédié sur la page [Projet](projet.md) : la page ZAP se rejoint uniquement depuis le bouton 🕷️ **ZAP (DAST)** de la page [OWASP](owasp.md), qui transmet le token déjà décodé (pas de ré-encodage côté client) — voir [🔗 ZAP (DAST)](owasp.md#-zap-dast) sur cette page.
 
-## 📄 Export PDF
+## 8️⃣ 📄 Export PDF
 
 `GET /zap/rapport/pdf?token=...` (bouton 📄 Export PDF sur la page) : synthèse par risque, catégories OWASP 2017/2021 (histogramme), évolution du risque (historique) et liste détaillée des alertes du dernier scan. Même mécanisme que `PdfExportService::generateOwaspPdf()` (Dompdf + Twig, `templates/rapport/rapport-zap.html.twig`), même jeton d'accès que la page web.
 
@@ -159,12 +159,12 @@ Paramètre `target_url` optionnel : précise la lane à exporter quand le projet
     Les champs description/solution/référence de chaque règle proviennent du catalogue ZAP sous forme de HTML (`<p>...</p>`), assaini une seule fois à l'ingestion — voir [Sanitization du HTML externe](../developpement/securite.md#-sanitization-du-html-externe-rapports-zap).
     Dans ce PDF, l'aperçu tronqué de la description passe en plus par `striptags` : les balises `<p>` n'y seraient pas interprétées comme sur la page web, et resteraient visibles littéralement.
 
-## 🚧 Hors périmètre (différé explicitement)
+## 9️⃣ 🚧 Hors périmètre (différé explicitement)
 
 - **Vue transverse multi-projets** (pas de dashboard/comparer/mutualisables façon Dependency-Check) — la page reste volontairement centrée sur un seul projet.
 - **Purge de la file ZAP** : commande `app:zap:purge` disponible (voir [Commandes Prod](../commandes/prod.md)) mais pas encore planifiée au cron.
 
-## 📚 Pour aller plus loin
+## 🔟 📚 Pour aller plus loin
 
 - [OWASP](owasp.md) — point d'entrée vers ZAP, et comparaison SAST/DAST.
 - [Dependency-Check](../dependency-check/pages.md) — autre scanner de sécurité poussé par la CI, même principe d'ingestion.

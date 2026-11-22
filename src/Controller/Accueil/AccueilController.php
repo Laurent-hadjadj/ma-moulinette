@@ -458,9 +458,7 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    #[Route('/api/secure/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_GESTIONNAIRE'])]
-    #[IsGranted('ROLE_GESTIONNAIRE')]
-    public function getListeFavoriProjet(): JsonResponse
+    private function getListeFavoriProjet(): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
@@ -524,8 +522,7 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    #[Route('/accueil/favori/liste/version', name: 'accueil_favori_liste_version')]
-    public function getListeFavoriVersion(): JsonResponse
+    private function getListeFavoriVersion(): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);

@@ -1,12 +1,25 @@
+/*
+####################################################
+##                                                ##
+##   Données de préparation de la base de démo    ##
+##                                                ##
+##               V1.1.0 - 15/11/2026              ##
+##                                                ##
+##      © 2015-2026 - code : AGPL-3.0-or-later    ##
+##                                                ##
+####################################################*/
+
 -- Comptes et groupes de l'instance de démonstration, appliqués par restaurer-demo.sh APRÈS le chargement des données.
 -- Variable psql attendue : hash (empreinte bcrypt du mot de passe, calculée par le script ; jamais écrite ici).
 --
 -- Modèle de droits :
---   * groupe utilisateur   « ma-moulinette-demo » : rattachement du compte ;
---   * groupe fonctionnel   « ma-moulinette »      : préfixe de tag SonarQube. L'application ne propose que les projets
+--   - groupe utilisateur   « ma-moulinette-demo » : rattachement du compte ;
+--   - groupe fonctionnel   « ma-moulinette »      : préfixe de tag SonarQube. L'application ne propose que les projets
 --     dont un tag commence par « ma-moulinette » (ListeProjetRepository::selectListeProjetByGroupe).
--- Rôle ROLE_UTILISATEUR, le minimum. JAMAIS ROLE_GESTIONNAIRE : il ouvre le CRUD EasyAdmin des utilisateurs et des groupes
--- (activer un compte, attribuer des rôles). Avec ce rôle minimal, le bouton de mise à jour de la page d'accueil est inactif.
+-- Rôles ROLE_UTILISATEUR et ROLE_SUIVI (choix de la version de référence sur la page de suivi : cette route exige
+-- ROLE_SUIVI ; ce rôle n'ouvre que la référence et la corbeille, cette dernière étant interdite par le mode démo).
+-- JAMAIS ROLE_GESTIONNAIRE : il ouvre le CRUD EasyAdmin des utilisateurs et des groupes (activer un compte, attribuer
+-- des rôles). Sans lui, le bouton de mise à jour de la page d'accueil est inactif.
 
 \set ON_ERROR_STOP on
 
@@ -30,7 +43,7 @@ VALUES (
 "suivi_projet":[],"favori_projet":[],"favori_version":[]}',
 false,
 'demo@ma-moulinette.fr',
-'["ROLE_UTILISATEUR"]',
+'["ROLE_UTILISATEUR","ROLE_SUIVI"]',
 :'hash',
 'Démo',
 'Ma-Moulinette',

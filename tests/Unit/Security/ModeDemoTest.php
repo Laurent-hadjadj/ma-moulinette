@@ -29,8 +29,8 @@ class ModeDemoTest extends TestCase
         foreach (
             [
                 '/', '/login', '/logout', '/logout/au-revoir', '/error', '/plan-du-site', '/mention-legale',
-                '/donnees-personnelles', '/.well-known/security.txt', '/accueil', '/accueil/favori/liste/version',
-                '/api/secure/accueil/favori/liste/projet', '/projet', '/projet/mes-projets', '/projet/cosui',
+                '/donnees-personnelles', '/demo/indisponible', '/.well-known/security.txt', '/accueil',
+                '/api/secure/preference/category', '/projet', '/projet/mes-projets', '/projet/cosui',
                 '/suivi', '/suivi/set', '/suivi/rapport/pdf', '/owasp', '/owasp/detail/42', '/owasp/rapport/pdf',
                 '/clean-code', '/clean-code/synthese', '/clean-code/synthese/pdf', '/dependency-check',
                 '/dependency-check/dashboard', '/dependency-check/projet/fr.ma/app/1.0.0',
@@ -52,11 +52,14 @@ class ModeDemoTest extends TestCase
                 '/api/secure/get/version', '/api/secure/suivi/version/liste', '/api/secure/favori/check',
                 '/api/secure/accueil/tags', '/api/secure/activity/dessin', '/api/secure/quality/langage',
                 '/api/secure/quality/off', '/api/secure/status', '/api/secure/health', '/api/secure/system/info',
-                '/login',
+                '/login', '/api/secure/utilisateur/change-me', '/api/secure/preference/statut',
             ] as $chemin
         ) {
             yield "POST $chemin" => ['POST', $chemin];
         }
+
+        // Version de référence (page de suivi) : seule écriture en PUT tolérée.
+        yield 'PUT /api/secure/suivi/version/reference' => ['PUT', '/api/secure/suivi/version/reference'];
 
         yield 'barre finale ignorée' => ['GET', '/accueil/'];
         yield 'barres doublées ignorées' => ['GET', '//accueil'];
@@ -82,13 +85,13 @@ class ModeDemoTest extends TestCase
             '/api/secure/enregistrement', '/api/secure/accueil/projet', '/api/secure/quality/profiles',
             '/api/secure/favori', '/api/secure/suivi/version/suivi', '/api/secure/suivi/mise-a-jour',
             '/api/secure/suivi/version/favori', '/api/secure/suivi/version/poubelle',
-            '/api/secure/suivi/version/reference', '/api/secure/repartition/collecte',
+            '/api/secure/repartition/collecte',
             '/api/secure/repartition/analyse', '/api/secure/repartition/historique',
-            '/api/secure/preference/statut', '/api/secure/preference/favori/delete',
+            '/api/secure/preference/favori/delete',
             '/api/secure/preference/version/delete', '/api/secure/activity/sauvegarde',
             '/api/secure/traitement/start', '/api/secure/traitement/add-pending',
             '/api/secure/dependency-check/upload', '/api/secure/zap/upload',
-            '/api/secure/mot-de-passe/mise-a-jour', '/api/secure/utilisateur/change-me',
+            '/api/secure/mot-de-passe/mise-a-jour',
             '/api/secure/admin/journal-roles/delete', '/api/secure/admin/logs/download-selection',
             '/api/public/traitement/automatique/liste', '/api/public/traitement/automatique/start',
             '/mot-de-passe/mise-a-jour', '/profil/details', '/repartition', '/actuator', '/actuator/info',
@@ -124,6 +127,26 @@ class ModeDemoTest extends TestCase
         yield 'POST /projet' => ['POST', '/projet'];
         // Une lecture exposée en POST n'est pas lisible en GET.
         yield 'GET /api/secure/peinture/projet/mesures' => ['GET', '/api/secure/peinture/projet/mesures'];
+        // Le changement d'avatar n'est toléré qu'en POST : la route accepte aussi GET, qui doit rester refusé.
+        foreach (['GET', 'HEAD', 'PUT', 'PATCH', 'DELETE'] as $methode) {
+            yield "$methode /api/secure/utilisateur/change-me" => [$methode, '/api/secure/utilisateur/change-me'];
+        }
+        // Les préférences : écriture en POST seulement, jamais en GET ; la catégorie se lit en GET seulement.
+        foreach (['GET', 'HEAD', 'PUT', 'PATCH', 'DELETE'] as $methode) {
+            yield "$methode /api/secure/preference/statut" => [$methode, '/api/secure/preference/statut'];
+        }
+        yield 'POST /api/secure/preference/category' => ['POST', '/api/secure/preference/category'];
+        // La version de référence n'est tolérée qu'en PUT (la corbeille, le favori et la mise à jour restent interdits).
+        foreach (['GET', 'HEAD', 'POST', 'PATCH', 'DELETE'] as $methode) {
+            yield "$methode /api/secure/suivi/version/reference" => [$methode, '/api/secure/suivi/version/reference'];
+        }
+        foreach (['/api/secure/suivi/version/poubelle', '/api/secure/suivi/version/favori', '/api/secure/suivi/mise-a-jour'] as $chemin) {
+            yield "PUT $chemin" => ['PUT', $chemin];
+        }
+        yield 'PUT reference/ailleurs' => ['PUT', '/api/secure/suivi/version/reference/ailleurs'];
+        // Et seul le chemin exact : pas de variante.
+        yield 'POST change-me/ailleurs' => ['POST', '/api/secure/utilisateur/change-me/ailleurs'];
+        yield 'POST change-me-autre' => ['POST', '/api/secure/utilisateur/change-me-autre'];
     }
 
     #[DataProvider('methodesEcritureSurRouteDeLectureProvider')]

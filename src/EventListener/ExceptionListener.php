@@ -71,10 +71,10 @@ class ExceptionListener
     {
         // Expression régulière pour détecter des valeurs sensibles
         $patterns = [
-            '/password\s*=\s*\S+/',
-            '/secret\s*=\s*\S+/',
-            '/token\s*=\s*\S+/',
-            '/key\s*=\s*\S+/',
+            '/password\s*=\s*\S+/i',
+            '/secret\s*=\s*\S+/i',
+            '/token\s*=\s*\S+/i',
+            '/key\s*=\s*\S+/i',
         ];
 
         foreach ($patterns as $pattern) {

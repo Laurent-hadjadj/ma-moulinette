@@ -23,8 +23,8 @@
  */
 export const encode = function(str) {
   return str.replace(/[A-Za-z]/g, (char) => {
-    const code = char.charCodeAt(0);
-    const base = char >= 'a' ? 'a'.charCodeAt(0) : 'A'.charCodeAt(0);
-    return String.fromCharCode(base + ((code - base + 13) % 26));
+    const code = char.codePointAt(0);
+    const base = char >= 'a' ? 'a'.codePointAt(0) : 'A'.codePointAt(0);
+    return String.fromCodePoint(base + ((code - base + 13) % 26));
   });
 }

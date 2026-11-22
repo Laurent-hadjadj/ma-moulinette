@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 
@@ -31,16 +31,16 @@ import '../../auth/details.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
-import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_403, http_404, http_500, http_504, content_type } from '../../common/constante.js';
+import { http_200, http_403, content_type } from '../../common/constante.js';
 
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-date-fns';
-import { parse, format } from 'date-fns';
+import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 /** On enregistre les classes et les plugins dans chart.js */
@@ -127,7 +127,7 @@ const refreshActivity=async function() {
     };
 
 $('.js-activity-refresh').on('click', () => {
-  refreshActivity();
+  void refreshActivity();
 });
 
 /**
@@ -268,7 +268,6 @@ const dessineGraph = async function() {
       showMessage('error', `Impossible de récupérer les données du graphique (Erreur ${t.code || 500}).`);
       return;
     }
-
     graphToto(t.listeDonnee.request);
   } catch (error) {
     sessionStorage.setItem('ma_moulinette_error', `Erreur graphique : ${JSON.stringify(error, null, 2)}`);
@@ -276,4 +275,177 @@ const dessineGraph = async function() {
   }
 }
 
+/**
+ * [Description for buildVerticalBar]
+ * Histogramme classique (barres verticales), pour une série dont l'ordre
+ * (ex. les heures) est déjà significatif — contrairement à un classement.
+ *
+ * @param string canvasId
+ * @param array labels
+ * @param array values
+ * @param string title
+ *
+ * @var function
+ */
+const buildVerticalBar = function(canvasId, labels, values, title) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) { return; }
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: title, data: values, backgroundColor: '#00445b' }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: title },
+        datalabels: { anchor: 'end', align: 'top', color: '#333' },
+      },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+    },
+  });
+};
+
+/**
+ * [Description for buildLineTrend]
+ * Courbe de tendance (évolution dans le temps), pour les blocs semaine/mois.
+ *
+ * @param string canvasId
+ * @param array labels
+ * @param array values
+ * @param string title
+ *
+ * @var function
+ */
+const buildLineTrend = function(canvasId, labels, values, title) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) { return; }
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: title,
+        data: values,
+        borderColor: 'rgb(0, 68, 91)',
+        backgroundColor: 'rgba(0, 68, 91, 0.25)',
+        fill: true,
+        tension: 0.4,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: title },
+        datalabels: { display: false },
+      },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+    },
+  });
+};
+
+/**
+ * [Description for buildHorizontalBar]
+ * Barres horizontales triées, mêmes données que le tableau associé —
+ * pattern repris de buildFamilyBar() (index-dependency-check-executive.js).
+ *
+ * @param string canvasId
+ * @param array labels
+ * @param array values
+ * @param string title
+ *
+ * @var function
+ */
+const buildHorizontalBar = function(canvasId, labels, values, title) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) { return; }
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: title, data: values, backgroundColor: '#00445b' }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: title },
+        datalabels: { anchor: 'end', align: 'right', color: '#333' },
+      },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
+    },
+  });
+};
+
+/**
+ * [Description for dessineGraphsTemporels]
+ * MODIF 2026-11-19 : trace les 6 graphiques (heure, semaine, mois, pics,
+ * top semaine, top mois) à partir du dataset JSON injecté par Twig
+ * (#activity-chart-data) — rendu serveur, pas d'appel AJAX supplémentaire.
+ *
+ * @var function
+ */
+const dessineGraphsTemporels = function() {
+  const node = document.getElementById('activity-chart-data');
+  if (!node) { return; }
+
+  let chartData;
+  try {
+    chartData = JSON.parse(node.textContent);
+  } catch (error) {
+    sessionStorage.setItem('ma_moulinette_error', `Dataset activity-chart-data invalide : ${JSON.stringify(error, null, 2)}`);
+    return;
+  }
+
+  buildVerticalBar(
+    'activity-chart-heure',
+    (chartData.heure || []).map((h) => h.heure),
+    (chartData.heure || []).map((h) => h.analyse),
+    'Analyses par heure'
+  );
+
+  buildLineTrend(
+    'activity-chart-semaine',
+    (chartData.semaine || []).map((j) => j.jour),
+    (chartData.semaine || []).map((j) => j.analyse),
+    'Analyses par jour'
+  );
+
+  buildLineTrend(
+    'activity-chart-mois',
+    (chartData.mois || []).map((s) => s.semaine),
+    (chartData.mois || []).map((s) => s.analyse),
+    'Analyses par semaine'
+  );
+
+  buildHorizontalBar(
+    'activity-chart-pics',
+    (chartData.pics || []).map((p) => p.date),
+    (chartData.pics || []).map((p) => p.analyse),
+    'Analyses par date'
+  );
+
+  buildHorizontalBar(
+    'activity-chart-top-semaine',
+    (chartData.top_semaine || []).map((p) => p.project_name),
+    (chartData.top_semaine || []).map((p) => p.analyse),
+    'Analyses par projet'
+  );
+
+  buildHorizontalBar(
+    'activity-chart-top-mois',
+    (chartData.top_mois || []).map((p) => p.project_name),
+    (chartData.top_mois || []).map((p) => p.analyse),
+    'Analyses par projet'
+  );
+};
+
 $(dessineGraph);
+$(dessineGraphsTemporels);

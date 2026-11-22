@@ -1,27 +1,27 @@
 # 🧪 Tests unitaires et d'intégration
 
-## 📈 État des suites (relevé du 15/11/2026)
+## 1️⃣ 📈 État des suites (relevé du 19/11/2026)
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 955 | 10 209 | Unitaires purs (mocks, aucune base réelle) |
-| `integration` (`tests/Integration`) | 703 | 1 772 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **4 658** | **11 981** | |
+| `unit` (`tests/Unit`) | 3 978 | 10 259 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 714 | 1 799 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
+| **Total** | **4 692** | **12 058** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
 **Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
 
 | Granularité | Couverture |
 | --- | --- |
-| Lignes | **81,24 %** |
+| Lignes | **81,28 %** |
 
-**Analyse statique** : **PHPStan niveau 7**, 0 erreur sur tout le périmètre configuré (`bin/`, `config/`, `public/`, `src/`, `tests/`) — voir [Analyse statique](#-analyse-statique-phpstan) plus bas.
+[Analyse statique](#8️⃣--analyse-statique-phpstan) (PHPStan niveau 7, toutes suites cumulées) :
 
 !!! note "🔄 Chiffres à réactualiser"
     Ces valeurs sont un relevé manuel, pas une sortie de CI : elles se périment à chaque campagne de tests.
     Les régénérer avec `composer test` (compteurs), `composer test:coverage` (couverture) et `vendor/bin/phpstan analyse` (erreurs résiduelles).
 
-## 📦 Suites de tests
+## 2️⃣ 📦 Suites de tests
 
 `phpunit.xml.dist` déclare trois suites :
 
@@ -35,7 +35,7 @@
     La suite `tests/Functional` a été vidée en 2026 (tous les tests restants étaient redondants avec la couverture Unit).
     Les parcours utilisateur bout-en-bout (JS, charts, rendu Twig dynamique) sont couverts séparément par une suite **Playwright** (`tests/e2e/`, projet Node.js distinct) — voir [Tests End-to-End](test-e2e.md).
 
-## ▶️ Exécuter les tests
+## 3️⃣ ▶️ Exécuter les tests
 
 Commandes définies dans `composer.json` :
 
@@ -58,7 +58,7 @@ php -d xdebug.mode=off vendor/bin/phpunit --filter testNomDuTest tests/Unit/Chem
     Deux exécutions simultanées (même sur des sous-dossiers différents) se marchent dessus : fixtures remises à zéro pendant qu'un autre run teste, ce qui produit des cascades d'échecs qui ressemblent à de vraies régressions mais ne sont que de la contention.
     Toujours vérifier qu'aucun autre process `phpunit`/`composer test*` ne tourne (y compris dans un terminal externe) avant de lancer une suite.
 
-## 🗄️ Base de données de test
+## 4️⃣🗄️ Base de données de test
 
 `tests/Integration` s'exécute contre une vraie base PostgreSQL (`.env.test` + `.env.test.local`), pas SQLite. Mise en place / réinitialisation complète :
 
@@ -71,20 +71,20 @@ php bin/console --env=test doctrine:fixtures:load --no-interaction
 
 `doctrine:schema:update --force` construit le schéma directement depuis le mapping des entités (`#[ORM\Column]`) — voir [Architecture — base de données](../architecture/architecture-base-de-donnees.md) pour la mise en garde sur la cohérence entité ↔ colonne SQL.
 
-## 🔑 Variables d'environnement requises
+## 5️⃣ 🔑 Variables d'environnement requises
 
 Un certain nombre de variables `%env(...)%` référencées par `config/services.yaml` doivent être définies pour que le kernel de test démarre (sinon `EnvNotFoundException`).
 Certaines (`DC_INGEST_TOKEN`) sont forcées directement dans `phpunit.xml.dist` ; les autres (`APP_CLIENT_TOKEN`, `APP_ALLOWED_ORIGINS`, tokens Sonar, placeholders LDAP…) sont dans `.env.test`/`.env.test.local`.
 Une variable manquante se traduit typiquement par des dizaines d'erreurs identiques `EnvNotFoundException` à travers toute la suite `tests/Integration` — un seul ajout dans `.env.test.local` suffit à toutes les résoudre.
 
-## 🌱 Fixtures de test
+## 6️⃣ 🌱 Fixtures de test
 
 Les fixtures Doctrine (`src/DataFixtures/`) suivent une convention de nommage normalisée pour rester anonymes et cohérentes : clé maven canonique `fr.ma-moulinette:ma-moulinette`, domaine email `@ma-moulinette.fr`.
 Les 5 utilisateurs nommés de `UtilisateurFixtures.php` (mot de passe fixture commun `test`, même hash que le compte `admin` — voir [Gestion de la sécurité](securite.md)) sont des jeux de données légitimes à conserver tels quels.
 
 Dans les tests `tests/Unit` (mocks, sans lien avec `src/DataFixtures/`), une convention distincte est utilisée pour désigner plusieurs projets fictifs dans un même test : `projet-a`/`projet-b`/`projet-c`, et la sentinelle `projet-inconnu` pour les cas négatifs (projet absent du périmètre).
 
-## 📊 Couverture de code
+## 7️⃣ 📊 Couverture de code
 
 Prérequis `php.ini` :
 
@@ -101,7 +101,7 @@ composer test:coverage
 Génère un rapport texte (`var/coverage/coverage.txt`), HTML (`var/coverage/coverage-html/`) et Clover (`var/coverage/clover.xml`).
 Les chemins texte/HTML sont fixés par les options passées en ligne de commande dans le script `composer.json` (elles priment sur la configuration `<coverage>` de `phpunit.xml.dist`) ; seul le chemin Clover vient de `phpunit.xml.dist`.
 
-## 🔎 Analyse statique (PHPStan)
+## 8️⃣ 🔎 Analyse statique (PHPStan)
 
 L'analyse statique complète les tests : elle ne vérifie pas le comportement mais la **cohérence des types** — un tableau dont on ignore le contenu, une méthode appelée sur une valeur qui peut être `null`, un `??` posé sur une expression qui ne l'est jamais.
 
@@ -140,7 +140,7 @@ Le **niveau 7** est la cible du projet depuis le 18/10/2026 : il exige que toute
 
 Un fichier peut être durci au-delà du niveau du projet : `RapportInsightService` est ainsi vérifié au **niveau 8**, ce qui garantit réellement le contrat d'union littérale (`'up'|'down'|'flat'|'na'`) publié à ses appelants.
 
-## 📚 Pour aller plus loin
+## 9️⃣ 📚 Pour aller plus loin
 
 - [Tests End-to-End](test-e2e.md) : suite Playwright.
 - [Architecture — base de données](../architecture/architecture-base-de-donnees.md) : schéma PostgreSQL et pilotage via `doctrine:schema:update`.

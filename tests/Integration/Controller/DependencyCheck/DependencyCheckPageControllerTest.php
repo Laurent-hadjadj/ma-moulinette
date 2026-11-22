@@ -70,8 +70,25 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->getConnection()->executeStatement('DELETE FROM ma_moulinette.dc_cve');
         /* Le projet `fr.ma-moulinette:demo` doit aussi être dans liste_projet pour passer
          * l'ACL de MesProjets (filtre par tag LIKE prefix%). */
+        $this->supprimerProjetsDeTest();
+    }
+
+    protected function tearDown(): void
+    {
+        // Non-régression : trois tests insèrent des projets à clé fixe (bravo, projet-a, projet-b, projet-wip) que
+        // seuls des tests d'autres classes, exécutés plus tard, effaçaient. Une exécution laissait donc ces lignes en
+        // base et la suivante échouait sur « uq_liste_projet_maven_key » (violation d'unicité).
+        $this->supprimerProjetsDeTest();
+        parent::tearDown();
+    }
+
+    /** Efface tous les projets que cette classe insère dans liste_projet (liste fermée de clés fixes). */
+    private function supprimerProjetsDeTest(): void
+    {
         $this->em->getConnection()->executeStatement(
-            "DELETE FROM ma_moulinette.liste_projet WHERE maven_key IN ('fr.ma-moulinette:demo', 'fr.hors-perimetre:projet-externe')"
+            "DELETE FROM ma_moulinette.liste_projet WHERE maven_key IN ("
+            . "'fr.ma-moulinette:demo', 'fr.ma-moulinette:bravo', 'fr.ma-moulinette:projet-a', "
+            . "'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-wip', 'fr.hors-perimetre:projet-externe')"
         );
     }
 

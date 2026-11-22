@@ -7,10 +7,11 @@ Depuis la v2.0.0, la notion d'**équipe** a été remplacée par deux concepts d
     Un **groupe fonctionnel** répond à la question « sur quels projets cette personne peut-elle intervenir ? » (ex. `java-c-cool`, associé à des tags SonarQube).
     Un utilisateur a **un seul** groupe utilisateur mais peut avoir **plusieurs** groupes fonctionnels.
 
-## 🗺️ Cartographie — cycle de vie d'une création
+## 1️⃣ 🗺️ Cartographie — cycle de vie d'une création
 
 Les deux CRUD partagent la même logique de garde dans `persistEntity()` : normalisation du nom, puis vérification d'unicité **sur la valeur déjà normalisée** (une recherche Doctrine par nom exact ne suffirait pas — voir la note sur `#[UniqueEntity]` ci-dessous).
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Home["🏠 /admin<br/>cartes Groupe Utilisateur / Groupe Fonctionnel<br/>ROLE_GESTIONNAIRE"] --> IndexGU["📋 Liste Groupe Utilisateur"]
@@ -28,8 +29,9 @@ flowchart TD
     CheckGF -->|oui| FlashGF["🚫 Flash danger « Ce groupe existe déjà »<br/>retour au formulaire,<br> rien n'est écrit"]
     CheckGF -->|non| SaveGF[("💾 groupe_fonctionnel")]
 ```
+<!-- markdownlint-enable MD046 -->
 
-## 🧭 Chemin de fer des deux listes
+## 2️⃣ 🧭 Chemin de fer des deux listes
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -57,8 +59,7 @@ Formulaire Groupe Fonctionnel (Créer / Modifier)
 ```
 <!-- markdownlint-enable MD046 -->
 
-
-## 🧑‍🤝‍🧑 Groupe utilisateur
+## 3️⃣ 🧑‍🤝‍🧑 Groupe utilisateur
 
 CRUD `Admin\GroupeUtilisateurCrudController`. Actions retirées de la page liste : **Modifier** et **Détail** (seules Créer/Supprimer restent visibles).
 
@@ -72,7 +73,7 @@ CRUD `Admin\GroupeUtilisateurCrudController`. Actions retirées de la page liste
 
 **Groupes créés par défaut** (fixtures) : `En attente` (statut initial d'un compte nouvellement créé) et `Aucun` (aucun groupe). Les groupes métier (ex. `ADMIN`, `CONSULTATION`, `COLLECTE`, `GESTIONNAIRE METIER`, `GESTIONNAIRE APPLICATIF`) ne sont **pas** créés automatiquement — ce sont des exemples à créer manuellement selon l'organisation cible.
 
-## 🏷️ Groupe fonctionnel
+## 4️⃣ 🏷️ Groupe fonctionnel
 
 CRUD `Admin\GroupeFonctionnelCrudController`. Action retirée de la page liste : **Détail** uniquement — **Modifier** reste accessible (le nom devient alors en lecture seule dans le formulaire, la description et le tag restent modifiables).
 
@@ -93,7 +94,7 @@ Aucun groupe fonctionnel n'est créé par les fixtures de base : à créer selon
     Ni `GroupeUtilisateurCrudController` ni `GroupeFonctionnelCrudController` n'imposaient de restriction de rôle côté serveur — seule la carte de la page d'accueil du back-office masquait l'accès (`is_granted('ROLE_GESTIONNAIRE')`).
     **Corrigé** par l'ajout de `#[IsGranted('ROLE_GESTIONNAIRE', statusCode: 403)]` sur les deux contrôleurs — voir [Gestion des utilisateurs](utilisateur.md) et [Gestion de la sécurité](../developpement/securite.md) pour le détail complet de ce renforcement.
 
-## 📚 Pour aller plus loin
+## 5️⃣ 📚 Pour aller plus loin
 
 - [Utilisateurs](utilisateur.md) : rattachement d'un compte à un groupe utilisateur et à des groupes fonctionnels.
 - [Portefeuilles](portefeuille.md) : rattachement d'un portefeuille de projets à un groupe fonctionnel.

@@ -1,0 +1,104 @@
+{# section 2 (paysage) — détail des avis de sécurité par sévérité. Placée en
+   dernier : ce qui compte le plus est la synthèse (parties 1), ce détail
+   complète pour qui veut creuser. #}
+{% set findings = data.findings %}
+
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport npm audit — Détail</title>
+    {{ include('rapport/npm-audit/_styles.html.twig') }}
+</head>
+
+<body>
+
+    {% if findings is not empty %}
+    <h2>Détail par avis de sécurité ({{ findings|length }})</h2>
+
+    {% set severities = [
+        { key: 'critical', label: 'Critiques',    cls: 'sev-critical' },
+        { key: 'high',     label: 'Élevées',      cls: 'sev-high' },
+        { key: 'moderate', label: 'Modérées',     cls: 'sev-moderate' },
+        { key: 'low',      label: 'Faibles',      cls: 'sev-low' },
+        { key: 'info',     label: 'Information',  cls: 'sev-info' },
+    ] %}
+
+    {% set first_sev_displayed = true %}
+    {% for sev in severities %}
+    {% set sev_findings = findings|filter(f => f.severity == sev.key) %}
+    {% if sev_findings|length > 0 %}
+    <div class="sev-section-title {{ sev.cls }} {{ not first_sev_displayed ? 'page-break-before' : '' }}">
+        {{ sev.label }} — {{ sev_findings|length }} avis de sécurité
+    </div>
+    <table class="findings">
+        <thead>
+            <tr>
+                <th class="num">#</th>
+                <th class="dep">Paquet</th>
+                <th class="type-col">Type</th>
+                <th class="origin-col">Origine</th>
+                <th class="cvss">CVSS</th>
+                <th>Advisory</th>
+                <th class="ver">Plage / Installée</th>
+                <th class="fix-col">Correctif</th>
+                <th class="cwe">CWE</th>
+                <th>Titre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in sev_findings %}
+            <tr>
+                <td class="num">{{ loop.index }}</td>
+                <td class="dep">{{ f.dependency_name }}</td>
+                <td class="type-col">
+                    {{ f.is_direct ? 'Direct' : 'Transitif' }}
+                </td>
+                <td class="origin-col">
+                    {% if f.is_prod is null %}
+                        <span class="origin origin-unknown">Indéterminé</span>
+                    {% elseif f.is_prod %}
+                        <span class="origin origin-prod">Production</span>
+                    {% else %}
+                        <span class="origin origin-dev">Dev</span>
+                    {% endif %}
+                </td>
+                <td class="cvss">{{ f.cvss is not null ? f.cvss : '-' }}</td>
+                <td>{{ f.advisory_id }}</td>
+                <td class="ver">
+                    {{ f.range ?: '-' }}
+                    {% if f.installed_version %}
+                        <br><span class="footnote">Installée : {{ f.installed_version }}</span>
+                    {% endif %}
+                </td>
+                <td class="fix-col">
+                    {% if f.fix_available %}
+                        <span class="badge-neutre">Oui</span>
+                    {% else %}
+                        Non
+                    {% endif %}
+                </td>
+                <td class="cwe">
+                    {% for cwe in f.cwes %}
+                        {{ cwe }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {{ f.title|slice(0, 200) }}
+                    {% if f.title|length > 200 %}…{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% set first_sev_displayed = false %}
+    {% endif %}
+    {% endfor %}
+    {% else %}
+    <h2>Aucune vulnérabilité détectée</h2>
+    {% endif %}
+
+</body>
+
+</html>

@@ -1,6 +1,6 @@
 # 📖 DependencyCheck — référence
 
-## 📦 Format du payload accepté
+## 1️⃣ 📦 Format du payload accepté
 
 Schéma minimal validé (sous-ensemble du rapport OWASP DependencyCheck v1.1) :
 
@@ -29,7 +29,7 @@ Formats binaires acceptés (détection par magic bytes, pas par le seul `Content
 | zip | `50 4B 03 04` | Exactement un fichier dans l'archive, de nom `.json` (pas de contrainte de position dans l'arborescence) |
 | tar.gz | `1F 8B` + `ustar` (offset 257 après décompression) | Un seul fichier `.json` |
 
-## 🗺️ Mapping JSON → base de données (synthèse)
+## 2️⃣ 🗺️ Mapping JSON → base de données (synthèse)
 
 | Champ JSON | Colonne | Table |
 | --- | --- | --- |
@@ -47,7 +47,7 @@ Le schéma complet (colonnes, types, contraintes, index) est documenté dans [Ar
 
 Trois en-têtes HTTP optionnels complètent l'upload avec des métadonnées absentes du rapport DependencyCheck lui-même (socle technique, archétype) — voir [Socle technique et archétype](../architecture/architecture-java.md#-socle-technique-et-archétype-module-dependencycheck).
 
-## 🌐 Codes HTTP
+## 3️⃣ 🌐 Codes HTTP
 
 ### `POST /api/secure/dependency-check/upload`
 
@@ -72,7 +72,7 @@ Trois en-têtes HTTP optionnels complètent l'upload avec des métadonnées abse
 | 404 | Ulid inconnu ou mal formé |
 | 503 | Endpoint désactivé |
 
-## 🧮 Formule JH (effort de remédiation)
+## 4️⃣ 🧮 Formule JH (effort de remédiation)
 
 Chaque dépendance vulnérable à mettre à jour se voit attribuer un effort estimé en **jours-homme (JH)**, utilisé pour le plan de remédiation (page executive) et le calcul du gain de mutualisation (dashboard, page mutualisables). La formule est **paramétrable par famille technologique** (`config/packages/dc_remediation.yaml`) plutôt que fixe, car l'effort de validation dépend fortement de l'écosystème — un bump Log4j ne se valide pas comme un bump Spring Framework.
 
@@ -88,7 +88,7 @@ La famille technologique d'une dépendance est déduite par une heuristique `gue
 !!! caution "⚠️ Ne pas confondre avec l'ancienne formule fixe"
     Une formule antérieure plus simple (`base + bonus si CRITICAL`) a existé et apparaît encore dans certaines notes de conception archivées. Elle a été remplacée par la formule paramétrable ci-dessus — en cas de doute, la source de vérité est `DcExecutiveAnalyticsService::computeDepJh()`, pas un document de conception daté.
 
-## 📓 Glossaire
+## 5️⃣ 📓 Glossaire
 
 | Terme | Définition |
 | --- | --- |
@@ -103,7 +103,7 @@ La famille technologique d'une dépendance est déduite par une heuristique `gue
 | **Archétype** | Template Maven ayant servi à générer le squelette initial d'un projet |
 | **`FOR UPDATE SKIP LOCKED`** | Clause PostgreSQL (≥ 9.5) qui ignore les lignes déjà verrouillées par une autre transaction — permet plusieurs workers concurrents sans collision |
 
-## 📚 Pour aller plus loin
+## 6️⃣ 📚 Pour aller plus loin
 
 - [Architecture d'ingestion](architecture.md) : pipeline, décisions techniques.
 - [Pages et navigation](pages.md) : parcours utilisateur, filtres.

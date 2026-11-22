@@ -42,16 +42,16 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 /** On importe les constantes */
 import { http_400, http_401, http_403, http_404, http_500, http_504, content_type } from '../../common/constante.js';
 
+// on contrôle si le module secrets.local.js est bien chargé pour récupérer le token
 let token;
-import("../../common/secrets.local.js").then((module) => {
+try {
+  const module = await import("../../common/secrets.local.js");
   token = module.token;
-}).catch((error) => {
-      const trace = prepareTechnicalDetails(error);
-      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
-    return;
-  });
+} catch (error) {
+  const trace = prepareTechnicalDetails(error);
+  const message = "Le module n'a pas été chargé correctement (Erreur 500).";
+  showMessage('critical', message, trace);
+}
 
 /**
   * [Description for sonarIsUp]
@@ -84,7 +84,7 @@ const sonarIsUp = async function() {
     // 📌 Vérification des erreurs
     if (error.status === http_404){
       const message = `La requête est incorrecte (Erreur 404).`;
-      showMessage('alert', message);
+      showMessage('error', message);
     }
     if (error.status === http_500 || error.status === 'DOWN'){
       const message = `État du serveur SonarQube : <strong>DOWN</strong> (Erreur 500).`;
@@ -97,6 +97,7 @@ const sonarIsUp = async function() {
 /**
   * [Description for miseAJourListe]
   * Récupération de la liste des projets.
+  * ROLE_REFERENTIAL est nécessaire pour accéder à cette route.
   *
   * @return void
   *
@@ -119,8 +120,8 @@ const miseAJourListe = async function() {
 
   try {
         const t = await $.ajax(options);
-        // 📌 Vérification des erreurs
-        const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+        // 📌 Vérification des erreurs, on traite la 403 dans le catch
+        const errorCodes = [http_400, http_401, http_404, http_500];
         if (errorCodes.includes(t.code)){
             const hasTrace = !!t.trace;
             const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
@@ -136,7 +137,7 @@ const miseAJourListe = async function() {
         /** On met à jour le nombre de projet public */
         $('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.public));
         /** On met à jour le nombre de projet privée */
-        if (isNaN(t.private)) {
+        if (t.private === undefined || Number.isNaN(t.private)) {
           $('#js-private').html('-');
           } else {
             $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
@@ -151,8 +152,15 @@ const miseAJourListe = async function() {
           showMessage(t.type, t.message, trace);
           setTimeout(() => { hideMessage(); }, 5000);
   } catch(error) {
+    if (error.status === http_403) {
+      const message = `Vous n'avez pas les droits nécessaires pour accéder à cette ressource (Erreur 403).`;
+      showMessage('warning', message);
+      return;
+    }
+
     const message = `Une erreur inattendue s'est produite lors de la mise à jour des projets (Erreur 500).`
     const trace = prepareTechnicalDetails(error);
+    console.log(trace);
     if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
       showMessage(trace.type, trace.message);
       return;
@@ -164,6 +172,8 @@ const miseAJourListe = async function() {
 /**
  * [Description for miseAJourTags]
  * On met à jour le nombre de projet et le nombre de tags
+ * ROLE_REFERENTIAL est nécessaire pour accéder à cette route.
+ *
  * @return void
  *
  * Created at: 19/05/2024 11:18:10 (Europe/Paris)
@@ -188,8 +198,8 @@ const miseAJourTags = async function() {
 
     try {
       const t = await $.ajax(options);
-      // 📌 Vérification des erreurs
-      const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+      // 📌 Vérification des erreurs, on gère la 403 dans le catch
+      const errorCodes = [http_400, http_401, http_404, http_500];
       if (errorCodes.includes(t.code)){
           const hasTrace = !!t.trace;
           const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
@@ -203,6 +213,11 @@ const miseAJourTags = async function() {
         .removeClass('couleur-rouge')
         .addClass('couleur-bleu');
     } catch (error) {
+      if (error.status === http_403) {
+        const message = `Vous n'avez pas les droits nécessaires pour accéder à cette ressource (Erreur 403).`;
+        showMessage('warning', message);
+        return;
+      }
       const message = `Une erreur inattendue s'est produite lors de la récupération du nombre de tags (Erreur 500).`;
       const trace = prepareTechnicalDetails(error);
       if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
@@ -220,7 +235,7 @@ const miseAJourTags = async function() {
  * Événement : on recharge la liste des projets.
  */
 $('#bouton-mise-a-jour-referential').on('click', ()=> {
-  sonarIsUp()
+  void sonarIsUp()
     .then((t)=> {
       /** On regarde si le serveur SonarQube est disponible */
       const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_504];
@@ -237,8 +252,13 @@ $('#bouton-mise-a-jour-referential').on('click', ()=> {
       }
 
       /** si le serveur est disponible */
-      miseAJourListe();
-      miseAJourTags();
+      void miseAJourListe();
+      void miseAJourTags();
+    })
+    .catch((error) => {
+      const message = `Une erreur inattendue s'est produite lors de la vérification de la disponibilité de SonarQube (Erreur 500).`;
+      const trace = prepareTechnicalDetails(error);
+      showMessage('critical', message, trace);
     });
 });
 
@@ -255,7 +275,7 @@ $('.tableau-de-board-svg').on('click', function(e) {
   if (mavenKey !== ''){
     /** on créé un hash avec la méthode reduce() comme clé de salt */
     const salt = mavenKey.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+      return char.codePointAt(0) + (hash << 6) + (hash << 16) - hash;
     }, 0);
 
     /** on créé un token pour encoder les paramètres */

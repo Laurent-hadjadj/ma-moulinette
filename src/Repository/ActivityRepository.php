@@ -542,6 +542,42 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
+     * [Description for distributionHoraireJour]
+     * Répartition des analyses par heure, sur une seule journée (bornes
+     * [début, fin[) — utilisée par la page Activité pour le bloc "Aujourd'hui
+     * (par heure)". Heure exprimée dans le fuseau applicatif (Europe/Paris),
+     * pas en UTC (executed_at est stocké en timestamptz).
+     *
+     * @param \DateTimeImmutable $debutJour
+     * @param \DateTimeImmutable $finJour
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 19/11/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     */
+    public function distributionHoraireJour(\DateTimeImmutable $debutJour, \DateTimeImmutable $finJour): array
+    {
+        try {
+            $sql = "SELECT EXTRACT(HOUR FROM executed_at AT TIME ZONE 'Europe/Paris') AS heure,
+                        COUNT(*) AS \"analyse\",
+                        COUNT(DISTINCT project_name) AS projet
+                    FROM ma_moulinette.activity
+                    WHERE executed_at >= :debut AND executed_at < :fin
+                    GROUP BY heure
+                    ORDER BY heure ASC";
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue('debut', $debutJour->format(self::$formatDate));
+            $stmt->bindValue('fin', $finJour->format(self::$formatDate));
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $request, 'erreur' => ''];
+    }
+
+    /**
      * [Description for countOlderThan]
      * Compte les lignes de activity plus anciennes que $days jours
      * (purge RGPD, voir mkDocs/docs/ma-moulinette/conformite/rgpd.md section 13).

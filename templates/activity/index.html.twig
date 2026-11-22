@@ -161,11 +161,49 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             </div>
             <div class="chart-empty-message js-chart-empty-message">Aucune donnée à tracer pour l'année en cours.</div>
 
-            {# MODIF 2026-10-16 : tableaux semaine / mois / top10, même pattern
-                que les tableaux OS/Navigateur/Appareil de la page Statistique
-                Utilisateur (stats-card), rendu serveur, pas d'AJAX. #}
+            {# MODIF 2026-11-19 : refonte "tableau à gauche / graphique à droite" (medium-7/medium-5,
+                small-12 empilé), sur le pattern dependency_check/executive.html.twig. 3 blocs de
+                distribution temporelle (heure, jour, semaine) d'abord, puis les 3 blocs Top 10/8. #}
+
+            {# Aujourd'hui (par heure) #}
             <div class="grid-x grid-margin-x margin-bottom-4">
-                <div class="cell small-12 medium-6">
+                <div class="cell small-12 medium-7">
+                    <div class="stats-card">
+                        <h3 class="h5 claire-hand">Aujourd'hui (par heure)</h3>
+                        {% if heure_table|default([])|length > 0 %}
+                            <table class="stats-table">
+                                <thead>
+                                    <tr><th>Heure</th><th class="text-right">Analyses</th><th class="text-right">Projets</th><th>Part des projets</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for h in heure_table %}
+                                        <tr>
+                                            <td>{{ h.heure }}</td>
+                                            <td class="text-right">{{ h.analyse }}</td>
+                                            <td class="text-right">{{ h.projet }}</td>
+                                            <td class="stats-percent-cell">
+                                                <span class="open-sans stats-percent-value">{{ h.percent }}%</span>
+                                                <span class="stats-percent-bar" aria-hidden="true" style="--percent: {{ h.percent }}"></span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="open-sans">Aucune analyse aujourd'hui.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="cell small-12 medium-5">
+                    <div class="callout alert-callout-border secondary min-height-280">
+                        <canvas id="activity-chart-heure" aria-label="Répartition des analyses par heure, de 7h à 19h."></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {# Cette semaine (par jour) #}
+            <div class="grid-x grid-margin-x margin-bottom-4">
+                <div class="cell small-12 medium-7">
                     <div class="stats-card">
                         <h3 class="h5 claire-hand">Cette semaine (lundi → aujourd'hui)</h3>
                         {% if semaine_table|default([])|length > 0 %}
@@ -192,7 +230,16 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         {% endif %}
                     </div>
                 </div>
-                <div class="cell small-12 medium-6">
+                <div class="cell small-12 medium-5">
+                    <div class="callout alert-callout-border secondary min-height-280">
+                        <canvas id="activity-chart-semaine" aria-label="Évolution des analyses cette semaine, jour par jour."></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {# Ce mois (par semaine) #}
+            <div class="grid-x grid-margin-x margin-bottom-4">
+                <div class="cell small-12 medium-7">
                     <div class="stats-card">
                         <h3 class="h5 claire-hand">Ce mois (par semaine)</h3>
                         {% if mois_table|default([])|length > 0 %}
@@ -219,10 +266,16 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         {% endif %}
                     </div>
                 </div>
+                <div class="cell small-12 medium-5">
+                    <div class="callout alert-callout-border secondary min-height-280">
+                        <canvas id="activity-chart-mois" aria-label="Évolution des analyses ce mois, semaine par semaine."></canvas>
+                    </div>
+                </div>
             </div>
 
+            {# Top 10 des pics d'analyse #}
             <div class="grid-x grid-margin-x margin-bottom-4">
-                <div class="cell small-12 medium-4">
+                <div class="cell small-12 medium-7">
                     <div class="stats-card">
                         <h3 class="h5 claire-hand">Top 10 des pics d'analyse</h3>
                         {% if top10_pics|default([])|length > 0 %}
@@ -241,45 +294,99 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         {% endif %}
                     </div>
                 </div>
-                <div class="cell small-12 medium-4">
+                <div class="cell small-12 medium-5">
+                    <div class="callout alert-callout-border secondary min-height-280">
+                        <canvas id="activity-chart-pics" aria-label="Top 10 des pics d'analyse par date."></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {# Top 8 projets — semaine en cours #}
+            <div class="grid-x grid-margin-x margin-bottom-4">
+                <div class="cell small-12 medium-7">
                     <div class="stats-card">
-                        <h3 class="h5 claire-hand">Top 10 projets — semaine en cours</h3>
-                        {% if top10_projets_semaine|default([])|length > 0 %}
+                        <h3 class="h5 claire-hand">Top 8 projets — semaine en cours</h3>
+                        {% if top10_projets_semaine.table|default([])|length > 0 %}
                             <table class="stats-table">
                                 <thead>
-                                    <tr><th>Projet</th><th class="text-right">Analyses</th></tr>
+                                    <tr><th>Projet</th><th class="text-right">Analyses</th><th>Part du total</th></tr>
                                 </thead>
                                 <tbody>
-                                    {% for p in top10_projets_semaine %}
-                                        <tr><td>{{ p.project_name }}</td><td class="text-right">{{ p.analyse }}</td></tr>
+                                    {% for p in top10_projets_semaine.table %}
+                                        <tr>
+                                            <td class="stats-table-cell-projet">{{ p.project_name }}</td>
+                                            <td class="text-right">{{ p.analyse }}</td>
+                                            <td class="stats-percent-cell">
+                                                <span class="open-sans stats-percent-value">{{ p.percent }}%</span>
+                                                <span class="stats-percent-bar" aria-hidden="true" style="--percent: {{ p.percent }}"></span>
+                                            </td>
+                                        </tr>
                                     {% endfor %}
                                 </tbody>
+                                <tfoot>
+                                    <tr><td><strong>Total</strong></td><td class="text-right"><strong>{{ top10_projets_semaine.total }}</strong></td><td></td></tr>
+                                </tfoot>
                             </table>
                         {% else %}
                             <p class="open-sans">Aucune analyse cette semaine.</p>
                         {% endif %}
                     </div>
                 </div>
-                <div class="cell small-12 medium-4">
+                <div class="cell small-12 medium-5">
+                    <div class="callout alert-callout-border secondary min-height-280">
+                        <canvas id="activity-chart-top-semaine" aria-label="Top 8 projets de la semaine en cours."></canvas>
+                    </div>
+                </div>
+            </div>
+
+            {# Top 8 projets — mois en cours #}
+            <div class="grid-x grid-margin-x margin-bottom-4">
+                <div class="cell small-12 medium-7">
                     <div class="stats-card">
-                        <h3 class="h5 claire-hand">Top 10 projets — mois en cours</h3>
-                        {% if top10_projets_mois|default([])|length > 0 %}
+                        <h3 class="h5 claire-hand">Top 8 projets — mois en cours</h3>
+                        {% if top10_projets_mois.table|default([])|length > 0 %}
                             <table class="stats-table">
                                 <thead>
-                                    <tr><th>Projet</th><th class="text-right">Analyses</th></tr>
+                                    <tr><th>Projet</th><th class="text-right">Analyses</th><th>Part du total</th></tr>
                                 </thead>
                                 <tbody>
-                                    {% for p in top10_projets_mois %}
-                                        <tr><td>{{ p.project_name }}</td><td class="text-right">{{ p.analyse }}</td></tr>
+                                    {% for p in top10_projets_mois.table %}
+                                        <tr>
+                                            <td class="stats-table-cell-projet">{{ p.project_name }}</td>
+                                            <td class="text-right">{{ p.analyse }}</td>
+                                            <td class="stats-percent-cell">
+                                                <span class="open-sans stats-percent-value">{{ p.percent }}%</span>
+                                                <span class="stats-percent-bar" aria-hidden="true" style="--percent: {{ p.percent }}"></span>
+                                            </td>
+                                        </tr>
                                     {% endfor %}
                                 </tbody>
+                                <tfoot>
+                                    <tr><td><strong>Total</strong></td><td class="text-right"><strong>{{ top10_projets_mois.total }}</strong></td><td></td></tr>
+                                </tfoot>
                             </table>
                         {% else %}
                             <p class="open-sans">Aucune analyse ce mois-ci.</p>
                         {% endif %}
                     </div>
                 </div>
+                <div class="cell small-12 medium-5">
+                    <div class="callout alert-callout-border secondary min-height-280">
+                        <canvas id="activity-chart-top-mois" aria-label="Top 8 projets du mois en cours."></canvas>
+                    </div>
+                </div>
             </div>
+
+            <script type="application/json" id="activity-chart-data">
+                {{ {
+                    'heure': heure_chart|default([]),
+                    'semaine': semaine_table|default([]),
+                    'mois': mois_table|default([]),
+                    'pics': top10_pics|default([]),
+                    'top_semaine': top10_projets_semaine.table|default([]),
+                    'top_mois': top10_projets_mois.table|default([]),
+                }|json_encode|raw }}
+            </script>
 
         </main>
 

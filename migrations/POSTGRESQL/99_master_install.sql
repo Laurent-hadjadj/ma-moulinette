@@ -74,6 +74,11 @@
 \ir 20_tables/ma_moulinette.sql
 \ir 20_tables/mesures.sql
 \ir 20_tables/no_sonar.sql
+\ir 20_tables/npm_dependency.sql
+\ir 20_tables/npm_finding.sql
+\ir 20_tables/npm_processing_queue.sql
+\ir 20_tables/npm_scan.sql
+\ir 20_tables/npm_vulnerability.sql
 \ir 20_tables/owasp.sql
 \ir 20_tables/owasp_dast.sql
 \ir 20_tables/owasp_details.sql

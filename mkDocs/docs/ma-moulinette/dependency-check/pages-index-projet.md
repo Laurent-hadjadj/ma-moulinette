@@ -2,7 +2,7 @@
 
 Détail bloc par bloc des 3 pages qui forment le socle de navigation du module : la liste des projets scannés, le détail d'un scan, et son export PDF. Vue d'ensemble et rôles : [Pages et navigation](pages.md).
 
-## 📦 Index — liste des projets scannés
+## 1️⃣ 📦 Index — liste des projets scannés
 
 `GET /dependency-check` (`dc_index`) — `DependencyCheckPageController::index()`.
 
@@ -37,7 +37,7 @@ Aucun appel `showMessage()` dans `index-dependency-check.js` — tous les messag
 | `info` | Utilisateur sans groupe fonctionnel valide (`allowedMavenKeys()` renvoie `null`) | ℹ️ Aucun projet accessible dans votre périmètre groupe_fonctionnel. |
 | `error` | Échec de `listLatestPerCoupleForView()` | ❌ La récupération des projets a échoué (Erreur {code}). {erreur} |
 
-## 🔍 Page détail  — scan
+## 2️⃣ 🔍 Page détail  — scan
 
 `GET /dependency-check/projet/{group}/{artifact}/{version}` (`dc_projet`) — `DependencyCheckPageController::projet()`.
 Utilise le même point d'entrée JS que l'Index (`index-dependency-check.js`), qui ne contient aucune logique conditionnelle propre à l'une ou l'autre page.
@@ -80,7 +80,7 @@ Page Détail scan (/dependency-check/projet/{group}/{artifact}/{version})
 
 Aucun appel `showMessage()` côté JS sur cette page (même script que l'Index, sans logique conditionnelle).
 
-## 📄 Export PDF
+## 3️⃣ 📄 Export PDF
 
 `GET /dependency-check/projet/{group}/{artifact}/{version}/pdf` (`dc_projet_pdf`) — `DependencyCheckPageController::projetPdf()`, délègue à `PdfExportService::generateDcPdf()`.
 Pas de template HTML : réponse binaire directe (`Content-Type: application/pdf`).
@@ -126,7 +126,7 @@ Export PDF (/dependency-check/projet/{group}/{artifact}/{version}/pdf)
     `projetPdf()` ne renvoyait auparavant aucun signal dans ces deux cas : un scan absent produisait un PDF silencieux (garde + glossaire seuls), et un échec de récupération des findings n'était visible que dans les logs serveur.
      Un message flash ne peut pas s'afficher sur cette route (la réponse est un fichier binaire, pas une page HTML) : en l'absence de scan, la page redirige donc désormais vers le Détail scan avec le flash d'avertissement habituel ; en cas d'échec de récupération des findings, le PDF est toujours généré mais affiche un bandeau d'avertissement en tête de la synthèse executive.
 
-## 📚 Pour aller plus loin
+## 4️⃣ 📚 Pour aller plus loin
 
 - [Pages et navigation](pages.md) : cartographie d'ensemble, rôles, filtres socle/vue.
 - [Executive summary et Historique](pages-executive-history.md), [Dashboard et KPI](pages-dashboard-kpi.md), [Comparaison et Mutualisables](pages-comparer-mutualisables.md) : détail des 6 autres pages.

@@ -2,7 +2,7 @@
 
 CRUD EasyAdmin (`Admin\UtilisateurCrudController`) permettant de consulter, créer, modifier et supprimer les comptes utilisateurs.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 ```mermaid
 flowchart TD
@@ -20,7 +20,7 @@ flowchart TD
     Index -->|Détail / Supprimer| Default["comportement EasyAdmin<br>par défaut,<br/>aucune garde spécifique"]
 ```
 
-## 🧭 Chemin de fer
+## 2️⃣ 🧭 Chemin de fer
 
 <!-- markdownlint-disable MD046 -->
 ```text
@@ -49,15 +49,14 @@ Formulaire (Créer / Modifier)
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 📋 Champs
+## 3️⃣ 📋 Champs
 
 | Champ | Détail |
 | --- | --- |
 | Avatar | Image, non modifiable directement dans le formulaire (masqué sur Créer/Modifier) |
 | Personne | Valeur calculée (`getPersonne()` = `trim("$nom $prenom")`), pas une colonne — visible en liste/détail, absente du formulaire (voir ⚠️ ci-dessous) |
 | Prénom / Nom | Texte |
-| Courriel | Non modifiable après création |
-| Rôles | Voir [Rôles assignables](#-rôles-assignables-selon-léditeur) ci-dessous |
+| Courriel | Non modifiable après création [Rôles assignables](#3️⃣--rôles-assignables-selon-léditeur) |
 | Actif | Interrupteur — un compte inactif ne peut pas se connecter (`CustomAuthenticator`) |
 | Groupe utilisateur | Choix parmi les groupes définis dans [Groupes](groupes.md) |
 | Groupes fonctionnels | Choix multiple parmi les groupes fonctionnels définis dans [Groupes](groupes.md) — détermine le périmètre de projets visible |
@@ -67,7 +66,7 @@ Formulaire (Créer / Modifier)
     `configureFields()` déclarait `TextField::new('personne')->setFormTypeOption('disabled', in_array($pageName, [Crud::PAGE_EDIT], true))->hideOnForm()` — l'option `disabled` (qui laissait croire à un champ visible mais verrouillé) était en réalité **morte** : `hideOnForm()` retire déjà le champ des formulaires Créer *et* Modifier, dans tous les cas.
     **Corrigé** : l'option `disabled` a été retirée (`personne` n'a pas de colonne en base, ni de `setPersonne()` — c'est un getter calculé `trim("$nom $prenom")`, non éditable par nature ; aucun changement de comportement, juste un nettoyage de code mort trompeur).
 
-## 🔐 Rôles assignables selon l'éditeur
+## 3️⃣ 🔐 Rôles assignables selon l'éditeur
 
 La liste des rôles proposés dans le formulaire dépend du rôle de la personne qui édite, pas d'une liste fixe :
 
@@ -91,17 +90,18 @@ Quelques garde-fous supplémentaires, appliqués à la fois dans le formulaire (
 
 !!! note "✅ Journal des changements de rôle désormais consultable"
     Chaque modification de rôles ou du statut Actif est auditée en base (table `user_role_log`, alimentée par `UserRoleLoggerService` à chaque `updateEntity()` — courriel de la cible et de l'éditeur, anciens/nouveaux rôles, ancien/nouveau statut actif, alertes de `SuspiciousActivityDetector`).
-    Ajout d'une page dédiée : [Journal des rôles](#-journal-des-rôles).
+    [Journal des rôles](#4️⃣--journal-des-rôles) : nouvelle page consultable par les `ROLE_INTERNAL` pour savoir qui a modifié les droits de qui.
 
 !!! note "✅ Auto-suppression bloquée (03/11/2026)"
     Un éditeur pouvait supprimer son propre compte depuis ce CRUD — la ligne disparaissait en base alors que la session restait authentifiée, et la requête suivante plantait (`EntityUserProvider::refreshUser()` ne retrouve plus l'identifiant). Reproduit en conditions réelles (un compte connecté a supprimé son propre compte). `UtilisateurCrudController::deleteEntity()` compare désormais le courriel de la cible à celui de l'éditeur connecté et bloque la suppression (message flash), quel que soit son rôle — y compris `ROLE_INTERNAL`.
 
-## 📜 Journal des rôles
+## 4️⃣ 📜 Journal des rôles
 
 Nouvelle page `Admin\UserRoleLogController` (`/admin/journal-roles`, carte dédiée sur la page d'accueil du back-office à côté de « Log », `ROLE_INTERNAL` — plus restrictif que le CRUD Utilisateur lui-même, car ce journal expose qui a modifié les droits de qui).
 
 ### 🗺️ Cartographie - Journal des rôles
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Home["🏠 /admin<br/>carte Journal des rôles<br/>ROLE_INTERNAL"] --> Index["📜 Liste (DataTables, Ajax)"]
@@ -114,6 +114,7 @@ flowchart TD
     Selection -->|Supprimer| Confirm{"Confirmation JS<br/>+ jeton CSRF"}
     Confirm -->|oui| Delete[("🗑️ suppression définitive<br/>aucune sauvegarde<br> automatique")]
 ```
+<!-- markdownlint-enable MD046 -->
 
 ### 🧭 Chemin de fer - Journal des rôles
 
@@ -166,7 +167,7 @@ Journal des rôles (/admin/journal-roles, UserRoleLogController)
     Mais si le serveur échouait **après** l'appel (ex. erreur base de données pendant `findByIds()`), la réponse JSON d'erreur (`{"code":500,...}`, envoyée en HTTP 200 comme partout ailleurs dans l'application) était tout de même traitée comme un succès par le callback `success` de jQuery : l'utilisateur téléchargeait un fichier `journal_roles.csv`/`.pdf` qui ne contenait en réalité que le message d'erreur JSON, sans être informé de l'échec réel.
     **Corrigé** en inspectant l'en-tête `Content-Type` de la réponse dans `success` : si `application/json` (au lieu de `text/csv`/`application/pdf`), le blob est relu comme texte, parsé, et le vrai message d'erreur est affiché via `showMessage()` plutôt que déclencher un faux téléchargement. Le même motif préexistait à l'identique dans `admin/logs` (`AdminLogController::downloadSelection()` / `app-admin-log.js`) — corrigé aussi, par cohérence.
 
-## 🌱 Comptes créés par défaut
+## 5️⃣ 🌱 Comptes créés par défaut
 
 Les fixtures de base (`migrations/POSTGRESQL/90_fixtures/fixtures.sql`) ne créent qu'un seul compte : `admin@ma-moulinette.fr` (rôle `ROLE_INTERNAL`) — voir [Gestion de la sécurité](../developpement/securite.md#-compte-administrateur) pour le mot de passe par défaut et l'avertissement associé.
 

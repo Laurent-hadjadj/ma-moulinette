@@ -2,8 +2,9 @@
 
 Toutes les pages de ce module exigent le rôle `ROLE_SECURITY` (attribut de classe sur `DependencyCheckPageController`) — voir [Gestion de la sécurité](../developpement/securite.md#-rôles-et-hiérarchie). `ROLE_SECURITY_ANALYTICS` n'est jamais une condition d'accès supplémentaire sur une route ; il élargit le **périmètre de données** vu sur les sections agrégées cross-projets (voir la note plus bas).
 
-## 🗺️ Cartographie des pages
+## 1️⃣ 🗺️ Cartographie des pages
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Acc[🏠 Accueil] -->|bouton| Proj[📁 Page Projet]
@@ -46,8 +47,9 @@ flowchart TD
     style DcComp fill:#e8f4f8
     style DcPdf fill:#fff4e8
 ```
+<!-- markdownlint-enable MD046 -->
 
-## 📋 Détail des pages
+## 2️⃣ 📋 Détail des pages
 
 | Route | Nom | Rôle |
 | --- | --- | --- |
@@ -68,7 +70,7 @@ Le détail de chaque page (chemin de fer bloc par bloc, messages remontés) est 
 - [Dashboard et KPI](pages-dashboard-kpi.md)
 - [Comparaison et Mutualisables](pages-comparer-mutualisables.md)
 
-## 🎚️ Filtre socle et vue prod/dev
+## 3️⃣ 🎚️ Filtre socle et vue prod/dev
 
 Le dashboard, le KPI et les pages associées supportent deux filtres transverses, propagés en query string :
 
@@ -78,7 +80,7 @@ Le dashboard, le KPI et les pages associées supportent deux filtres transverses
 !!! note "🔍 Vue analytics vs vue périmètre"
     Un utilisateur avec `ROLE_SECURITY_ANALYTICS` voit une vue globale non filtrée par groupe fonctionnel (profils transverses : RSSI, équipe sécurité, management). Sans ce rôle, les pages sont restreintes au périmètre `groupe_fonctionnel` de l'utilisateur, comme le reste de l'application — voir [Gestion de la sécurité](../developpement/securite.md).
 
-## 📚 Pour aller plus loin
+## 4️⃣ 📚 Pour aller plus loin
 
 - [Index, Détail scan et Export PDF](pages-index-projet.md), [Executive summary et Historique](pages-executive-history.md), [Dashboard et KPI](pages-dashboard-kpi.md), [Comparaison et Mutualisables](pages-comparer-mutualisables.md) : détail bloc par bloc de chaque page.
 - [Architecture d'ingestion](architecture.md) : pipeline, décisions techniques.

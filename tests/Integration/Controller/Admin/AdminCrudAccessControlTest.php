@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -28,6 +28,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  * is_granted('ROLE_BATCH')). Corrigé par
  * l'ajout de #[IsGranted(...)] sur chaque contrôleur. Ce test vérifie le
  * 403 pour un rôle insuffisant et le 200 pour le rôle attendu.
+ *
+ * MODIF 2026-11-17 : ajout de la route Ajax PortefeuilleAjaxController
+ * (list-projets), qui exigeait à tort ROLE_GESTIONNAIRE au lieu de
+ * ROLE_BATCH (rôle de la page CRUD Portefeuille qui l'appelle).
  */
 class AdminCrudAccessControlTest extends WebTestCase
 {
@@ -128,6 +132,40 @@ class AdminCrudAccessControlTest extends WebTestCase
         $this->client->request('GET', '/admin/portefeuille');
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * Régression 2026-11-17 : BUG CORRIGÉ — PortefeuilleAjaxController
+     * exigeait ROLE_GESTIONNAIRE alors que la page appelante (ci-dessus)
+     * n'exige que ROLE_BATCH ; ces 2 rôles sont des branches indépendantes
+     * de la hiérarchie (security.yaml), donc un utilisateur ROLE_BATCH
+     * pouvait voir la page « Créer un portefeuille » mais se voyait
+     * refuser silencieusement le filtrage par groupe fonctionnel.
+     */
+    public function testPortefeuilleAjaxListProjetsAllowsRoleBatchWithoutRoleGestionnaire(): void
+    {
+        $this->loginWithRoles(['ROLE_BATCH']);
+
+        // Route sous /api/secure/ : ApiClientHeaderSubscriber exige en plus un
+        // Origin/Referer autorisé + le header interne (indépendant du rôle testé ici).
+        $this->client->request('GET', '/api/secure/admin/portefeuille/list-projets', [], [], [
+            'HTTP_Origin'           => 'https://localhost',
+            'HTTP_X_INTERNAL_FRONT' => 'front-app',
+        ]);
+
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testPortefeuilleAjaxListProjetsDeniesRoleUtilisateur(): void
+    {
+        $this->loginWithRoles(['ROLE_UTILISATEUR']);
+
+        $this->client->request('GET', '/api/secure/admin/portefeuille/list-projets', [], [], [
+            'HTTP_Origin'           => 'https://localhost',
+            'HTTP_X_INTERNAL_FRONT' => 'front-app',
+        ]);
+
+        $this->assertSame(403, $this->client->getResponse()->getStatusCode());
     }
 
     public function testBatchCrudDeniesRoleUtilisateur(): void

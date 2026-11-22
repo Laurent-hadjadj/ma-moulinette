@@ -127,6 +127,7 @@ class UtilisateurCrudController extends AbstractCrudController
         $badges = [
                 'ROLE_NONE' => 'secondary',
                 'ROLE_UTILISATEUR' => 'primary',
+                'ROLE_REFERENTIAL' => 'success',
                 'ROLE_COLLECTE' => 'success',
                 'ROLE_SUIVI' => 'warning',
                 'ROLE_BATCH' => 'warning',
@@ -141,6 +142,7 @@ class UtilisateurCrudController extends AbstractCrudController
         $allRoles = [
             self::ROLE_LABEL_AUCUN_ACCES => 'ROLE_NONE',
             'Utilisateur' => 'ROLE_UTILISATEUR',
+            'Référentiel' => 'ROLE_REFERENTIAL',
             'Collecte' => 'ROLE_COLLECTE',
             'Suivi' => 'ROLE_SUIVI',
             'Activité' => 'ROLE_ACTIVITY',
@@ -198,6 +200,7 @@ class UtilisateurCrudController extends AbstractCrudController
             $assignableRoles = [
                 self::ROLE_LABEL_AUCUN_ACCES => 'ROLE_NONE',
                 'Utilisateur' => 'ROLE_UTILISATEUR',
+                'Référentiel' => 'ROLE_REFERENTIAL',
                 'Collecte' => 'ROLE_COLLECTE',
                 'Suivi' => 'ROLE_SUIVI',
                 'Sécurité' => 'ROLE_SECURITY',

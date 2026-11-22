@@ -71,14 +71,17 @@ test.describe('11 — Module OWASP', () => {
 
     await test.step('3. Vérification du dashboard OWASP', async () => {
       // Résumé chiffré (toujours présent, même à 0).
-      await expect(page.locator('#nombre-faille-owasp')).toBeVisible();
+      await expect(page.locator('#js-owasp-total')).toBeVisible();
 
       // Tableau de synthèse par catégorie OWASP (a1..a10).
       await expect(page.locator('#a1')).toBeVisible();
       await expect(page.locator('#a10')).toBeVisible();
 
-      // Tableau détaillé des vulnérabilités, rempli en JS après collecte.
-      await expect(page.locator('#tbody')).toBeAttached();
+      // Tableau détaillé des vulnérabilités, rempli en JS après collecte
+      // (MODIF 22/11/2026 : #tbody renommé #js-tbody-owasp-details depuis
+      // la scission du tableau de détail en 2 — vulnérabilités OWASP vs
+      // Hotspots, cf. templates/owasp/index.html.twig).
+      await expect(page.locator('#js-tbody-owasp-details')).toBeAttached();
 
       // Chart.js : présence uniquement, contenu non inspectable (canvas).
       await expect(page.locator('#owasp-bar-chart-container canvas#owasp-bar-chart')).toBeVisible();

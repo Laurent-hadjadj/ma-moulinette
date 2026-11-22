@@ -65,20 +65,23 @@ avant toute persistance en base — jamais au rendu. La liste blanche se limite 
 
 `config/packages/security.yaml` définit la hiérarchie de rôles suivante :
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
-    NONE["ROLE_NONE<br/>(compte désactivé, aucun privilège)"]
-    U["ROLE_UTILISATEUR<br/>(base — toute page privée hors périmètre restreint)"]
-    U --> COLLECTE[ROLE_COLLECTE]
-    U --> SUIVI[ROLE_SUIVI]
-    U --> BATCH[ROLE_BATCH]
-    U --> ACTUATOR[ROLE_ACTUATOR]
-    U --> SECURITY[ROLE_SECURITY]
-    SECURITY --> ANALYTICS[ROLE_SECURITY_ANALYTICS]
-    U --> GESTIONNAIRE[ROLE_GESTIONNAIRE]
-    GESTIONNAIRE --> INTERNAL[ROLE_INTERNAL]
-    U --> ACTIVITY[ROLE_ACTIVITY]
+    NONE["ROLE_NONE (compte désactivé, aucun privilège)"]
+    U["ROLE_UTILISATEUR (base - toute page privée hors périmètre restreint)"]
+    U --> REFERENTIAL["ROLE_REFERENTIAL"]
+    U --> COLLECTE["ROLE_COLLECTE"]
+    U --> SUIVI["ROLE_SUIVI"]
+    U --> BATCH["ROLE_BATCH"]
+    U --> ACTUATOR["ROLE_ACTUATOR"]
+    U --> SECURITY["ROLE_SECURITY"]
+    U --> ACTIVITY["ROLE_ACTIVITY"]
+    U --> GESTIONNAIRE["ROLE_GESTIONNAIRE"]
+    GESTIONNAIRE --> INTERNAL["ROLE_INTERNAL"]
+    SECURITY --> SECURITY_ANALYTICS["ROLE_SECURITY_ANALYTICS"]
 ```
+<!-- markdownlint-enable MD046 -->
 
 !!! note "🧬 Hiérarchie à plat, pas en cascade"
     Contrairement à une hiérarchie classique où un rôle hériterait des droits d'un autre rôle métier, ici **tous les rôles fonctionnels héritent uniquement de `ROLE_UTILISATEUR`** — `ROLE_BATCH` n'inclut pas `ROLE_COLLECTE` par exemple. Seules deux chaînes existent : `ROLE_SECURITY_ANALYTICS → ROLE_SECURITY` et `ROLE_INTERNAL → ROLE_GESTIONNAIRE`.
@@ -126,8 +129,10 @@ Au-delà de `ROLE_UTILISATEUR` (accès de base à toute page privée), certaines
 | Page Activité SonarQube (affichage + actions) | `ROLE_ACTIVITY` | `ActivityController`, `ApiActivityController` |
 | Toutes les pages DependencyCheck | `ROLE_SECURITY` | `DependencyCheckPageController` (attribut de classe) |
 | Vue transverse multi-projets DependencyCheck | `ROLE_SECURITY_ANALYTICS` | `isAnalyticsMode()` (`DependencyCheckPageController`) |
-| Mise à jour de la liste des projets/profils (Accueil) | `ROLE_GESTIONNAIRE` | `AccueilController`, `ApiAccueilController` |
-| Gestion des portefeuilles (actions Ajax) | `ROLE_GESTIONNAIRE` | `PortefeuilleAjaxController` |
+| Toutes les pages npm audit | `ROLE_SECURITY` | `NpmAuditPageController` (attribut de classe) |
+| Vue cross-projets par paquet npm audit | `ROLE_SECURITY_ANALYTICS` | `NpmAuditPageController::paquets()` (attribut de méthode) |
+| Mise à jour du référentiel (projets/tags, Accueil) + Quality Profiles | `ROLE_REFERENTIAL` | `ApiAccueilController`, `ApiProfilController` |
+| Gestion des portefeuilles (actions Ajax) | `ROLE_BATCH` | `PortefeuilleAjaxController` |
 | Statistiques d'utilisation transverses | `ROLE_INTERNAL` | `StatistiqueController` |
 | Journal d'administration (logs applicatifs) | `ROLE_INTERNAL` | `AdminLogController` |
 | Journal des changements de rôle | `ROLE_INTERNAL` | `UserRoleLogController` |

@@ -5,13 +5,13 @@ Ce guide décrit comment installer le schéma PostgreSQL de Ma-Moulinette sur un
 !!! note "🪶 Contexte historique"
     Jusqu'en v1.6.0, l'application utilisait SQLite. La migration vers PostgreSQL (v2.0.0) a été un changement ponctuel, réalisé une fois ; ce guide décrit la procédure d'installation **actuelle** pour PostgreSQL, pas la procédure de migration SQLite → PostgreSQL elle-même (voir `CHANGELOG.md` pour cet historique).
 
-## 🧰 Prérequis
+## 1️⃣ 🧰 Prérequis
 
 - PostgreSQL 18 installé et accessible.
 - Extension PHP `pdo_pgsql` activée.
 - Droits suffisants pour créer un rôle et une base (utilisateur `postgres` ou équivalent superuser).
 
-## 🐳 Option 1 — Installation automatique (Docker)
+## 2️⃣ 🐳 Option 1 — Installation automatique (Docker)
 
 C'est le chemin recommandé, utilisé en développement comme en production (voir [Environnement d'exécution](../architecture/architecture-technique.md#-environnement-dexécution)).
 Au démarrage du conteneur `database-ma-moulinette`, `docker/scripts/postgresql/init_sql_files.sh` exécute **automatiquement** tous les fichiers `.sql` trouvés sous `migrations/POSTGRESQL/` (montés sur `/docker-entrypoint-initdb.d`), triés par ordre alphabétique de chemin — c'est pourquoi les dossiers sont numérotés (`00_init/`, `10_schema/`, `20_tables/`…).
@@ -22,7 +22,7 @@ Prérequis : définir `DB_USER_PASSWORD` (mot de passe applicatif, injecté dans
 docker compose -f docker/docker-compose.yml up -d database-ma-moulinette
 ```
 
-## 🖥️ Option 2 — Installation manuelle (`psql`)
+## 3️⃣ 🖥️ Option 2 — Installation manuelle (`psql`)
 
 Depuis le dossier `migrations/POSTGRESQL/`, exécuter le script maître qui enchaîne tous les sous-dossiers dans l'ordre :
 
@@ -49,7 +49,7 @@ Ce script exécute, dans l'ordre :
 - droits (`80_grants/`),
 - puis les fixtures de référence (`90_fixtures/`).
 
-## ⚙️ Configuration applicative
+## 4️⃣ ⚙️ Configuration applicative
 
 Dans `.env.local` (jamais dans `.env` versionné) :
 
@@ -57,7 +57,7 @@ Dans `.env.local` (jamais dans `.env` versionné) :
 DATABASE_URL="postgresql://<utilisateur>:<mot_de_passe>@<hôte>:<port>/<base>?serverVersion=18&charset=utf8"
 ```
 
-## ✅ Vérification
+## 5️⃣ ✅ Vérification
 
 ```bash
 psql -U db_user -d ma_moulinette -c "SELECT version, date_version FROM ma_moulinette.ma_moulinette ORDER BY id DESC LIMIT 1;"
@@ -65,7 +65,7 @@ psql -U db_user -d ma_moulinette -c "SELECT version, date_version FROM ma_moulin
 
 Doit retourner la dernière version applicative enregistrée dans les fixtures.
 
-## 🛠️ Commande de maintenance ponctuelle : migration `compte_rendu`
+## 6️⃣ 🛠️ Commande de maintenance ponctuelle : migration `compte_rendu`
 
 !!! WARNING "Attention"
     Le champ `compte_rendu` de `BatchExecutionJournal` a été migré de `TEXT` vers `BYTEA` gzippé (v2.0.0 — voir [Traitement](../back-office/traitement.md#-suivi-dexécution)).

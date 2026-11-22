@@ -1228,7 +1228,7 @@ $('.js-modifier-analyse').on('click', async function () {
     if (suivi === un) {
       const compteurTexte = $('#compteur-suivi').text(); // "(N/15)"
       const match = compteurTexte.match(/\((\d+)\/15\)/);
-      const current = match ? parseInt(match[1], 10) : zero;
+      const current = match ? Number(match[1]) : zero;
       if (current >= 15) {
         showMessage('warning', "La limite de 15 versions pour le suivi est atteinte.", null);
         $(`#${id}`).prop('checked', false);

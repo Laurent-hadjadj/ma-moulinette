@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\Zap;
@@ -55,7 +55,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function decode(string $rawBody, ?string $declaredContentType): ZapPayloadDecodeResult
     {
@@ -126,7 +126,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function detectFormat(string $body): string
     {
@@ -152,18 +152,55 @@ class ZapPayloadDecoder
      * [Description for probeGzipForTar]
      * Probe rapide : tar inside gzip ?
      *
+     * MODIF 2026-11-22 : `gzdecode($body, 512)` paraissait limiter la sortie
+     * à 512 octets, mais ce 2ᵉ paramètre est en réalité une taille de buffer
+     * zlib - si la taille décompressée RÉELLE le dépasse (le cas de tout
+     * tar.gz non trivial : un en-tête tar seul fait déjà 512 octets, avant
+     * même le contenu), l'appel échoue purement (`false`), jamais une
+     * troncature. Toute archive TGZ réelle était donc mal classée en simple
+     * gzip (bug confirmé en conditions réelles, trouvé en comblant un trou
+     * de couverture resté à 0% sur ce chemin). Remplacé par l'API
+     * d'inflation incrémentale (`inflate_add`), qui alimente le flux
+     * compressé par petits blocs et s'arrête dès que 263 octets décompressés
+     * sont obtenus (assez pour lire le magic "ustar" à l'offset 257) - sûr
+     * face à un zip-bomb (travail borné par construction), correct quelle
+     * que soit la taille réelle de l'archive.
+     *
      * @param string $body
      *
      * @return bool
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function probeGzipForTar(string $body): bool
     {
-        $decoded = @gzdecode($body, 512);
-        if ($decoded === false || strlen($decoded) < 263) {
+        try {
+            $context = inflate_init(ZLIB_ENCODING_GZIP);
+        } catch (\ValueError) {
+            return false;
+        }
+        if ($context === false) {
+            return false;
+        }
+
+        $decoded = '';
+        $chunkSize = 128;
+        $offset = 0;
+        $bodyLength = strlen($body);
+
+        while ($offset < $bodyLength && strlen($decoded) < 263) {
+            $chunk = substr($body, $offset, $chunkSize);
+            $offset += $chunkSize;
+            $piece = @inflate_add($context, $chunk, ZLIB_SYNC_FLUSH);
+            if ($piece === false) {
+                return false;
+            }
+            $decoded .= $piece;
+        }
+
+        if (strlen($decoded) < 263) {
             return false;
         }
         return substr($decoded, 257, 5) === 'ustar';
@@ -181,7 +218,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function assertFormatMatchesContentType(string $detected, ?string $declared): void
     {
@@ -212,7 +249,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function decodeGzip(string $body): string
     {
@@ -232,7 +269,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function decodeZip(string $body): string
     {
@@ -282,7 +319,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function decodeTgz(string $body): string
     {
@@ -330,7 +367,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function readStreamWithLimit($stream, int $limit): string
     {
@@ -362,7 +399,7 @@ class ZapPayloadDecoder
      *
      * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function assertZapReportSchema(array $parsed): void
     {

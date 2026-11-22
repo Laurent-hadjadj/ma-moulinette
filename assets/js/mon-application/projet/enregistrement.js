@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 
@@ -133,7 +133,7 @@ export const enregistrement = async function (maven_key) {
      -> envoie null au backend, persisté tel quel dans historique.logger_breakdown. */
   let loggerBreakdown = null;
   const jsAfficheLoggerDetail = document.getElementById('js-affiche-logger-detail');
-  if (jsAfficheLoggerDetail && jsAfficheLoggerDetail.dataset.loggerBreakdown) {
+  if (jsAfficheLoggerDetail?.dataset.loggerBreakdown) {
     try {
       loggerBreakdown = JSON.parse(jsAfficheLoggerDetail.dataset.loggerBreakdown);
     } catch (e) {
@@ -148,7 +148,7 @@ export const enregistrement = async function (maven_key) {
    * historique.actuator_info. */
   let actuatorInfo = [];
   const jsActuatorPastille = document.getElementById('js-actuator-pastille');
-  if (jsActuatorPastille && jsActuatorPastille.dataset.actuatorJson) {
+  if (jsActuatorPastille?.dataset.actuatorJson) {
     try {
       actuatorInfo = JSON.parse(jsActuatorPastille.dataset.actuatorJson);
     } catch (e) {
@@ -163,7 +163,7 @@ export const enregistrement = async function (maven_key) {
    * lecture DOM, le payload porte ensuite les valeurs vers le backend. */
   let rciMesures = {};
   const jsRciAlertStatus = document.getElementById('js-rci-alert-status');
-  if (jsRciAlertStatus && jsRciAlertStatus.dataset.rciMesuresJson) {
+  if (jsRciAlertStatus?.dataset.rciMesuresJson) {
     try {
       rciMesures = JSON.parse(jsRciAlertStatus.dataset.rciMesuresJson) || {};
     } catch (e) {
@@ -176,7 +176,7 @@ export const enregistrement = async function (maven_key) {
    * même pattern que rciMesures.*/
   let accessibilityMesures = {};
   const jsAccessibilityAnomalies = document.getElementById('js-accessibility-anomalies');
-  if (jsAccessibilityAnomalies && jsAccessibilityAnomalies.dataset.accessibilityMesuresJson) {
+  if (jsAccessibilityAnomalies?.dataset.accessibilityMesuresJson) {
     try {
       accessibilityMesures = JSON.parse(jsAccessibilityAnomalies.dataset.accessibilityMesuresJson) || {};
     } catch (e) {
@@ -265,7 +265,18 @@ export const enregistrement = async function (maven_key) {
   /** On récupère les hotspots. */
   const noteHotspot = $('#js-note-menace-potentielle').text().trim();
 
-  /** On récupère les hotspot par sévérité */
+  /** On récupère les hotspot par sévérité.
+   *  MODIF 2026-11-22 : lecture défensive - ces 6 cellules ne sont injectées
+   *  dans le DOM par peinture.js (afficheMenacePotentielle) qu'à l'ouverture
+   *  de la modale de détail des Hotspots, jamais systématiquement après un
+   *  simple clic "Afficher" - contrairement à #js-menace-potentielle-totale
+   *  (présent en statique dans le gabarit Twig de cette modale, lui est
+   *  toujours là). Sans ce garde-fou, enregistrement() plantait avec
+   *  "Cannot read properties of null (reading 'dataset')" dès qu'un
+   *  utilisateur enregistrait sans avoir ouvert cette modale au préalable -
+   *  cas normal et fréquent - laissant l'enregistrement échouer
+   *  silencieusement (aucun appel réseau, aucun message affiché). Confirmé
+   *  en conditions réelles (test e2e, page.on('pageerror')). */
   const t24 = document.getElementById('js-menace-potentielle-to-review-high');
   const t25 = document.getElementById('js-menace-potentielle-to-review-medium');
   const t26 = document.getElementById('js-menace-potentielle-to-review-low');
@@ -273,13 +284,13 @@ export const enregistrement = async function (maven_key) {
   const t25b = document.getElementById('js-menace-potentielle-reviewed-medium');
   const t26b = document.getElementById('js-menace-potentielle-reviewed-low');
   const t27 = document.getElementById('js-menace-potentielle-totale');
-  const menacePotentielleToReviewHigh = t24.dataset.menacePotentielleToReviewHigh;
-  const menacePotentielleToReviewMedium = t25.dataset.menacePotentielleToReviewMedium;
-  const menacePotentielleToReviewLow = t26.dataset.menacePotentielleToReviewLow;
-  const menacePotentielleReviewedHigh = t24b.dataset.menacePotentielleReviewedHigh;
-  const menacePotentielleReviewedMedium = t25b.dataset.menacePotentielleReviewedMedium;
-  const menacePotentielleReviewedLow = t26b.dataset.menacePotentielleReviewedLow;
-  const menacePotentielleTotale = t27.dataset.menacePotentielleTotale;
+  const menacePotentielleToReviewHigh = t24 ? t24.dataset.menacePotentielleToReviewHigh : 0;
+  const menacePotentielleToReviewMedium = t25 ? t25.dataset.menacePotentielleToReviewMedium : 0;
+  const menacePotentielleToReviewLow = t26 ? t26.dataset.menacePotentielleToReviewLow : 0;
+  const menacePotentielleReviewedHigh = t24b ? t24b.dataset.menacePotentielleReviewedHigh : 0;
+  const menacePotentielleReviewedMedium = t25b ? t25b.dataset.menacePotentielleReviewedMedium : 0;
+  const menacePotentielleReviewedLow = t26b ? t26b.dataset.menacePotentielleReviewedLow : 0;
+  const menacePotentielleTotale = t27 ? t27.dataset.menacePotentielleTotale : 0;
 
   const t28 = document.getElementById('js-bug-blocker');
   const t29 = document.getElementById('js-bug-critical');
@@ -320,7 +331,7 @@ export const enregistrement = async function (maven_key) {
    *  aux clés SonarQube dans le payload PUT. */
   const data =
   {
-    ...(window.peintureData || {}),
+    ...window.peintureData,
     maven_key, 'project_name': project_name, 'analyse_key': analyseKey,
     'version_release': versionRelease, 'version_snapshot': versionSnapshot,
     'version_autre': versionAutre, version, 'date_version': dateVersion,

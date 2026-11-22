@@ -1,0 +1,117 @@
+{% set title = 'npm audit' %}
+{% set description = app_name ~ ' - Liste des paquets npm scannes.' %}
+{% set bottom = 'footer-fixed' %}
+
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {% block importmap %}
+        {{ importmap('npm-audit') }}
+        {% endblock %}
+    </head>
+
+    <body>
+        {{ include('header.html.twig') }}
+
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous etes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('projet', {}) }}">Projet</a></li>
+                    <li aria-current="page">npm audit</li>
+                </ol>
+            </nav>
+        </header>
+
+        {{ include('_message.html.twig') }}
+
+        <main class="grid-container margin-bottom-2">
+            <h2 class="h4 claire-hand">
+                <span aria-hidden="true">📦</span> npm audit &mdash; Paquets scannés
+            </h2>
+
+            {% if is_granted('ROLE_SECURITY_ANALYTICS') %}
+            <div class="cell shrink margin-bottom-1">
+                <a
+                    id="bouton-ouvrir-npm-audit-paquets"
+                    href="{{ path('npm_audit_paquets') }}"
+                    class="button open-sans focus-dark-light"
+                >
+                    <span aria-hidden="true">🌐</span> Vue cross-projets par paquet
+                </a>
+            </div>
+            {% endif %}
+
+            {% if scans is empty %}
+            <div class="callout alert-callout-border info">
+                <p><span aria-hidden="true">ℹ️</span> Aucun paquet n'a encore été scanné.</p>
+                <p>Les rapports npm audit sont postés par la CI sur <code>POST
+                        /api/secure/npm-audit/upload</code>.</p>
+            </div>
+            {% else %}
+            <div class="cell table-scroll">
+                <table class="open-sans">
+                    <thead>
+                        <tr>
+                            <th>Projet</th>
+                            <th>Version</th>
+                            <th class="text-right">CRITICAL</th>
+                            <th class="text-right">HIGH</th>
+                            <th class="text-right">MODERATE</th>
+                            <th class="text-right">LOW</th>
+                            <th>Scan date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in scans %}
+                        <tr>
+                            <td><strong>{{ p.project_artifact }}</strong> <span
+                                    class="text-muted">({{ p.project_group }})</span></td>
+                            <td>{{ p.project_version }}</td>
+                            <td class="text-right">
+                                {% if p.vuln_count_critical > 0 %}
+                                <span class="badge-count critical">{{ p.vuln_count_critical }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if p.vuln_count_high > 0 %}
+                                <span class="badge-count high">{{ p.vuln_count_high }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if p.vuln_count_moderate > 0 %}
+                                <span class="badge-count moderate">{{ p.vuln_count_moderate }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if p.vuln_count_low > 0 %}
+                                <span class="badge-count low">{{ p.vuln_count_low }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ p.scan_date|date('Y-m-d H:i') }}</td>
+                            <td>
+                                <a href="{{ path('npm_audit_projet', {
+                                                'group': p.project_group,
+                                                'artifact': p.project_artifact,
+                                                'version': p.project_version
+                                                }) }}" class="button tiny hollow open-sans focus-dark-light">
+                                    Detail
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            <div class="margin-bottom-4" aria-hidden="true">&nbsp;</div>
+        </main>
+
+        {{ include('footer.html.twig') }}
+    </body>
+
+</html>

@@ -97,9 +97,16 @@ class ApiProfilControllerTest extends TestCase
 
     /* ============ listeQualityProfiles ============ */
 
+    /**
+     * MODIF 2026-11-19 : précise le rôle vérifié (ROLE_REFERENTIAL, pas un
+     * autre rôle par accident) — jusqu'ici seul le résultat (true/false)
+     * était mocké, sans contraindre l'argument de isGranted().
+     */
     public function testListeQualityProfilesReturns403WithoutRole(): void
     {
-        $this->security->method('isGranted')->willReturn(false);
+        $this->security->expects($this->once())->method('isGranted')
+            ->with('ROLE_REFERENTIAL')
+            ->willReturn(false);
 
         $response = $this->controller->listeQualityProfiles();
         $data = json_decode((string) $response->getContent(), true);

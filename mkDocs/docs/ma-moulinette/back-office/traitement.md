@@ -2,12 +2,13 @@
 
 Un **traitement** (entité `Batch`) définit la configuration d'une collecte récurrente ou ponctuelle sur un [portefeuille](portefeuille.md) de projets. Cette page couvre à la fois sa **configuration** (CRUD back-office) et son **suivi d'exécution** (page de monitoring).
 
-## ⚙️ Configuration (CRUD back-office)
+## 1️⃣ ⚙️ Configuration (CRUD back-office)
 
 CRUD EasyAdmin (`Admin\BatchCrudController`).
 
 ### 🗺️ Cartographie — cycle de vie
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart TD
     Home["🏠 /admin<br/>carte Traitements<br/>ROLE_BATCH"] --> Index["📋 Liste des traitements"]
@@ -26,6 +27,7 @@ flowchart TD
     DoDelete --> Cascade[("🗑️ batch_traitement<br/>+ batch_execution<br/>(par traitement_id)")]
     Cascade --> RemoveBatch[("🗑️ suppression de batch")]
 ```
+<!-- markdownlint-enable MD046 -->
 
 ### 🧭 Chemin de fer
 
@@ -71,13 +73,16 @@ Formulaire (Créer / Modifier)
     `BatchCrudController` n'imposait aucune restriction de rôle côté serveur — seule la carte de la page d'accueil du back-office masquait l'accès (`is_granted('ROLE_BATCH')`).
     **Corrigé** par l'ajout de `#[IsGranted('ROLE_BATCH', statusCode: 403)]` sur le contrôleur (même correctif appliqué à [Portefeuille](portefeuille.md)) — voir [Gestion des utilisateurs](utilisateur.md) et [Gestion de la sécurité](../developpement/securite.md) pour le détail complet de ce renforcement.
 
-## 📊 Suivi d'exécution
+## 2️⃣ 📊 Suivi d'exécution
 
-Page accessible via `/traitement/suivi` (rôle `ROLE_BATCH` ou `ROLE_GESTIONNAIRE`), présentant un tableau des exécutions avec identifiant, batch/portefeuille associé, mode (automatique/manuel), utilisateur déclencheur, dates de début/fin, durée, statut (`EN_COURS`/`SUCCES`/`ECHEC`/`PARTIEL`), nombre de projets traités/en succès/en erreur, et un bouton **Journal** ouvrant le compte rendu détaillé (décompressé à la volée depuis la colonne `compte_rendu`, stockée en `BYTEA` gzippé).
+Page accessible via `/traitement/suivi` (rôle `ROLE_BATCH` ou `ROLE_GESTIONNAIRE`), présentant un tableau des exécutions avec identifiant, batch/portefeuille associé, mode (automatique/manuel), utilisateur déclencheur, dates de début/fin, durée, statut (`EN_COURS`/`SUCCES`/`ECHEC`/`PARTIEL`), nombre de projets traités/en succès/en erreur, trois boutons par ligne :
+
+- **Journal** : ouvre le compte rendu détaillé (décompressé à la volée depuis la colonne `compte_rendu`, stockée en `BYTEA` gzippé).
+- **Afficher le rapport** / **Télécharger le PDF** : rendent `rapport-colleteuse.html.twig` via `rapport_execution_pdf` (`PdfExportService`). Inactifs (`href="#"`) pour un traitement jamais exécuté.
 
 Filtres disponibles : par portefeuille, par traitement, par statut, par mode, par plage de dates.
 
-## 🔀 Déclenchement manuel vs automatique
+## 3️⃣ 🔀 Déclenchement manuel vs automatique
 
 !!! note "🧵 Ni Messenger, ni Scheduler Symfony natif"
     Contrairement à ce qu'on pourrait attendre, **aucun des deux modes n'utilise Symfony Messenger ni le Scheduler natif** (`src/Schedule.php` est un squelette vide, remplacé par du cron externe).
@@ -88,7 +93,7 @@ Filtres disponibles : par portefeuille, par traitement, par statut, par mode, pa
 !!! caution "🔐 Jeton `API_CLIENT_TOKEN` du mode automatique"
     Si `API_CLIENT_TOKEN` n'est pas configuré côté serveur (vide ou `changeme`), les routes `/api/public/traitement/*` répondent **503** (échec fermé) au lieu d'accepter n'importe quel appel ; un jeton faux répond **403**. Détail : [Gestion de la sécurité](../developpement/securite.md).
 
-## 📚 Pour aller plus loin
+## 4️⃣ 📚 Pour aller plus loin
 
 - [Portefeuilles](portefeuille.md) : prérequis à la création d'un traitement.
 - [Profiling](profiling.md) : mesure de performance des exécutions batch.

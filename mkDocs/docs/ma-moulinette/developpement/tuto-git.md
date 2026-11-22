@@ -1,10 +1,10 @@
 # 🌿 Tutoriel d'utilisation de Git sur le terminal
 
-## ✅ Prérequis
+## 1️⃣ ✅ Prérequis
 
 Avant de démarrer le premier sprint, vérifiez que toutes les branches partent du même point.
 
-## 📝 Les premières modifications
+## 2️⃣ 📝 Les premières modifications
 
 Vous avez modifié des fichiers sur votre branche et vous voulez garder une trace claire de votre avancement : il faut créer un commit.
 
@@ -71,7 +71,7 @@ git push
 
 Cette commande va envoyer tous les commits passés sur le dépôt distant (GitHub/GitLab).
 
-## 🔀 La fusion des travaux communs
+## 3️⃣ 🔀 La fusion des travaux communs
 
 ### Mettre à jour la branche develop
 
@@ -125,7 +125,7 @@ git checkout develop
 git merge [votre branche]
 ```
 
-## 🕰️ Commandes pratiques
+## 4️⃣ 🕰️ Commandes pratiques
 
 ```bash
 git log

@@ -76,6 +76,7 @@ class PdfExportService
             ];
         })->toArray();
 
+
         $batchData = [
             'id' => $batchExecution->getId(),
             'nomTraitement' => $batchExecution->getNomTraitement(),
@@ -96,7 +97,7 @@ class PdfExportService
 
         $dompdf = new Dompdf($options);
         // --- Génération du HTML ---
-        $html = $this->twig->render('/rapport/rapport-zurb-foundation.html.twig', [
+        $html = $this->twig->render('/rapport/rapport-colleteuse.html.twig', [
             'batch' => $batchData,
             'logoBase64' => $this->logoBase64(),
             'document_type' => $document_type ?? self::$confidentiel,
@@ -154,7 +155,7 @@ class PdfExportService
     }
 
     /**
-     * Genere le rapport PDF de la page Suivi.
+     * Génère le rapport PDF de la page Suivi.
      *
      * MODIF 2026-05-11 : refonte sur le modèle
      * generateDcPdf. DomPDF ne supporte pas le changement d'orientation
@@ -963,6 +964,209 @@ class PdfExportService
         });
 
         return $dompdf->output();
+    }
+
+    /**
+     * Génère le rapport PDF npm audit — orientation mixte (portrait puis
+     * paysage en dernier, pas de retour en portrait après : contrairement à
+     * generateDcPdf, le détail paysage est la dernière partie du document,
+     * jamais suivi d'une autre section). 2 sous-PDF Dompdf fusionnés via
+     * FPDI, même mécanisme que generateDcPdf.
+     *
+     * Sous-PDF 1 (portrait) : page de garde + Résumé + Tendance + Focus
+     * stratégique (3 sections séparées par un saut de page CSS, pas 3
+     * sous-PDF distincts — aucune section paysage ne s'intercale entre
+     * elles, inutile de les fusionner séparément).
+     * Sous-PDF 2 (paysage) : détail par avis de sécurité, généré seulement
+     * si des findings existent.
+     *
+     * @param array<string, mixed> $data
+     *
+     * @return string
+     */
+    public function generateNpmAuditPdf(array $data, ?string $document_type = null, ?bool $watermarkOverride = null): string
+    {
+        $documentType = $document_type ?? self::$confidentiel;
+
+        $mode = strtolower((string) $this->params->get('rapport.pdf.watermark.mode'));
+        if (!in_array($mode, ['always', 'confidential', 'never'], true)) {
+            $mode = 'confidential';
+        }
+        $isConfidential = stripos((string) $documentType, 'confidentiel') !== false;
+        $watermarkEnabled = $watermarkOverride ?? match ($mode) {
+            'always' => true,
+            'never' => false,
+            default => $isConfidential,
+        };
+        $watermarkText = strtoupper($documentType);
+
+        $pdfPart1 = $this->renderNpmAuditSubPdf(
+            'rapport/npm-audit/_part1-portrait.html.twig', $data, 'portrait'
+        );
+        $pdfPart2 = !empty($data['findings'])
+            ? $this->renderNpmAuditSubPdf(
+                'rapport/npm-audit/_part2-landscape.html.twig', $data, 'landscape'
+            )
+            : null;
+
+        $parts = [$pdfPart1];
+        if ($pdfPart2 !== null) { $parts[] = $pdfPart2; }
+
+        return $this->mergeNpmAuditSubPdfs($parts, $data, $documentType, $watermarkEnabled, $watermarkText);
+    }
+
+    /**
+     * Génère un sous-PDF Dompdf a partir d'un template Twig + une
+     * orientation. Pas de footer (ajouté après la fusion FPDI pour une
+     * numérotation de pages continue) — même pattern que renderDcSubPdf.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function renderNpmAuditSubPdf(string $template, array $data, string $orientation): string
+    {
+        $options = new Options();
+        $options->set('defaultFont', self::$police);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+
+        $html = $this->twig->render($template, [
+            'data'       => $data,
+            'logoBase64' => $this->logoBase64(),
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', $orientation);
+        $dompdf->render();
+
+        return $dompdf->output();
+    }
+
+    /**
+     * Fusionne les sous-PDF npm audit via FPDI en préservant l'orientation
+     * et la taille de chaque page source. Même mécanisme que
+     * mergeDcSubPdfs (dupliqué plutôt que partagé — convention du projet,
+     * une classe anonyme FPDI par type de rapport).
+     *
+     * @param string[] $pdfBinaries
+     * @param array<string, mixed> $data
+     */
+    private function mergeNpmAuditSubPdfs(
+        array $pdfBinaries,
+        array $data,
+        string $documentType,
+        bool $watermarkEnabled = false,
+        string $watermarkText = '',
+    ): string {
+        $merger = new class extends Fpdi {
+            public string $npmAuditDocumentType = '';
+            public string $npmAuditDateGenerated = '';
+            private float $angle = 0;
+
+            public function Footer(): void
+            {
+                $this->SetY(-15);
+                $this->SetDrawColor(0, 68, 91);
+                $this->Line(15, $this->GetY(), $this->GetPageWidth() - 15, $this->GetY());
+                $this->SetY(-12);
+                $this->SetFont('Helvetica', '', 9);
+                $this->SetTextColor(0, 68, 91);
+                $this->SetX(15);
+                $this->Cell(60, 6, $this->npmAuditDateGenerated, 0, 0, 'L');
+                $this->SetX(0);
+                $this->Cell($this->GetPageWidth(), 6, $this->npmAuditDocumentType, 0, 0, 'C');
+                $this->SetX($this->GetPageWidth() - 75);
+                $this->Cell(60, 6, 'Page ' . $this->PageNo() . ' / {nb}', 0, 0, 'R');
+            }
+
+            public function Rotate(float $angle, ?float $x = null, ?float $y = null): void
+            {
+                if ($x === null) { $x = $this->x; }
+                if ($y === null) { $y = $this->y; }
+                if ($this->angle != 0) { $this->_out('Q'); }
+                $this->angle = $angle;
+                if ($angle != 0) {
+                    $angle *= M_PI / 180;
+                    $c  = cos($angle);
+                    $s  = sin($angle);
+                    $cx = $x * $this->k;
+                    $cy = ($this->h - $y) * $this->k;
+                    $this->_out(sprintf(
+                        'q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',
+                        $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy
+                    ));
+                }
+            }
+
+            protected function _endpage(): void
+            {
+                if ($this->angle != 0) {
+                    $this->angle = 0;
+                    $this->_out('Q');
+                }
+                parent::_endpage();
+            }
+
+            public function DrawNpmAuditWatermark(string $text): void
+            {
+                if ($text === '') { return; }
+                $this->SetFont('Helvetica', 'B', 50);
+                $this->SetTextColor(244, 244, 244);
+                $w = $this->GetPageWidth();
+                $h = $this->GetPageHeight();
+                $cx = $w / 2;
+                $cy = $h / 2;
+                $textWidth = $this->GetStringWidth($text);
+                $this->Rotate(30, $cx, $cy);
+                $this->Text($cx - $textWidth / 2, $cy + 8, $text);
+                $this->Rotate(0);
+                $this->SetTextColor(0, 68, 91);
+            }
+        };
+        $merger->npmAuditDocumentType  = $this->toLatin1($documentType);
+        $merger->npmAuditDateGenerated = $this->toLatin1('Génère le ' . date(self::$dateFormat));
+        $merger->AliasNbPages();
+        $merger->setAutoPageBreak(false);
+
+        $projectLabel = sprintf('%s:%s:%s',
+            $data['project_group'] ?? '?',
+            $data['project_artifact'] ?? '?',
+            $data['project_version'] ?? '?'
+        );
+        $merger->SetTitle($this->toLatin1('Rapport npm audit - ' . $projectLabel));
+        $merger->SetAuthor('Ma-Moulinette');
+        $merger->SetSubject($this->toLatin1('Rapport vulnerabilites npm audit'));
+        $merger->SetKeywords('npm audit, GHSA, CVSS, CWE');
+        $merger->SetCreator('Ma-Moulinette');
+
+        $tmpFiles = [];
+        try {
+            foreach ($pdfBinaries as $bin) {
+                $tmp = tempnam(sys_get_temp_dir(), 'npmaudit-fpdi-') . '.pdf';
+                file_put_contents($tmp, $bin);
+                $tmpFiles[] = $tmp;
+            }
+
+            $latinWatermark = $watermarkEnabled ? $this->toLatin1($watermarkText) : '';
+            foreach ($tmpFiles as $tmp) {
+                $pageCount = $merger->setSourceFile($tmp);
+                for ($p = 1; $p <= $pageCount; $p++) {
+                    $tplId = $merger->importPage($p);
+                    $size  = $merger->getTemplateSize($tplId);
+                    assert(is_array($size));
+                    $merger->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                    if ($watermarkEnabled && $merger->PageNo() > 1) {
+                        $merger->DrawNpmAuditWatermark($latinWatermark);
+                    }
+                    $merger->useTemplate($tplId);
+                }
+            }
+
+            return $merger->Output('S');
+        } finally {
+            foreach ($tmpFiles as $tmp) { @unlink($tmp); }
+        }
     }
 
     /**

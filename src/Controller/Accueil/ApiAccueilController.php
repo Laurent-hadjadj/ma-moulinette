@@ -95,8 +95,9 @@ class ApiAccueilController extends AbstractController
     }
 
     /**
-     * [Description for projetListe]
+     * [Description for accueilProjetListe]
      * Récupération de la liste des projets.
+     * Demandé (#bouton-mise-a-jour-referential).
      * http://{url}/api/components/search_projects?ps=500
      *
      * @return JsonResponse
@@ -105,8 +106,8 @@ class ApiAccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    #[Route('/api/secure/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_GESTIONNAIRE'])]
-    #[IsGranted('ROLE_GESTIONNAIRE')]
+    #[Route('/api/secure/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_REFERENTIAL'])]
+    #[IsGranted('ROLE_REFERENTIAL')]
     public function accueilProjetListe(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/projet");
@@ -252,15 +253,16 @@ class ApiAccueilController extends AbstractController
 
     /**
      * [Description for accueilProjetTags]
-     *
+     * Récupération du nombre de tags des projets.
+     * Demandé (#bouton-mise-a-jour-referential).
      * @return JsonResponse
      *
      * Created at: 29/07/2024 20:51:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    #[Route('/api/secure/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_GESTIONNAIRE'])]
-    #[IsGranted('ROLE_GESTIONNAIRE')]
+    #[Route('/api/secure/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_REFERENTIAL'])]
+    #[IsGranted('ROLE_REFERENTIAL')]
     public function accueilProjetTags(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/tags");

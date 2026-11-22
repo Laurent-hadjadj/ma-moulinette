@@ -18,6 +18,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
 # 2024-12-10 - activation de l'extension fileinfo (php.ini + php-ext)
+# 2026-11-15 - fileinfo retiré d'ici (docker-php-ext-install et activation dans php.ini) : elle est déjà compilée dans l'image
+#              php officielle. Le second exemplaire provoquait « PHP Warning: Module "fileinfo" is already loaded »
+#              à chaque commande PHP.
 # 2025-03-27 - modification de la taille des upload de 4mo à 8mo pour les documents PDF ;
 # 2025-06-23 - ajout de l'extension gd ;
 # 2025-11-30 - mise à jour de realpath_cache_size, realpath_cache_ttl, max_execution_time, session.cookie_secure, session.cookie_httponly
@@ -38,7 +41,7 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     # LDAP).
     && apt-get install -y libldap2-dev \
     && docker-php-ext-configure ldap \
-    && docker-php-ext-install -j$(nproc) intl zip xsl calendar pdo_sqlite pdo_pgsql fileinfo ldap\
+    && docker-php-ext-install -j$(nproc) intl zip xsl calendar pdo_sqlite pdo_pgsql ldap\
     && apt autoremove -y \
     && apt-get purge -y libicu-dev libonig-dev libzip-dev libxslt-dev libfreetype-dev \
                 libjpeg62-turbo-dev libpng-dev libldap2-dev \
@@ -46,7 +49,6 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && rm -rf /tmp/pear /var/lib/apt/lists/*
 
 RUN sed -i -r "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" "$PHP_INI_DIR/php.ini" \
-    && sed -i -r "s/;extension=fileinfo/extension=fileinfo/g" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/expose_php = On/expose_php = Off/g" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/post_max_size = 8M/post_max_size = 16M/g" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/upload_max_filesize = 2M/upload_max_filesize = 8M/g" "$PHP_INI_DIR/php.ini" \

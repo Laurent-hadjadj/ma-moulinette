@@ -134,6 +134,13 @@ test.describe('21 — Traitement & Profiling', () => {
         { timeout: 90_000 }
       );
       await humanButton.click();
+
+      // Spinner affiché dès le clic (classe .blink), avant même la réponse
+      // serveur — régression corrigée le 21/11/2026 : la classe n'était
+      // jamais ajoutée (seulement retirée), aucun retour visuel pendant
+      // que le traitement tournait.
+      await expect(humanButton).toHaveClass(/blink/);
+
       const response = await startResponse;
       expect(response.status()).toBe(200);
 
@@ -141,6 +148,12 @@ test.describe('21 — Traitement & Profiling', () => {
       await expect(page.locator('#message-box')).toContainText(
         `La collecte pour les projets de tetris-game est terminée`
       );
+
+      // Spinner retiré une fois le traitement terminé — régression corrigée
+      // le 21/11/2026 : le verrou anti-rejeu (suppressClick) restait bloqué
+      // à `true` dans certains chemins de sortie, désactivant le bouton
+      // définitivement jusqu'au rechargement de la page.
+      await expect(humanButton).not.toHaveClass(/blink/);
     });
 
     await test.step("5. Modale Information — détails du traitement", async () => {
@@ -182,6 +195,32 @@ test.describe('21 — Traitement & Profiling', () => {
       await expect(journalModal).toBeHidden();
       await page.locator('#bouton-fermer-information').click();
       await expect(page.locator('#modal-traitement-information')).toBeHidden();
+    });
+
+    /**
+     * Régression 2026-11-19 : « Afficher le rapport »/« Voir le journal »/
+     * « Télécharger le PDF » renvoyaient une 500 sur tout traitement réel —
+     * un traitement_id ULID était traité comme un simple string par les
+     * repositories Batch. « Voir le journal » est déjà exercé bout-en-bout à
+     * l'étape 6 ci-dessus ; cette étape couvre les 2 liens restants, jusqu'ici
+     * sans aucune couverture Unit/Integration/e2e (ce qui avait laissé passer
+     * le bug). Vérification par requête HTTP directe (mêmes cookies de
+     * session que la page) plutôt que par navigation complète, pour ne pas
+     * quitter la page de suivi en cours de test.
+     */
+    await test.step('6bis. Boutons « Afficher le rapport » et « Télécharger le PDF »', async () => {
+      const showHref = await page.locator('#outil-1 .pdf-view').getAttribute('href');
+      const downloadHref = await page.locator('#outil-1 .pdf-download').getAttribute('href');
+      expect(showHref).not.toBe('#');
+      expect(downloadHref).not.toBe('#');
+
+      const showResponse = await page.request.get(showHref!);
+      expect(showResponse.status()).toBe(200);
+      expect(showResponse.headers()['content-type']).toContain('application/pdf');
+
+      const downloadResponse = await page.request.get(downloadHref!);
+      expect(downloadResponse.status()).toBe(200);
+      expect(downloadResponse.headers()['content-type']).toContain('application/pdf');
     });
 
     await test.step('7. Dashboard Profiling — consulte les données produites par le traitement', async () => {

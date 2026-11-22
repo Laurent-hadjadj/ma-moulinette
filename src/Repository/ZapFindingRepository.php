@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -40,7 +40,7 @@ class ZapFindingRepository extends ServiceEntityRepository
      *
      * Created at: 13/10/2026 21:06:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -59,25 +59,5 @@ class ZapFindingRepository extends ServiceEntityRepository
         }
 
         return ['code' => 500, 'erreur' => $message];
-    }
-
-    /**
-     * [Description for findByScan]
-     *
-     * @param int $scanId
-     *
-     * @return ZapFinding[]
-     *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function findByScan(int $scanId): array
-    {
-        return $this->createQueryBuilder('f')
-            ->where('f.scan = :scanId')
-            ->setParameter('scanId', $scanId)
-            ->getQuery()
-            ->getResult();
     }
 }

@@ -39,15 +39,15 @@ import { modalSafe } from '../../common/safeModal.js';
 import { http_200, http_400, http_401, http_403, http_404, http_500, content_type, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
 
 let token;
-import("../../common/secrets.local.js").then((module) => {
+try {
+  const module = await import("../../common/secrets.local.js");
   token = module.token;
-}).catch((error) => {
-      const trace = prepareTechnicalDetails(error);
-      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
-    return;
-  });
+} catch (error) {
+  const trace = prepareTechnicalDetails(error);
+  const message = "Le module n'a pas été chargé correctement (Erreur 500).";
+  showMessage('critical', message, trace);
+  sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
+}
 
 import {encode} from '../../common/encode.js';
 import {Chart, registerables} from 'chart.js';
@@ -300,7 +300,7 @@ $('#js-container-langage').on('click', '.js-bouton-autre-profil', (e) => {
   const language = elm.dataset.language;
 
   // Appel de l'API et mise à jour de la modale
-  autreProfil(language);
+  void autreProfil(language);
 
   // Accessibilité : focus automatique sur le titre de la modale
   setTimeout(() => {
@@ -435,9 +435,11 @@ $('#bouton-affiche-graphique').on('click', async () => {
 
     // Cas sans données : on affiche le message HTML
     if (hasNoData) {
-      if (canvas) canvas.style.display = 'none';
-      if (emptyMessage) emptyMessage.style.display = 'flex';
-          return;
+      if (canvas) { canvas.style.display = 'none'; }
+      if (emptyMessage) {
+        emptyMessage.style.display = 'flex';
+        return;
+      }
     }
 
   // Cas avec données : on cache le message HTML
@@ -476,7 +478,7 @@ $('.js-profil-information').on('click', (e) => {
   }
   /** on créé un hash avec la méthode reduce() comme clé de salt */
   const salt = language.split('').reduce((hash, char) => {
-    return (char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash) | 0;
+    return Math.trunc(char.codePointAt(0) + (hash << 6) + (hash << 16) - hash);
   }, 0);
 
   /** on créé un token pour encoder les paramètres */
@@ -490,5 +492,5 @@ $('.js-profil-information').on('click', (e) => {
  * Appel la fonction de mise à jour de la liste des référentiels
  */
 $('#bouton-refresh-profil').on('click', ()=>{
-  refreshQuality();
+  void refreshQuality();
 });

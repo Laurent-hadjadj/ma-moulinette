@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  *
  */
 
@@ -298,15 +298,23 @@ tbody tr:nth-child(even) {
   transform: translateY(0);
 }
 
-/* clignotant */
+/* Spinner du bouton de lancement manuel (icône i-am-human) — pulsation
+ * douce pendant que le clic est pris en compte/le traitement démarre.
+ * MODIF 2026-11-21 : renommé en @keyframes blinkIcon (collision de nom
+ * avec @keyframes blink ci-dessus, utilisée par .bulle-retry — en CSS les
+ * noms de @keyframes sont globaux, la déclaration la plus basse du fichier
+ * gagnait pour LES DEUX usages, cassant silencieusement l'animation de
+ * .bulle-retry qui faisait un visibility toggle au lieu d'un fondu). Classe
+ * ajoutée/retirée depuis index-batch.js, jamais posée côté Twig.
+ */
 .blink {
-  animation: blink 1.5s steps(5, start) infinite;
+  animation: blinkIcon 1s ease-in-out infinite;
   fill: #c46e27;
 }
 
-@keyframes blink {
-  from { visibility: visible; }
-  to { visibility: hidden; }
+@keyframes blinkIcon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
 /* ==== SECTION INFORMATIONS ==== */
@@ -339,6 +347,59 @@ tbody tr:nth-child(even) {
 .badge.failed { background-color: #E53935; }
 .badge.active { background-color: #43A047; }
 .badge.inactive { background-color: #BDBDBD; }
+
+/* MODIF 2026-11-19 : remplace les badges en ligne (Nombre de
+ * projets/Mode de collecte/Durée/Résultat/Activé), dont la largeur fixe
+ * commune aurait laissé beaucoup de vide disproportionné sur les valeurs
+ * courtes ("Oui") par rapport aux longues ("Automatique"). Pattern "tuile
+ * titre/trait/valeur", cohérent avec les tuiles KPI déjà utilisées ailleurs
+ * dans l'application (page Statistique Utilisateur, page Activity). */
+.info-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.5rem;
+  background-color: #f5f5f5;
+  border: 1px solid #e6e6e6;
+  text-align: center;
+}
+
+.info-tile-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.info-tile-divider {
+  display: block;
+  width: 2rem;
+  height: 2px;
+  margin: 0.4rem 0;
+  background-color: #cfcfcf;
+}
+
+.info-tile-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #00445b;
+}
+
+.info-tile-success { background-color: #e8f5e9; border-color: #43A047; }
+.info-tile-success .info-tile-divider { background-color: #43A047; }
+.info-tile-success .info-tile-value { color: #2E7D32; }
+
+.info-tile-failed { background-color: #fdecea; border-color: #E53935; }
+.info-tile-failed .info-tile-divider { background-color: #E53935; }
+.info-tile-failed .info-tile-value { color: #bf0815; }
+
+.info-tile-inactive { background-color: #f0f0f0; border-color: #BDBDBD; }
+.info-tile-inactive .info-tile-divider { background-color: #BDBDBD; }
+.info-tile-inactive .info-tile-value { color: #757575; }
 
 /* ==== TIMELINE ==== */
 .timeline-container {
@@ -378,6 +439,48 @@ tbody tr:nth-child(even) {
   width: 0%;
   transition: width 0.6s ease;
 }
+
+/* MODIF 2026-11-19 : légende des seuils de couleur de la barre de
+ * progression (mêmes couleurs que index-batch.js : #4CAF50/#FFB300/#E53935). */
+.timeline-progress-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.timeline-legend-title { font-weight: 600; }
+
+.timeline-legend-item { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+.timeline-legend-dot {
+  display: inline-block;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+}
+
+.timeline-legend-dot-ok { background-color: #4CAF50; }
+.timeline-legend-dot-warning { background-color: #FFB300; }
+.timeline-legend-dot-error { background-color: #E53935; }
+
+/* MODIF 2026-11-19 : légendes texte (succès/erreur/déjà à jour) jamais
+ * stylées — .text-success/.text-error/.text-muted étaient déjà utilisées
+ * dans le template mais n'existaient dans aucune feuille CSS du projet. */
+.timeline-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.timeline-summary .text-success { color: #2E7D32; font-weight: 600; }
+.timeline-summary .text-error { color: #bf0815; font-weight: 600; }
+.timeline-summary .text-muted { color: #757575; }
 
 /* ==== Journal Selector ==== */
 .journal-selector-container {

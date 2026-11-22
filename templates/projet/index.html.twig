@@ -347,6 +347,19 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             </a>
                         </div>
                     </div>
+                    {# Page npm audit #}
+                    <div class="small-12 medium-4 large-4 cell">
+                        <div class="bouton-wrapper-dependency-check">
+                            <a id="bouton-npm-audit" href="{{ path('npm_audit_index') }}"
+                                class="button expanded focus-dark-light" aria-label="Ouvre le module npm audit">
+                                <div class="container-dependency-check">
+                                    <span aria-hidden="true" class="npm-audit-icon">📦</span>&nbsp;
+                                    <span class="show-for-medium open-sans color-blanc">npm audit</span>
+                                    <span class="show-for-small-only open-sans color-blanc">npm</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                     {% endif %}
                     {% if version_serveur_sonar != 8  %}
                     <div class="small-12 medium-4 large-4 cell">

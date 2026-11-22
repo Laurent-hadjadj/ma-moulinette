@@ -1,0 +1,5 @@
+# MODIF 2026-11-22 : fichier optionnel de correspondance maven_key -> code
+# applicatif métier (app:sonar:update-tags, phase 3), pouvant contenir de
+# vraies clés Maven client. Ce dépôt est public (GitHub) : ce fichier ne doit
+# jamais y être committé, même déposé ici par commodité locale.
+liste_code_appli.json

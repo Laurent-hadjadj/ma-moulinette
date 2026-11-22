@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Admin;
@@ -365,11 +365,9 @@ class BatchCrudController extends AbstractCrudController
 
         /** On récupère le nom du batch */
         $transaction_id = $entityInstance->getTraitementId();
-
-        /** On supprime le traitement  */
+        /** On supprime le traitement. Attention $transaction_id peut être un Ulid */
         $r1 = $batchTraitementRepos->deleteTraitement($transaction_id);
         $r2 = $batchExecutionRepos->deleteTraitement($transaction_id);
-
         if ($r1['code'] !== 200){
             throw new SqlRequestException('insertBatchTraitement', (int) $r1['code'], $r1['erreur'], null);
         } elseif  ($r2['code'] !== 200){

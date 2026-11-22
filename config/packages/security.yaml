@@ -7,6 +7,7 @@ security:
         # en E2E pour les users disabled qui seront activés par l'internal).
         ROLE_NONE: []
         ROLE_UTILISATEUR: []
+        ROLE_REFERENTIAL: ['ROLE_UTILISATEUR']
         ROLE_COLLECTE: ['ROLE_UTILISATEUR']
         ROLE_SUIVI: ['ROLE_UTILISATEUR']
         ROLE_BATCH: ['ROLE_UTILISATEUR']
@@ -90,6 +91,9 @@ security:
         # MODIF 2026-10-13 : idem pour les endpoints ZAP (DAST), authentification
         # via ZapIngestTokenSubscriber (bearer token dédié, pas de session).
         - { path: ^/api/secure/zap/, roles: PUBLIC_ACCESS }
+        # MODIF 2026-11-20 : idem pour les endpoints npm audit, authentification
+        # via NpmAuditTokenSubscriber (bearer token dédié, pas de session).
+        - { path: ^/api/secure/npm-audit/, roles: PUBLIC_ACCESS }
         - { path: ^/api/secure/, roles: ROLE_UTILISATEUR }
 
         # Web (public)
@@ -99,6 +103,8 @@ security:
         - { path: ^/plan-du-site, roles: PUBLIC_ACCESS }
         - { path: ^/mention-legal, roles: PUBLIC_ACCESS }
         - { path: ^/donnees-personnelles, roles: PUBLIC_ACCESS }
+        # Instance de démonstration : page « Action indisponible » (voir DemoController).
+        - { path: ^/demo/indisponible, roles: PUBLIC_ACCESS }
 
         # Web (privé)
         - { path: ^/admin, roles: ROLE_UTILISATEUR }

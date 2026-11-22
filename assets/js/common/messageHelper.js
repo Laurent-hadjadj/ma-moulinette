@@ -43,7 +43,7 @@ const isHtmlEscaped = function(text) {
 export const extractSemanticalErrorMessage = function(rawData) {
     try {
         const responseText = String(rawData);
-        const regex = /<!--\s*(.*?)\s*-->/gs;
+        const regex = /<!--((?:(?!-->)[\s\S])*)-->/g;
         const matches = [...responseText.matchAll(regex)];
 
         if (matches.length > 0) {
@@ -137,7 +137,8 @@ export function prepareTechnicalDetails(traceCandidate) {
                 }
 
                 // On gère le cas d'une vraie exception 401 et 403 levée par le handler
-                if (data && data.type && data.code && data.message){
+                if (data?.type && data.code && data.message){
+                    console.error(`Erreur ${data.code} : ${data.message}`);
                     return {code: data.code, type: data.type, message: data.message};
                 }
 

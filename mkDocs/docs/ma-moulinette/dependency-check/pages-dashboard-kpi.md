@@ -4,7 +4,7 @@ Détail bloc par bloc des 2 pages d'agrégation cross-projets. Vue d'ensemble et
 
 Sur ces 2 pages, aucun bouton n'est conditionné par un `is_granted(...)` Twig : toutes les variations d'affichage viennent de variables déjà calculées côté contrôleur (`analytics_mode`, `available_groupes`, `available_socles`).
 
-## 📊 Dashboard agrégé
+## 1️⃣ 📊 Dashboard agrégé
 
 `GET /dependency-check/dashboard` (`dc_dashboard`) — `DependencyCheckPageController::dashboard()`.
 
@@ -105,7 +105,7 @@ Chaque source de données agrégée échoue indépendamment (une table vide n'em
 | `error` | Échec de `aggregateSeverityByDay()` (graphique 30 jours) | ❌ La récupération aggregateSeverityByDay a échoué (Erreur {code}). {erreur} |
 | `critical` (JS) | Le JSON injecté pour les 4 graphiques (`#dc-dashboard-data`) ne peut pas être parsé | 🔴 [DC dashboard] dataset JSON parse error (+ détails techniques repliables) |
 
-## 📈 Pilotage SLA (KPI)
+## 2️⃣ 📈 Pilotage SLA (KPI)
 
 `GET /dependency-check/kpi` (`dc_kpi`) — `DependencyCheckPageController::kpi()`.
 
@@ -159,7 +159,7 @@ Cette page n'a ni filtre socle ni filtre groupe (contrairement au Dashboard) : l
 | `error` | Échec de `aggregateSeverityByDay()` (tendance 90 jours) | ❌ La récupération aggregateSeverityByDay a échoué (Erreur {code}). {erreur} |
 | `critical` (JS) | Le JSON injecté pour le graphique (`#dc-kpi-data`) ne peut pas être parsé | 🔴 [DC KPI] JSON parse error (+ détails techniques repliables) |
 
-## 📚 Pour aller plus loin
+## 3️⃣ 📚 Pour aller plus loin
 
 - [Pages et navigation](pages.md) : cartographie d'ensemble, rôles, filtres socle/vue.
 - [Index, Détail scan et Export PDF](pages-index-projet.md), [Executive summary et Historique](pages-executive-history.md), [Comparaison et Mutualisables](pages-comparer-mutualisables.md) : détail des 6 autres pages.

@@ -6,25 +6,28 @@ Depuis la v2.0.0, Ma-Moulinette utilise **une seule base PostgreSQL 18**, dans u
     Jusqu'en v1.6.0, l'application utilisait deux bases SQLite distinctes (`data.db` pour les données de collecte, `temp.db` pour les calculs intermédiaires de répartition).
     La migration vers PostgreSQL a fusionné les deux dans un schéma unique. L'historique détaillé de cette migration est dans `CHANGELOG.md` ; les scripts SQL de l'époque SQLite ne sont plus maintenus.
 
-## 📊 Vue d'ensemble chiffrée
+## 1️⃣ 📊 Vue d'ensemble chiffrée
 
 Décompte réel des objets déclarés dans `migrations/POSTGRESQL/` (un fichier SQL = une définition, comptage exhaustif, pas une estimation) :
 
 | Type d'objet | Nombre | Source |
 | --- | :---: | --- |
-| Tables | 54 (53 *logged* + 1 *UNLOGGED*, voir ci-dessous) | `20_tables/*.sql` |
+| Tables | 59 (58 *logged* + 1 *UNLOGGED*, voir ci-dessous) | `20_tables/*.sql` |
 | Vues | 5 | `30_views/*.sql` |
-| Index | 157 | `40_indexes/indexes.sql` |
+| Index | 171 | `40_indexes/indexes.sql` |
 | Fonctions PL/pgSQL | 2 (`purge_batch_profiling`, `get_pg_stat_activity`) | `50_functions/*.sql` |
-| Commentaires (`COMMENT ON`) | 991 | `60_comments/comments.sql` |
-| Contraintes (`ADD CONSTRAINT`, dont clés étrangères) | 51 | `70_constraints/constraints.sql` |
+| Commentaires (`COMMENT ON`) | 989 | `60_comments/comments.sql` |
+| Contraintes (`ADD CONSTRAINT`, dont clés étrangères) | 60 | `70_constraints/constraints.sql` |
 | Séquences explicites | 0 (colonnes `GENERATED ... AS IDENTITY`, séquences implicites) | — |
 | Triggers | 0 | — |
 
-!!! note "🔄 Relevé du 02/11/2026"
-    Les évolutions depuis le dernier relevé (45 → 52 → 54 tables) sont les 5 tables ZAP/DAST (`zap_processing_queue`, `zap_scan`, `zap_rule`, `zap_finding`, `owasp_dast`), `eco_conception` (Empreinte Écologique, plugins Creedengo), `accessibility` (tag SonarQube `accessibility`) et `owasp_details` (détail des vulnérabilités OWASP classées) — voir [Tables par domaine](#-tables-par-domaine) plus bas. Les 2 dernières n'avaient jamais été répercutées dans cette page lors de leur ajout.
+!!! note "🔄 Relevé du 22/11/2026"
 
-## 📂 Organisation des scripts de migration
+[Tables par domaine](#5️⃣--tables-par-domaine) : 59 tables, dont 5 pour DependencyCheck, 4 (+ `owasp_dast`) pour ZAP, 5 pour npm audit (les 3 scanners de sécurité du parc), le reste pour la collecte SonarQube et les fonctionnalités applicatives (activité, batch, back-office…). Le schéma PostgreSQL est volontairement **non relationnel** : la plupart des relations sont gérées par l'application via des clés naturelles (`maven_key`, `groupe_id`, tags JSON) et non par des contraintes SQL `FOREIGN KEY`.\
+
+> Pourquoi ⁉️ c'est un biais noSQL et une organisation déjà implémenté par SonarQube, que j'assume.
+
+## 2️⃣ 📂 Organisation des scripts de migration
 
 Le schéma est défini par des scripts SQL bruts dans `migrations/POSTGRESQL/`, organisés par type d'objet et exécutés dans un ordre précis (voir `99_master_install.sql`) :
 
@@ -52,7 +55,7 @@ psql -U postgres -v ON_ERROR_STOP=1 -f 99_master_install.sql
 !!! caution "⚠️ Deux mécanismes de migration coexistent"
     `doctrine/doctrine-migrations-bundle` est présent dans `composer.json` et configuré (`config/packages/doctrine_migrations.yaml`, namespace `Migrations` → `migrations/`), mais **le dossier ne contient aucune classe de migration PHP** : le schéma réel est piloté par les scripts SQL ci-dessus, complétés en développement par `php bin/console doctrine:schema:update --force` pour resynchroniser rapidement le mapping Doctrine (`#[ORM\Column(name: ...)]`) sur la base. En cas d'erreur `Undefined column` après un changement d'entité, comparer d'abord le `name:` de la colonne au script `20_tables/<table>.sql` correspondant — un décalage entre les deux est la cause la plus fréquente.
 
-## 🧊 Tables logged vs tables UNLOGGED
+## 3️⃣ 🧊 Tables logged vs tables UNLOGGED
 
 PostgreSQL propose un mode `UNLOGGED` pour les tables : les écritures ne passent pas par le WAL (journal de transactions), ce qui les rend plus rapides mais **non répliquées** et **non garanties après un crash ou un arrêt non propre du serveur** — leur contenu est alors automatiquement vidé (`TRUNCATE` implicite) au redémarrage.
 C'est un mécanisme PostgreSQL natif (`CREATE UNLOGGED TABLE`), différent d'une table `TEMPORARY` (qui, elle, est propre à une session/connexion et disparaît à sa fermeture).
@@ -65,10 +68,11 @@ Dans `migrations/POSTGRESQL/`, une seule table utilise ce mécanisme aujourd'hui
 
 Toutes les autres tables du schéma (y compris `repartition`, la table finale versionnée) sont des tables **`logged`** classiques, avec garantie de durabilité standard.
 
-## 🔗 Convention relationnelle
+## 4️⃣ 🔗 Convention relationnelle
 
-La grande majorité des tables **ne sont pas reliées par clé étrangère SQL** : les relations se font par clé naturelle au niveau applicatif (`maven_key`, `groupe_id`, tags JSON). Les seules contraintes `FOREIGN KEY` réellement déclarées (`70_constraints/constraints.sql`) concernent le domaine DependencyCheck et deux relations `batch`/`actuator` ponctuelles.
+La grande majorité des tables **ne sont pas reliées par clé étrangère SQL** : les relations se font par clé naturelle au niveau applicatif (`maven_key`, `groupe_id`, tags JSON). Les contraintes `FOREIGN KEY` réellement déclarées (`70_constraints/constraints.sql`) concernent les 3 scanners de sécurité (DependencyCheck, ZAP, npm audit) et deux relations `batch`/`actuator` ponctuelles.
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     U[👤 utilisateur<br/>groupe_utilisateur, groupe_id<br/>liste_groupe_fonctionnel: JSON]
@@ -82,11 +86,13 @@ flowchart LR
     P -.->|préfixe de tag| GF
     P -.->|liste de maven_key| LP
 ```
+<!-- markdownlint-enable MD046 -->
 
 Les flèches en pointillés indiquent une **référence par valeur** (chaîne stockée, comparée par `LIKE prefix%` ou recherche dans un tableau JSON), pas une contrainte `FOREIGN KEY` — l'intégrité référentielle de ce périmètre est garantie côté applicatif (services/repository), pas par PostgreSQL.
 
-À l'inverse, les domaines **DependencyCheck** et **ZAP (DAST)** sont des modèles relationnels classiques avec clés étrangères réelles :
+À l'inverse, les domaines **DependencyCheck**, **ZAP (DAST)** et **npm audit** sont des modèles relationnels classiques avec clés étrangères réelles :
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 erDiagram
     dc_processing_queue ||--o{ dc_scan : "ingéré vers"
@@ -130,9 +136,11 @@ erDiagram
         string severity_at_scan
     }
 ```
+<!-- markdownlint-enable MD046 -->
 
 Même principe côté **ZAP (DAST)** — `owasp_dast` rattache un scan à sa classification par catégorie OWASP (2017/2021), sur le même modèle que `hotspot_owasp` pour l'analyse statique :
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 erDiagram
     zap_processing_queue ||--o{ zap_scan : "ingéré vers"
@@ -178,8 +186,62 @@ erDiagram
         string maven_key
     }
 ```
+<!-- markdownlint-enable MD046 -->
 
-## 📋 Tables par domaine
+<!-- markdownlint-disable MD046 -->
+```mermaid
+erDiagram
+    npm_processing_queue ||--o{ npm_scan : "ingéré vers"
+    npm_scan ||--o{ npm_finding : "a"
+    npm_dependency ||--o{ npm_finding : "concernée par"
+    npm_vulnerability ||--o{ npm_finding : "référencée par"
+
+    npm_processing_queue {
+        bigint id PK
+        string ulid
+        string status
+        bytea payload_gz
+        string payload_sha256
+        string project_group
+        string project_artifact
+        string project_version
+    }
+    npm_scan {
+        bigint id PK
+        bigint queue_id FK
+        string project_group
+        string project_artifact
+        string project_version
+        timestamptz scan_date
+        int vuln_count_total
+        int dep_count_prod
+        int dep_count_dev
+    }
+    npm_dependency {
+        bigint id PK
+        string name
+    }
+    npm_vulnerability {
+        bigint id PK
+        string advisory_id
+        string severity
+        jsonb cwes
+    }
+    npm_finding {
+        bigint id PK
+        bigint scan_id FK
+        bigint dependency_id FK
+        bigint vulnerability_id FK
+        string severity_at_scan
+        string range
+        string installed_version
+        boolean is_direct
+        boolean is_prod
+    }
+```
+<!-- markdownlint-enable MD046 -->
+
+## 5️⃣ 📋 Tables par domaine
 
 ### 🔐 Identité et sécurité
 
@@ -213,8 +275,7 @@ erDiagram
 | `todo` | Occurrences `TODO`/`FIXME` |
 | `profiles`, `profiles_historique` | Profils qualité SonarQube suivis |
 | `properties` | Propriétés de configuration par projet |
-| `repartition` | Répartition des indicateurs par module (frontend/backend/autre), résultat final versionné |
-| `repartition_temp` | Tampon de collecte détaillée — table `UNLOGGED`, vidée automatiquement au redémarrage (voir [🧊 Tables simples vs `UNLOGGED`](#-tables-logged-vs-tables-unlogged)) |
+| `repartition` | Répartition des indicateurs par module (frontend/backend/autre), résultat final versionné [🧊 Tables simples vs `UNLOGGED`](#3️⃣--tables-logged-vs-tables-unlogged) |
 | `clean_code` | Indicateurs Clean Code (nouveau modèle SonarQube) |
 | `rci` | Détail par module (frontend/backend/autre/inconnu) du RCI (Risk Criticality Index, plugin `sonar-rci`) — snapshot courant, une ligne par projet. |
 | `eco_conception` | Empreinte Écologique (plugins SonarQube Creedengo `creedengo-java/javascript/php/python`, activable via `CREEDENGO_ENABLED`) — snapshot courant, une ligne par `maven_key`. |
@@ -257,6 +318,16 @@ erDiagram
 | `zap_finding` | Association scan × règle, avec instances et tags OWASP bruts (JSONB) |
 | `owasp_dast` | Classification d'un scan par catégorie OWASP (2017/2021), construite à partir des tags `OWASP_<année>_AXX` des findings — vide si aucun tag présent dans le rapport source |
 
+### 📦 npm audit
+
+| Table | Rôle |
+| --- | --- |
+| `npm_processing_queue` | File d'ingestion des rapports npm audit uploadés par la CI (`POST /api/secure/npm-audit/upload`) — enveloppe jusqu'à 3 rapports bruts (`full`/`prodOnly`/`installed`) |
+| `npm_scan` | Un scan = un rapport npm audit pour (project_group, project_artifact, project_version, scan_date) |
+| `npm_dependency` | Référentiel dédupliqué des paquets npm (par `name` — pas de sha1, un paquet npm n'a pas de fichier binaire unique) |
+| `npm_vulnerability` | Référentiel dédupliqué des avis de sécurité (par `advisory_id`, GHSA-ID extrait de `via[].url`) |
+| `npm_finding` | Jointure scan × dépendance × avis, avec `is_direct`/`is_prod` (nullable)/`installed_version` — dimensions sans équivalent DependencyCheck |
+
 ### 🌱 Actuator (Spring Boot)
 
 | Table | Rôle |
@@ -272,7 +343,7 @@ erDiagram
 | `user_agent_analysis`, `user_agent_event` | Analyse des User-Agent (détection d'activité suspecte) |
 | `ma_moulinette` | Table de version applicative |
 
-## 📚 Pour aller plus loin
+## 6️⃣ 📚 Pour aller plus loin
 
 - [Architecture technique](architecture-technique.md) : vue d'ensemble applicative.
 - [Migration PostgreSQL](../developpement/guide-migration.md) : procédure détaillée pour un nouvel environnement.

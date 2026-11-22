@@ -169,7 +169,7 @@ class ApiProfilController extends AbstractController
      * [Description for listeQualityProfiles]
      * Renvoie la liste des profils qualité
      * http://{url}/api/qualityprofiles/search?qualityProfile={name}
-     * RÔLE-GESTIONNAIRE
+     * RÔLE-REFERENTIAL
      *
      * @return JsonResponse
      *
@@ -187,8 +187,8 @@ class ApiProfilController extends AbstractController
         $propertiesRepos = $this->em->getRepository(Properties::class);
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
-            $this->logger->warning("[Profil] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_GESTIONNAIRE).");
+        if (!$this->security->isGranted('ROLE_REFERENTIAL')){
+            $this->logger->warning("[Profil] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_REFERENTIAL).");
 
             return new JsonResponse([
                 'code' => 403,

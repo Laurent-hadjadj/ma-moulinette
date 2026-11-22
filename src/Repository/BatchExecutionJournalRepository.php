@@ -111,9 +111,15 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
    */
   public function countBatchExecutionJournalCode(string $job_id): array
   {
+    /* MODIF 2026-11-19 : BUG CORRIGÉ — ko_count comptait "code != 200", ce qui
+     * incluait aussi les code=202 ("déjà à jour"), comptés en plus dans
+     * oko_count : les 3 catégories n'étaient pas mutuellement exclusives
+     * (oko était un sous-ensemble de ko, pas une 3e catégorie distincte).
+     * Alignement sur la même logique que selectBatchExecutionJournalNomProjetAndStatus()
+     * (déjà correcte : ok/oko/ko strictement exclusifs). */
     $sql = "SELECT
               SUM(CASE WHEN code = 200 THEN 1 ELSE 0 END) AS ok_count,
-              SUM(CASE WHEN code != 200 THEN 1 ELSE 0 END) AS ko_count,
+              SUM(CASE WHEN code != 200 AND code != 202 THEN 1 ELSE 0 END) AS ko_count,
               SUM(CASE WHEN code = 202 THEN 1 ELSE 0 END) AS oko_count
             FROM ma_moulinette.batch_execution_journal
             WHERE job_id = :job_id";

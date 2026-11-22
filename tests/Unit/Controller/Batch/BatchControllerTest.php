@@ -173,6 +173,29 @@ class BatchControllerTest extends TestCase
         $this->assertSame(500, $data['code']);
     }
 
+    /**
+     * Régression 2026-11-19 : branche ajoutée pour éviter de poursuivre avec
+     * un job_id manquant (selectBatchExecutionLastTraitementId renvoie
+     * code=200 mais id vide) — jusqu'ici non testée.
+     */
+    public function testInformationReturns404WhenJobIdEmpty(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->batchTraitementRepo->method('selectBatchTraitementByTraitementId')->willReturn([
+            'code' => 200,
+            'traitement' => ['traitement_id' => 'abc'],
+        ]);
+        $this->batchExecutionRepo->method('selectBatchExecutionLastTraitementId')->willReturn([
+            'code' => 200, 'id' => '',
+        ]);
+
+        $response = $this->controller->traitementInformation($this->jsonRequest(['traitement_id' => 'abc']));
+        $data = json_decode((string) $response->getContent(), true);
+
+        $this->assertSame(404, $data['code']);
+        $this->assertSame('warning', $data['type']);
+    }
+
     public function testInformationHappyPath(): void
     {
         $this->authChecker->method('isGranted')->willReturn(true);

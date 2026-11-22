@@ -8,8 +8,9 @@ Ma-Moulinette embarque **24 commandes console** Symfony (`bin/console app:...`),
 | `src/Command/Maintenance/` | 6 | Outils ponctuels (migration, audit, statistiques) — invocation manuelle |
 | `src/Command/Dev/` | 5 | Réservées à l'environnement de développement (seed de données fictives, diagnostic) |
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     subgraph Cron["⏱️ Cron cron-ma-moulinette (Supercronic)"]
@@ -38,8 +39,9 @@ flowchart LR
     Cron --> DB[(PostgreSQL)]
     Manuel --> DB
 ```
+<!-- markdownlint-enable MD046 -->
 
-## 📋 Vue d'ensemble
+## 2️⃣ 📋 Vue d'ensemble
 
 Classification d'**impact** utilisée dans les 3 pages de détail :
 
@@ -91,7 +93,7 @@ Toutes réservées à `env=dev` (garde-fou explicite, refus en dehors de cet env
 | `app:seed:projet-fixture` | 🟣 Hybride (destructive ciblée) | Purge + recrée un projet de test complet |
 | `app:test-compte-rendu` | 🔵 Lecture seule | Vérifie la lecture/décompression d'un champ BYTEA |
 
-## 📚 Pour aller plus loin
+## 3️⃣ 📚 Pour aller plus loin
 
 - [Commandes Prod](prod.md)
 - [Commandes Maintenance](maintenance.md)

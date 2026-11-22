@@ -2,7 +2,7 @@
 
 La page d'accueil est le point d'entrée de l'application après [authentification](../authentification/authentification.md). Elle affiche l'état des référentiels locaux (projets, profils qualité), permet leur mise à jour, et donne accès aux projets/versions favoris de l'utilisateur.
 
-## 🗺️ Cartographie
+## 1️⃣ 🗺️ Cartographie
 
 La navigation se lit en deux temps : le **bandeau commun** (identique en tête de **toutes** les pages) et le **contenu propre** à la page d'accueil.
 
@@ -19,7 +19,8 @@ flowchart LR
 ```
 <!-- markdownlint-enable MD046 -->
 
-- Le bandeau (`header.html.twig`) est **identique sur toutes les pages** — détaillé dans [Haut de page](#-haut-de-page).
+[Haut de page](#3️⃣-haut-de-page)
+
 - **Préférences** et **Déconnexion** sont de vraies redirections `<a href>` ; le **courriel** ouvre une **modale** (`modalSafe`).
 - Le back-office (`/admin`) est une porte à privilège minimal qui affiche ensuite des **cartes filtrées par rôle** — voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes).
 
@@ -41,7 +42,7 @@ flowchart TD
 - Le **raccourci** d'une carte de favori ouvre la page [Suivi](suivi.md) du projet (`/suivi/set?maven_key=…`).
 - L'**icône ℹ️** des Tags ouvre une **modale** (`modalSafe`), sans quitter la page.
 
-## 🧭 Chemin de fer de la page
+## 2️⃣ 🧭 Chemin de fer de la page
 
 L'écran se lit en deux colonnes sous le bandeau commun : à gauche « **Informations et outils** » (état des référentiels), à droite les « **Favoris** ».
 
@@ -73,7 +74,7 @@ Page Accueil
 ```
 <!-- markdownlint-enable MD046 -->
 
-## 🔝 Haut de page
+## 3️⃣ Haut de page
 
 Le bandeau supérieur (`header.html.twig`, inclus sur **toutes** les pages de l'application, pas seulement l'accueil) affiche :
 
@@ -96,7 +97,7 @@ Depuis la v2.0.0, le back-office donne aussi accès (selon rôle) aux pages [Sta
 !!! note "🔀 Deux cartes « Activité » distinctes"
     Ne pas confondre la carte **« Activité »** (statistiques d'usage des utilisateurs, sans rôle particulier) et la carte **« Activité SonarQube »** (historique des tâches d'analyse SonarQube, `ROLE_ACTIVITY`) — voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes).
 
-## 📚 Bloc référentiel local
+## 4️⃣ 📚 Bloc référentiel local
 
 Affiche le nombre de projets et de profils qualité connus localement, comparés au nombre réel sur le serveur SonarQube.
 Un écart déclenche un message de recommandation de mise à jour, avec le delta (en plus ou en moins). La comparaison ne se fait qu'au-delà d'une fréquence paramétrable (variables `MAJ_PROJET`/`MAJ_PROFIL`, en jours — par défaut recommandation quotidienne pour les projets, mensuelle pour les profils) : si le référentiel a déjà été rafraîchi récemment, aucun signalement n'apparaît même en cas d'écart réel.
@@ -105,7 +106,7 @@ La mise à jour manuelle de la liste des projets et des tags nécessite le rôle
 
 Le bouton profile qualité ouvre la page [Profils qualité](../back-office/profils.md) du back-office, qui permet de visualiser les profils de language connus localement et de les mettre à jour depuis le serveur SonarQube.
 
-## 🏷️ Bloc des tags
+## 5️⃣ 🏷️ Bloc des tags
 
 !!! note "💡 Astuce"
     Le bloc des tags est affiché **même si l'utilisateur n'a pas le rôle `ROLE_GESTIONNAIRE`**. Il permet de vérifier que les tags sont bien appliqués sur les projets, même pour un simple utilisateur.
@@ -118,7 +119,7 @@ Affiche le nombre total de projets du référentiel et le nombre de projets ayan
     Le bloc des tags **n'affiche pas les tags eux-mêmes** : il ne s'agit pas d'un inventaire, mais d'une vérification de l'application des tags sur les projets. Pour consulter la liste des tags, voir [Tags](../back-office/tags.md).
     Un projet peut avoir plusieurs tags, mais un tag ne peut pas être appliqué à un projet si le tag n'existe pas dans le référentiel.
 
-## 👁️ Bloc visibilité
+## 6️⃣ 👁️ Bloc visibilité
 
 !!! note "💡 Astuce"
     Il convient de vérifier que les projets sont bien configurés en visibilité `public` ou `privé`, même pour un simple utilisateur.
@@ -126,7 +127,7 @@ Affiche le nombre total de projets du référentiel et le nombre de projets ayan
 
 Affiche le nombre de projets de visibilité `public` et `privé`.
 
-## ⭐ Bloc Informations sur la version sonarqube
+## 7️⃣ ⭐ Bloc Informations sur la version sonarqube
 
 ce bloc affiche la version du serveur SonarQube.
 Si la version du serveur est différente de celle attendue par l'application (variable `VERSION_SONARQUBE`), un message d'avertissement est affiché.
@@ -134,7 +135,7 @@ Si la version du serveur est différente de celle attendue par l'application (va
 !!! note "✅ Version indisponible : « Inconnu » au lieu de « 0 »"
     Si le serveur SonarQube est injoignable ou renvoie une erreur (par ex. token invalide → 401), la page affichait auparavant « Version du serveur : **0** », trompeur. Désormais la valeur s'affiche **« Inconnu » en rouge** (défaut explicite `Version inconnue.` côté serveur + garde-fou Twig), quel que soit le chemin de rendu.
 
-## ⭐ Bloc des favoris
+## 8️⃣ ⭐ Bloc des favoris
 
 Affiche, au choix de l'utilisateur (paramètre exclusif, pas de mélange possible), soit ses **projets favoris**, soit les **versions favorites** d'un même projet — voir [Préférences](preferences.md). Le nombre de versions affichées est paramétrable (variable `NOMBRE_FAVORI`, 20 par défaut).
 Chaque carte porte un **raccourci** (icône) qui ouvre directement la page [Suivi](suivi.md) du projet concerné.
@@ -142,11 +143,11 @@ Chaque carte porte un **raccourci** (icône) qui ouvre directement la page [Suiv
 !!! warning "⚠️ Favori désynchronisé"
     Le **compteur** de favoris reflète les **préférences** de l'utilisateur, tandis que les **cartes** affichées proviennent de l'**historique**. Si un projet favori a disparu de l'historique (changement de serveur SonarQube, purge SQL), le compteur peut indiquer « 1 » sans qu'aucune carte ne s'affiche. Dans ce cas, un message d'avertissement **nomme le favori orphelin** et propose les deux corrections : **relancer une collecte** du projet, ou **retirer le favori** depuis la page [Préférences](preferences.md).
 
-## ℹ️ Fenêtre d'information
+## 9️⃣ ℹ️ Fenêtre d'information
 
 Une fenêtre d'information (pop-up) est disponible au niveau du bloc Tags.peut s'ouvrir suite a un clique sur l'icône I à côté du label Tags. Elle précise à l’utilisateur les règles d'utilisation des tags dans la prise en compte des projets dans l'application Ma-Moulinette.
 
-## ⚠️ Messages remontés par la page
+## 🔟 ⚠️ Messages remontés par la page
 
 Les messages empruntent **deux canaux distincts** (mécanisme commun décrit dans [Gestion des messages](../erreur/gestion-messages.md)) :
 
