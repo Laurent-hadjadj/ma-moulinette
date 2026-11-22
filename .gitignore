@@ -12,6 +12,7 @@
 /public/bundles/
 /var/
 /vendor/
+/test-results/
 composer.lock
 package-lock.json
 symfony.lock
