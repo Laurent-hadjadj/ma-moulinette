@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Prod. */
@@ -90,7 +90,7 @@ class DependencyCheckProcessCommand extends Command
      *
      * Created at: 24/05/2026 10:43:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function configure(): void
     {
@@ -128,7 +128,7 @@ class DependencyCheckProcessCommand extends Command
      *
      * Created at: 24/05/2026 10:43:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -159,7 +159,7 @@ class DependencyCheckProcessCommand extends Command
      *
      * Created at: 24/05/2026 10:43:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function runOneShot(SymfonyStyle $io, int $batchSize, int $maxBatches): int
     {
@@ -206,7 +206,7 @@ class DependencyCheckProcessCommand extends Command
      *
      * Created at: 24/05/2026 10:43:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function runWatch(SymfonyStyle $io, int $batchSize, int $sleepSec): int
     {
@@ -247,7 +247,7 @@ class DependencyCheckProcessCommand extends Command
      *
      * Created at: 24/05/2026 10:44:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function processOneBatch(SymfonyStyle $io, int $batchSize): array
     {
@@ -267,6 +267,7 @@ class DependencyCheckProcessCommand extends Command
 
         $totals['claimed'] = count($claimed);
         if ($totals['claimed'] === 0) {
+            $this->logHeartbeatIfDue();
             return $totals;
         }
 
@@ -359,7 +360,7 @@ class DependencyCheckProcessCommand extends Command
      *
      * Created at: 24/05/2026 10:44:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function processOne(DcProcessingQueue $entry): void
     {
@@ -425,7 +426,7 @@ class DependencyCheckProcessCommand extends Command
      *
      * Created at: 24/05/2026 10:45:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function printSummary(SymfonyStyle $io, array $totals): void
     {
@@ -435,5 +436,27 @@ class DependencyCheckProcessCommand extends Command
             ['Failed'    => $totals['failed']],
             ['Requeued'  => $totals['requeued']],
         );
+    }
+
+    /**
+     * Preuve de vie throttlée : la commande tourne chaque minute via la
+     * crontab mais ne journalise rien quand la queue est vide, donc
+     * cron.log n'apparaît jamais tant qu'aucun rapport n'a été ingéré. Log
+     * un heartbeat toutes les 15 minutes (sans état persisté : simple
+     * modulo sur la minute courante, aligné sur la fréquence "* * * * *"
+     * de la crontab) plutôt qu'à chaque exécution, pour éviter de noyer
+     * cron.log une fois les files réellement actives.
+     */
+    private function logHeartbeatIfDue(): void
+    {
+        $minute = (int) (new \DateTimeImmutable())->format('i');
+        if (self::isHeartbeatDue($minute)) {
+            $this->logger->info('[DC-Worker] Heartbeat - file vide.');
+        }
+    }
+
+    private static function isHeartbeatDue(int $minute): bool
+    {
+        return $minute % 15 === 0;
     }
 }

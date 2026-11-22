@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -163,6 +163,23 @@ class DependencyCheckProcessCommandTest extends TestCase
             ->willReturn([]);
 
         $this->tester->execute(['--batch' => 0]);
+    }
+
+    /**
+     * Throttle du heartbeat "queue vide" (cf. logHeartbeatIfDue) : seulement
+     * aux minutes multiples de 15, pour ne pas noyer cron.log une fois les
+     * queues réellement actives.
+     */
+    public function testHeartbeatIsDueOnlyEveryFifteenMinutes(): void
+    {
+        $method = new \ReflectionMethod(DependencyCheckProcessCommand::class, 'isHeartbeatDue');
+
+        foreach ([0, 15, 30, 45] as $minute) {
+            $this->assertTrue($method->invoke(null, $minute), "minute $minute doit déclencher le heartbeat");
+        }
+        foreach ([1, 7, 14, 16, 29, 44, 59] as $minute) {
+            $this->assertFalse($method->invoke(null, $minute), "minute $minute ne doit pas déclencher le heartbeat");
+        }
     }
 
     // ═══════════════════ Helpers ═════════════════════════════════════════════
