@@ -104,6 +104,14 @@ return [
         'path' => './assets/js/mon-application/zap/index-zap.js',
         'entrypoint' => true,
     ],
+    'npm-audit' => [
+        'path' => './assets/js/mon-application/npm-audit/index-npm-audit.js',
+        'entrypoint' => true,
+    ],
+    'npm-audit-dashboard' => [
+        'path' => './assets/js/mon-application/npm-audit/index-npm-audit-dashboard.js',
+        'entrypoint' => true,
+    ],
     'clean-code' => [
         'path' => './assets/js/mon-application/clean-code/index-clean-code.js',
         'entrypoint' => true,

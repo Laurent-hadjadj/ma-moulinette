@@ -350,6 +350,10 @@ textarea[readonly] {
   align-items: center;
 }
 
+/* Icône emoji du bouton npm audit (pas de SVG dédié, contrairement aux
+ * autres boutons de cette grille) — même échelle visuelle que leurs SVG. */
+.npm-audit-icon { font-size: 1.6em; }
+
 .container-ligne {
   display: flex;
   /**
@@ -526,7 +530,8 @@ textarea[readonly] {
 #bouton-cosui,
 #bouton-analyse-owasp,
 #bouton-dependency-check,
-#bouton-ouvrir-clean-code {
+#bouton-ouvrir-clean-code,
+#bouton-npm-audit {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -576,6 +581,7 @@ textarea[readonly] {
 #bouton-cosui:hover,
 #bouton-analyse-owasp:hover,
 #bouton-dependency-check:hover,
+#bouton-npm-audit:hover,
 #bouton-fermer-liste-todo:hover,
 #bouton-fermer-liste-logger:hover,
 #bouton-fermer-liste-violations:hover,
@@ -594,7 +600,7 @@ textarea[readonly] {
 #bouton-fermer-mesures-rci:hover,
 #bouton-fermer-scope:hover { background-color: #006182; }
 
-/** 
+/**
  * select2 custom placeholder
  *  Ici on surcharge les class de l'api select2
  */

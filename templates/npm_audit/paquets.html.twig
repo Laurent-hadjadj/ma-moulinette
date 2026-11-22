@@ -1,0 +1,136 @@
+{% set title = 'npm audit - Paquets (vue cross-projets)' %}
+{% set description = app_name ~ ' - vue cross-projets des paquets npm vulnerables.' %}
+{% set bottom = 'footer-fixed' %}
+
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {% block importmap %}
+        {{ importmap('npm-audit-dashboard') }}
+        {% endblock %}
+    </head>
+
+    <body>
+        {{ include('header.html.twig') }}
+
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous etes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('npm_audit_index') }}">npm audit</a></li>
+                    <li aria-current="page">Paquets</li>
+                </ol>
+            </nav>
+        </header>
+
+        {{ include('_message.html.twig') }}
+
+        <main class="grid-container margin-bottom-2">
+            <h2 class="h4 claire-hand">
+                <span aria-hidden="true">📦</span> npm audit &mdash; Paquets (vue cross-projets)
+            </h2>
+            <p class="open-sans text-muted">
+                Vue organisation entière — pour piloter l'effort de correction là où il a le plus d'impact,
+                pas limitée à votre périmètre groupe fonctionnel.
+            </p>
+
+            {% if packages is empty %}
+            <div class="callout alert-callout-border info">
+                <p><span aria-hidden="true">ℹ️</span> Aucun paquet npm concerné par un avis de sécurité pour l'instant.</p>
+            </div>
+            {% else %}
+
+            {# Tuiles de synthèse — même pattern que la page projet (.npm-info-tile). #}
+            <div class="grid-x grid-margin-x grid-margin-y margin-bottom-1">
+                <div class="cell small-6 medium-3">
+                    <div class="npm-info-tile">
+                        <span class="npm-info-tile-title">Projets scannés</span>
+                        <span class="npm-info-tile-divider" aria-hidden="true"></span>
+                        <span class="npm-info-tile-value">{{ kpi.scanned_projects }}</span>
+                    </div>
+                </div>
+                <div class="cell small-6 medium-3">
+                    <div class="npm-info-tile">
+                        <span class="npm-info-tile-title">Paquets concernés</span>
+                        <span class="npm-info-tile-divider" aria-hidden="true"></span>
+                        <span class="npm-info-tile-value">{{ kpi.impacted_packages }}</span>
+                    </div>
+                </div>
+                <div class="cell small-6 medium-3">
+                    <div class="npm-info-tile">
+                        <span class="npm-info-tile-title">Avis cumulés</span>
+                        <span class="npm-info-tile-divider" aria-hidden="true"></span>
+                        <span class="npm-info-tile-value">{{ kpi.total_findings }}</span>
+                    </div>
+                </div>
+                <div class="cell small-6 medium-3">
+                    <div class="npm-info-tile npm-info-tile-total">
+                        <span class="npm-info-tile-title">Paquets mutualisés (≥2 projets)</span>
+                        <span class="npm-info-tile-divider" aria-hidden="true"></span>
+                        <span class="npm-info-tile-value">{{ kpi.shared_packages }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-x grid-margin-x margin-bottom-1">
+                <div class="cell small-12 medium-7">
+                    <div class="npm-chart-container">
+                        <canvas id="npm-dash-top-packages" role="img" aria-label="Top 10 des paquets par nombre de projets touchés"></canvas>
+                    </div>
+                </div>
+                <div class="cell small-12 medium-5">
+                    {{ _self.info_callout('<strong>Top 10</strong> des paquets npm ayant le plus de <strong>projets touchés</strong> (pas le plus d\'avis de sécurité) — un paquet partagé par beaucoup de projets est prioritaire à corriger, même si chaque projet n\'a qu\'un seul avis.') }}
+                </div>
+            </div>
+
+            <h3 class="h5 claire-hand"><span aria-hidden="true">📋</span> Tous les paquets concernés ({{ packages|length }})</h3>
+            <div class="cell table-scroll">
+                <table class="open-sans v-middle">
+                    <thead>
+                        <tr>
+                            <th>Paquet</th>
+                            <th class="text-center">Projets touchés</th>
+                            <th class="text-center">Avis cumulés</th>
+                            <th class="text-center">Pire sévérité</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in packages %}
+                        <tr class="v-middle">
+                            <td class="v-middle"><strong>{{ p.name }}</strong></td>
+                            <td class="text-center v-middle">{{ p.nb_projects }}</td>
+                            <td class="text-center v-middle">{{ p.nb_findings }}</td>
+                            <td class="text-center v-middle">
+                                <span class="badge-level {{ p.worst_severity }}">{{ p.worst_severity|upper }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            <div class="margin-bottom-4" aria-hidden="true">&nbsp;</div>
+        </main>
+
+        <script type="application/json" id="npm-audit-chart-data">{{ {
+            'topPackages': top_chart|merge({
+                'title': 'Top 10 paquets par nombre de projets touchés',
+                'datasetLabel': 'Projets touchés',
+            }),
+        }|json_encode|raw }}</script>
+
+        {% macro info_callout(text) %}
+        <div class="callout alert-callout-border info margin-bottom-1 clear-both">
+            <p class="open-sans font-size-085 margin-bottom-0">
+                <span aria-hidden="true">ℹ️</span> {{ text|raw }}
+            </p>
+        </div>
+        {% endmacro %}
+
+        {{ include('footer.html.twig') }}
+    </body>
+
+</html>
