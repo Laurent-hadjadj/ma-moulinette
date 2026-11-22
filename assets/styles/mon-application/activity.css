@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  *
  */
 
@@ -97,6 +97,20 @@
   width: 100% !important;
   height: 100% !important;
   display: block;
+}
+
+/* MODIF 2026-11-19 : blocs tableau+graphique (heure/semaine/mois/top8-10).
+ * Convention "une page = une feuille CSS" : min-height-280 existe déjà dans
+ * dependency-check.css, dupliquée ici plutôt que partagée entre pages. */
+.min-height-280 { min-height: 280px; }
+
+/* Défensif : un nom de projet très long ne doit plus casser la mise en page,
+ * même si le passage en medium-7/medium-5 résout l'essentiel du débordement. */
+.stats-table td.stats-table-cell-projet {
+  max-width: 1px; /* force le navigateur à respecter la largeur de colonne */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
  /*******************  Global ******************/

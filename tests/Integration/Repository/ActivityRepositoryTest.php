@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -287,6 +287,57 @@ class ActivityRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
         $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
+    }
+
+    /**
+     * MODIF 2026-11-19 : nouvelle méthode pour le bloc "Aujourd'hui (par
+     * heure)" de la page Activité.
+     */
+    public function testDistributionHoraireJourGroupeParHeure(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        $jour = new \DateTimeImmutable('today', new \DateTimeZone('Europe/Paris'));
+        $activityRepository = $entityManager->getRepository(Activity::class);
+
+        $insert = static function (string $heureMinute) use ($entityManager, $jour): void {
+            $executedAt = $jour->modify($heureMinute);
+            $entityManager->getConnection()->executeStatement(
+                'INSERT INTO ma_moulinette.activity
+                    (maven_key, project_name, analyse_id, status, submitter_login, submitted_at, started_at, executed_at, execution_time)
+                 VALUES (:mk, :pn, :aid, :st, :sub, :sa, :sta, :ea, :et)',
+                [
+                    'mk' => 'fr.ma-moulinette:ma-moulinette',
+                    'pn' => 'ma-moulinette',
+                    'aid' => 'AY_test_horaire_' . $heureMinute,
+                    'st' => 'SUCCESS',
+                    'sub' => 'ci-pipeline',
+                    'sa' => $executedAt->modify('-60 seconds')->format('Y-m-d H:i:sO'),
+                    'sta' => $executedAt->modify('-10 seconds')->format('Y-m-d H:i:sO'),
+                    'ea' => $executedAt->format('Y-m-d H:i:sO'),
+                    'et' => 12000,
+                ]
+            );
+        };
+        $insert('09:15');
+        $insert('09:45');
+        $insert('14:30');
+
+        $debutJour = $jour->setTime(0, 0);
+        $finJour = $debutJour->modify('+1 day');
+        $r = $activityRepository->distributionHoraireJour($debutJour, $finJour);
+
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+
+        $parHeure = [];
+        foreach ($r['request'] as $row) {
+            $parHeure[(int) $row['heure']] = (int) $row['analyse'];
+        }
+        $this->assertSame(2, $parHeure[9] ?? 0);
+        $this->assertSame(1, $parHeure[14] ?? 0);
     }
 
     protected function tearDown(): void

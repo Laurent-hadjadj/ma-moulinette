@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -85,11 +85,12 @@ class ActivityControllerIndexTest extends WebTestCase
         $body = (string) $response->getContent();
 
         $this->assertStringContainsString('Indicateurs clés', $body);
+        $this->assertStringContainsString("Aujourd'hui (par heure)", $body);
         $this->assertStringContainsString('Cette semaine', $body);
         $this->assertStringContainsString('Ce mois', $body);
         $this->assertStringContainsString("Top 10 des pics d'analyse", $body);
-        $this->assertStringContainsString('Top 10 projets — semaine en cours', $body);
-        $this->assertStringContainsString('Top 10 projets — mois en cours', $body);
+        $this->assertStringContainsString('Top 8 projets — semaine en cours', $body);
+        $this->assertStringContainsString('Top 8 projets — mois en cours', $body);
         $this->assertStringContainsString('ma-moulinette', $body);
     }
 }

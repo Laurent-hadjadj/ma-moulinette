@@ -326,7 +326,38 @@ class ActivityController extends AbstractController
         unset($semaine);
         $moisTable = array_values($moisParSemaine);
 
-        /** Top 10 pics d'analyse (toutes périodes confondues). */
+        /** Aujourd'hui (par heure), plage d'affichage 7h-19h. */
+        $debutJour = $maintenant->setTime(0, 0);
+        $finJour = $debutJour->modify('+1 day');
+        $distributionHoraire = $activityRepos->distributionHoraireJour($debutJour, $finJour);
+        $heureRows = (($distributionHoraire['code'] ?? 0) === 200) ? $distributionHoraire['request'] : [];
+        $parHeure = [];
+        foreach ($heureRows as $h) {
+            $parHeure[(int) $h['heure']] = ['analyse' => (int) $h['analyse'], 'projet' => (int) $h['projet']];
+        }
+        /* Le graphique garde les 13 heures (7h-19h) avec des zéros, pour
+         * visualiser les creux de la journée ; le tableau, lui, ne liste que
+         * les heures avec des données — même convention que semaine_table/
+         * mois_table (listeAnalyseProjetPeriode ne retourne déjà que les
+         * jours/semaines avec au moins une analyse). */
+        $heureChart = [];
+        $heureTable = [];
+        for ($heure = 7; $heure <= 19; $heure++) {
+            $analyse = $parHeure[$heure]['analyse'] ?? 0;
+            $projet = $parHeure[$heure]['projet'] ?? 0;
+            $ligne = [
+                'heure' => sprintf('%02dh', $heure),
+                'analyse' => $analyse,
+                'projet' => $projet,
+                'percent' => $analyse > 0 ? round(($projet / $analyse) * 100, 1) : 0,
+            ];
+            $heureChart[] = $ligne;
+            if ($analyse > 0) {
+                $heureTable[] = $ligne;
+            }
+        }
+
+        /** Top 10 pics d'analyse (toutes périodes confondues) — inchangé, pas de ligne Autres/total. */
         $top10Pics = $activityRepos->top10PicsAnalyse(10);
         $top10PicsTable = (($top10Pics['code'] ?? 0) === 200) ? array_map(static fn(array $j) => [
             'date' => (new \DateTimeImmutable($j['day']))->format(self::$formatDate),
@@ -334,24 +365,76 @@ class ActivityController extends AbstractController
             'projet' => (int) $j['projet'],
         ], $top10Pics['request']) : [];
 
-        /** Top 10 projets — semaine / mois en cours. */
-        $topSemaine = $activityRepos->topProjetsPeriode($lundiSemaine, 10);
-        $topSemaineTable = (($topSemaine['code'] ?? 0) === 200) ? $topSemaine['request'] : [];
+        /** Top 8 projets — semaine / mois en cours, avec ligne "Autres" + total. */
+        $totalAnalysesSemaine = array_sum(array_map(static fn(array $j) => (int) $j['analyse'], $semaineRows));
+        $topSemaine = $activityRepos->topProjetsPeriode($lundiSemaine, 8);
+        $topSemaineTable = $this->buildTopProjetsAvecAutres(
+            (($topSemaine['code'] ?? 0) === 200) ? $topSemaine['request'] : [],
+            $totalAnalysesSemaine
+        );
 
-        $topMois = $activityRepos->topProjetsPeriode($debutMois, 10);
-        $topMoisTable = (($topMois['code'] ?? 0) === 200) ? $topMois['request'] : [];
+        $totalAnalysesMois = array_sum(array_map(static fn(array $j) => (int) $j['analyse'], $moisRows));
+        $topMois = $activityRepos->topProjetsPeriode($debutMois, 8);
+        $topMoisTable = $this->buildTopProjetsAvecAutres(
+            (($topMois['code'] ?? 0) === 200) ? $topMois['request'] : [],
+            $totalAnalysesMois
+        );
 
         return [
             'kpi_total_analyses' => $totalAnalyses,
             'kpi_total_projets' => $totalProjetsKpi,
             'kpi_moyenne_jour' => $moyenneJourKpi,
             'kpi_jour_pic' => $jourPic,
+            'heure_table' => $heureTable,
+            'heure_chart' => $heureChart,
             'semaine_table' => $semaineTable,
             'mois_table' => $moisTable,
             'top10_pics' => $top10PicsTable,
             'top10_projets_semaine' => $topSemaineTable,
             'top10_projets_mois' => $topMoisTable,
         ];
+    }
+
+    /**
+     * [Description for buildTopProjetsAvecAutres]
+     * Complète un top N projets (maven_key/project_name/analyse) avec une
+     * ligne "Autres" (somme des analyses hors top N) et un pourcentage de
+     * part du total de la période, pour chaque ligne y compris "Autres".
+     *
+     * @param array<int, array<string, mixed>> $topRows
+     * @param int $totalPeriode
+     *
+     * @return array{table: array<int, array<string, mixed>>, total: int}
+     *
+     * Created at: 19/11/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     */
+    private function buildTopProjetsAvecAutres(array $topRows, int $totalPeriode): array
+    {
+        $sommeAffichee = array_sum(array_map(static fn(array $j) => (int) $j['analyse'], $topRows));
+        $autres = $totalPeriode - $sommeAffichee;
+
+        $table = array_map(static function (array $j) use ($totalPeriode) {
+            $analyse = (int) $j['analyse'];
+            return [
+                'maven_key' => $j['maven_key'],
+                'project_name' => $j['project_name'],
+                'analyse' => $analyse,
+                'percent' => $totalPeriode > 0 ? round(($analyse / $totalPeriode) * 100, 1) : 0,
+            ];
+        }, $topRows);
+
+        if ($autres > 0) {
+            $table[] = [
+                'maven_key' => null,
+                'project_name' => 'Autres',
+                'analyse' => $autres,
+                'percent' => $totalPeriode > 0 ? round(($autres / $totalPeriode) * 100, 1) : 0,
+            ];
+        }
+
+        return ['table' => $table, 'total' => $totalPeriode];
     }
 
     /**
@@ -416,7 +499,9 @@ class ActivityController extends AbstractController
                     'dateIso' => $j['day'],
                     'analyse' => $analyse,
                     'projet' => $projet,
-                    'type' => ($analyse > 0 && ($projet / $analyse) < 0.3) ? 'concentre' : 'large',
+                    // $analyse >= $seuilPic >= 10 à ce point (garde ligne 496) : la division
+                    // par zéro est déjà impossible, pas besoin d'un garde-fou supplémentaire.
+                    'type' => ($projet / $analyse) < 0.3 ? 'concentre' : 'large',
                 ];
             }
         }
