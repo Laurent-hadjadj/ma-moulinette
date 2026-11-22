@@ -65,6 +65,7 @@ nav:
           - Projet: ma-moulinette/application/projet.md
           - OWASP: ma-moulinette/application/owasp.md
           - ZAP (DAST): ma-moulinette/application/zap.md
+          - npm audit: ma-moulinette/application/npm-audit.md
           - Suivi: ma-moulinette/application/suivi.md
           - COSUI: ma-moulinette/application/cosui.md
           - Répartition détaillée: ma-moulinette/application/repartition_details.md

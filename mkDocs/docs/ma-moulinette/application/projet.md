@@ -15,12 +15,13 @@ flowchart TD
     Proj -->|"Comité de Suivi"| Cosui[📅 COSUI]
     Proj -->|"Analyse"| Owasp[🛡️ OWASP]
     Proj -->|"Dependency-Check"<br/>ROLE_SECURITY| DC[🛡️ DependencyCheck]
+    Proj -->|"npm audit"<br/>ROLE_SECURITY| NpmAudit[📦 npm audit]
     Proj -->|"Clean Code"<br/>si serveur SonarQube ≠ v8| CC[✨ Clean Code]
     Proj -->|"lien « Mes projets »"| MesProj[📊 Mes projets]
 ```
 <!-- markdownlint-enable MD046 -->
 
-Deux façons de naviguer : un vrai lien `<a href>` (fil d'Ariane « Accueil », bouton « Dependency-Check ») ou un bouton piloté par JavaScript qui construit l'URL cible avec un jeton obfusqué (ROT13+Base64, pas une signature — confort de navigation, la vraie sécurité vient du pare-feu et des contrôles de rôle/périmètre serveur) et la clé du projet sélectionné (`Répartition`, `Suivi`, `COSUI`, `OWASP`, `Clean Code`) — dans les deux cas, un projet doit être sélectionné au préalable.
+Deux façons de naviguer : un vrai lien `<a href>` (fil d'Ariane « Accueil », bouton « Dependency-Check », bouton « npm audit ») ou un bouton piloté par JavaScript qui construit l'URL cible avec un jeton obfusqué (ROT13+Base64, pas une signature — confort de navigation, la vraie sécurité vient du pare-feu et des contrôles de rôle/périmètre serveur) et la clé du projet sélectionné (`Répartition`, `Suivi`, `COSUI`, `OWASP`, `Clean Code`) — dans les deux cas, un projet doit être sélectionné au préalable.
 
 ## 2️⃣ 🧭 Chemin de fer de la page
 
@@ -119,6 +120,7 @@ Au-dessus du tableau, un badge 🎯 rappelle chaque groupe fonctionnel auquel l'
 | **Comité de Suivi (COSUI)** | toujours | Ouvre [COSUI](cosui.md) |
 | **Analyse OWASP** | toujours | Ouvre [OWASP](owasp.md) (référentiels 2017/2021/2025) |
 | **Dependency-Check** | `ROLE_SECURITY` | Ouvre [DependencyCheck](../dependency-check/pages.md) |
+| **npm audit** | `ROLE_SECURITY` | Ouvre [npm audit](npm-audit.md) |
 | **Clean Code** | serveur SonarQube ≠ version 8 (pas un rôle) | Ouvre [Clean Code](clean-code.md) |
 
 Tous les boutons de navigation (sauf « Afficher » et « Mes projets ») sont **désactivés à l'affichage** et ne se débloquent qu'une fois un projet sélectionné.
@@ -379,7 +381,8 @@ La page `/projet/mes-projets` a ses propres messages Flash, distincts de la page
 - [COSUI](cosui.md) — comité de suivi.
 - [Suivi](suivi.md) — historique des versions, alimenté uniquement après enregistrement.
 - [Répartition détaillée](repartition_details.md) — signalements par module applicatif.
-- [DependencyCheck](../dependency-check/pages.md) — vulnérabilités des dépendances.
+- [DependencyCheck](../dependency-check/pages.md) — vulnérabilités des dépendances Maven (Java).
+- [npm audit](npm-audit.md) — vulnérabilités des dépendances npm (JS/TS).
 - [Gestion de la sécurité](../developpement/securite.md) — détail des rôles.
 
 -**-- FIN --**-
