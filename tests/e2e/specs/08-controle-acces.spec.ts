@@ -1,4 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
+import type { Page } from '@playwright/test';
 import { login } from '../helpers/auth';
 import { resetAndSeedAfterSpec03, resetAndSeedAfterSpec04, resetAndSeedAfterSpec08 } from '../helpers/db';
 import { USERS } from '../helpers/users';
@@ -12,8 +13,9 @@ import { USERS } from '../helpers/users';
  *
  *   A. Contrôle STRICT — `#[IsGranted(...)]` (classe ou méthode) : lève une
  *      vraie AccessDeniedException → vrai HTTP 403. Concerne ROLE_INTERNAL
- *      (/admin/logs), ROLE_GESTIONNAIRE (actions accueil), ROLE_SECURITY
- *      (/dependency-check), ROLE_ACTIVITY (/activity).
+ *      (/admin/logs), ROLE_REFERENTIAL (actions accueil, depuis le
+ *      durcissement ROLE_GESTIONNAIRE→ROLE_REFERENTIAL du 22/11/2026),
+ *      ROLE_SECURITY (/dependency-check), ROLE_ACTIVITY (/activity).
  *
  *   B. Contrôle SOUPLE — `isGranted()` manuel dans le corps du contrôleur :
  *      pas d'exception, juste un flash message + rendu normal, HTTP 200.
@@ -33,14 +35,21 @@ import { USERS } from '../helpers/users';
  * pas le rendu visuel (dépendant de l'environnement).
  *
  * Pré-requis :
- *   - Cas A (sauf ROLE_GESTIONNAIRE positif) + Cas B négatifs : seed post-
+ *   - Cas A (sauf positif ROLE_REFERENTIAL) + Cas B négatifs : seed post-
  *     spec-03 suffit (Josh=ROLE_UTILISATEUR, Nathan=ROLE_COLLECTE,
  *     Sophie=ROLE_COLLECTE+ROLE_SUIVI, Aurélie=ROLE_GESTIONNAIRE,
  *     interne=ROLE_INTERNAL).
  *   - Cas A/B positifs pour ROLE_SECURITY/ROLE_ACTIVITY/ROLE_BATCH/
- *     ROLE_ACTUATOR (rôles qu'aucun user ne porte nativement dans le
- *     scénario 01-07) : seed dédié resetAndSeedAfterSpec08() qui cumule
- *     ces 4 rôles sur Nathan (cf. helpers/db.ts).
+ *     ROLE_ACTUATOR/ROLE_REFERENTIAL (rôles qu'aucun user ne porte
+ *     nativement dans le scénario 01-07) : seed dédié
+ *     resetAndSeedAfterSpec08() qui cumule ces 5 rôles sur Nathan
+ *     (cf. helpers/db.ts).
+ *
+ * MODIF 22/11/2026 : les routes /api/secure/accueil/projet et
+ * /api/secure/accueil/tags exigent désormais ROLE_REFERENTIAL, et non
+ * ROLE_GESTIONNAIRE (nouveau rôle dédié, cf. ApiAccueilController) —
+ * Aurélie (ROLE_GESTIONNAIRE seul) devient donc un cas NÉGATIF sur ces 2
+ * routes, le cas positif passe sur Nathan via resetAndSeedAfterSpec08().
  */
 
 /**
@@ -51,13 +60,30 @@ import { USERS } from '../helpers/users';
  * vrai fetch() déclenché depuis la page, `page.request.post()` n'ajoute
  * pas ces en-têtes automatiquement : sans eux on obtient un 403 pour TOUS
  * les users (y compris ceux avec le bon rôle), ce qui ne testerait pas du
- * tout ROLE_GESTIONNAIRE. On les ajoute explicitement pour isoler le
+ * tout ROLE_REFERENTIAL. On les ajoute explicitement pour isoler le
  * contrôle de rôle comme seule variable testée.
  */
 const INTERNAL_FRONT_HEADERS = {
   Origin: 'http://localhost:8000',
   'X-Internal-Front': 'front-app',
 };
+
+/**
+ * MODIF 22/11/2026 : `page.request.post()` n'attache pas non plus
+ * automatiquement les cookies de la session navigateur (constaté en direct :
+ * le même appel sans ce header reçoit systématiquement un 401 "non
+ * authentifié", alors que l'utilisateur vient d'être connecté avec succès
+ * via `login()` — vérifié que le cookie PHPSESSID attendu par Symfony est
+ * bien présent dans `page.context().cookies()`, juste jamais envoyé par cet
+ * appel précis). On le reconstruit et on le pose explicitement, comme pour
+ * Origin/X-Internal-Front ci-dessus — même nécessité, même cause (ce n'est
+ * pas un vrai fetch() émis par la page).
+ */
+async function apiPost(page: Page, url: string): Promise<import('@playwright/test').APIResponse> {
+  const cookies = await page.context().cookies();
+  const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+  return page.request.post(url, { headers: { ...INTERNAL_FRONT_HEADERS, Cookie: cookieHeader } });
+}
 
 test.describe("08 — Contrôle d'accès par rôle", () => {
   test.describe('A. Contrôle strict (#[IsGranted], 403 réel)', () => {
@@ -79,29 +105,35 @@ test.describe("08 — Contrôle d'accès par rôle", () => {
 
     test('Nathan (ROLE_COLLECTE) reçoit un 403 sur les actions accueil (ROLE_GESTIONNAIRE requis)', async ({ page }) => {
       await login(page, USERS.nathan);
-      const listeResponse = await page.request.post('/api/secure/accueil/projet', { headers: INTERNAL_FRONT_HEADERS });
+      const listeResponse = await apiPost(page, '/api/secure/accueil/projet');
       expect(listeResponse.status()).toBe(403);
-      const tagsResponse = await page.request.post('/api/secure/accueil/tags', { headers: INTERNAL_FRONT_HEADERS });
+      const tagsResponse = await apiPost(page, '/api/secure/accueil/tags');
       expect(tagsResponse.status()).toBe(403);
     });
 
-    test.describe('Aurélie positif (reset password déjà effectué)', () => {
+    test.describe('Aurélie (reset password déjà effectué)', () => {
       test.beforeAll(() => {
         // resetAndSeedAfterSpec03() laisse Aurélie avec reset_password=true
         // (flow nominal 1ère connexion, testé en spec 04) : tant que ce flag
         // est actif, le gate reset-password bloque l'accès à toute route hors
         // /mot-de-passe/mise-a-jour et /logout, quel que soit son rôle — ce
-        // n'est pas un manque de ROLE_GESTIONNAIRE. resetAndSeedAfterSpec04()
-        // simule l'état post-reset (reset_password=false) nécessaire ici.
+        // n'est pas un manque de rôle. resetAndSeedAfterSpec04() simule
+        // l'état post-reset (reset_password=false) nécessaire ici.
         resetAndSeedAfterSpec04();
       });
 
-      test('Aurélie (ROLE_GESTIONNAIRE) accède normalement aux actions accueil', async ({ page }) => {
+      // MODIF 22/11/2026 : ROLE_GESTIONNAIRE ne suffit plus depuis le
+      // durcissement vers ROLE_REFERENTIAL (que Aurélie ne porte pas) —
+      // ce test était un cas positif avant ce durcissement, il vérifie
+      // maintenant le 403 attendu. Cas positif ROLE_REFERENTIAL : voir
+      // "Nathan (ROLE_REFERENTIAL) accède normalement aux actions accueil"
+      // ci-dessous.
+      test('Aurélie (ROLE_GESTIONNAIRE seul) reçoit un 403 sur les actions accueil (ROLE_REFERENTIAL requis)', async ({ page }) => {
         await login(page, USERS.aurelie);
-        const listeResponse = await page.request.post('/api/secure/accueil/projet', { headers: INTERNAL_FRONT_HEADERS });
-        expect(listeResponse.status()).toBe(200);
-        const tagsResponse = await page.request.post('/api/secure/accueil/tags', { headers: INTERNAL_FRONT_HEADERS });
-        expect(tagsResponse.status()).toBe(200);
+        const listeResponse = await apiPost(page, '/api/secure/accueil/projet');
+        expect(listeResponse.status()).toBe(403);
+        const tagsResponse = await apiPost(page, '/api/secure/accueil/tags');
+        expect(tagsResponse.status()).toBe(403);
       });
     });
 
@@ -132,6 +164,14 @@ test.describe("08 — Contrôle d'accès par rôle", () => {
         await login(page, USERS.nathan);
         const response = await page.goto('/activity');
         expect(response?.status()).toBe(200);
+      });
+
+      test('Nathan (ROLE_REFERENTIAL) accède normalement aux actions accueil', async ({ page }) => {
+        await login(page, USERS.nathan);
+        const listeResponse = await apiPost(page, '/api/secure/accueil/projet');
+        expect(listeResponse.status()).toBe(200);
+        const tagsResponse = await apiPost(page, '/api/secure/accueil/tags');
+        expect(tagsResponse.status()).toBe(200);
       });
     });
   });
