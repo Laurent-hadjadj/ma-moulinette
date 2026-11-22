@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\CommandRebuildHistorique;
@@ -214,7 +214,7 @@ class BuildMapHistoryService
      *
      * Created at: 17/03/2026 04:05:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function metricsKey(int $version): string
     {
@@ -280,7 +280,7 @@ class BuildMapHistoryService
      *
      * Created at: 11/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function optionalMetricsKey(): string
     {
@@ -300,7 +300,7 @@ class BuildMapHistoryService
      *
      * Created at: 25/03/2026 18:13:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getCommentDensityRating(float $ratio): string {
         // Courbe en cloche : densité idéale 15-25%. Avant : trou (5, 15) qui
@@ -330,7 +330,7 @@ class BuildMapHistoryService
      *
      * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function normalizeLanguageDistribution(string $raw): string
     {
@@ -346,7 +346,7 @@ class BuildMapHistoryService
      *
      * Created at: 26/03/2026 18:25:42 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getComplexityRating(float|null $ratio): string {
         // MODIF 2026-07-15 : le ratio est ncloc/complexité (lignes de code par point de
@@ -379,7 +379,7 @@ class BuildMapHistoryService
      *
      * Created at: 21/03/2026 14:57:26 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function ratingToLetter(string $value): string
     {
@@ -402,7 +402,7 @@ class BuildMapHistoryService
      *
      * Created at: 29/03/2026 16:19:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getCoverageRating(?float $coverage): ?string
     {
@@ -413,7 +413,7 @@ class BuildMapHistoryService
         if ($coverage >= 80) { return 'A'; }
         if ($coverage >= 70) { return 'B'; }
         if ($coverage >= 50) { return 'C'; }
-        if ($coverage >= 30 && $coverage < 50) { return 'D'; }
+        if ($coverage >= 30) { return 'D'; }
         return 'E';
     }
 
@@ -426,7 +426,7 @@ class BuildMapHistoryService
      *
      * Created at: 29/03/2026 16:36:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getDuplicationRating(?float $density): ?string
     {
@@ -452,7 +452,7 @@ class BuildMapHistoryService
      *
      * Created at: 25/03/2026 18:14:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function generateKeys(array $prefixes, array $suffixes): array {
         $keys = [];
@@ -474,7 +474,7 @@ class BuildMapHistoryService
      *
      * Created at: 19/03/2026 19:25:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function metricsRebuild(array $measures, array $analysis, string $project_key, string $collect = 'measures'): array
     {
