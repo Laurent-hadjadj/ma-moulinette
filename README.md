@@ -1,12 +1,12 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.9.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.10.0-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-4231%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-11426-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-81.13%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-4969%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-12883-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-82.14%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-AGPL%203.0-blue)](LICENSE)
 
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.9.0 Release on November 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.10.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -84,27 +84,27 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 15/11/2026)
+> [!NOTE] Information sur le projet (relevé du 19/11/2026)
 >
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-|  PHP      |  328      | 56559  | 25150        | 10301 | 92010 |
-|  HTML    |  157      | 28592  | 1156         | 2041  | 31789 |
-|  JS      |  93       | 11222  | 4673         | 1826  | 17721 |
-|  CSS     |  39       | 6640   | 1382         | 1403  | 9425 |
-|  SQL     |  84       | 3347   | 1760         | 772   | 5879 |
-|  MIGRATION |  21     | 1165   | 351          | 226   | 1742 |
+|  PHP      |  329      | 56708  | 25356        | 10334 | 92398 |
+|  HTML    |  158      | 28739  | 1168         | 2053  | 31960 |
+|  JS      |  93       | 11355  | 4720         | 1838  | 17913 |
+|  CSS     |  39       | 6647   | 1387         | 1405  | 9439 |
+|  SQL     |  84       | 3349   | 1762         | 772   | 5883 |
+|  MIGRATION |  23     | 1235   | 375          | 238   | 1848 |
 
-### 📊 Qualité du code (relevé du 15/11/2026)
+### 📊 Qualité du code (relevé du 19/11/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 955** tests / 10 209 assertions |
-| Tests d'intégration (`tests/Integration`) | **703** tests / 1 772 assertions |
-| **Total** | **4 658** tests / **11 981** assertions |
+| Tests unitaires (`tests/Unit`) | **3 978** tests / 10 259 assertions |
+| Tests d'intégration (`tests/Integration`) | **714** tests / 1 799 assertions |
+| **Total** | **4 692** tests / **12 058** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **81,24 %** |
+| Couverture — lignes | **81,28 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
@@ -113,7 +113,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.9.0** simplifie la procédure de gestion et de déploiement du projet de démonstration, introduit en 2.8.0 et améliore la documentation markdown (voir [CHANGELOG.md](CHANGELOG.md)).
+La **version 2.10.0** corrige plusieurs anomalies et améliore la stabilité et la qualité de l'application. Elle ajoute notamment la gestion des rapports d'audit pour NPM (TS/JS) (voir [CHANGELOG.md](CHANGELOG.md)).
 
 ### ✅ Fonctionnalités disponibles
 
@@ -129,14 +129,16 @@ La **version 2.9.0** simplifie la procédure de gestion et de déploiement du pr
 - [x] Intégration des **indicateurs SonarQube 10.x** ;
 - [x] Ingestion des rapports Owasp Dependency-Check ;
 - [x] Ingestion des rapports Zap Scan (mode Gore) ;
-- [x] Gestion des **sessions utilisateurs** et **sécurisation** de l’application ;
+- [x] Ingestion des rapports `npm audit` ;
+- [x] Ajout de la page projet, dashboard e* et **sécurisation** de l’application ;
 - [x] Tableaux de bord et **visualisation** des indicateurs, avec **filtrage** et **tri** pour les mesures Legacy et SonarQube 10.x ;
 - [x] Tableaux de bord pour les indicateurs OWASP Dependency-Check ;
 - [x] Tableaux de bord pour les indicateurs ZAP Scan ;
-- [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check et ZAP Scan ;
+- [x] Tableaux de bord pour les indicateurs NPM audit, dont une vue cross-projets par paquet (pas de vue exécutive façon Dependency-Check : pas de socle de versions npm comparable) ;
+- [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check, ZAP Scan et NPM ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 658 tests, 11 981 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 692 tests, 12 058 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 - [x] Ajout des tests End-to-End avec Playwright (22 suites, cf. tableau « Qualité du code » ci-dessus) ;
 - [x] Ajout de la collecte des indicateurs SonarQube 2026.14 (LTA) et des versions ultérieures ;

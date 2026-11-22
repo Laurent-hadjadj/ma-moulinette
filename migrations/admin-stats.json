@@ -1,55 +1,55 @@
 {
-    "generated_at": "2026-11-16T07:11:17+00:00",
+    "generated_at": "2026-11-22T15:54:43+00:00",
     "cloc": {
         "php": {
-            "fichier": 329,
-            "code": 56623,
-            "comment": 25305,
-            "vide": 10326,
-            "total": 92254
+            "fichier": 350,
+            "code": 60069,
+            "comment": 26422,
+            "vide": 10864,
+            "total": 97355
         },
         "html": {
-            "fichier": 158,
-            "code": 28644,
-            "comment": 1163,
-            "vide": 2048,
-            "total": 31855
+            "fichier": 165,
+            "code": 29987,
+            "comment": 1179,
+            "vide": 2171,
+            "total": 33337
         },
         "js": {
-            "fichier": 93,
-            "code": 11222,
-            "comment": 4673,
-            "vide": 1826,
-            "total": 17721
+            "fichier": 95,
+            "code": 11471,
+            "comment": 4783,
+            "vide": 1849,
+            "total": 18103
         },
         "css": {
-            "fichier": 39,
-            "code": 6640,
-            "comment": 1382,
-            "vide": 1403,
-            "total": 9425
+            "fichier": 40,
+            "code": 6863,
+            "comment": 1444,
+            "vide": 1440,
+            "total": 9747
         },
         "sql": {
-            "fichier": 84,
-            "code": 3348,
-            "comment": 1761,
-            "vide": 772,
-            "total": 5881
+            "fichier": 89,
+            "code": 3489,
+            "comment": 1882,
+            "vide": 811,
+            "total": 6182
         },
         "migration": {
-            "fichier": 22,
-            "code": 1200,
-            "comment": 363,
-            "vide": 232,
-            "total": 1795
+            "fichier": 24,
+            "code": 1459,
+            "comment": 416,
+            "vide": 275,
+            "total": 2150
         }
     },
     "tests": {
         "unit": {
-            "count": 3977
+            "count": 4183
         },
         "integration": {
-            "count": 706
+            "count": 786
         }
     }
 }

@@ -75,7 +75,10 @@ Formulaire (Créer / Modifier)
 
 ## 2️⃣ 📊 Suivi d'exécution
 
-Page accessible via `/traitement/suivi` (rôle `ROLE_BATCH` ou `ROLE_GESTIONNAIRE`), présentant un tableau des exécutions avec identifiant, batch/portefeuille associé, mode (automatique/manuel), utilisateur déclencheur, dates de début/fin, durée, statut (`EN_COURS`/`SUCCES`/`ECHEC`/`PARTIEL`), nombre de projets traités/en succès/en erreur, et un bouton **Journal** ouvrant le compte rendu détaillé (décompressé à la volée depuis la colonne `compte_rendu`, stockée en `BYTEA` gzippé).
+Page accessible via `/traitement/suivi` (rôle `ROLE_BATCH` ou `ROLE_GESTIONNAIRE`), présentant un tableau des exécutions avec identifiant, batch/portefeuille associé, mode (automatique/manuel), utilisateur déclencheur, dates de début/fin, durée, statut (`EN_COURS`/`SUCCES`/`ECHEC`/`PARTIEL`), nombre de projets traités/en succès/en erreur, trois boutons par ligne :
+
+- **Journal** : ouvre le compte rendu détaillé (décompressé à la volée depuis la colonne `compte_rendu`, stockée en `BYTEA` gzippé).
+- **Afficher le rapport** / **Télécharger le PDF** : rendent `rapport-colleteuse.html.twig` via `rapport_execution_pdf` (`PdfExportService`). Inactifs (`href="#"`) pour un traitement jamais exécuté.
 
 Filtres disponibles : par portefeuille, par traitement, par statut, par mode, par plage de dates.
 

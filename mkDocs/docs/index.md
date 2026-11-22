@@ -1,6 +1,6 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.9.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.10.0-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛
 ┗┓┏┓┏┛━┏┫┣┓━┃┃
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.9.0 Release on November 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.10.0 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -86,7 +86,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.9.0** simplifie la procédure de gestion et de déploiement du projet de démonstration, introduit en 2.8.0 et améliore la documentation markdown (voir [CHANGELOG.md](CHANGELOG.md)).
+La **version 2.10.0** corrige plusieurs anomalies et améliore la stabilité et la qualité de l'application. Elle ajoute notamment la gestion des rapports d'audit **npm** (dépendances JS/TS) : ingestion asynchrone, pages de restitution, dashboard, vue cross-projets par paquet et export PDF (voir [CHANGELOG.md](CHANGELOG.md)).
 
 ### ✅ Fonctionnalités disponibles
 
@@ -97,6 +97,8 @@ La **version 2.9.0** simplifie la procédure de gestion et de déploiement du pr
 - [x] **Hiérarchie de rôles** étendue : `COLLECTE`, `SUIVI`, `BATCH`, `ACTUATOR`, `SECURITY`, `SECURITY_ANALYTICS`, `GESTIONNAIRE`, `INTERNAL` (+ `ACTIVITY`, utilisé mais hors hiérarchie — voir [Gestion de la sécurité](ma-moulinette/developpement/securite.md)) ;
 - [x] **Collecte** manuelle (boucle synchrone + polling JS) ou automatique (commande console planifiée par cron) — voir [Traitement](ma-moulinette/back-office/traitement.md) ;
 - [x] Module **OWASP DependencyCheck** : ingestion asynchrone des rapports CI, dashboard cross-projets, mutualisation des CVE (voir [DependencyCheck](ma-moulinette/dependency-check/architecture.md)) ;
+- [x] Module **ZAP (DAST)** : ingestion asynchrone des rapports de scan, page de restitution dédiée (KPI, graphiques, historique), export PDF ;
+- [x] Module **npm audit** (dépendances JS/TS) : ingestion asynchrone, pages de restitution (liste, détail, dashboard, vue cross-projets par paquet), export PDF (voir [npm audit](ma-moulinette/application/npm-audit.md)) ;
 - [x] Support **Actuator** : déclaration de points d'accès `/actuator/info`, collecte automatique des clés JSON déclarées à chaque analyse de projet, affichage (pastille + modale) sur la page Projet ; et collecte de la **répartition des LOGGER Java** pour les applications Spring Boot ;
 - [x] **Historisation** des résultats et métriques en base pour les versions SonarQube **8, 9, 10, 2024, 2025 et 2026** ;
 - [x] Tableaux de bord et **visualisation** des indicateurs (projet, profil, OWASP 2017/2021/2025, Clean Code, COSUI, répartition, activité, statistiques) ;
@@ -107,15 +109,15 @@ La **version 2.9.0** simplifie la procédure de gestion et de déploiement du pr
 
 ### 📊 Qualité du code
 
-Relevé du 15/11/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
+Relevé du 19/11/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires | **3 955** (10 209 assertions) |
-| Tests d'intégration | **703** (1 772 assertions) |
-| **Total** | **4 658** tests / **11 981** assertions |
+| Tests unitaires | **3 978** (10 259 assertions) |
+| Tests d'intégration | **714** (1 799 assertions) |
+| **Total** | **4 692** tests / **12 058** assertions |
 | Tests End-to-End | **22** suites Playwright (voir [Tests End-to-End](ma-moulinette/developpement/test-e2e.md)) |
-| Couverture de code (lignes) | **81,24 %** |
+| Couverture de code (lignes) | **81,28 %** |
 | Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 ### 🧱 Fonctionnalités en cours de finalisation
@@ -123,6 +125,8 @@ Relevé du 15/11/2026 — voir [Tests unitaires et d'intégration](ma-moulinette
 Liste des évolutions restantes :
 
 - [ ] Finalisation de la récupération "j'ai oublié mon mot de passe" ;
-- [ ] Améliorer la couverture des tests e2e;
+- [ ] Migration des Security Hotspots SonarQube (`/api/hotspots/*`), dépréciés depuis la version SonarQube 2026.4, vers `issues/search` ;
+- [ ] Ajout de l'authentification MFA ;
+- [ ] Améliorer la couverture des tests e2e ;
 
 -**-- FIN --**-
