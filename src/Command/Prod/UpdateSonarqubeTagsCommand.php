@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -31,11 +31,17 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * MODIF 2026-05-21 : conversion du script CLI
  * `update_sonarqube_tags_cli.php` (v1.1.0) en Symfony Command.
  *
- * Met à jour les tags SonarQube de tous les projets :
+ * Met à jour les tags SonarQube des projets appartenant au périmètre de
+ * groupes défini par sonar_tags.target_groups (SONAR_TAGS_TARGET_GROUPS,
+ * .env.local) :
  *   1. Récupère la liste complète des projets via /api/components/search_projects
- *   2. Efface les tags existants (setTag="aucun")
- *   3. Détecte le groupe de permissions du projet (critère : permissions
- *      {codeviewer,securityhotspotadmin,user} + description contient "2021")
+ *   2. Détecte le groupe du projet par nom direct parmi sonar_tags.target_groups.
+ *      Si target_groups N'EST PAS vide, un projet dont aucun groupe ne figure
+ *      dans la liste est ignoré sans modification ("Ignorés"). Si target_groups
+ *      EST vide, aucun projet ne peut jamais matcher (liste vide) : chaque
+ *      projet non archivé reçoit le tag "aucun" avec un avertissement
+ *      ("Sans tag"), rien n'est ignoré silencieusement.
+ *   3. Efface les tags existants (setTag="aucun")
  *   4. Si groupe "Archive" → tag="archive" ; sinon tag=sanitize(groupName)
  *   5. Sauvegarde le mapping maven_key→groupe dans mapping_projets_groupes.json
  *
@@ -51,8 +57,12 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 )]
 class UpdateSonarqubeTagsCommand extends Command
 {
+    /** @var string[] */
+    private readonly array $sonarTagsTargetGroups;
+
     /**
-     * @param string[] $sonarTagsGroupPermissions
+     * @param string[] $sonarTagsTargetGroups
+     * @param string[] $sonarTagsBusinessTagFileCandidates
      */
     public function __construct(
         /* MODIF 2026-10-15 : log dédié aux commandes de la crontab Docker
@@ -66,14 +76,16 @@ class UpdateSonarqubeTagsCommand extends Command
         private readonly string $mamoulCliProxyUrl,
         private readonly string $mamoulCliProxyUserPwd,
         private readonly string $mamoulCliNoProxy,
-        /* MODIF 2026-07-21 : critère de détection du groupe projet SonarQube,
-         * paramétrable via config/packages/sonar_tags.yaml (auparavant en dur). */
-        #[Autowire(param: 'sonar_tags.group_permissions')]
-        private readonly array $sonarTagsGroupPermissions = ['codeviewer', 'securityhotspotadmin', 'user'],
-        #[Autowire(param: 'sonar_tags.group_description_marker')]
-        private readonly string $sonarTagsGroupDescriptionMarker = '2021',
+        #[Autowire(param: 'sonar_tags.target_groups')]
+        array $sonarTagsTargetGroups = [],
+        #[Autowire(param: 'sonar_tags.business_tag_file_candidates')]
+        private readonly array $sonarTagsBusinessTagFileCandidates = [],
     ) {
         parent::__construct();
+        $this->sonarTagsTargetGroups = array_values(array_unique(array_filter(
+            array_map(static fn (string $g): string => trim($g), $sonarTagsTargetGroups),
+            static fn (string $g): bool => $g !== ''
+        )));
     }
 
     /**
@@ -83,7 +95,7 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * Created at: 24/05/2026 10:04:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function configure(): void
     {
@@ -106,7 +118,7 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * Created at: 24/05/2026 10:04:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -150,33 +162,92 @@ class UpdateSonarqubeTagsCommand extends Command
         $io->text(sprintf('Projets récupérés : %d', count($projects)));
         $this->logger->info('[SonarTags] Projets récupérés.', ['count' => count($projects)]);
 
-        $archive   = 0;
-        $proceeded = 0;
-        $warning   = 0;
-        $mapping   = [];
+        if ($this->sonarTagsTargetGroups !== []) {
+            $io->note(sprintf(
+                'Périmètre restreint à %d groupe(s) : %s. Les autres projets sont ignorés (aucune modification).',
+                count($this->sonarTagsTargetGroups),
+                implode(', ', $this->sonarTagsTargetGroups)
+            ));
+        }
+
+        [$businessTags, $businessTagFile] = $this->loadBusinessTagMap();
+        if ($businessTagFile !== null) {
+            $io->note(sprintf(
+                'Tags métier : %d correspondance(s) chargée(s) depuis %s.',
+                count($businessTags),
+                $businessTagFile
+            ));
+        } else {
+            $io->text('Tags métier : aucun fichier trouvé, étape ignorée.');
+        }
+
+        $archive       = 0;
+        $proceeded     = 0;
+        $warning       = 0;
+        $skipped       = 0;
+        $businessTagged = 0;
+        $mapping       = [];
 
         foreach ($projects as $key) {
             try {
-                $this->setProjectTag($sonarUrl, $auth, $sslConfig, $proxyConfig, $key, 'aucun', $dryRun, $debug, $io);
+                /** 
+                 * MODIF 2026-11-22 : la détection du groupe (déjà nécessaire pour le
+                 * tag) sert aussi de critère de périmètre — un seul appel API
+                 * /api/permissions/groups par projet (au lieu de 2 : archive + groupe
+                 * interrogeaient déjà la même route séparément). Avec un périmètre
+                 * explicite (sonar_tags.target_groups), getProjectGroup() ne peut
+                 * renvoyer qu'un groupe de cette liste (ou null) — un $groupName non
+                 * null y figure donc toujours forcément. */
+                $groups    = $this->fetchProjectGroups($sonarUrl, $auth, $sslConfig, $proxyConfig, $key, $debug, $io);
+                $groupData = $this->getProjectGroup($groups);
+                $groupName = $groupData['name'] ?? null;
 
-                if ($this->isArchivedProject($sonarUrl, $auth, $sslConfig, $proxyConfig, $key, $debug, $io)) {
-                    $groupTag = 'archive';
-                    $archive++;
-                } else {
-                    $groupData = $this->getProjectGroup($sonarUrl, $auth, $sslConfig, $proxyConfig, $key, $debug, $io);
-                    if ($groupData !== null) {
-                        $groupTag = $this->sanitizeTag($groupData['name']);
-                        $proceeded++;
-                    } else {
-                        $groupTag = 'aucun';
-                        $io->warning(sprintf('Projet %s : aucun groupe valide, tag "aucun" conservé.', $key));
-                        $this->logger->warning('[SonarTags] Projet sans groupe valide.', ['key' => $key]);
-                        $warning++;
-                    }
+                if ($this->sonarTagsTargetGroups !== [] && $groupName === null) {
+                    $skipped++;
+                    $this->logger->info('[SonarTags] Projet ignoré (hors périmètre groupes cibles).', [
+                        'key' => $key,
+                    ]);
+                    continue;
                 }
 
-                $this->setProjectTag($sonarUrl, $auth, $sslConfig, $proxyConfig, $key, $groupTag, $dryRun, $debug, $io);
-                $mapping[] = ['maven_key' => $key, 'groupe' => $groupTag];
+                $this->setProjectTag($sonarUrl, $auth, $sslConfig, $proxyConfig, $key, 'aucun', $dryRun, $debug, $io);
+
+                $isArchived = $this->isArchivedProject($groups);
+                if ($isArchived) {
+                    $groupTag = 'archive';
+                } elseif ($groupData !== null) {
+                    $groupTag = $this->sanitizeTag($groupData['name']);
+                } else {
+                    $groupTag = 'aucun';
+                    $io->warning(sprintf('Projet %s : aucun groupe valide, tag "aucun" conservé.', $key));
+                    $this->logger->warning('[SonarTags] Projet sans groupe valide.', ['key' => $key]);
+                }
+
+                $businessTag = $businessTags[$key] ?? null;
+                $finalTags   = $businessTag !== null ? [$groupTag, $businessTag] : [$groupTag];
+
+                $this->setProjectTags($sonarUrl, $auth, $sslConfig, $proxyConfig, $key, $finalTags, $dryRun, $debug, $io);
+
+                /**
+                 * MODIF 2026-11-22 : compteurs incrémentés seulement APRÈS le succès
+                 * de l'appel de tag ci-dessus — pas avant. Un projet dont le clean
+                 * "aucun" passe mais dont le retag échoue (403 "Insufficient privileges"
+                 * SonarQube, ex. permission manquante) tombait dans le catch ci-dessous
+                 * SANS annuler l'incrément déjà fait, et se retrouvait compté "Tagué"
+                 * dans le résumé final alors que son tag de groupe n'avait en réalité
+                 * jamais été appliqué. */
+                if ($isArchived) {
+                    $archive++;
+                } elseif ($groupData !== null) {
+                    $proceeded++;
+                } else {
+                    $warning++;
+                }
+                if ($businessTag !== null) {
+                    $businessTagged++;
+                }
+
+                $mapping[] = ['maven_key' => $key, 'groupe' => $groupTag, 'tag_metier' => $businessTag];
 
             } catch (\Throwable $e) {
                 $io->error(sprintf('Erreur sur %s : %s', $key, $e->getMessage()));
@@ -188,7 +259,8 @@ class UpdateSonarqubeTagsCommand extends Command
 
         /* MODIF 2026-05-24 : chemin var/ + méthode protégée mockable. */
         $mappingFile = 'var/mapping_projets_groupes.json';
-        /* MODIF 2026-07-21 : cette écriture était inconditionnelle — le fichier
+        /**
+         * MODIF 2026-07-21 : cette écriture était inconditionnelle — le fichier
          * était donc bien réécrit sur disque même en --dry-run, alors que l'option
          * annonce explicitement "aucune modification réelle" (seuls les appels de
          * tag SonarQube étaient jusqu'ici simulés). */
@@ -199,11 +271,12 @@ class UpdateSonarqubeTagsCommand extends Command
         }
 
         $io->success(sprintf(
-            'Traitement terminé. Archivés: %d | Tagués: %d | Sans tag: %d | Mapping: %s',
-            $archive, $proceeded, $warning, $dryRun ? $mappingFile . ' (non écrit)' : $mappingFile
+            'Traitement terminé. Archivés: %d | Tagués: %d | Tag métier: %d | Sans tag: %d | Ignorés: %d | Mapping: %s',
+            $archive, $proceeded, $businessTagged, $warning, $skipped, $dryRun ? $mappingFile . ' (non écrit)' : $mappingFile
         ));
         $this->logger->info('[SonarTags] Terminé.', [
-            'archive' => $archive, 'proceeded' => $proceeded, 'warning' => $warning,
+            'archive' => $archive, 'proceeded' => $proceeded, 'business_tagged' => $businessTagged,
+            'warning' => $warning, 'skipped' => $skipped,
         ]);
 
         return Command::SUCCESS;
@@ -216,11 +289,12 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * Created at: 24/05/2026 10:04:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function buildSslConfig(): array
     {
-        /* MODIF 2026-07-21 : verify_peer/verify_host sont typés int non-nullables
+        /**
+         * MODIF 2026-07-21 : verify_peer/verify_host sont typés int non-nullables
          * (résolus par Symfony via %env(int:MAMOUL_CLI_VERIFY_*)%, qui échoue au
          * démarrage si la variable est absente) — un "?: 0" ici ne pouvait donc
          * jamais retomber sur un défaut sûr, il ne faisait que réécrire la même
@@ -240,7 +314,7 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * Created at: 24/05/2026 10:04:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function buildProxyConfig(): array
     {
@@ -265,13 +339,78 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * Created at: 24/05/2026 10:06:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function sanitizeTag(string $tag): string
     {
         $tag = strtolower($tag);
         $tag = preg_replace('/[^a-z0-9]/', '-', $tag) ?? '';
         return $tag !== '' ? $tag : 'aucun';
+    }
+
+    /**
+     * [Description for loadBusinessTagMap]
+     * Phase 3 : charge la correspondance maven_key → tag métier depuis le
+     * premier fichier existant de sonar_tags.business_tag_file_candidates.
+     * Fichier optionnel : aucun candidat trouvé n'est pas une erreur, le
+     * tag métier est alors simplement omis pour tous les projets.
+     *
+     * Format attendu : tableau JSON d'objets {"project_key": "...",
+     * "code_apli": "..."}. Une entrée invalide (champ manquant/vide une fois
+     * trimmé) est ignorée silencieusement ; un fichier illisible ou un JSON
+     * invalide produit un avertissement loggé et un résultat vide (comme
+     * "fichier non trouvé", pas une erreur bloquante pour le reste de la
+     * commande).
+     *
+     * @return array{0: array<string, string>, 1: string|null}
+     *
+     * Created at: 22/11/2026
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     */
+    private function loadBusinessTagMap(): array
+    {
+        $path = null;
+        foreach ($this->sonarTagsBusinessTagFileCandidates as $candidate) {
+            if ($candidate !== '' && is_file($candidate)) {
+                $path = $candidate;
+                break;
+            }
+        }
+        if ($path === null) {
+            return [[], null];
+        }
+
+        try {
+            $content = file_get_contents($path);
+            if ($content === false) {
+                throw new \RuntimeException('Lecture impossible.');
+            }
+            $rows = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+            if (!is_array($rows)) {
+                throw new \RuntimeException('Structure JSON inattendue (tableau attendu).');
+            }
+        } catch (\Throwable $e) {
+            $this->logger->warning('[SonarTags] Fichier de tags métier illisible, étape ignorée.', [
+                'path' => $path, 'error' => $e->getMessage(),
+            ]);
+            return [[], null];
+        }
+
+        $map = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $mavenKey  = trim((string) ($row['project_key'] ?? ''));
+            $codeAppli = trim((string) ($row['code_apli'] ?? ''));
+            if ($mavenKey === '' || $codeAppli === '') {
+                continue;
+            }
+            $map[$mavenKey] = $this->sanitizeTag($codeAppli);
+        }
+
+        return [$map, $path];
     }
 
     /**
@@ -294,7 +433,7 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * Created at: 24/05/2026 10:06:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     protected function callApi(
         string $sonarUrl,
@@ -328,7 +467,7 @@ class UpdateSonarqubeTagsCommand extends Command
             CURLOPT_SSL_VERIFYHOST => $sslConfig['verify_host'] === 0 ? 0 : 2,
             CURLOPT_SSL_VERIFYPEER => (bool) $sslConfig['verify_peer'],
             CURLOPT_SSL_CIPHER_LIST=> $sslConfig['ciphers'],
-            CURLOPT_PROTOCOLS      => CURLPROTO_HTTPS,
+            CURLOPT_PROTOCOLS      => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_CONNECTTIMEOUT => 15,
             CURLOPT_TIMEOUT        => 90,
         ]);
@@ -425,7 +564,7 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * Created at: 24/05/2026 10:08:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function setProjectTag(
         string $sonarUrl,
@@ -438,7 +577,44 @@ class UpdateSonarqubeTagsCommand extends Command
         bool $debug,
         SymfonyStyle $io
     ): void {
-        $tagValue = $this->sanitizeTag($tagValue);
+        $this->setProjectTags($sonarUrl, $auth, $sslConfig, $proxyConfig, $projectKey, [$tagValue], $dryRun, $debug, $io);
+    }
+
+    /**
+     * [Description for setProjectTags]
+     * Variante de setProjectTag() pour plusieurs tags combinés en un seul
+     * appel (ex. tag de groupe + tag métier, phase 3) : l'API SonarQube
+     * remplace la liste complète des tags d'un projet à chaque appel, donc
+     * chaque tag doit être sanitizé individuellement AVANT d'être joint par
+     * une virgule — sanitizer la chaîne déjà jointe transformerait la
+     * virgule elle-même en "-" et fusionnerait les tags en un seul.
+     *
+     * @param array{verify_peer: int, verify_host: int, ciphers: non-empty-string} $sslConfig
+     * @param array{use_proxy: int, proxy_url: string, proxy_userpwd: string, no_proxy: string[]} $proxyConfig
+     * @param string[] $tags
+     *
+     * Created at: 22/11/2026
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     */
+    private function setProjectTags(
+        string $sonarUrl,
+        string $auth,
+        array $sslConfig,
+        array $proxyConfig,
+        string $projectKey,
+        array $tags,
+        bool $dryRun,
+        bool $debug,
+        SymfonyStyle $io
+    ): void {
+        $sanitized = array_map(fn (string $tag): string => $this->sanitizeTag($tag), $tags);
+        $sanitized = array_values(array_unique(array_filter(
+            $sanitized,
+            static fn (string $tag): bool => $tag !== ''
+        )));
+        $tagValue = $sanitized !== [] ? implode(',', $sanitized) : 'aucun';
+
         if ($dryRun) {
             $io->text(sprintf('  [DRY-RUN] Tag simulé : "%s" → %s', $tagValue, $projectKey));
             return;
@@ -448,7 +624,10 @@ class UpdateSonarqubeTagsCommand extends Command
     }
 
     /**
-     * [Description for getProjectGroup]
+     * [Description for fetchProjectGroups]
+     * Récupère la liste brute des groupes de permissions d'un projet.
+     * Point d'entrée API unique, réutilisé par getProjectGroup() et
+     * isArchivedProject() (auparavant 2 appels séparés vers la même route).
      *
      * @param string $sonarUrl
      * @param string $auth
@@ -458,13 +637,13 @@ class UpdateSonarqubeTagsCommand extends Command
      * @param bool $debug
      * @param SymfonyStyle $io
      *
-     * @return array{name: string, permissions: string[]}|null
+     * @return array<int, array{name?: string, permissions?: string[], description?: string}>
      *
-     * Created at: 24/05/2026 10:08:45 (Europe/Paris)
+     * Created at: 22/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function getProjectGroup(
+    private function fetchProjectGroups(
         string $sonarUrl,
         string $auth,
         array $sslConfig,
@@ -472,19 +651,52 @@ class UpdateSonarqubeTagsCommand extends Command
         string $projectKey,
         bool $debug,
         SymfonyStyle $io
-    ): ?array {
+    ): array {
         $data = $this->callApi($sonarUrl, $auth, $sslConfig, $proxyConfig,
             '/api/permissions/groups', ['projectKey' => $projectKey], 'GET', $debug, $io);
-        if (!is_array($data) || !isset($data['groups'])) {
-            return null;
-        }
-        foreach ($data['groups'] as $g) {
-            $permissions = $g['permissions'] ?? [];
-            $desc        = $g['description'] ?? '';
-            if (!empty($permissions)
-                && count(array_diff($permissions, $this->sonarTagsGroupPermissions)) === 0
-                && str_contains($desc, $this->sonarTagsGroupDescriptionMarker)) {
-                return ['name' => (string) $g['name'], 'permissions' => (array) $permissions];
+        return is_array($data) ? (array) ($data['groups'] ?? []) : [];
+    }
+
+    /**
+     * [Description for getProjectGroup]
+     * Détermine le groupe "projet" parmi les groupes déjà récupérés via
+     * fetchProjectGroups() : celui dont le nom figure exactement dans
+     * `sonar_tags.target_groups` (recherche directe par nom).
+     *
+     * MODIF 2026-11-22 : l'ancien critère de repli (permissions
+     * {codeviewer,securityhotspotadmin,user} + marqueur de description
+     * "2021", utilisé pour deviner le "bon" groupe quand aucune liste
+     * explicite n'existait) a été retiré — les groupes cibles sont
+     * désormais toujours explicites, cette convention de nommage n'a plus
+     * d'utilité. Périmètre vide = aucun groupe ne peut jamais matcher, donc
+     * toujours null (voir le docblock de la classe pour ce que ça implique
+     * côté appelant).
+     *
+     * BUG CORRIGÉ 2026-11-22 :
+     * `/api/permissions/groups` renvoie TOUJOURS tous les groupes de
+     * l'instance SonarQube (pas seulement ceux qui ont un droit sur ce
+     * projet précis) — `permissions` est un tableau VIDE pour un groupe qui
+     * n'a en réalité aucun droit sur ce projet. Sans la vérification
+     * `$permissions !== []` ci-dessous, un projet dont le vrai groupe est
+     * hors périmètre se faisait rattacher au premier groupe du périmètre 
+     * trouvé dans la liste malgré un tableau `permissions` vide pour ce groupe —
+     * c'est-à-dire un groupe auquel le projet n'appartient en réalité pas du tout.
+     *
+     * @param array<int, array{name?: string, permissions?: string[], description?: string}> $groups
+     *
+     * @return array{name: string, permissions: string[]}|null
+     *
+     * Created at: 24/05/2026 10:08:45 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     */
+    private function getProjectGroup(array $groups): ?array
+    {
+        foreach ($groups as $g) {
+            $name        = (string) ($g['name'] ?? '');
+            $permissions = (array) ($g['permissions'] ?? []);
+            if ($name !== '' && $permissions !== [] && in_array($name, $this->sonarTagsTargetGroups, true)) {
+                return ['name' => $name, 'permissions' => $permissions];
             }
         }
         return null;
@@ -502,35 +714,21 @@ class UpdateSonarqubeTagsCommand extends Command
 
     /**
      * [Description for isArchivedProject]
+     * Détermine si un projet est archivé parmi les groupes déjà récupérés
+     * via fetchProjectGroups().
      *
-     * @param string $sonarUrl
-     * @param string $auth
-     * @param array{verify_peer: int, verify_host: int, ciphers: non-empty-string} $sslConfig
-     * @param array{use_proxy: int, proxy_url: string, proxy_userpwd: string, no_proxy: string[]} $proxyConfig
-     * @param string $projectKey
-     * @param bool $debug
-     * @param SymfonyStyle $io
+     * @param array<int, array{name?: string, permissions?: string[], description?: string}> $groups
      *
      * @return bool
      *
      * Created at: 24/05/2026 10:11:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function isArchivedProject(
-        string $sonarUrl,
-        string $auth,
-        array $sslConfig,
-        array $proxyConfig,
-        string $projectKey,
-        bool $debug,
-        SymfonyStyle $io
-    ): bool {
-        $data   = $this->callApi($sonarUrl, $auth, $sslConfig, $proxyConfig,
-            '/api/permissions/groups', ['projectKey' => $projectKey], 'GET', $debug, $io);
-        $groups = is_array($data) ? ($data['groups'] ?? []) : [];
+    private function isArchivedProject(array $groups): bool
+    {
         foreach ($groups as $g) {
-            if ($g['name'] === 'Archive' && !empty($g['permissions'])) {
+            if (($g['name'] ?? null) === 'Archive' && !empty($g['permissions'])) {
                 return true;
             }
         }
