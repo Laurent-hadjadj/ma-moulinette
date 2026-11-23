@@ -1,6 +1,6 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.10.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.10.1-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5.12-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.11-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.10.0 Release on November 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.10.1 Release on November 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -113,7 +113,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.10.0** corrige plusieurs anomalies et améliore la stabilité et la qualité de l'application. Elle ajoute notamment la gestion des rapports d'audit pour NPM (TS/JS) (voir [CHANGELOG.md](CHANGELOG.md)).
+La **version 2.10.1** gros chore de la version - licence, en-tête, phpDoc,... (voir [CHANGELOG.md](CHANGELOG.md)).
 
 ### ✅ Fonctionnalités disponibles
 
