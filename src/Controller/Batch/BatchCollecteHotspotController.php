@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -32,8 +32,8 @@ class BatchCollecteHotspotController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -41,8 +41,7 @@ class BatchCollecteHotspotController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for vulnerabilityProbability]
@@ -51,9 +50,8 @@ class BatchCollecteHotspotController extends AbstractController
      *
      * @return int
      *
-     * Created at: 26/05/2024 16:04:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function vulnerabilityProbability(string $probability): int
     {
@@ -76,10 +74,8 @@ class BatchCollecteHotspotController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     *
-     * Created at: 21/05/2024 22:25:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteHotspot(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -112,7 +108,8 @@ class BatchCollecteHotspotController extends AbstractController
         /** pas d'information disponible */
         if (!$select['info']) {
             $this->logger->info('[Batch Hotspot] ℹ️ Aucune information trouvée sur le projet', [
-            'maven_key' => $maven_key]);
+                'maven_key' => $maven_key
+            ]);
 
             return [
                 'code' => 404,
@@ -124,13 +121,14 @@ class BatchCollecteHotspotController extends AbstractController
         $dateVersion = new \DateTimeImmutable($select['info']['date'], new \DateTimeZone(self::$europeParis));
 
         /** Sécurisation de l'URL */
-        /* MODIF 2026-10-16 : projectKey supprimé (pas juste déprécié) sur
+        /**
+         * MODIF 2026-10-16 : projectKey supprimé (pas juste déprécié) sur
          * /api/hotspots/search depuis SonarQube 2026.10, remplacé par project
          * (renommage effectif depuis la 10.2) — voir GetSonarVersionService::hotspotProjectParam(). */
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/hotspots/search',
-            [ $this->sonarVersion->hotspotProjectParam() => $maven_key, 'ps' => 500, 'p' => 1 ]
+            [$this->sonarVersion->hotspotProjectParam() => $maven_key, 'ps' => 500, 'p' => 1]
         );
 
         $this->logger->debug("[Batch Hotspot] 🛠️ Appel API SonarQube", ['url' => $url]);
@@ -149,11 +147,11 @@ class BatchCollecteHotspotController extends AbstractController
             ];
         }
 
-       /** Création de la date du jour */
+        /** Création de la date du jour */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
-        $map = [ 'maven_key' => $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $delete = $hotspotsRepos->deleteHotspotsMavenKey($map);
 
         if ($delete['code'] != 200) {
@@ -177,27 +175,34 @@ class BatchCollecteHotspotController extends AbstractController
                 $niveau = $this->vulnerabilityProbability($value['vulnerabilityProbability']);
                 /** On compte le nombre de hotspot par niveau */
                 switch ($niveau) {
-                    case 1: $high++; break;
-                    case 2: $medium++; break;
-                    case 3: $low++; break;
-                    default: break;
+                    case 1:
+                        $high++;
+                        break;
+                    case 2:
+                        $medium++;
+                        break;
+                    case 3:
+                        $low++;
+                        break;
+                    default:
+                        break;
                 }
 
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
-                        'maven_key' => $maven_key,
-                        'version' => $select['info']['version'],
-                        'date_version' => $dateVersion,
-                        'hotspot_key' => $value['key'] ?? 'NC',
-                        'security_category' => $value['securityCategory'] ?? 'NC',
-                        'rule_key' => $value['ruleKey'] ?? 'NC',
-                        'probability' => $value['vulnerabilityProbability'],
-                        'status' => $value['status'] ?? 'NC',
-                        'resolution' => $value['resolution'] ?? '',
-                        'niveau' => $niveau,
-                        'mode_collecte' => $mode_collecte,
-                        'utilisateur_collecte' =>$utilisateur_collecte,
-                        'date_enregistrement' => $date
+                    'maven_key' => $maven_key,
+                    'version' => $select['info']['version'],
+                    'date_version' => $dateVersion,
+                    'hotspot_key' => $value['key'] ?? 'NC',
+                    'security_category' => $value['securityCategory'] ?? 'NC',
+                    'rule_key' => $value['ruleKey'] ?? 'NC',
+                    'probability' => $value['vulnerabilityProbability'],
+                    'status' => $value['status'] ?? 'NC',
+                    'resolution' => $value['resolution'] ?? '',
+                    'niveau' => $niveau,
+                    'mode_collecte' => $mode_collecte,
+                    'utilisateur_collecte' => $utilisateur_collecte,
+                    'date_enregistrement' => $date
                 ];
             }
         } else {
@@ -205,23 +210,23 @@ class BatchCollecteHotspotController extends AbstractController
             $niveau = $this->vulnerabilityProbability('NC');
             /** Ajout des hotspots à la liste à insérer */
             $map[] = [
-                    'maven_key' => $maven_key,
-                    'version' => $select['info']['version'],
-                    'date_version' => $dateVersion,
-                    'hotspot_key' => 'NC',
-                    'security_category' => 'NC',
-                    'rule_key' => 'NC',
-                    'probability' => 'NC',
-                    'status' => 'NC',
-                    'resolution' => '',
-                    'niveau' => $niveau,
-                    'mode_collecte' => $mode_collecte,
-                    'utilisateur_collecte' => $utilisateur_collecte,
-                    'date_enregistrement' => $date
+                'maven_key' => $maven_key,
+                'version' => $select['info']['version'],
+                'date_version' => $dateVersion,
+                'hotspot_key' => 'NC',
+                'security_category' => 'NC',
+                'rule_key' => 'NC',
+                'probability' => 'NC',
+                'status' => 'NC',
+                'resolution' => '',
+                'niveau' => $niveau,
+                'mode_collecte' => $mode_collecte,
+                'utilisateur_collecte' => $utilisateur_collecte,
+                'date_enregistrement' => $date
             ];
         }
 
-         /** On enregistre les données */
+        /** On enregistre les données */
         $insert = $hotspotsRepos->insertHotspots($map);
 
         if ($insert['code'] !== 200) {
@@ -238,11 +243,11 @@ class BatchCollecteHotspotController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $historique = [
-                'hotspot_high' => $high,
-                'hotspot_medium' => $medium,
-                'hotspot_low' => $low,
-                'nombre_hotspot' => $high+$medium+$low
-            ];
+            'hotspot_high' => $high,
+            'hotspot_medium' => $medium,
+            'hotspot_low' => $low,
+            'nombre_hotspot' => $high + $medium + $low
+        ];
 
         $this->logger->info('[Batch Hotspot] ℹ️ Collecte terminée avec succès', [
             'maven_key' => $maven_key,
@@ -259,5 +264,4 @@ class BatchCollecteHotspotController extends AbstractController
             'historique' => $historique
         ];
     }
-
 }

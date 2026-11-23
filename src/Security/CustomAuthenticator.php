@@ -46,8 +46,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         private LoggerInterface $logger,
         private Ldap $ldap,
         private string $ldapUpnSuffix,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for authenticate]
@@ -57,7 +56,6 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * @return Passport
      *
-     * Created at: 31/01/2024 14:57:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -108,9 +106,9 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
                 $session = $request->getSession();
                 if ($session instanceof \Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface) {
                     $session->getFlashBag()->add('notice', [
-                    'type' => 'success',
-                    'message' => 'Votre mot de passe a été automatiquement mis à jour.'
-                ]);
+                        'type' => 'success',
+                        'message' => 'Votre mot de passe a été automatiquement mis à jour.'
+                    ]);
                 }
 
                 return $this->createPassport($login, $utilisateur, $request);
@@ -150,6 +148,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
             );
             $result = $query->execute();
 
+            // NON je ne veux pas empty() je veux un count() !!!!
             if (count($result) === 0) {
                 $this->logger->warning('[LDAP] 👻 Utilisateur LDAP introuvable.', [
                     'user' => $userDn,
@@ -226,7 +225,6 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
             throw new CustomUserMessageAuthenticationException(
                 '[InvalidCredentialsException] Identifiant ou mot de passe incorrect.'
             );
-
         } catch (ExceptionInterface $e) {
             $this->logger->warning("[LDAP] 🔴 Erreur LDAP : " . $e->getMessage(), [
                 'user' => $courriel
@@ -249,7 +247,6 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * @return Response|null
      *
-     * Created at: 31/01/2024 14:56:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -271,29 +268,28 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * @return Response
      *
-     * Created at: 11/02/2026 16:26:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function onAuthenticationFailure(
-    Request $request,
-    AuthenticationException $exception
+        Request $request,
+        AuthenticationException $exception
     ): Response {
         $this->logger->warning("[AuthenticationException] ⚠️ Échec d'authentification pour " .     $request->request->get('courriel'), [
             'error' => $exception->getMessage()
         ]);
 
         // 1. Stocker dans la session (clé Symfony)
-            $request->getSession()->set(
-                SecurityRequestAttributes::AUTHENTICATION_ERROR,
-                $exception
-            );
+        $request->getSession()->set(
+            SecurityRequestAttributes::AUTHENTICATION_ERROR,
+            $exception
+        );
 
-            // 2. AUSSI dans les attributs de la requête
-            $request->attributes->set(
-                SecurityRequestAttributes::AUTHENTICATION_ERROR,
-                $exception
-            );
+        // 2. AUSSI dans les attributs de la requête
+        $request->attributes->set(
+            SecurityRequestAttributes::AUTHENTICATION_ERROR,
+            $exception
+        );
 
         return new RedirectResponse($this->getLoginUrl($request));
     }
@@ -305,7 +301,6 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * @return string
      *
-     * Created at: 26/09/2025 10:08:42 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -322,7 +317,6 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * @return Response
      *
-     * Created at: 26/09/2025 10:08:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -349,7 +343,6 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
      *
      * @return Passport
      *
-     * Created at: 11/02/2026 15:56:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

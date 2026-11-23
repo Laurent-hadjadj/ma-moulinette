@@ -42,8 +42,6 @@ class UtilisateurRepositoryHandlerTest extends TestCase
      * [Description for testInsertTodo_WhenSQLException]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 12:24:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -107,8 +105,6 @@ class UtilisateurRepositoryHandlerTest extends TestCase
      * [Description for testUpdateUtilisateurFavoriProjet_WhenSQLException]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 14:27:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

@@ -28,7 +28,7 @@ class AnomalieRepository extends ServiceEntityRepository
 
   public function __construct(ManagerRegistry $registry)
   {
-      parent::__construct($registry, Anomalie::class);
+    parent::__construct($registry, Anomalie::class);
   }
 
   /**
@@ -37,8 +37,6 @@ class AnomalieRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 21/12/2024 20:17:39 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -48,17 +46,17 @@ class AnomalieRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = self::$noDataBase;
+      $message = self::$noDataBase;
     }
 
     // state = '23502'
     if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-        $message = $e->getMessage();
+      $message = $e->getMessage();
     }
 
     // state = '23505'
     if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
     }
 
     return ['code' => 500, 'erreur' => $message];
@@ -71,8 +69,6 @@ class AnomalieRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 13/03/2024 18:01:52 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -82,14 +78,14 @@ class AnomalieRepository extends ServiceEntityRepository
             FROM ma_moulinette.anomalie
             WHERE maven_key=:maven_key";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -99,8 +95,6 @@ class AnomalieRepository extends ServiceEntityRepository
    * Retourne la liste des anomalies par projet, trié  par ordre alphabétique
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/03/2024 21:24:57 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -111,10 +105,10 @@ class AnomalieRepository extends ServiceEntityRepository
             GROUP BY maven_key, project_name
             ORDER BY project_name ASC";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-          $liste = $stmt->executeQuery()->fetchAllAssociative();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
@@ -125,8 +119,6 @@ class AnomalieRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 20/03/2024 16:17:09 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -135,14 +127,14 @@ class AnomalieRepository extends ServiceEntityRepository
     $sql = "SELECT *
             FROM ma_moulinette.anomalie
             WHERE maven_key=:maven_key";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -151,8 +143,6 @@ class AnomalieRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 29/05/2024 18:15:21 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -163,51 +153,50 @@ class AnomalieRepository extends ServiceEntityRepository
             VALUES
               (:maven_key, :project_name, :anomalie_total, :dette_minute, :dette_reliability_minute, :dette_vulnerability_minute, :dette_code_smell_minute, :dette, :dette_reliability, :dette_vulnerability, :dette_code_smell, :frontend, :backend, :autre, :inconnu, :blocker, :critical, :major, :info, :minor, :bug, :vulnerability, :code_smell, :scope_main, :scope_test, :bug_scope_main, :bug_scope_test, :vulnerability_scope_main, :vulnerability_scope_test, :code_smell_scope_main, :code_smell_scope_test, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
+      $this->getEntityManager()->getConnection()->beginTransaction();
 
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(':project_name', $map['project_name']);
-              $stmt->bindValue(':anomalie_total', $map['anomalie_total']);
-              $stmt->bindValue(':dette', $map['dette']);
-              $stmt->bindValue(':dette_reliability', $map['dette_reliability']);
-              $stmt->bindValue(':dette_vulnerability', $map['dette_vulnerability']);
-              $stmt->bindValue(':dette_code_smell', $map['dette_code_smell']);
-              $stmt->bindValue(':dette_minute', $map['dette_minute']);
-              $stmt->bindValue(':dette_reliability_minute', $map['dette_reliability_minute']);
-              $stmt->bindValue(':dette_vulnerability_minute', $map['dette_vulnerability_minute']);
-              $stmt->bindValue(':dette_code_smell_minute', $map['dette_code_smell_minute']);
-              $stmt->bindValue(':frontend', $map['frontend']);
-              $stmt->bindValue(':backend', $map['backend']);
-              $stmt->bindValue(':autre', $map['autre']);
-              $stmt->bindValue(':inconnu', $map['inconnu']);
-              $stmt->bindValue(':blocker', $map['blocker']);
-              $stmt->bindValue(':critical', $map['critical']);
-              $stmt->bindValue(':major', $map['major']);
-              $stmt->bindValue(':info', $map['info']);
-              $stmt->bindValue(':minor', $map['minor']);
-              $stmt->bindValue(':bug', $map['bug']);
-              $stmt->bindValue(':vulnerability', $map['vulnerability']);
-              $stmt->bindValue(':code_smell', $map['code_smell']);
-              $stmt->bindValue(':scope_main', $map['scope_main']);
-              $stmt->bindValue(':scope_test', $map['scope_test']);
-              $stmt->bindValue(':bug_scope_main', $map['bug_scope_main']);
-              $stmt->bindValue(':bug_scope_test', $map['bug_scope_test']);
-              $stmt->bindValue(':vulnerability_scope_main', $map['vulnerability_scope_main']);
-              $stmt->bindValue(':vulnerability_scope_test', $map['vulnerability_scope_test']);
-              $stmt->bindValue(':code_smell_scope_main', $map['code_smell_scope_main']);
-              $stmt->bindValue(':code_smell_scope_test', $map['code_smell_scope_test']);
-              $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-              $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-              /** on formate la date avant de l'enregistrer */
-              $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-              $stmt->executeStatement();
-            $this->getEntityManager()->getConnection()->commit();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(':project_name', $map['project_name']);
+      $stmt->bindValue(':anomalie_total', $map['anomalie_total']);
+      $stmt->bindValue(':dette', $map['dette']);
+      $stmt->bindValue(':dette_reliability', $map['dette_reliability']);
+      $stmt->bindValue(':dette_vulnerability', $map['dette_vulnerability']);
+      $stmt->bindValue(':dette_code_smell', $map['dette_code_smell']);
+      $stmt->bindValue(':dette_minute', $map['dette_minute']);
+      $stmt->bindValue(':dette_reliability_minute', $map['dette_reliability_minute']);
+      $stmt->bindValue(':dette_vulnerability_minute', $map['dette_vulnerability_minute']);
+      $stmt->bindValue(':dette_code_smell_minute', $map['dette_code_smell_minute']);
+      $stmt->bindValue(':frontend', $map['frontend']);
+      $stmt->bindValue(':backend', $map['backend']);
+      $stmt->bindValue(':autre', $map['autre']);
+      $stmt->bindValue(':inconnu', $map['inconnu']);
+      $stmt->bindValue(':blocker', $map['blocker']);
+      $stmt->bindValue(':critical', $map['critical']);
+      $stmt->bindValue(':major', $map['major']);
+      $stmt->bindValue(':info', $map['info']);
+      $stmt->bindValue(':minor', $map['minor']);
+      $stmt->bindValue(':bug', $map['bug']);
+      $stmt->bindValue(':vulnerability', $map['vulnerability']);
+      $stmt->bindValue(':code_smell', $map['code_smell']);
+      $stmt->bindValue(':scope_main', $map['scope_main']);
+      $stmt->bindValue(':scope_test', $map['scope_test']);
+      $stmt->bindValue(':bug_scope_main', $map['bug_scope_main']);
+      $stmt->bindValue(':bug_scope_test', $map['bug_scope_test']);
+      $stmt->bindValue(':vulnerability_scope_main', $map['vulnerability_scope_main']);
+      $stmt->bindValue(':vulnerability_scope_test', $map['vulnerability_scope_test']);
+      $stmt->bindValue(':code_smell_scope_main', $map['code_smell_scope_main']);
+      $stmt->bindValue(':code_smell_scope_test', $map['code_smell_scope_test']);
+      $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+      $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+      /** on formate la date avant de l'enregistrer */
+      $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
-
 }

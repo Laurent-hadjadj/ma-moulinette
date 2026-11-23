@@ -20,7 +20,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\{BooleanField, ChoiceField, DateTimeFi
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{Batch, BatchTraitement, BatchExecution };
+use App\Entity\{Batch, BatchTraitement, BatchExecution};
 use App\Exception\SqlRequestException;
 
 /**
@@ -37,14 +37,12 @@ class BatchCrudController extends AbstractCrudController
     /**
      * [Description for __construct]
      *
-     * Created at: 02/01/2023, 18:32:27 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $emm
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for formatUsername]
@@ -55,17 +53,17 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return string
      *
-     * Created at: 01/06/2025 16:47:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function formatUsername(string $first_name, string $last_name): string
     {
         // Si pas de point OU compte technique
-        if (strtolower($first_name) === 'admin' && (
-            strtolower($last_name) === '@ma-moulinette' ||
-            strtolower($last_name) === 'ma-moulinette')
-            ) {
+        if (
+            strtolower($first_name) === 'admin' && (
+                strtolower($last_name) === '@ma-moulinette' ||
+                strtolower($last_name) === 'ma-moulinette')
+        ) {
             return ' ' . strtoupper($first_name);
         }
 
@@ -83,9 +81,8 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return string
      *
-     * Created at: 02/01/2023, 18:32:36 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getEntityFqcn(): string
     {
@@ -99,9 +96,8 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return Actions
      *
-     * Created at: 09/11/2025 15:49:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureActions(Actions $actions): Actions
     {
@@ -118,9 +114,8 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return Filters
      *
-     * Created at: 02/01/2023, 18:32:42 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -138,9 +133,8 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return iterable<\EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface>
      *
-     * Created at: 02/01/2023, 18:33:02 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFields(string $pageName): iterable
     {
@@ -171,7 +165,7 @@ class BatchCrudController extends AbstractCrudController
             $key = ["aucun"];
             $val = ["Aucun"];
         } else {
-            foreach($result as $value) {
+            foreach ($result as $value) {
                 $key[$i] = $value['groupe_fonctionnel'];
                 $val[$i] = $value['groupe_fonctionnel'];
                 $i++;
@@ -202,7 +196,6 @@ class BatchCrudController extends AbstractCrudController
         yield DateTimeField::new('dateEnregistrement')
             ->setTimezone(self::$europeParis)
             ->hideOnForm();
-
     }
 
     /**
@@ -213,9 +206,8 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return void
      *
-     * Created at: 02/01/2023, 18:33:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -239,14 +231,14 @@ class BatchCrudController extends AbstractCrudController
         $exec = $this->emm->getConnection()->executeQuery($sql, ['portefeuille' => $portefeuille])->fetchAssociative();
 
         $nombre_projet = 0;
-        if (isset($exec['liste'])){
+        if (isset($exec['liste'])) {
             $nombre_projet = count(json_decode($exec['liste'], true));
         }
 
         /**
          * On enregistre les données que l'on veut modifier.
          * attention, les attributs dans l'entity ne doivent pas être NotNull et NotBlank.
-        */
+         */
         $entityInstance->setTitre(mb_strtoupper($titre));
         $entityInstance->setResponsable($user->getPrenom() . ' ' . $user->getNom());
 
@@ -280,7 +272,7 @@ class BatchCrudController extends AbstractCrudController
         /** On programme le traitement dans la table BatchTraitement  */
         $r = $batchTraitementRepos->insertBatchTraitement($map);
 
-        if ($r['code'] !== 200){
+        if ($r['code'] !== 200) {
             throw new SqlRequestException('insertBatchTraitement', (int) $r['code'], $r['erreur'], null);
         }
     }
@@ -293,9 +285,8 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return void
      *
-     * Created at: 02/01/2023, 18:33:27 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -308,7 +299,8 @@ class BatchCrudController extends AbstractCrudController
         $conn = $this->emm->getConnection();
 
         /** On vérifie que le nombre de projet n'a pas changé */
-        /* MODIF 2026-07-20 : colonne "titre" inexistante depuis le renommage du
+        /**
+         * MODIF 2026-07-20 : colonne "titre" inexistante depuis le renommage du
          * 2026-04-07 (titre/groupe -> portefeuille/groupe_fonctionnel, voir
          * migrations/POSTGRESQL/20_tables/portefeuille.sql) — provoquait un
          * SQLSTATE[42703] à chaque modification d'un traitement. Alignée sur
@@ -352,10 +344,20 @@ class BatchCrudController extends AbstractCrudController
         parent::updateEntity($em, $entityInstance);
     }
 
+    /**
+     * [Description for deleteEntity]
+     *
+     * @param EntityManagerInterface $em
+     * @param mixed $entityInstance
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function deleteEntity(EntityManagerInterface $em, $entityInstance): void
     {
         /* MODIF 2026-05-07 : guard instanceof. */
-        // @phpstan-ignore-next-line instanceof.alwaysTrue (garde défensive EasyAdmin)
         if (!$entityInstance instanceof Batch) {
             return;
         }
@@ -368,9 +370,9 @@ class BatchCrudController extends AbstractCrudController
         /** On supprime le traitement. Attention $transaction_id peut être un Ulid */
         $r1 = $batchTraitementRepos->deleteTraitement($transaction_id);
         $r2 = $batchExecutionRepos->deleteTraitement($transaction_id);
-        if ($r1['code'] !== 200){
+        if ($r1['code'] !== 200) {
             throw new SqlRequestException('insertBatchTraitement', (int) $r1['code'], $r1['erreur'], null);
-        } elseif  ($r2['code'] !== 200){
+        } elseif ($r2['code'] !== 200) {
             throw new SqlRequestException('insertBatchExecution', (int) $r2['code'], $r2['erreur'], null);
         }
 

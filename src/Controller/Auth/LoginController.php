@@ -56,7 +56,6 @@ class LoginController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 29/10/2024 20:14:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -78,10 +77,8 @@ class LoginController extends AbstractController
      * [Description for re-login]
      *
      * @return Response
-     *
-     * Created at: 15/12/2022, 22:33:09 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/', name: 're_login')]
     public function reLogin(): Response
@@ -115,9 +112,8 @@ class LoginController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 15/12/2022, 22:33:25 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/login', name: 'login')]
     public function login(): Response
@@ -149,10 +145,8 @@ class LoginController extends AbstractController
     /**
      * [Description for logout]
      *
-     *
-     * Created at: 02/01/2023, 18:20:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/logout', name: 'logout')]
     public function logout(): RedirectResponse
@@ -163,11 +157,10 @@ class LoginController extends AbstractController
 
     /**
      * [Description for logoutExit]
-    * MODIF 2026-05-07 : logoutExit() — sortie utilisateur, redirige vers /logout.
+     * MODIF 2026-05-07 : logoutExit() — sortie utilisateur, redirige vers /logout.
      *
      * @return RedirectResponse
      *
-     * Created at: 09/06/2026 07:32:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -181,5 +174,4 @@ class LoginController extends AbstractController
 
         return new RedirectResponse($this->router->generate('logout'));
     }
-
 }

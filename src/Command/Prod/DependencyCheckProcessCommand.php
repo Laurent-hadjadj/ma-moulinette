@@ -12,10 +12,11 @@
  */
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Prod. */
+
 namespace App\Command\Prod;
 
 use App\Entity\DcProcessingQueue;
-use App\Exception\DependencyCheck\{DcEmptyPayloadException,DcGzipDecodeException, DcInvalidJsonException,DcInvalidStructureException, DcPayloadException};
+use App\Exception\DependencyCheck\{DcEmptyPayloadException, DcGzipDecodeException, DcInvalidJsonException, DcInvalidStructureException, DcPayloadException};
 use App\Repository\DcProcessingQueueRepository;
 use App\Service\DependencyCheck\DependencyCheckIngester;
 use Doctrine\ORM\EntityManagerInterface;
@@ -88,7 +89,6 @@ class DependencyCheckProcessCommand extends Command
      *
      * @return void
      *
-     * Created at: 24/05/2026 10:43:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -126,7 +126,6 @@ class DependencyCheckProcessCommand extends Command
      *
      * @return int
      *
-     * Created at: 24/05/2026 10:43:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -157,7 +156,6 @@ class DependencyCheckProcessCommand extends Command
      *
      * @return int
      *
-     * Created at: 24/05/2026 10:43:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -204,7 +202,6 @@ class DependencyCheckProcessCommand extends Command
      *
      * @return int
      *
-     * Created at: 24/05/2026 10:43:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -245,7 +242,6 @@ class DependencyCheckProcessCommand extends Command
      *
      * @return array{claimed: int, done: int, failed: int}
      *
-     * Created at: 24/05/2026 10:44:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -294,8 +290,10 @@ class DependencyCheckProcessCommand extends Command
                 $this->em->flush();
 
                 $totals['done']++;
-                $io->text(sprintf('  ✓ %s done (%d:%s:%s)',
-                    $ulid, $totals['done'],
+                $io->text(sprintf(
+                    '  ✓ %s done (%d:%s:%s)',
+                    $ulid,
+                    $totals['done'],
                     $entry->getProjectArtifact(),
                     $entry->getProjectVersion()
                 ));
@@ -323,8 +321,13 @@ class DependencyCheckProcessCommand extends Command
                     $totals['failed']++;
                     $io->text(sprintf('  ✗ %s FAILED définitif (%s)', $ulid, $message));
                 } else {
-                    $io->text(sprintf('  ⤴ %s requeue (tentative %d/%d : %s)',
-                        $ulid, $entry->getAttempts(), self::MAX_ATTEMPTS, $message));
+                    $io->text(sprintf(
+                        '  ⤴ %s requeue (tentative %d/%d : %s)',
+                        $ulid,
+                        $entry->getAttempts(),
+                        self::MAX_ATTEMPTS,
+                        $message
+                    ));
                 }
 
                 $this->logger->error('[DC-Worker] Échec traitement.', [
@@ -358,7 +361,6 @@ class DependencyCheckProcessCommand extends Command
      *
      * @return void
      *
-     * Created at: 24/05/2026 10:44:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -424,7 +426,6 @@ class DependencyCheckProcessCommand extends Command
      *
      * @return void
      *
-     * Created at: 24/05/2026 10:45:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

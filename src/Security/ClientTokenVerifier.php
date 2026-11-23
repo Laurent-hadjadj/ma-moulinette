@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace App\Security;
 
 /**
+ * [Description ClientTokenVerifier]
  * Contrôle un jeton d'API partagé (ex. `api.client_token`) avec les mêmes garanties que les jetons
  * des dépôts de rapports (`DependencyCheckTokenSubscriber`, `ZapIngestTokenSubscriber`) :
  *
@@ -28,22 +29,26 @@ namespace App\Security;
  * Classe sans état : un appel statique suffit, ce qui n'impose aucun changement de constructeur aux appelants.
  * Elle ne journalise rien : l'appelant ne doit JAMAIS écrire le jeton fourni dans un journal.
  *
- * Created at: 15/11/2026
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 final class ClientTokenVerifier
 {
     /** Valeur d'exemple laissée dans un fichier d'environnement : le service doit alors rester fermé. */
     public const SENTINELLE = 'changeme';
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
+     * [Description for verifier]
+     *
      * @param mixed $attendu jeton configuré côté serveur (paramètre ou variable d'environnement)
      * @param mixed $fourni  jeton reçu dans la requête
+     *
+     * @return ResultatJeton
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function verifier(mixed $attendu, mixed $fourni): ResultatJeton
     {

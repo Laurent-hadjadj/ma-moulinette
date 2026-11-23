@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 // Intégration de jquery
@@ -44,10 +44,8 @@ import("../../common/secrets.local.js").then((module) => {
  *
  * @return void
  *
- * Created at: 21/07/2025 12:05:07 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
+ 
+*/
 const enableButtonAnalyse = function () {
   const $buttonAfficheResult = $('.js-affiche-result');
 
@@ -62,9 +60,8 @@ const enableButtonAnalyse = function () {
  *
  * @return void
  *
- * Created at: 21/07/2025 12:06:39 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const disableButtonAffiche = function () {
   const $buttonAfficheResult = $('.js-affiche-result');
@@ -83,9 +80,8 @@ const disableButtonAffiche = function () {
  *
  * @return void
  *
- * Created at: 21/07/2025 12:15:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const ErrorButtonAffiche = function () {
   const $buttonAfficheResult = $('.js-affiche-result');
@@ -100,9 +96,8 @@ const ErrorButtonAffiche = function () {
  *
  * @return string
  *
- * Created at: 03/08/2025 18:59:20 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const extraireNomProjet = function (maven_key) {
   if (maven_key.includes(':')) {
@@ -124,9 +119,8 @@ const extraireNomProjet = function (maven_key) {
  *
  * @param string maven_key
  *
- * @return [type]
+ * @return void
  *
- * Created at: 13/12/2022, 10:08:02 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 export const remplissage = async function (maven_key) {
@@ -1451,8 +1445,8 @@ export const remplissage = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:25:28 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 export const afficheHotspotDetails = async function (maven_key) {
   /* On récupère la répartition des hotspot. */

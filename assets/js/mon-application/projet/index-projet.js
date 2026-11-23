@@ -80,7 +80,6 @@ import { clean_screen } from './clean-screen.js';
  *
  * @return void
  *
- * Created at: 01/12/2025 12:50:28 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
@@ -97,10 +96,10 @@ const clean = async function (type) {
  *
  * @param mixed a
  *
- * @return [type]
+ * @return void
  *
- * Created at: 19/12/2022, 22:08:24 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const shuffle = function (a) {
   let j, x, i;
@@ -123,8 +122,8 @@ const shuffle = function (a) {
  *
  * @return void
  *
- * Created at: 19/12/2022, 22:09:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const palette = function () {
   const nouvellePalette = [];
@@ -142,10 +141,10 @@ const palette = function () {
  * @param mixed label
  * @param mixed dataset
  *
- * @return [type]
+ * @return void
  *
- * Created at: 19/12/2022, 22:09:45 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const dessineMoiUnMouton = function (label, dataset) {
   const nouvellePalette = palette();
@@ -196,8 +195,8 @@ const dessineMoiUnMouton = function (label, dataset) {
  *
  * @return void
  *
- * Created at: 19/12/2022, 22:10:52 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const ditBonjour = function () {
   log(' - 📌 Initialisation de la log...');
@@ -210,10 +209,10 @@ const ditBonjour = function () {
  * @param mixed params
  * @param mixed data
  *
- * @return [type]
+ * @return void
  *
- * Created at: 19/12/2022, 22:11:27 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const match = function (params, data) {
   /* MODIF 2026-05-17 : $.trim supprimé en jQuery 4. */
@@ -254,8 +253,8 @@ let listeProjetData = [];
  *
  * @return string|jQuery
  *
- * Created at: 29/10/2026 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const templateProjetOption = function (data) {
   if (!data.id) { return data.text; }
@@ -305,8 +304,8 @@ const templateProjetSelection = function (data) {
  *
  * @return void
  *
- * Created at: 07/11/2026 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const updateProjetCompteurs = function () {
   const total = listeProjetData.length;
@@ -332,8 +331,8 @@ const updateProjetCompteurs = function () {
  *
  * @return void
  *
- * Created at: 29/10/2026 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const markProjetCollecte = function (maven_key) {
   const projet = listeProjetData.find(p => p.id === maven_key);
@@ -372,8 +371,8 @@ const markProjetCollecte = function (maven_key) {
  *
  * @return void
  *
- * Created at: 19/12/2022, 22:11:56 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const selectProjet = async function () {
   const options = {
@@ -467,8 +466,8 @@ const errorButton = function (element, aria_label) {
  * @param string maven_key
  * @return
  *
- * Created at: 19/12/2022, 22:12:44 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const projetInformation = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
@@ -539,8 +538,8 @@ const projetInformation = async function (maven_key) {
  * @param string maven_key
  * @return response
  *
- * Created at: 19/12/2022, 22:13:13 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const projetMesure = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
@@ -611,8 +610,8 @@ const projetMesure = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:16:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const projetOwasp = async function (maven_key) {
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -700,8 +699,8 @@ const projetOwasp = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:17:17 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const projetHotspot = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
@@ -776,8 +775,8 @@ const projetHotspot = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:13:42 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const projetAnomalie = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
@@ -844,9 +843,9 @@ const projetAnomalie = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:14:11 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetAnomalieDetails = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -916,9 +915,9 @@ const projetAnomalieDetails = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:18:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetHotspotOwasp = async function (maven_key, menace) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1002,9 +1001,9 @@ const projetHotspotOwasp = async function (maven_key, menace) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:19:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetHotspotOwaspDetails = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1073,9 +1072,9 @@ const projetHotspotOwaspDetails = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:19:44 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetNoSonar = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1154,9 +1153,9 @@ const projetNoSonar = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 10/04/2023, 15:11:30 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetTodo = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1234,9 +1233,9 @@ const projetTodo = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 11/07/2024, 21:40:10 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetLogger = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1321,9 +1320,9 @@ const projetLogger = async function (maven_key) {
  * @param string maven_key
  * @return response
  *
- * Created at: 23/07/2026 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetActuator = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1394,9 +1393,9 @@ const projetActuator = async function (maven_key) {
  * @param string maven_key
  * @return response
  *
- * Created at: 28/09/2026 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetRCI = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1478,9 +1477,9 @@ const projetRCI = async function (maven_key) {
  * @param string maven_key
  * @return response
  *
- * Created at: 08/10/2026 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetEmpreinteEcologique = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1524,9 +1523,9 @@ const projetEmpreinteEcologique = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 26/10/2026 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const projetAccessibility = async function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
@@ -1579,9 +1578,9 @@ const projetAccessibility = async function (maven_key) {
  *
  * @return response
  *
- * Created at: 19/12/2022, 22:20:20 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- */
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const finCollecte = function (maven_key) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');

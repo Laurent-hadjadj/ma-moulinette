@@ -5,16 +5,17 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
 
 /* MODIF 2026-05-21 : converti depuis run_ma-moulinette_collecte_cli.php
    (v1.4.1) vers Symfony Command (namespace App\Command\Prod, CommandTester, LoggerInterface). */
+
 namespace App\Command\Prod;
 
 use Psr\Log\LoggerInterface;
@@ -69,9 +70,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @return void
      *
-     * Created at: 24/05/2026 09:49:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function configure(): void
     {
@@ -94,9 +94,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @return int
      *
-     * Created at: 24/05/2026 09:50:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -197,13 +196,13 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @return array{verify_peer: int, verify_host: int, ciphers: non-empty-string}
      *
-     * Created at: 24/05/2026 09:50:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildSslConfig(): array
     {
-        /* MODIF 2026-07-21 : verify_peer/verify_host sont typés int non-nullables
+        /**
+         * MODIF 2026-07-21 : verify_peer/verify_host sont typés int non-nullables
          * (résolus par Symfony via %env(int:MAMOUL_CLI_VERIFY_*)%, qui échoue au
          * démarrage si la variable est absente) — un "?: 0" ici ne pouvait donc
          * jamais retomber sur un défaut sûr, il ne faisait que réécrire la même
@@ -221,9 +220,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @return array{use_proxy: bool, proxy_url: string, proxy_userpwd: string, no_proxy: string[]}
      *
-     * Created at: 24/05/2026 09:50:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     /**
      * @return array{use_proxy: bool, proxy_url: non-empty-string, proxy_userpwd: string, no_proxy: array<int, string>}
@@ -260,9 +258,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @return array<string, mixed>
      *
-     * Created at: 24/05/2026 09:53:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function callApi(
         string $baseUrl,
@@ -296,7 +293,7 @@ class RunMoulinetteCollecteCommand extends Command
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYHOST => $sslConfig['verify_host'] === 0 ? 0 : 2,
             CURLOPT_SSL_VERIFYPEER => (bool) $sslConfig['verify_peer'],
-            CURLOPT_SSL_CIPHER_LIST=> $sslConfig['ciphers'],
+            CURLOPT_SSL_CIPHER_LIST => $sslConfig['ciphers'],
             CURLOPT_PROTOCOLS      => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_CONNECTTIMEOUT => 15,
             CURLOPT_TIMEOUT        => $timeout,
@@ -349,9 +346,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @return array<int, array<string, mixed>>
      *
-     * Created at: 24/05/2026 09:55:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getTraitementsAutomatiques(
         string $url,
@@ -361,8 +357,16 @@ class RunMoulinetteCollecteCommand extends Command
         bool $debug,
         SymfonyStyle $io
     ): array {
-        $data = $this->callApi($url, $sslConfig, $proxyConfig,
-            '/api/public/traitement/automatique/liste', ['token' => $token], 'POST', $debug, $io);
+        $data = $this->callApi(
+            $url,
+            $sslConfig,
+            $proxyConfig,
+            '/api/public/traitement/automatique/liste',
+            ['token' => $token],
+            'POST',
+            $debug,
+            $io
+        );
 
         if (!isset($data['code']) || $data['code'] !== 200) {
             $this->logger->error('[Collecte] Erreur récupération traitements.', ['response' => $data]);
@@ -385,9 +389,8 @@ class RunMoulinetteCollecteCommand extends Command
      *
      * @return array<string, mixed>
      *
-     * Created at: 24/05/2026 09:57:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function startTraitement(
         string $url,
@@ -411,7 +414,15 @@ class RunMoulinetteCollecteCommand extends Command
             'traitement_id'   => (string) ($traitement['traitement_id']   ?? ''),
         ];
 
-        return $this->callApi($url, $sslConfig, $proxyConfig,
-            '/api/public/traitement/automatique/start', $params, 'POST', $debug, $io);
+        return $this->callApi(
+            $url,
+            $sslConfig,
+            $proxyConfig,
+            '/api/public/traitement/automatique/start',
+            $params,
+            'POST',
+            $debug,
+            $io
+        );
     }
 }

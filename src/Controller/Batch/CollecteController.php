@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -43,9 +43,8 @@ class CollecteController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -75,9 +74,8 @@ class CollecteController extends AbstractController
      *
      * @return string
      *
-     * Created at: 07/09/2025 15:07:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function generateHtmlForItem(array $item): string
     {
@@ -135,9 +133,8 @@ class CollecteController extends AbstractController
      *
      * @return string
      *
-     * Created at: 08/09/2025 10:42:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function generateHtmlErrorContain(int|string $code, string $message, string $erreur): string
     {
@@ -157,12 +154,10 @@ class CollecteController extends AbstractController
     /**
      * [Description for collecte]
      *
-
      * @return array<int|string, mixed>
      *
-     * Created at: 11/06/2024 12:58:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function collecte(string $portefeuille, string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -880,7 +875,8 @@ class CollecteController extends AbstractController
 
         $actuatorInfo = $this->batchCollecteActuator->BatchCollecteActuatorInfo($maven_key);
 
-        /* MODIF 2026-07-23 : Actuator est "best effort" — seule une erreur interne
+        /**
+         * MODIF 2026-07-23 : Actuator est "best effort" — seule une erreur interne
          * Ma-Moulinette (recherche du point d'accès en base, clé 'fatal') stoppe la
          * collecte du projet, comme les autres étapes. Un point d'accès injoignable
          * ou en erreur HTTP ne bloque plus rien : le JSON d'échec est stocké tel quel
@@ -983,7 +979,8 @@ class CollecteController extends AbstractController
             ]
         );
 
-        /* MODIF 2026-09-25 : RCI global + par module (frontend/backend/autre/inconnu).
+        /**
+         * MODIF 2026-09-25 : RCI global + par module (frontend/backend/autre/inconnu).
          * MODIF 2026-09-28 : BatchCollecteRciController::buildRciMeasures()
          * calcule ET persiste (delete puis insert) dans la table rci — plus
          * besoin d'appeler RciRepository ici, seul le report des indicateurs
@@ -1022,7 +1019,8 @@ class CollecteController extends AbstractController
             ]);
         }
 
-        /* MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo).
+        /**
+         * MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo).
          * BatchCollecteEmpreinteEcologique() calcule ET persiste (delete puis
          * insert) dans la table eco_conception.
          * code 404 = CREEDENGO_ENABLED=false, non bloquant : colonnes eco_*
@@ -1037,7 +1035,8 @@ class CollecteController extends AbstractController
             ]);
         }
 
-        /* MODIF 26/10/2026 : Accessibilité (tag SonarQube accessibility).
+        /**
+         * MODIF 26/10/2026 : Accessibilité (tag SonarQube accessibility).
          * BatchCollecteAccessibility() calcule ET persiste (delete puis
          * insert) dans la table accessibility. Pas de feature-flag
          * (contrairement à Empreinte Écologique) : un échec reste traité

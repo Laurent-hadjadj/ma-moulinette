@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -83,13 +83,15 @@ class PropertiesRepositoryTest extends KernelTestCase
         $d1 = new \DateTimeImmutable(self::$dateModificationProjet);
         $d2 = new \DateTimeImmutable(self::$dateModificationProfil);
         $d0 = new \DateTimeImmutable(self::$dateCreation);
-        $map = ['projet_bd' => self::$projetBd,
-                'projet_sonar' => self::$projetSonar,
-                'profil_bd' => self::$profilBd,
-                'profil_sonar' => self::$profilSonar,
-                'date_creation' => $d0,
-                'date_modification_projet' => $d1,
-                'date_modification_profil' => $d2];
+        $map = [
+            'projet_bd' => self::$projetBd,
+            'projet_sonar' => self::$projetSonar,
+            'profil_bd' => self::$profilBd,
+            'profil_sonar' => self::$profilSonar,
+            'date_creation' => $d0,
+            'date_modification_projet' => $d1,
+            'date_modification_profil' => $d2
+        ];
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
@@ -108,10 +110,12 @@ class PropertiesRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map = ['projet_bd' => self::$projetBd,
-                'projet_sonar'=> self::$projetSonar,
-                'date_modification_projet' => new \DateTimeImmutable(self::$dateModificationProjet),
-                'type' => self::$type];
+        $map = [
+            'projet_bd' => self::$projetBd,
+            'projet_sonar' => self::$projetSonar,
+            'date_modification_projet' => new \DateTimeImmutable(self::$dateModificationProjet),
+            'type' => self::$type
+        ];
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
@@ -130,10 +134,12 @@ class PropertiesRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map = ['profil_bd' => self::$profilBd,
-                'profil_sonar'=> self::$profilSonar,
-                'date_modification_profil' => new \DateTimeImmutable(self::$dateModificationProfil),
-                'type' => self::$type];
+        $map = [
+            'profil_bd' => self::$profilBd,
+            'profil_sonar' => self::$profilSonar,
+            'date_modification_profil' => new \DateTimeImmutable(self::$dateModificationProfil),
+            'type' => self::$type
+        ];
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
@@ -154,5 +160,4 @@ class PropertiesRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
 }

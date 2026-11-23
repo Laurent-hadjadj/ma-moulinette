@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -35,13 +35,13 @@ class ActivityBatchReportCaseTest extends TestCase
     private function getEntity(): ActivityBatchReport
     {
         return (new activityBatchReport())
-        ->setDateStart(new \DateTimeImmutable(self::$dateStart))
-        ->setDateEnd(new \DateTimeImmutable(self::$dateEnd))
-        ->setTaskCount(self::$taskCount)
-        ->setTaskDone(self::$taskDone)
-        ->setPage(self::$page)
-        ->setLastError(self::$lastError)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setDateStart(new \DateTimeImmutable(self::$dateStart))
+            ->setDateEnd(new \DateTimeImmutable(self::$dateEnd))
+            ->setTaskCount(self::$taskCount)
+            ->setTaskDone(self::$taskDone)
+            ->setPage(self::$page)
+            ->setLastError(self::$lastError)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -58,14 +58,14 @@ class ActivityBatchReportCaseTest extends TestCase
 
     public function testSettingAndGettingDateStart(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateStart);
+        $newDate = new \DateTimeImmutable(self::$dateStart);
         $this->activityBatchReport->setDateStart($newDate);
         $this->assertEquals($newDate, $this->activityBatchReport->getDateStart());
     }
 
     public function testSettingAndGettingDateEnd(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnd);
+        $newDate = new \DateTimeImmutable(self::$dateEnd);
         $this->activityBatchReport->setDateEnd($newDate);
         $this->assertEquals($newDate, $this->activityBatchReport->getDateEnd());
     }
@@ -96,9 +96,8 @@ class ActivityBatchReportCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->activityBatchReport->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->activityBatchReport->getDateEnregistrement());
     }
-
 }

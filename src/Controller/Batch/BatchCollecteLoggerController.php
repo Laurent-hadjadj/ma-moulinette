@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -32,8 +32,8 @@ class BatchCollecteLoggerController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -41,8 +41,7 @@ class BatchCollecteLoggerController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for makeRequest]
@@ -52,23 +51,22 @@ class BatchCollecteLoggerController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 12/08/2024 11:24:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function makeRequest(array $queryParams): array
     {
         /** Sécurisation de l'URL
-          * MODIF 2026-05-15 : endpoint corrigé.
-          * `/api/project_analyses/search` ne supporte PAS les paramètres
-          * `statuses=OPEN` + `rules=...` (qui appartiennent à
-          * `/api/issues/search`). En Sonar 9, l'API était permissive et
-          * silencieusement tolérait ces paramètres ignorés. En Sonar 10+
-          * la validation est stricte et retourne 400 :
-          * "Value of parameter 'statuses' (OPEN) must be one of: [P, U, L]".
-          * Le bon endpoint pour compter les issues d'une règle est
-          * `/api/issues/search` qui existe en Sonar 7+ et reste compatible
-          * 9 / 10 / 11+. */
+         * MODIF 2026-05-15 : endpoint corrigé.
+         * `/api/project_analyses/search` ne supporte PAS les paramètres
+         * `statuses=OPEN` + `rules=...` (qui appartiennent à
+         * `/api/issues/search`). En Sonar 9, l'API était permissive et
+         * silencieusement tolérait ces paramètres ignorés. En Sonar 10+
+         * la validation est stricte et retourne 400 :
+         * "Value of parameter 'statuses' (OPEN) must be one of: [P, U, L]".
+         * Le bon endpoint pour compter les issues d'une règle est
+         * `/api/issues/search` qui existe en Sonar 7+ et reste compatible
+         * 9 / 10 / 11+. */
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
@@ -91,7 +89,8 @@ class BatchCollecteLoggerController extends AbstractController
             ];
         }
 
-        /* MODIF 2026-05-15 : on remonte aussi le tableau
+        /**
+         * MODIF 2026-05-15 : on remonte aussi le tableau
          * des issues (jusqu'a `ps=500`). En plus du `total` pour la table
          * `logger` aggregate, ces issues serviront a peupler `logger_details`
          * (1 ligne par occurrence, drill-down par fichier + framework). */
@@ -110,7 +109,11 @@ class BatchCollecteLoggerController extends AbstractController
      * null sans rejeter la row.
      *
      * @param array<string, mixed> $issue
+     *
      * @return array<string, mixed>|null
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function parseIssueToDetail(
         array $issue,
@@ -180,9 +183,8 @@ class BatchCollecteLoggerController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 10/07/2024 22:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteLogger(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -197,30 +199,30 @@ class BatchCollecteLoggerController extends AbstractController
 
         /** On regarde si le plugin Track-Logger-Method est activé */
         $loggerPlugin = $this->getParameter('track.logger.method');
-        if ((bool)$loggerPlugin === false || $loggerPlugin === 'false' || $loggerPlugin === 'False'){
+        if ((bool)$loggerPlugin === false || $loggerPlugin === 'false' || $loggerPlugin === 'False') {
             $this->logger->info("[Batch Logger] ⚠️ Collecte non lancée : plugin désactivé (TRACK_LOGGER_METHOD=false)", [
                 'maven_key' => $maven_key
             ]);
 
             return [
-                    'code' => 404,
-                    'message' => "La collecte des LOGGERS n'a pas été lancée. (TRACK_LOGGER_METHOD=false).",
-                    'historique' => [
-                        'logger_info' => 0,
-                        'logger_warn' => 0,
-                        'logger_error' => 0,
-                        'logger_debug' => 0,
-                    ]
-                ];
+                'code' => 404,
+                'message' => "La collecte des LOGGERS n'a pas été lancée. (TRACK_LOGGER_METHOD=false).",
+                'historique' => [
+                    'logger_info' => 0,
+                    'logger_warn' => 0,
+                    'logger_error' => 0,
+                    'logger_debug' => 0,
+                ]
+            ];
         }
 
         /* Liste des différents Logger */
         $method = [
-                    'track-info-method',
-                    'track-warn-method',
-                    'track-error-method',
-                    'track-debug-method'
-                ];
+            'track-info-method',
+            'track-warn-method',
+            'track-error-method',
+            'track-debug-method'
+        ];
         /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
          * statuses renommée issueStatuses depuis la 10.4 (valeur alignée sur
          * OPEN,CONFIRMED,REOPENED / OPEN,CONFIRMED,ACCEPTED, pas seulement OPEN, cf.
@@ -228,21 +230,42 @@ class BatchCollecteLoggerController extends AbstractController
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
         $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParams = [
-            $method[0] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[0], 'ps' => 500],
-            $method[1] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[1], 'ps' => 500],
-            $method[2] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[2], 'ps' => 500],
-            $method[3] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[3], 'ps' => 500]
+            $method[0] => [
+                $componentKeyParam => $maven_key,
+                'facets'  => 'rules',
+                $issueStatus['param'] => $issueStatus['value'],
+                'rules' => self::$trackLoggerMethod . $method[0],
+                'ps' => 500
+            ],
+            $method[1] => [
+                $componentKeyParam => $maven_key,
+                'facets'  => 'rules',
+                $issueStatus['param'] => $issueStatus['value'],
+                'rules' => self::$trackLoggerMethod . $method[1],
+                'ps' => 500
+            ],
+            $method[2] => [
+                $componentKeyParam => $maven_key,
+                'facets'  => 'rules',
+                $issueStatus['param'] => $issueStatus['value'],
+                'rules' => self::$trackLoggerMethod . $method[2],
+                'ps' => 500
+            ],
+            $method[3] => [
+                $componentKeyParam => $maven_key,
+                'facets'  => 'rules',
+                $issueStatus['param'] => $issueStatus['value'],
+                'rules' => self::$trackLoggerMethod . $method[3],
+                'ps' => 500
+            ]
         ];
 
         /** Appels API et vérification des retours */
         $results = [];
         foreach ($method as $tracker) {
             $this->logger->debug("[Batch Logger] 🛠️ Appel API Sonar : {$tracker}", [
-                'params' => $queryParams[$tracker]]);
+                'params' => $queryParams[$tracker]
+            ]);
             $results[$tracker] = self::makeRequest($queryParams[$tracker]);
 
             if (isset($results[$tracker]['code']) && $results[$tracker]['code'] !== 200) {
@@ -274,7 +297,7 @@ class BatchCollecteLoggerController extends AbstractController
             ];
         }
 
-         /** Enregistrement en base */
+        /** Enregistrement en base */
         $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
         $loggerData = [
             'maven_key' => $maven_key,
@@ -301,7 +324,8 @@ class BatchCollecteLoggerController extends AbstractController
             ];
         }
 
-        /* MODIF 2026-05-15 : peuplement de la table
+        /**
+         * MODIF 2026-05-15 : peuplement de la table
          * `logger_details` pour le drill-down par fichier + framework.
          * 1 ligne par occurrence parsée depuis les `issues` retournées
          * par chaque appel (makeRequest renvoie maintenant aussi 'issues').
@@ -320,7 +344,8 @@ class BatchCollecteLoggerController extends AbstractController
                 'erreur' => $delete['erreur'],
             ]);
         } else {
-            /* MODIF 2026-05-15 : recuperation de la version
+            /**
+             * MODIF 2026-05-15 : recuperation de la version
              * courante depuis information_projet pour la stocker dans chaque
              * row logger_details (utile pour le drill-down "loggers de la
              * version X"). En cas d'échec/absence on garde null, ce qui
@@ -337,7 +362,9 @@ class BatchCollecteLoggerController extends AbstractController
             foreach ($method as $tracker) {
                 $issues = $results[$tracker]['issues'] ?? [];
                 foreach ($issues as $issue) {
-                    if (!is_array($issue)) { continue; }
+                    if (!is_array($issue)) {
+                        continue;
+                    }
                     $row = self::parseIssueToDetail($issue, $maven_key, $projectVersion, $mode_collecte, $utilisateur_collecte, $date);
                     if ($row !== null) {
                         $detailRows[] = $row;
@@ -369,7 +396,8 @@ class BatchCollecteLoggerController extends AbstractController
             'debug' => $loggerData['logger_debug']
         ]);
 
-        /* MODIF 2026-05-15 : breakdown level × framework
+        /**
+         * MODIF 2026-05-15 : breakdown level × framework
          * exposé au front. Forme : { info: { SLF4J: N, Commons Logging: M, "—": K },
          * warn: {...}, error: {...}, debug: {...} }. Les frameworks null
          * (plugin v1.x non parsable) sont consolidés sous la clé "—" pour
@@ -384,7 +412,9 @@ class BatchCollecteLoggerController extends AbstractController
                 $level     = (string) $row['level'];
                 $framework = $row['framework'] !== null ? (string) $row['framework'] : '—';
                 $nb        = (int) $row['nb'];
-                if (!isset($breakdown[$level])) { $breakdown[$level] = []; }
+                if (!isset($breakdown[$level])) {
+                    $breakdown[$level] = [];
+                }
                 $breakdown[$level][$framework] = $nb;
             }
         }
@@ -405,6 +435,5 @@ class BatchCollecteLoggerController extends AbstractController
             'message' => 'La collecte des Logger Java pour le projet est terminée.',
             'historique' => $historique
         ];
-
     }
 }

@@ -16,8 +16,10 @@ namespace App\Controller\HealthCheck;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Routing\Attribute\Route;
-/* MODIF 2026-05-05 : programme sur l'interface
- * RateLimiterFactoryInterface (la classe concrete final RateLimiterFactory n'est pas mockable). Le service autowire `limiter.healthcheck` implémente l'interface. */
+/**
+ * MODIF 2026-05-05 : programme sur l'interface
+ * RateLimiterFactoryInterface (la classe concrete final RateLimiterFactory n'est pas mockable).
+ * Le service autowire `limiter.healthcheck` implémente l'interface. */
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Psr\Log\LoggerInterface;
@@ -46,7 +48,6 @@ class HealthCheckController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 21/04/2026 19:50:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

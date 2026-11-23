@@ -43,8 +43,6 @@ class RepartitionTempRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/02/2025 11:31:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -76,8 +74,6 @@ class RepartitionTempRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $issues
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/02/2025 16:16:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -95,37 +91,37 @@ class RepartitionTempRepository extends ServiceEntityRepository
         }
 
         try {
-                $batchSize = 500; // Taille optimale
-                $connection = $this->getEntityManager()->getConnection();
-                $sqlPrefix = "INSERT INTO ma_moulinette.repartition_temp (maven_key, component, type, severity, setup) VALUES ";
-                $chunks = array_chunk($issues, $batchSize);
+            $batchSize = 500; // Taille optimale
+            $connection = $this->getEntityManager()->getConnection();
+            $sqlPrefix = "INSERT INTO ma_moulinette.repartition_temp (maven_key, component, type, severity, setup) VALUES ";
+            $chunks = array_chunk($issues, $batchSize);
 
-                foreach ($chunks as $chunk) {
-                    $placeholders = [];
-                    $params = [];
-                    foreach ($chunk as $issue) {
-                        if (!isset($issue['maven_key'], $issue['component'], $issue['category'], $issue['severity'], $issue['setup'])) {
-                            continue;
-                        }
-
-                        $placeholders[] = "(?, ?, ?, ?, ?)";
-                        $params[] = $issue['maven_key'];
-                        $params[] = $issue['component'];
-                        $params[] = $issue['category'];
-                        $params[] = $issue['severity'];
-                        $params[] = $issue['setup'];
-                    }
-
-                    if (empty($placeholders)) {
-                        // To.do Mettre un logger
+            foreach ($chunks as $chunk) {
+                $placeholders = [];
+                $params = [];
+                foreach ($chunk as $issue) {
+                    if (!isset($issue['maven_key'], $issue['component'], $issue['category'], $issue['severity'], $issue['setup'])) {
                         continue;
                     }
 
-                    // Ajoute la clause ON CONFLICT pour ignorer les duplicata
-                    $fullSql = $sqlPrefix . implode(", ", $placeholders);
-
-                    $connection->executeStatement($fullSql, $params);
+                    $placeholders[] = "(?, ?, ?, ?, ?)";
+                    $params[] = $issue['maven_key'];
+                    $params[] = $issue['component'];
+                    $params[] = $issue['category'];
+                    $params[] = $issue['severity'];
+                    $params[] = $issue['setup'];
                 }
+
+                if (empty($placeholders)) {
+                    // To.do Mettre un logger
+                    continue;
+                }
+
+                // Ajoute la clause ON CONFLICT pour ignorer les duplicata
+                $fullSql = $sqlPrefix . implode(", ", $placeholders);
+
+                $connection->executeStatement($fullSql, $params);
+            }
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -139,8 +135,6 @@ class RepartitionTempRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/02/2025 18:34:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -158,20 +152,20 @@ class RepartitionTempRepository extends ServiceEntityRepository
                         FROM ma_moulinette.repartition_temp
                         WHERE maven_key = :maven_key and setup <> :setup";
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
-                        $stmtCheck->bindValue(self::$mavenKey, $map['maven_key']);
-                        $stmtCheck->bindValue(self::$setup, $map['setup']);
-                    $result = $stmtCheck->executeQuery();
-                    $existingId = $result->fetchOne();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
+            $stmtCheck->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmtCheck->bindValue(self::$setup, $map['setup']);
+            $result = $stmtCheck->executeQuery();
+            $existingId = $result->fetchOne();
 
-                if ($existingId) {
-                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlDelete));
-                        $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                        $stmt->bindValue(self::$setup, $map['setup']);
-                        $stmt->executeStatement();
-                    }
-                $this->getEntityManager()->getConnection()->commit();
+            if ($existingId) {
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlDelete));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                $stmt->bindValue(self::$setup, $map['setup']);
+                $stmt->executeStatement();
+            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
@@ -187,8 +181,6 @@ class RepartitionTempRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 12/02/2025 19:01:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -201,12 +193,12 @@ class RepartitionTempRepository extends ServiceEntityRepository
                 AND severity = :severity
                 AND setup = :setup";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                    $stmt->bindValue(':category', $map['category']);
-                    $stmt->bindValue(':severity', $map['severity']);
-                    $stmt->bindValue(self::$setup, $map['setup']);
-                $liste = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(':category', $map['category']);
+            $stmt->bindValue(':severity', $map['severity']);
+            $stmt->bindValue(self::$setup, $map['setup']);
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -220,8 +212,6 @@ class RepartitionTempRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 27/08/2025 15:57:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -234,12 +224,12 @@ class RepartitionTempRepository extends ServiceEntityRepository
                 AND severity = :severity
                 AND setup = :setup";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                    $stmt->bindValue(':category', $map['category']);
-                    $stmt->bindValue(':severity', $map['severity']);
-                    $stmt->bindValue(self::$setup, $map['setup']);
-                $result = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(':category', $map['category']);
+            $stmt->bindValue(':severity', $map['severity']);
+            $stmt->bindValue(self::$setup, $map['setup']);
+            $result = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }

@@ -31,6 +31,8 @@ use App\Exception\SonarApiException;
 
 /**
  * [Description RebuildHistoriqueCommand]
+ *  Reconstruit l'historique à partir des données agrégée SonarQube
+ *
  */
 #[AsCommand(
     name: 'app:historique:rebuild',
@@ -39,7 +41,7 @@ use App\Exception\SonarApiException;
 class RebuildHistoriqueCommand extends Command
 {
 
-public function __construct(
+    public function __construct(
         private SonarAnalysisFetcherService $analysisFetcher,
         private SonarMetricsFetcherService $metricsFetcher,
         private BuildMapHistoryService $buildMapHistory,
@@ -59,7 +61,6 @@ public function __construct(
      *
      * @return void
      *
-     * Created at: 17/03/2026 04:23:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -81,7 +82,6 @@ public function __construct(
      *
      * @return int
      *
-     * Created at: 17/03/2026 04:23:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -129,10 +129,10 @@ public function __construct(
         foreach ($analyses as $analysis) {
 
             try {
-                    $metrics = $this->metricsFetcher->fetchMetrics(
-                        $project_key,
-                        $analysis['analysisKey']
-                    );
+                $metrics = $this->metricsFetcher->fetchMetrics(
+                    $project_key,
+                    $analysis['analysisKey']
+                );
             } catch (SonarApiException $e) {
                 $io->warning($e->getMessage());
                 $io->newLine();
@@ -185,9 +185,9 @@ public function __construct(
 
                 $io->newLine();
                 $progressBar->display();
-
             } else {
-                /* MODIF 2026-07-21 : insertHistoriqueAjoutProjet() insère UNE ligne
+                /**
+                 * MODIF 2026-07-21 : insertHistoriqueAjoutProjet() insère UNE ligne
                  * (pas un tableau) et renvoie ['code'=>200|500, 'erreur'=>...] — pas
                  * un compteur. L'ancienne logique de "batch de 50" accumulait les
                  * maps puis appelait cette méthode avec le tableau entier (jamais
@@ -240,5 +240,4 @@ public function __construct(
 
         return $errors > 0 ? Command::FAILURE : Command::SUCCESS;
     }
-
 }

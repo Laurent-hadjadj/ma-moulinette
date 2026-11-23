@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -42,7 +42,10 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // 1) Exception "générique" sans SQLSTATE particulier
         $ex = new class('Une erreur inconnue') extends \Exception {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         $res = $this->repo->handleDatabaseException($ex);
@@ -54,14 +57,17 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // 2) Exception avec message contenant SQLSTATE[08006]
         $ex = new class(self::$sqlState8006) extends \Exception {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         $res = $this->repo->handleDatabaseException($ex);
 
         $this->assertSame([
             'code'  => 500,
-            'erreur'=> self::$sqlState8006
+            'erreur' => self::$sqlState8006
         ], $res);
     }
 
@@ -70,8 +76,14 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
         // 3) SQLSTATE 23502 → retour du message d'origine
         $msg = 'Colonne non nulle manquante';
         $ex = new class($msg) extends \Exception {
-            public function __construct(string $m) { parent::__construct($m); }
-            public function getSqlState(): string { return '23502'; }
+            public function __construct(string $m)
+            {
+                parent::__construct($m);
+            }
+            public function getSqlState(): string
+            {
+                return '23502';
+            }
         };
 
         $res = $this->repo->handleDatabaseException($ex);
@@ -83,21 +95,24 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // 4) SQLSTATE 23505 → code 23505 + message fixe
         $ex = new class(self::$sqlState23505) extends \Exception {
-            public function getSqlState(): string { return '23505'; }
+            public function getSqlState(): string
+            {
+                return '23505';
+            }
         };
 
         $res = $this->repo->handleDatabaseException($ex);
 
         $this->assertSame([
             'code'  => 500,
-            'erreur'=> self::$sqlState23505
+            'erreur' => self::$sqlState23505
         ], $res);
     }
 
     public function testNoDatabase(): void
     {
         // Créer un mock pour une exception Driver\Exception
-      /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
         $driverExceptionMock = $this->createStub(\Doctrine\DBAL\Driver\Exception::class);
 
         // Créer la ConnectionException en passant null pour la requête
@@ -174,5 +189,4 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
             'erreur' => self::$sqlState23505,
         ], $result);
     }
-
 }

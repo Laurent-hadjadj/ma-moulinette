@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\CommandRebuildHistorique;
@@ -44,9 +44,8 @@ class SonarMetricsFetcherService
      *
      * @return array<string, string|int>
      *
-     * Created at: 17/03/2026 04:05:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function fetchMetrics(string $project_key, string $analysis_key): array
     {
@@ -61,34 +60,40 @@ class SonarMetricsFetcherService
             ]
         );
 
-        $this->logger->debug('[SonarMetricsFetcher] 🛠️ Appel API SonarQube',
-        ['url' => $url]);
+        $this->logger->debug(
+            '[SonarMetricsFetcher] 🛠️ Appel API SonarQube',
+            ['url' => $url]
+        );
 
         $response = $this->client->httpSonarQube($url);
 
         if ($response['code'] !== 200) {
             $this->logger->error('[SonarMetricsFetcher] ❌ Erreur lors de l\'appel API SonarQube', [
                 'status' => $response['code'],
-                'url' => $url]);
-                throw new SonarApiException(
+                'url' => $url
+            ]);
+            throw new SonarApiException(
                 sprintf(
-                        'Erreur API Sonar (HTTP %s) pour %s',
-                        $response['code'] ?? 'unknown',
-                        $url
+                    'Erreur API Sonar (HTTP %s) pour %s',
+                    $response['code'] ?? 'unknown',
+                    $url
                 ),
                 $response
-                );
+            );
         }
 
         if (!isset($response['json']['components'])) {
-            $this->logger->warning('[SonarMetricsFetcher] ⚠️ Aucune metrics trouvée pour ce     projet', [
-                'project_key' => $project_key,
-                'analysis_id' => $analysis_key
+            $this->logger->warning(
+                '[SonarMetricsFetcher] ⚠️ Aucune metrics trouvée pour ce     projet',
+                [
+                    'project_key' => $project_key,
+                    'analysis_id' => $analysis_key
                 ]
             );
         }
-        if (empty($response['json']['component']['measures'])){
-            $this->logger->info('[SonarMetricsFetcher] Analyse sans métriques',
+        if (empty($response['json']['component']['measures'])) {
+            $this->logger->info(
+                '[SonarMetricsFetcher] Analyse sans métriques',
                 [
                     'project_key' => $project_key,
                     'analysis_id' => $analysis_key

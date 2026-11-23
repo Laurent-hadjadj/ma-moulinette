@@ -33,8 +33,8 @@ class BatchCollecteHotspotOwaspController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -42,8 +42,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for vulnerabilityProbability]
@@ -52,7 +51,6 @@ class BatchCollecteHotspotOwaspController extends AbstractController
      *
      * @return int
      *
-     * Created at: 26/05/2024 16:04:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -74,7 +72,6 @@ class BatchCollecteHotspotOwaspController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/05/2024 11:59:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -94,7 +91,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On supprime les hotspots pour la maven_key. */
         if ($menace === 'a0') {
-            $map = [ 'maven_key' => $maven_key ];
+            $map = ['maven_key' => $maven_key];
             $delete = $hotspotOwaspRepos->deleteHotspotOwaspMavenKey($map);
 
             if ($delete['code'] != 200) {
@@ -111,14 +108,14 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             return ((int) $sonarVersion == 8) ?
                 [
                     'code' => 200,
-                    'owasp_2017'=> [], //ne sert a rien.
+                    'owasp_2017' => [], //ne sert a rien.
                     'info' => 'effacement',
                     'message' => $message,
                     'data' => []
                 ] :
                 [
                     'code' => 200,
-                    'owasp_2021'=> [],
+                    'owasp_2021' => [],
                     'info' => 'effacement',
                     'message' => $message,
                     'data' => []
@@ -126,13 +123,13 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map = [ 'maven_key' => $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $information = $informationProjetRepos->selectInformationProjetVersion($map);
 
         if ($information['code'] != 200) {
             $this->logger->error('[HotspotOwasp] ❌ Erreur de la requête selectInformationProjetVersion.', [
-            'code' => $information['code'],
-            'erreur' => $information['erreur']
+                'code' => $information['code'],
+                'erreur' => $information['erreur']
             ]);
 
             return [
@@ -161,8 +158,8 @@ class BatchCollecteHotspotOwaspController extends AbstractController
          */
         $hotspotProjectParam = $this->sonarVersion->hotspotProjectParam();
         $queryParamsList = [
-            'owasp2017' => [$hotspotProjectParam => $maven_key, 'owaspTop10' => $menace,'p' => 1, 'ps' => 500 ],
-            'owasp2021' => [$hotspotProjectParam => $maven_key, 'owaspTop10-2021' => $menace,'p' => 1, 'ps' => 500 ]
+            'owasp2017' => [$hotspotProjectParam => $maven_key, 'owaspTop10' => $menace, 'p' => 1, 'ps' => 500],
+            'owasp2021' => [$hotspotProjectParam => $maven_key, 'owaspTop10-2021' => $menace, 'p' => 1, 'ps' => 500]
         ];
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
@@ -190,7 +187,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On execute si la version de SonarQube est >= 9 */
         $owasp2021 = ['NC'];
-        if ((int) $sonarVersion > 8){
+        if ((int) $sonarVersion > 8) {
             $url = $this->urlBuilder->build(
                 $this->getParameter(self::$sonarUrl),
                 '/api/hotspots/search',
@@ -201,35 +198,35 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
                 $this->logger->error('[HotspotOwasp] ❌ Erreur API OWASP 2021', [
-                        'code' => $owasp2021['code'],
-                        'erreur' => $owasp2021['erreur'],
-                    ]);
+                    'code' => $owasp2021['code'],
+                    'erreur' => $owasp2021['erreur'],
+                ]);
 
                 return [
-                        'code' => $owasp2021['code'],
-                        'erreur' => $owasp2021['erreur'],
-                        'type' => 'owasp2021'
-                    ];
-                }
+                    'code' => $owasp2021['code'],
+                    'erreur' => $owasp2021['erreur'],
+                    'type' => 'owasp2021'
+                ];
+            }
         }
 
         /** On prépare les données */
-        $prepareHotspotData = function($data, $ref) use ($maven_key, $information, $dateVersion, $date, $menace, $mode_collecte, $utilisateur_collecte) {
+        $prepareHotspotData = function ($data, $ref) use ($maven_key, $information, $dateVersion, $date, $menace, $mode_collecte, $utilisateur_collecte) {
             return [
-                    'referential_owasp' => $ref,
-                    'maven_key' => $maven_key,
-                    'version' => $information['info']['version'],
-                    'date_version' => $dateVersion,
-                    'menace' => $menace,
-                    'security_category' => $data['securityCategory'] ?? 'NC',
-                    'rule_key' => $data['ruleKey'] ?? 'NC',
-                    'probability' => $data['vulnerabilityProbability'] ?? 'NC',
-                    'status' => $data['status'] ?? 'NC',
-                    'resolution' => $data['resolution'] ?? '',
-                    'niveau' => $this->vulnerabilityProbability($data['vulnerabilityProbability'] ?? -1),
-                    'mode_collecte' => $mode_collecte,
-                    'utilisateur_collecte' => $utilisateur_collecte,
-                    'date_enregistrement' => $date
+                'referential_owasp' => $ref,
+                'maven_key' => $maven_key,
+                'version' => $information['info']['version'],
+                'date_version' => $dateVersion,
+                'menace' => $menace,
+                'security_category' => $data['securityCategory'] ?? 'NC',
+                'rule_key' => $data['ruleKey'] ?? 'NC',
+                'probability' => $data['vulnerabilityProbability'] ?? 'NC',
+                'status' => $data['status'] ?? 'NC',
+                'resolution' => $data['resolution'] ?? '',
+                'niveau' => $this->vulnerabilityProbability($data['vulnerabilityProbability'] ?? -1),
+                'mode_collecte' => $mode_collecte,
+                'utilisateur_collecte' => $utilisateur_collecte,
+                'date_enregistrement' => $date
             ];
         };
 
@@ -246,7 +243,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                 $hotspotDataList[] = $prepareHotspotData($item, 2021);
             }
         }
-        if ($hotspotDataList){
+        if ($hotspotDataList) {
             $insert = $hotspotOwaspRepos->insertHotspotOwasp($hotspotDataList);
             if ($insert['code'] !== 200) {
                 $this->logger->error('[HotspotOwasp] ❌ Échec de la requête insertHotspotOwasp', [
@@ -270,12 +267,12 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         ]);
 
         return [
-                'code' => 200,
-                'info' => 'enregistrement',
-                'owasp_2017' => $owasp2017['json']['paging']['total'],
-                'owasp_2021' => $owasp2021['json']['paging']['total'] ?? 'NC',
-                'message' => 'La collecte des menaces Hotspots de catégorie OWASP est terminée.',
-                'data' => $hotspotDataList
-            ];
+            'code' => 200,
+            'info' => 'enregistrement',
+            'owasp_2017' => $owasp2017['json']['paging']['total'],
+            'owasp_2021' => $owasp2021['json']['paging']['total'] ?? 'NC',
+            'message' => 'La collecte des menaces Hotspots de catégorie OWASP est terminée.',
+            'data' => $hotspotDataList
+        ];
     }
 }

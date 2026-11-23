@@ -56,6 +56,14 @@ class NpmAuditProcessCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * [Description for configure]
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function configure(): void
     {
         $this
@@ -64,6 +72,17 @@ class NpmAuditProcessCommand extends Command
             ->addOption('watch', 'w', InputOption::VALUE_REQUIRED, 'DEV ONLY : boucle infinie avec sleep N secondes entre ticks.', null);
     }
 
+    /**
+     * [Description for execute]
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -81,6 +100,18 @@ class NpmAuditProcessCommand extends Command
         return $this->runOneShot($io, $batchSize, $maxBatches);
     }
 
+    /**
+     * [Description for runOneShot]
+     *
+     * @param SymfonyStyle $io
+     * @param int $batchSize
+     * @param int $maxBatches
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function runOneShot(SymfonyStyle $io, int $batchSize, int $maxBatches): int
     {
         $totals = ['done' => 0, 'failed' => 0, 'requeued' => 0];
@@ -105,6 +136,18 @@ class NpmAuditProcessCommand extends Command
         return $totals['failed'] > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
+    /**
+     * [Description for runWatch]
+     *
+     * @param SymfonyStyle $io
+     * @param int $batchSize
+     * @param int $sleepSec
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function runWatch(SymfonyStyle $io, int $batchSize, int $sleepSec): int
     {
         $cycle = 0;
@@ -133,7 +176,15 @@ class NpmAuditProcessCommand extends Command
     }
 
     /**
+     * [Description for processOneBatch]
+     *
+     * @param SymfonyStyle $io
+     * @param int $batchSize
+     *
      * @return array{claimed: int, done: int, failed: int}
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function processOneBatch(SymfonyStyle $io, int $batchSize): array
     {
@@ -237,8 +288,17 @@ class NpmAuditProcessCommand extends Command
         return $totals;
     }
 
+
     /**
+     * [Description for printSummary]
+     *
+     * @param SymfonyStyle $io
      * @param array{done: int, failed: int, requeued: int} $totals
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printSummary(SymfonyStyle $io, array $totals): void
     {
@@ -250,7 +310,9 @@ class NpmAuditProcessCommand extends Command
         );
     }
 
+
     /**
+     * [Description for logHeartbeatIfDue]
      * Preuve de vie throttlée : la commande tourne chaque minute via la
      * crontab mais ne journalise rien quand la queue est vide (cf.
      * processOneBatch ci-dessus), donc cron.log n'apparaît jamais tant
@@ -259,6 +321,10 @@ class NpmAuditProcessCommand extends Command
      * aligné sur la fréquence "* * * * *" de la crontab) plutôt qu'à
      * chaque exécution, pour éviter de noyer cron.log une fois les files
      * réellement actives.
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function logHeartbeatIfDue(): void
     {
@@ -268,6 +334,16 @@ class NpmAuditProcessCommand extends Command
         }
     }
 
+    /**
+     * [Description for isHeartbeatDue]
+     *
+     * @param int $minute
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private static function isHeartbeatDue(int $minute): bool
     {
         return $minute % 15 === 0;

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Admin;
@@ -55,9 +55,8 @@ class AdminLogController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 13/12/2025 20:26:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -77,9 +76,8 @@ class AdminLogController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 13/12/2025 20:26:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/admin/logs', name: 'admin_logs_index')]
     public function index(): Response
@@ -118,9 +116,8 @@ class AdminLogController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 13/12/2025 22:55:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/admin/logs/api/list', name: 'admin_logs_api_list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
@@ -139,13 +136,13 @@ class AdminLogController extends AbstractController
             $types ?: null,
         );
 
-        $data_logs = array_map(static fn ($log) => [
-                'name'  => $log['name'],
-                'env'   => $log['env'],
-                'type'  => $log['type'],
-                'size'  => $log['size'],
-                'mtime' => $log['mtime'] === false ? null : date('Y-m-d H:i:s', $log['mtime']),
-            ], $logs);
+        $data_logs = array_map(static fn($log) => [
+            'name'  => $log['name'],
+            'env'   => $log['env'],
+            'type'  => $log['type'],
+            'size'  => $log['size'],
+            'mtime' => $log['mtime'] === false ? null : date('Y-m-d H:i:s', $log['mtime']),
+        ], $logs);
 
         $this->logger->debug('[Admin-Log] 🛠️ Listing des logs demandé', [
             'env' => $env,
@@ -167,9 +164,8 @@ class AdminLogController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 13/12/2025 22:55:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/admin/logs/download-selection', name: 'admin_logs_download_selection', methods: ['POST'])]
     public function downloadSelection(Request $request): Response
@@ -213,5 +209,4 @@ class AdminLogController extends AbstractController
         $response->deleteFileAfterSend(true);
         return $response;
     }
-
 }

@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 // Fonction pour échapper les caractères spéciaux HTML
@@ -21,9 +21,8 @@ export const escapeHtml = function(text) {
  *
  * @return string
  *
- * Created at: 22/06/2025 12:35:47 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const isHtmlEscaped = function(text) {
     return /&lt;|&gt;|&amp;|&quot;|&#39;/.test(text);
@@ -36,9 +35,8 @@ const isHtmlEscaped = function(text) {
  *
  * @return string
  *
- * Created at: 09/06/2025 13:21:22 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 export const extractSemanticalErrorMessage = function(rawData) {
     try {
@@ -77,9 +75,8 @@ export const extractSemanticalErrorMessage = function(rawData) {
  *
  * @return string
  *
- * Created at: 22/06/2025 12:31:33 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const formatErrorDetails = function(details) {
     const safeDetails = isHtmlEscaped(details) ? details : escapeHtml(details);
@@ -104,9 +101,8 @@ const formatErrorDetails = function(details) {
   *
   * @return string
   *
-  * Created at: 22/06/2025 13:22:21 (Europe/Paris)
   * @author     Laurent HADJADJ <laurent_h@me.com>
-  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+  * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
   */
 export function prepareTechnicalDetails(traceCandidate) {
         // Si traceCandidate est null ou undefined, retourne une chaîne vide
@@ -172,9 +168,8 @@ export function prepareTechnicalDetails(traceCandidate) {
  *
  * @return void
  *
- * Created at: 08/06/2025 22:42:19 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 export const showMessage = function(type, message, technicalDetails = null) {
     const messageElement = $('#message-box');
@@ -249,9 +244,8 @@ export const showMessage = function(type, message, technicalDetails = null) {
  *
  * @return void
  *
- * Created at: 08/06/2025 19:25:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 export const hideMessage = function() {
     const messageElement = $('#message-box');

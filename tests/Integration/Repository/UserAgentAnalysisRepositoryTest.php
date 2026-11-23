@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -25,6 +25,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 /* MODIF 2026-06-09 : tests Integration UserAgentAnalysisRepository.
  * Couvre insertUserAgentAnalysis avec vraie base PostgreSQL (schéma ma_moulinette).
  */
+
 class UserAgentAnalysisRepositoryTest extends KernelTestCase
 {
     private ?EntityManagerInterface $em = null;
@@ -147,7 +148,7 @@ class UserAgentAnalysisRepositoryTest extends KernelTestCase
 
         // Les fixtures créent 2 analyses
         $this->assertCount(2, $all);
-        $deviceTypes = array_map(fn (UserAgentAnalysis $a) => $a->getDeviceType(), $all);
+        $deviceTypes = array_map(fn(UserAgentAnalysis $a) => $a->getDeviceType(), $all);
         $this->assertContains('desktop', $deviceTypes);
         $this->assertContains('smartphone', $deviceTypes);
     }

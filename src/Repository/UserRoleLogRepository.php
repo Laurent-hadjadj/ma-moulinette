@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -49,10 +49,8 @@ class UserRoleLogRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 20/07/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -71,10 +69,8 @@ class UserRoleLogRepository extends ServiceEntityRepository
      * @param array<string, mixed> $map clés possibles : courriel, start, end (\DateTimeInterface)
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 20/07/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findFiltered(array $map): array
     {
@@ -102,8 +98,8 @@ class UserRoleLogRepository extends ServiceEntityRepository
         $sql = "SELECT id, user_email, editor_email, old_roles, new_roles,
                         old_active, new_active, alerts, created_at
                 FROM ma_moulinette.user_role_log"
-                . ($where !== [] ? ' WHERE ' . implode(' AND ', $where) : '')
-                . " ORDER BY created_at DESC LIMIT :limit";
+            . ($where !== [] ? ' WHERE ' . implode(' AND ', $where) : '')
+            . " ORDER BY created_at DESC LIMIT :limit";
 
         try {
             $liste = $this->getEntityManager()->getConnection()->executeQuery(
@@ -125,10 +121,8 @@ class UserRoleLogRepository extends ServiceEntityRepository
      * @param int[] $ids
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 20/07/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findByIds(array $ids): array
     {
@@ -161,10 +155,8 @@ class UserRoleLogRepository extends ServiceEntityRepository
      * @param int[] $ids
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 20/07/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function deleteByIds(array $ids): array
     {
@@ -198,10 +190,8 @@ class UserRoleLogRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countOlderThan(int $days): int
     {
@@ -224,10 +214,8 @@ class UserRoleLogRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int nombre de lignes supprimées
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function purge(int $days): int
     {

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\CommandRebuildHistorique;
@@ -34,10 +34,9 @@ class SonarQualityScorer
      * [Description for calculate]
      *
      * @return array{score: int, rating: string}
-     *
-     * Created at: 23/03/2026 02:52:06 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     *
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function calculate(): array
     {
@@ -59,9 +58,8 @@ class SonarQualityScorer
      *
      * @return void
      *
-     * Created at: 23/03/2026 02:52:14 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function applyCriticalPenalties(): void
     {
@@ -78,9 +76,8 @@ class SonarQualityScorer
      *
      * @return void
      *
-     * Created at: 23/03/2026 02:52:18 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function applyMajorPenalties(): void
     {
@@ -97,9 +94,8 @@ class SonarQualityScorer
      *
      * @return void
      *
-     * Created at: 23/03/2026 02:52:22 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function applyQualityAdjustments(): void
     {
@@ -141,9 +137,8 @@ class SonarQualityScorer
      *
      * @return string
      *
-     * Created at: 23/03/2026 02:52:30 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getRating(int $score): string
     {
@@ -165,9 +160,8 @@ class SonarQualityScorer
      *
      * @return float
      *
-     * Created at: 23/03/2026 02:52:33 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function get(string $key): float
     {
@@ -185,9 +179,8 @@ class SonarQualityScorer
      *
      * @return array{score: int, rating: string}
      *
-     * Created at: 23/03/2026 02:52:36 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function calculateStrict(): array
     {

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -271,7 +271,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
 
         $this->tempRepo->expects($this->once())
             ->method('batchInsertIssuesSQL')
-            ->with($this->callback(fn (array $issues) => count($issues) === 2))
+            ->with($this->callback(fn(array $issues) => count($issues) === 2))
             ->willReturn(['code' => 200]);
 
         $result = $this->controller->batchCollecteRepartition(self::MAVEN_KEY, 'BUG', 'BLOCKER', self::SETUP);

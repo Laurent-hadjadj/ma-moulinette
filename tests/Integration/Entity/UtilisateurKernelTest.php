@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Entity;
@@ -61,73 +61,72 @@ class UtilisateurKernelTest extends KernelTestCase
       ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $container = static::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
+  protected function setUp(): void
+  {
+    self::bootKernel();
+    $container = static::getContainer();
+    $entityManager = $container->get(EntityManagerInterface::class);
 
-        // Réinitialiser la séquence
-        $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform();
+    // Réinitialiser la séquence
+    $connection = $entityManager->getConnection();
+    $platform = $connection->getDatabasePlatform();
 
-        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
-            $sequence = 'ma_moulinette.utilisateur_id_seq';
-            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
-        }
-
-        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.utilisateur');
-        $executor = new ORMExecutor($entityManager);
-        $executor->execute([new UtilisateurFixtures()], true);
+    if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
+      $sequence = 'ma_moulinette.utilisateur_id_seq';
+      $connection->executeQuery("SELECT setval('$sequence', 1, false);");
     }
 
-    public function testAjoutUtilisateurAvecCourrielExistant(): void
-    {
-        /* Création d'un nouvel utilisateur avec un courriel déjà existant */
-        $utilisateur = $this->getEntity();
+    $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.utilisateur');
+    $executor = new ORMExecutor($entityManager);
+    $executor->execute([new UtilisateurFixtures()], true);
+  }
 
-        /* Vérification qu'une exception est lancée lors de la tentative d'ajout de l'utilisateur */
-        $this->expectException(\Doctrine\DBAL\Exception\UniqueConstraintViolationException::class);
+  public function testAjoutUtilisateurAvecCourrielExistant(): void
+  {
+    /* Création d'un nouvel utilisateur avec un courriel déjà existant */
+    $utilisateur = $this->getEntity();
 
-        /* Tentative de persistance de l'utilisateur */
-        $container = static::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
+    /* Vérification qu'une exception est lancée lors de la tentative d'ajout de l'utilisateur */
+    $this->expectException(\Doctrine\DBAL\Exception\UniqueConstraintViolationException::class);
 
-        $entityManager->persist($utilisateur);
-        $entityManager->flush();
-    }
+    /* Tentative de persistance de l'utilisateur */
+    $container = static::getContainer();
+    $entityManager = $container->get(EntityManagerInterface::class);
 
-    public function testCompteUtilisateurNoActif(): void
-    {
-        /* On se connecte à la base de tests */
-        $container = static::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
+    $entityManager->persist($utilisateur);
+    $entityManager->flush();
+  }
 
-        /* On compte le nombre d'utilisateur non actif */
-        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
-        $count = $utilisateurRepository->count(['actif' => false]);
-        $this->assertEquals(4, $count);
-    }
+  public function testCompteUtilisateurNoActif(): void
+  {
+    /* On se connecte à la base de tests */
+    $container = static::getContainer();
+    $entityManager = $container->get(EntityManagerInterface::class);
 
-    public function testUtilisateurFindOneBy(): void
-    {
-        /* On se connecte à la base de tests */
-        $container = static::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
+    /* On compte le nombre d'utilisateur non actif */
+    $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+    $count = $utilisateurRepository->count(['actif' => false]);
+    $this->assertEquals(4, $count);
+  }
 
-        /* On compte le nombre d'utilisateur non actif */
-        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
-        $admin = $utilisateurRepository->findOneBy(['prenom' => 'admin']);
-        $aurelie = $utilisateurRepository->findOneBy(['prenom' => 'Aurélie']);
-        $emma = $utilisateurRepository->findOneBy(['prenom' => 'Emma']);
-        $josh = $utilisateurRepository->findOneBy(['prenom' => 'Josh']);
-        $nathan = $utilisateurRepository->findOneBy(['prenom' => 'Nathan']);
+  public function testUtilisateurFindOneBy(): void
+  {
+    /* On se connecte à la base de tests */
+    $container = static::getContainer();
+    $entityManager = $container->get(EntityManagerInterface::class);
 
-        $this->assertNotNull($admin);
-        $this->assertNotNull($aurelie);
-        $this->assertNotNull($emma);
-        $this->assertNotNull($josh);
-        $this->assertNotNull($nathan);
+    /* On compte le nombre d'utilisateur non actif */
+    $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+    $admin = $utilisateurRepository->findOneBy(['prenom' => 'admin']);
+    $aurelie = $utilisateurRepository->findOneBy(['prenom' => 'Aurélie']);
+    $emma = $utilisateurRepository->findOneBy(['prenom' => 'Emma']);
+    $josh = $utilisateurRepository->findOneBy(['prenom' => 'Josh']);
+    $nathan = $utilisateurRepository->findOneBy(['prenom' => 'Nathan']);
 
+    $this->assertNotNull($admin);
+    $this->assertNotNull($aurelie);
+    $this->assertNotNull($emma);
+    $this->assertNotNull($josh);
+    $this->assertNotNull($nathan);
   }
 }

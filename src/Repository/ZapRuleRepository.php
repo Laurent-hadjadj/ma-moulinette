@@ -37,8 +37,6 @@ class ZapRuleRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array{code: int, erreur: string}
-     *
-     * Created at: 13/10/2026 21:07:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -69,8 +67,6 @@ class ZapRuleRepository extends ServiceEntityRepository
      * @param string $alertRef
      *
      * @return ZapRule|null
-     *
-     * Created at: 15/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

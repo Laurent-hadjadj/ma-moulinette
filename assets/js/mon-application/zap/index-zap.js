@@ -3,7 +3,7 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *
  *  MODIF 2026-10-13 : entré JS pour la page /zap (DAST). Lit le dataset
  *  injecte dans <script type="application/json" id="zap-chart-data"> et
@@ -19,7 +19,7 @@
  *
  *  ---
  *  Vous pouvez obtenir une copie de la licence a l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -85,9 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param mixed laneIndex
  * @param mixed categories
  *
- * Created at: 13/10/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildCategoryCharts = function(laneIndex, categories) {
   categories.forEach((dataset) => {
@@ -138,9 +137,8 @@ const buildCategoryCharts = function(laneIndex, categories) {
  * @param mixed laneIndex
  * @param mixed history
  *
- * Created at: 13/10/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildHistoryChart = function(laneIndex, history) {
   const ctx = document.getElementById(`zap-chart-history-${laneIndex}`);

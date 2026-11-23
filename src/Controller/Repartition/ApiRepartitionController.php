@@ -35,17 +35,15 @@ class ApiRepartitionController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 04/12/2022, 09:00:38 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
         private BatchCollecteRepartitionController $batchCollecteRepartition,
         private LoggerInterface $logger,
         private Security $security
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for projetRepartitionCollecte]
@@ -55,9 +53,8 @@ class ApiRepartitionController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 04/12/2022, 09:04:35 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/repartition/collecte', name: 'api_repartition_collecte', methods: ['PUT'])]
     public function apiRepartitionCollecte(Request $request): JsonResponse
@@ -136,9 +133,8 @@ class ApiRepartitionController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 04/12/2022, 09:05:20 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/repartition/analyse', name: 'repartition_analyse', methods: ['PUT'])]
     public function apiRepartitionAnalyse(Request $request): JsonResponse
@@ -271,7 +267,6 @@ class ApiRepartitionController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 01/09/2025 11:19:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -366,7 +361,6 @@ class ApiRepartitionController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 18/02/2025 09:14:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -430,7 +424,7 @@ class ApiRepartitionController extends AbstractController
         $this->logger->info('[Répartition-Mise-a-jour] ℹ️ Enregistrement des données effectué.');
 
         return new JsonResponse([
-                'code' => 200,
+            'code' => 200,
             'message' => $repartitionMaJ['message'] ?? 'Mise à jour effectuée.'
         ], Response::HTTP_OK);
     }

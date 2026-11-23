@@ -13,9 +13,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\NpmAudit;
+namespace App\Exception\Npm;
 
 /**
+ * [Description NpmAuditIngestException]
  * Toute défaillance liée au payload d'un job d'ingestion npm audit (worker
  * `app:npm-audit:process`) : payload vide, gzip corrompu, JSON invalide,
  * structure inattendue (bloc "full" absent). Contrairement à DC

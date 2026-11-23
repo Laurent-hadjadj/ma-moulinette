@@ -23,14 +23,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\CleanCode;
 use App\Service\UserAgent\UserAgentTrackingFacade;
 
-/* MODIF 2026-05-17 : contrôleur de la page
- * /clean-code — mini tableau de bord des indicateurs SonarQube 10+
- * (taxonomy clean code, impact qualités/sévérités, conformité OWASP/SANS/CWE).
- * Accès par token (même pattern que OwaspController). */
 
 /**
  * [Description CleanCodeController]
- */
+ * MODIF 2026-05-17 : contrôleur de la page
+ * /clean-code — mini tableau de bord des indicateurs SonarQube 10+
+ * (taxonomy clean code, impact qualités/sévérités, conformité OWASP/SANS/CWE).
+ * Accès par token (même pattern que OwaspController). */
 class CleanCodeController extends AbstractController
 {
     use AppUserAware;
@@ -67,9 +66,8 @@ class CleanCodeController extends AbstractController
      *
      * @return array{type_footer: null, logo_entreprise: string, marque_entreprise_short: string, marque_entreprise_long: string, env: string, version: string, date_copyright: string}
      *
-     * Created at: 17/05/2026 12:33:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -91,9 +89,8 @@ class CleanCodeController extends AbstractController
      *
      * @return string|null
      *
-     * Created at: 17/05/2026 12:33:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeToken(string $token): ?string
     {
@@ -124,9 +121,8 @@ class CleanCodeController extends AbstractController
      *
      * @return array{label: string, class: string}|null null si 0, absente ou valeur inattendue (pas de badge affiché).
      *
-     * Created at: 02/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function severiteBadge(array $row, string $column): ?array
     {
@@ -153,9 +149,8 @@ class CleanCodeController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 17/05/2026 12:34:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/clean-code', name: 'clean_code')]
     public function index(Request $request): Response
@@ -218,14 +213,14 @@ class CleanCodeController extends AbstractController
 
         /* Score de risque pondéré (par issue) */
         $rawRisk = ($d['impact_blocker'] * 4)
-                 + ($d['impact_high'] * 3)
-                 + ($d['impact_medium'] * 2)
-                 + ($d['impact_low'] * 1)
-                 + ($d['impact_info'] * 0.5);
+            + ($d['impact_high'] * 3)
+            + ($d['impact_medium'] * 2)
+            + ($d['impact_low'] * 1)
+            + ($d['impact_info'] * 0.5);
         $riskScore = $issueTotal > 0 ? round($rawRisk / $issueTotal, 2) : 0;
 
         /* Niveau de risque */
-        $riskLevel = match(true) {
+        $riskLevel = match (true) {
             $riskScore >= 3.0 => 'critical',
             $riskScore >= 2.0 => 'high',
             $riskScore >= 1.0 => 'medium',
@@ -277,8 +272,8 @@ class CleanCodeController extends AbstractController
                 WHERE maven_key = :mk AND cc_responsible IS NOT NULL
                 ORDER BY date_enregistrement DESC
                 LIMIT 10',
-                ['mk' => $maven_key]
-            );
+            ['mk' => $maven_key]
+        );
 
         /**
          * MODIF 02/11/2026 : "pire sévérité" par dimension (maintenabilité/
@@ -300,17 +295,17 @@ class CleanCodeController extends AbstractController
         if (!empty($historyRows)) {
             $p = $historyRows[0];
             $pRawRisk   = ((int)$p['impact_blocker'] * 4) + ((int)$p['impact_high'] * 3)
-                        + ((int)$p['impact_medium'] * 2) + ((int)$p['impact_low'] * 1)
-                        + ((int)$p['impact_info'] * 0.5);
+                + ((int)$p['impact_medium'] * 2) + ((int)$p['impact_low'] * 1)
+                + ((int)$p['impact_info'] * 0.5);
             $pViolations = (int)$p['violations'];
             $pRiskScore  = $pViolations > 0 ? round($pRawRisk / $pViolations, 2) : 0;
 
             $pCcTotal = (int)$p['cc_consistent'] + (int)$p['cc_intentional']
-                    + (int)$p['cc_adaptable'] + (int)$p['cc_responsible'];
+                + (int)$p['cc_adaptable'] + (int)$p['cc_responsible'];
             $pRespPct = $pCcTotal > 0 ? round(((int)$p['cc_responsible'] / $pCcTotal) * 100, 1) : 0;
 
             $pQualTotal = (int)$p['quality_maintainability'] + (int)$p['quality_reliability']
-                        + (int)$p['quality_security'];
+                + (int)$p['quality_security'];
             $pSecPct    = $pQualTotal > 0 ? round(((int)$p['quality_security'] / $pQualTotal) * 100, 1) : 0;
 
             $deltas = [
@@ -325,8 +320,8 @@ class CleanCodeController extends AbstractController
             $evoLabels = $evoRisk = $evoResp = $evoSec = [];
             foreach (array_reverse($historyRows) as $row) {
                 $rawR        = ((int)$row['impact_blocker'] * 4) + ((int)$row['impact_high'] * 3)
-                             + ((int)$row['impact_medium'] * 2) + ((int)$row['impact_low'] * 1)
-                             + ((int)$row['impact_info'] * 0.5);
+                    + ((int)$row['impact_medium'] * 2) + ((int)$row['impact_low'] * 1)
+                    + ((int)$row['impact_info'] * 0.5);
                 $violations  = (int)$row['violations'];
                 $rs = $violations > 0 ? round($rawR / $violations, 2) : 0;
 

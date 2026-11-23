@@ -20,6 +20,9 @@ use Psr\Log\LoggerInterface;
 
 /**
  * [Description ApiClientHeaderSubscriber]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 class ApiClientHeaderSubscriber implements EventSubscriberInterface
 {
@@ -30,9 +33,9 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     private string $internalHeaderName;
     private string $internalHeaderValue;
     private LoggerInterface $logger;
-/**
- * @param array<int, string> $allowedOrigins
- */
+    /**
+     * @param array<int, string> $allowedOrigins
+     */
 
     public function __construct(
         string $appClientToken,
@@ -53,7 +56,6 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/10/2025 09:30:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -71,7 +73,6 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      *
      * @return void
      *
-     * Created at: 20/10/2025 22:45:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -84,7 +85,8 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /* Exclusion des routes /api/secure/dependency-check/.
+        /**
+         * Exclusion des routes /api/secure/dependency-check/.
          * ces endpoints sont appelés par la CI GitLab (machine-to-machine)
          * et non par le front Symfony. Ils sont proteges par un subscriber dédié
          * qui valide un token bearer plutôt que la combinaison Origin + X-Internal-Front.
@@ -93,13 +95,15 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /* MODIF 2026-10-13 : même exclusion pour /api/secure/zap/ (CI,
+        /**
+         * MODIF 2026-10-13 : même exclusion pour /api/secure/zap/ (CI,
          * machine-to-machine, protégé par ZapIngestTokenSubscriber). */
         if (str_starts_with($request->getPathInfo(), '/api/secure/zap/')) {
             return;
         }
 
-        /* MODIF 2026-11-20 : même exclusion pour /api/secure/npm-audit/ (CI,
+        /**
+         * MODIF 2026-11-20 : même exclusion pour /api/secure/npm-audit/ (CI,
          * machine-to-machine, protégé par NpmAuditTokenSubscriber). */
         if (str_starts_with($request->getPathInfo(), '/api/secure/npm-audit/')) {
             return;
@@ -109,7 +113,8 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
         $referer        = $request->headers->get('Referer') ?? '';
         $internalHeader = $request->headers->get($this->internalHeaderName);
 
-        //🔒 seules les requêtes venant d’un Origin ou Referer autorisé et portant le header interne correct (X-Internal-Front: front-app) peuvent appeler /api/secure/*.
+        //🔒 seules les requêtes venant d’un Origin ou Referer autorisé et portant le header interne correct
+        // (X-Internal-Front: front-app) peuvent appeler /api/secure/*.
         $isAllowedOriginOrReferer =
             $this->isAllowedOrigin($origin) ||
             $this->isAllowedOrigin($referer);
@@ -157,7 +162,6 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      *
      * @return bool
      *
-     * Created at: 10/11/2025 12:33:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -181,5 +185,4 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
 
         return false;
     }
-
 }

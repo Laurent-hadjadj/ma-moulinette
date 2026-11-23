@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Validator;
@@ -27,17 +27,17 @@ class ActuatorInfoValidatorTest extends KernelTestCase
   private static string $actuatorInfoDescription = '[SOCLE][ARCHETYPE]';
   private static string $actuatorInfoCle = 'socle.archetype';
 
-private function getEntity(): ActuatorInfo
-{
-  $actuator = new Actuator();
-  $actuator->setId(self::$actuatorId);
+  private function getEntity(): ActuatorInfo
+  {
+    $actuator = new Actuator();
+    $actuator->setId(self::$actuatorId);
 
-  $actuatorInfo = new ActuatorInfo();
-  $actuatorInfo->setActuator($actuator)
-              ->setActuatorInfoDescription(self::$actuatorInfoDescription)
-              ->setActuatorInfoCle(self::$actuatorInfoCle);
-  return $actuatorInfo;
-}
+    $actuatorInfo = new ActuatorInfo();
+    $actuatorInfo->setActuator($actuator)
+      ->setActuatorInfoDescription(self::$actuatorInfoDescription)
+      ->setActuatorInfoCle(self::$actuatorInfoCle);
+    return $actuatorInfo;
+  }
 
   public function assertHasErrors(ActuatorInfo $entity, int $number = 0): void
   {
@@ -46,7 +46,7 @@ private function getEntity(): ActuatorInfo
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -65,9 +65,9 @@ private function getEntity(): ActuatorInfo
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 4);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 4);
   }
 }

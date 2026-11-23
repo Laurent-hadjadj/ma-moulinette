@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -22,162 +22,152 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OwaspRepository extends ServiceEntityRepository
 {
-private static string $removeReturnLine = "/\s+/u";
-private static string $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
-public function __construct(ManagerRegistry $registry)
-{
-    parent::__construct($registry, Owasp::class);
-}
-
-/**
- * [Description for handleDatabaseException]
- *
- * @param \Throwable $e
- *
- * @return array<int|string, mixed>
- *
- * Created at: 21/10/2024 16:55:20 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
- */
-public function handleDatabaseException(\Throwable $e): array
-{
-    $message = $e->getMessage();
-
-    // message = 'SQLSTATE[08006]'
-    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = self::$noDataBase;
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Owasp::class);
     }
 
-    // state = '23502'
-    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+    /**
+     * [Description for handleDatabaseException]
+     *
+     * @param \Throwable $e
+     *
+     * @return array<int|string, mixed>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function handleDatabaseException(\Throwable $e): array
+    {
         $message = $e->getMessage();
+
+        // message = 'SQLSTATE[08006]'
+        if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+            $message = self::$noDataBase;
+        }
+
+        // state = '23502'
+        if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+            $message = $e->getMessage();
+        }
+
+        // state = '23505'
+        if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+            return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+        }
+
+        return ['code' => 500, 'erreur' => $message];
     }
 
-    // state = '23505'
-    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-    }
-
-    return ['code' => 500, 'erreur' => $message];
-}
-
-/**
- * [Description for selectOwaspOrderByDateEnregistrement]
- * On récupère les infos de la dernière analyse.
- *
- * @param array<int|string, mixed> $map
- *
- * @return array<int|string, mixed>
- *
- * Created at: 02/03/2024 23:20:29 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-public function selectOwaspOrderByDateEnregistrement(array $map): array
-{
-    $sql = "SELECT *
+    /**
+     * [Description for selectOwaspOrderByDateEnregistrement]
+     * On récupère les infos de la dernière analyse.
+     *
+     * @param array<int|string, mixed> $map
+     *
+     * @return array<int|string, mixed>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function selectOwaspOrderByDateEnregistrement(array $map): array
+    {
+        $sql = "SELECT *
             FROM ma_moulinette.owasp
             WHERE maven_key=:maven_key AND referential_owasp=:referential_owasp
             ORDER BY date_enregistrement DESC LIMIT 1";
 
-    try {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $map['maven_key']);
             $stmt->bindValue(':referential_owasp', $map['referential_owasp']);
-        $liste = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
-    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
-}
 
 
-/**
- * [Description for selectOwaspVersion]
- * Récupère l'application (maven_key) et la version de la dernière
- * analyse OWASP pour alimenter le breadcrumb de la page OWASP.
- *
- * @param string $maven_key
- *
- * @return array<int|string, mixed>
- *
- * Created at: 10/05/2026 00:00:00 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-public function selectOwaspVersion(string $maven_key): array
-{
-    $sql = "SELECT maven_key, version
+    /**
+     * [Description for selectOwaspVersion]
+     * Récupère l'application (maven_key) et la version de la dernière
+     * analyse OWASP pour alimenter le breadcrumb de la page OWASP.
+     *
+     * @param string $maven_key
+     *
+     * @return array<int|string, mixed>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function selectOwaspVersion(string $maven_key): array
+    {
+        $sql = "SELECT maven_key, version
             FROM ma_moulinette.owasp
             WHERE maven_key=:maven_key
             ORDER BY date_enregistrement DESC LIMIT 1";
 
-    try {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $maven_key);
-        $row = $stmt->executeQuery()->fetchAssociative();
-    } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+            $row = $stmt->executeQuery()->fetchAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+
+        if ($row === false) {
+            return ['code' => 200, 'application' => null, 'version' => null, 'erreur' => ''];
+        }
+
+        return ['code' => 200, 'application' => $row['maven_key'], 'version' => $row['version'], 'erreur' => ''];
     }
 
-    if ($row === false) {
-        return ['code' => 200, 'application' => null, 'version' => null, 'erreur' => ''];
-    }
-
-    return ['code' => 200, 'application' => $row['maven_key'], 'version' => $row['version'], 'erreur' => ''];
-}
-
-/**
- * [Description for deleteOwaspMavenKey]
- * Supprime les données de la version courante (i.e. correspondant à la maven_key)
- *
- * @param array<string, mixed> $map
- *
- * @return array<int|string, mixed>
- *
- * Created at: 11/03/2024 08:37:44 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-public function deleteOwaspMavenKey(array $map): array
-{
-    $sql = "DELETE
+    /**
+     * [Description for deleteOwaspMavenKey]
+     * Supprime les données de la version courante (i.e. correspondant à la maven_key)
+     *
+     * @param array<string, mixed> $map
+     *
+     * @return array<int|string, mixed>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function deleteOwaspMavenKey(array $map): array
+    {
+        $sql = "DELETE
             FROM ma_moulinette.owasp
             WHERE maven_key=:maven_key";
 
-    try {
+        try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':maven_key', $map['maven_key']);
-                $stmt->executeStatement();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(':maven_key', $map['maven_key']);
+            $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
-    } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+        } catch (\Throwable $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'erreur' => ''];
     }
-    return ['code' => 200, 'erreur' => ''];
-}
 
-/**
- * [Description for InsertOwasp]
- * Ajoute les signalements et les issues OWASP pour le projet
- *
- * @param array<int|string, mixed> $owaspDataList
- *
- * @return array<int|string, mixed>
- *
- * Created at: 26/05/2024 13:03:43 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-public function insertOwasp(array $owaspDataList): array
-{
-    /* MODIF 27/10/2026 : les 60 colonnes a1..a10/aN_blocker..minor + source sont
+    /**
+     * [Description for InsertOwasp]
+     * Ajoute les signalements et les issues OWASP pour le projet
+     *
+     * @param array<int|string, mixed> $owaspDataList
+     *
+     * @return array<int|string, mixed>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function insertOwasp(array $owaspDataList): array
+    {
+        /* MODIF 27/10/2026 : les 60 colonnes a1..a10/aN_blocker..minor + source sont
     * remplacées par une colonne JSONB `categories` (classification désormais
     * faite localement par OwaspRuleClassifierService) + module_frontend/backend/autre. */
-    $sql = "INSERT INTO ma_moulinette.owasp
+        $sql = "INSERT INTO ma_moulinette.owasp
                 (referential_owasp, maven_key, version, date_version, effort_total, categories,
                 module_frontend, module_backend, module_autre,
                 mode_collecte, utilisateur_collecte, date_enregistrement)
@@ -186,34 +176,33 @@ public function insertOwasp(array $owaspDataList): array
                 :module_frontend, :module_backend, :module_autre,
                 :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
-    try {
-        $this->getEntityManager()->getConnection()->beginTransaction();
-    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-    /* MODIF 2026-07-18 : executeStatement() était hors de la boucle — une
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            /* MODIF 2026-07-18 : executeStatement() était hors de la boucle — une
     * seule exécution après avoir lié TOUTES les lignes sur la même
     * requête préparée n'insérait que la dernière ligne (les liaisons se
     * réécrivent, elles ne s'accumulent pas). Avec 2 référentiels (2017 +
     * 2021), seul le dernier de la liste était réellement persisté. */
-    foreach ($owaspDataList as $map) {
+            foreach ($owaspDataList as $map) {
                 foreach ($map as $key => $value) {
-                if ($value instanceof \DateTimeImmutable) {
-                    $stmt->bindValue(":$key", $value->format('Y-m-d H:i:sO'));
-                } elseif (is_array($value)) {
-                    $stmt->bindValue(":$key", json_encode($value, JSON_THROW_ON_ERROR));
-                } else {
-            if ($key !== 'total') {
-                        $stmt->bindValue(":$key", $value);
+                    if ($value instanceof \DateTimeImmutable) {
+                        $stmt->bindValue(":$key", $value->format('Y-m-d H:i:sO'));
+                    } elseif (is_array($value)) {
+                        $stmt->bindValue(":$key", json_encode($value, JSON_THROW_ON_ERROR));
+                    } else {
+                        if ($key !== 'total') {
+                            $stmt->bindValue(":$key", $value);
+                        }
                     }
-                }
                 }
                 $stmt->executeStatement();
             }
-        $this->getEntityManager()->getConnection()->commit();
-    } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Throwable $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'erreur' => ''];
     }
-    return ['code' => 200, 'erreur' => ''];
-}
-
 }

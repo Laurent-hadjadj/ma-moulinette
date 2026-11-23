@@ -22,12 +22,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ListeProjetRepository extends ServiceEntityRepository
 {
-    private static string $removeReturnLine = "/\s+/u";
-    private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
-      parent::__construct($registry, ListeProjet::class);
+    parent::__construct($registry, ListeProjet::class);
   }
 
   /**
@@ -35,32 +35,30 @@ class ListeProjetRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 21/10/2024 16:55:20 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
-
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -69,11 +67,9 @@ class ListeProjetRepository extends ServiceEntityRepository
    *
    * @param string $type
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 27/10/2023 12:59:43 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function countListeProjetVisibility($type): array
   {
@@ -81,11 +77,11 @@ class ListeProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.liste_projet
             WHERE visibility=:visibility";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(":visibility", $type);
-          $request = $stmt->executeQuery()->fetchAllAssociative();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(":visibility", $type);
+      $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'request' => $request, 'erreur' => ''];
   }
@@ -93,23 +89,21 @@ class ListeProjetRepository extends ServiceEntityRepository
   /**
    * [Description for countListProjet]
    * Compte le nombre total de projet.
-     * @return array<int|string, mixed>
-   *
-   * Created at: 27/10/2023 13:54:53 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function countListeProjet(): array
   {
     $sql = "SELECT COUNT(*) AS total
             FROM ma_moulinette.liste_projet";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-          $nombre = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Throwable $e) {
-            return $this->handleDatabaseException($e);
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $nombre = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
     }
-        return ['code' => 200, 'request' => $nombre, 'erreur' => ''];
+    return ['code' => 200, 'request' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -117,9 +111,7 @@ class ListeProjetRepository extends ServiceEntityRepository
    * On retourne le nombre de projet récupéré du serveur SonarQube et
    * le nombre de tag disponible
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 19/05/2024 09:27:26 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -135,65 +127,63 @@ class ListeProjetRepository extends ServiceEntityRepository
                 WHERE elem = 'aucun')";
 
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-          $nombre = $stmt->executeQuery()->fetchAllAssociative();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 
   /**
-     * Normalise une liste de noms de groupes en prefixes de tag :
-     * trim, lowercase, espaces remplaces par tirets, valeur 'null' ignoree.
-     *
-     * @param array<int|string, mixed> $groupes
-     * @return array<int, string>
-     */
-    public static function normalizeGroupesToTagPrefixes(array $groupes): array
-    {
-        $prefixes = [];
-        foreach ($groupes as $groupe) {
-            if ($groupe === 'null' || $groupe === null) {
-                continue;
-            }
-            $minus = trim(strtolower((string) $groupe));
-            if ($minus === '') {
-                continue;
-            }
-            $prefixes[] = preg_replace('/\s+/', '-', $minus);
-        }
-        return $prefixes;
+   * Normalise une liste de noms de groupes en prefixes de tag :
+   * trim, lowercase, espaces remplaces par tirets, valeur 'null' ignoree.
+   *
+   * @param array<int|string, mixed> $groupes
+   * @return array<int, string>
+   */
+  public static function normalizeGroupesToTagPrefixes(array $groupes): array
+  {
+    $prefixes = [];
+    foreach ($groupes as $groupe) {
+      if ($groupe === 'null' || $groupe === null) {
+        continue;
+      }
+      $minus = trim(strtolower((string) $groupe));
+      if ($minus === '') {
+        continue;
+      }
+      $prefixes[] = preg_replace('/\s+/', '-', $minus);
     }
+    return $prefixes;
+  }
 
-    /**
+  /**
    * [Description for selectListeProjetByGroupe]
-     * Retourne la liste des projets dont au moins un tag correspond a l'un des
-     * prefixes fournis (LIKE 'prefix%').
+   * Retourne la liste des projets dont au moins un tag correspond a l'un des
+   * prefixes fournis (LIKE 'prefix%').
    *
-     * @param array<int, string> $tagPrefixes  liste de prefixes (sans le %)
+   * @param array<int, string> $tagPrefixes  liste de prefixes (sans le %)
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 26/03/2024 17:37:27 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function selectListeProjetByGroupe(array $tagPrefixes): array
+  public function selectListeProjetByGroupe(array $tagPrefixes): array
   {
-        if ($tagPrefixes === []) {
-            return ['code' => 200, 'liste' => [], 'erreur' => ''];
-        }
+    if ($tagPrefixes === []) {
+      return ['code' => 200, 'liste' => [], 'erreur' => ''];
+    }
 
-        /** Generation des placeholders nommes et de la map de parametres */
-        $placeholders = [];
-        $params = [];
-        foreach ($tagPrefixes as $i => $prefix) {
-            $key = "p$i";
-            $placeholders[] = ":$key";
-            $params[$key] = $prefix . '%';
-        }
-        $array = implode(', ', $placeholders);
+    /** Generation des placeholders nommes et de la map de parametres */
+    $placeholders = [];
+    $params = [];
+    foreach ($tagPrefixes as $i => $prefix) {
+      $key = "p$i";
+      $placeholders[] = ":$key";
+      $params[$key] = $prefix . '%';
+    }
+    $array = implode(', ', $placeholders);
 
     $sql = "SELECT DISTINCT
                 liste_projet.maven_key AS id,
@@ -203,12 +193,12 @@ class ListeProjetRepository extends ServiceEntityRepository
                 json_array_elements_text(liste_projet.tags) AS tag
             WHERE tag LIKE ANY(ARRAY[$array])";
     try {
-            $liste = $this->getEntityManager()->getConnection()->executeQuery(
-                preg_replace(self::$removeReturnLine, " ", $sql),
-                $params,
-            )->fetchAllAssociative();
+      $liste = $this->getEntityManager()->getConnection()->executeQuery(
+        preg_replace(self::$removeReturnLine, " ", $sql),
+        $params,
+      )->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
@@ -217,9 +207,7 @@ class ListeProjetRepository extends ServiceEntityRepository
    * [Description for deleteListeProjet]
    *  Supprime tous les projets de la table
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 03/04/2024 09:47:35 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -227,15 +215,14 @@ class ListeProjetRepository extends ServiceEntityRepository
   {
     $sql = "DELETE FROM ma_moulinette.liste_projet";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
-
 }

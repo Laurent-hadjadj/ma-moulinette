@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller;
@@ -47,16 +47,15 @@ class PreferenceController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 15/12/2022, 22:06:26 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
         ParameterBagInterface $params,
         private UserAgentTrackingFacade $tracking
-    ){
+    ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -70,9 +69,8 @@ class PreferenceController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/12/2024 21:31:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -99,9 +97,8 @@ class PreferenceController extends AbstractController
      *
      * @return string|false
      *
-     * Created at: 21/07/2026 07:56:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildPreferenceJson(array $statut, array $suiviProjet, array $favoriProjet, array $favoriVersion): string|false
     {
@@ -123,9 +120,8 @@ class PreferenceController extends AbstractController
      *
      * @return bool true si succès, false sinon
      *
-     * Created at: 21/07/2026 07:56:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function updatePreference(string $jarray, string $courriel): bool
     {
@@ -154,9 +150,8 @@ class PreferenceController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 09/06/2023, 15:43:33 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/preference/statut', name: 'api_preference_statut', methods: 'POST')]
     public function apiPreferenceStatut(Request $request): JsonResponse
@@ -235,9 +230,8 @@ class PreferenceController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 12/06/2023, 14:34:11 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/preference/favori/delete', name: 'api_preference_favori_delete', methods: 'POST')]
     public function apiPreferenceFavoriDelete(Request $request): JsonResponse
@@ -294,9 +288,8 @@ class PreferenceController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 12/06/2023, 14:35:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/preference/version/delete', name: 'api_preference_version_delete', methods: 'POST')]
     public function apiPreferenceVersionDelete(Request $request): JsonResponse
@@ -388,9 +381,8 @@ class PreferenceController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/05/2023, 14:06:12 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/preference/category', name: 'api_preference_category', methods: 'GET')]
     public function apiPreferenceCategory(Request $request): JsonResponse
@@ -427,9 +419,8 @@ class PreferenceController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 16/05/2023, 21:11:05 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/preferences', name: 'preferences', methods: 'GET')]
     public function index(): Response
@@ -469,9 +460,10 @@ class PreferenceController extends AbstractController
                 "description" => $descriptionFavoriVersion,
                 "statut" => $preferences['statut']['favori_version']
             ],
-            /* MODIF 2026-10-23 : nouvelle présentation de la page Projet (tuiles) en test —
-               clé absente des préférences existantes, donc repli explicite sur false
-               (présentation classique) tant que l'utilisateur n'a pas basculé l'option. */
+            /**
+             * MODIF 2026-10-23 : nouvelle présentation de la page Projet (tuiles) en test —
+             * clé absente des préférences existantes, donc repli explicite sur false
+             * (présentation classique) tant que l'utilisateur n'a pas basculé l'option. */
             "presentation_projet" => [
                 "option" => "Presentation",
                 "description" => $descriptionPresentationProjet,

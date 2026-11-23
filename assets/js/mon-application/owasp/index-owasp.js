@@ -3,14 +3,14 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *
  *  Intégration du référentiel OWASP 2021 :
  *  Zakaria GUEDDOU <zakaria.gueddou19@gmail.com>
  *
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -63,15 +63,16 @@ Chart.register(ChartDataLabels);
  *
  * @return Array
  *
- * Created at: 19/12/2022, 21:30:26 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-/* MODIF 28/10/2026 : BUG CORRIGÉ — les bornes (`> 0.71 && < 0.81`, etc.)
- * laissaient des trous aux valeurs limites exactes (0.31, 0.51, 0.71, 0.81) :
- * un taux tombant pile dessus ne matchait aucune condition, laissant c/n
- * `undefined` → `class="badge undefined"`, aucune règle CSS ne correspond,
- * badge bleu par défaut de Foundation. */
 const calculNoteHotspot = function(taux) {
+  /**
+   * MODIF 28/10/2026 : BUG CORRIGÉ — les bornes (`> 0.71 && < 0.81`, etc.)
+   * laissaient des trous aux valeurs limites exactes (0.31, 0.51, 0.71, 0.81) :
+   * un taux tombant pile dessus ne matchait aucune condition, laissant c/n
+   * `undefined` → `class="badge undefined"`, aucune règle CSS ne correspond,
+   * badge bleu par défaut de Foundation. */
   /** C = couleur, n = note */
   if (taux > 0.79) {
     return [couleur[un], note[un]];
@@ -213,8 +214,8 @@ const injectionModuleOwasp = function (selector, count, total) {
  * @param string badge
  * @param integer laNote
  *
- * Created at: 19/12/2022, 21:31:50 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const injectionOwaspInfo = function(id, menace, badge, laNote) {
   const i =`<span class="stat-note stat-note-value">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(menace)}</span>
@@ -227,9 +228,8 @@ const injectionOwaspInfo = function(id, menace, badge, laNote) {
  * réinitialise les valeurs.
  * @return void
  *
- * Created at: 27/03/2024 13:05:58 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const videLeTableau = function() {
   /*  MODIF 2026-07-18 : '' -> '--' (une cellule vide se confondait avec un
@@ -293,8 +293,8 @@ const owaspSeverityByCategory = {};
 * @param string maven_key
 * @param integer referential_owasp
 *
-* Created at: 19/12/2022, 21:32:27 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
 */
 const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
 
@@ -653,8 +653,8 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
  * @param string maven_key
  * @param integer referential_owasp
  *
- * Created at: 19/12/2022, 21:39:57 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 
@@ -720,8 +720,8 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 *
 * @return string
 *
-* Created at: 19/12/2022, 21:41:13 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
+
 */
 const injectionHotspotListe = function(id, formatage, menace, leTaux, badge, laNote) {
   const i = `<span class="stat-note stat-note-value">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(menace)}</span>
@@ -737,8 +737,8 @@ $(`#h${id}`).html(i);
 * @param string maven_key
 * @param integer referential_owasp
 *
-* Created at: 19/12/2022, 21:42:09 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
 */
 const remplissageHotspotListe = async function(maven_key, referential_owasp) {
   if (maven_key === undefined || referential_owasp === undefined) {
@@ -902,9 +902,9 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
  * @param string status
  *
  * @return string
- *
- * Created at: 19/12/2022, 21:44:32 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+*
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const injectionHotspotDetails = function(number,url,color,rule,severity,file,line,message,status){
   const ligne = `<tr>
@@ -926,8 +926,8 @@ const injectionHotspotDetails = function(number,url,color,rule,severity,file,lin
  * @param string maven_key
  * @param integer referential_owasp
  *
- * Created at: 19/12/2022, 21:46:30 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
   /** Si la clé maven n'est pas défini on ne fait rien */
@@ -1011,8 +1011,8 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
  * @param {number|null} line
  * @param {string} message
  *
- * Created at: 28/10/2026 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const injectionOwaspDetailsRow = function (number, url, rule, severity, categories, component, line, message) {
   const ligne = `<tr>
@@ -1038,8 +1038,8 @@ const injectionOwaspDetailsRow = function (number, url, rule, severity, categori
  * @param string maven_key
  * @param integer referential_owasp
  *
- * Created at: 28/10/2026 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const remplissageOwaspDetails = async function (maven_key, referential_owasp) {
   if (maven_key === undefined || referential_owasp === undefined) {
@@ -1097,8 +1097,8 @@ const remplissageOwaspDetails = async function (maven_key, referential_owasp) {
  * @param string menace
  * @param string titre
  *
- * Created at: 19/12/2022, 21:49:48 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) {
   if (maven_key === undefined) {
@@ -1176,9 +1176,8 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
  *
  * @param string referential_owasp
  *
- * Created at: 18/07/2026 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const updateCategoryLabels = function (referential_owasp) {
   const listes = { '2017': listeOwasp2017, '2021': listeOwasp2021, '2025': listeOwasp2025 };
@@ -1197,9 +1196,8 @@ const updateCategoryLabels = function (referential_owasp) {
  *
  * @param mixed referential_owasp
  *
- * Created at: 20/11/2024 19:46:23 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const selectAnalyseVersion = function (key, referential_owasp) {
   /** Libellés de catégorie du tableau de synthèse pour ce référentiel */
@@ -1222,9 +1220,8 @@ const selectAnalyseVersion = function (key, referential_owasp) {
  *
  * @param string version
  *
- * Created at: 21/11/2024 19:06:35 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const selectReferentialOwasp = function(version){
   const $version_2017 = $('#owasp-2017');
@@ -1256,23 +1253,23 @@ const selectReferentialOwasp = function(version){
   }
 }
 
-/**
- * [Description for dessineMoiUneBarre]
- *
- * @param mixed referential
- *
- * @return [type]
- *
- * Created at: 26/11/2024 19:20:43 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
+
 /**
  * MODIF 2026-07-18 : conserve l'instance du graphique pour la détruire avant d'en recréer une —
  * sans ça, chaque clic sur un référentiel (2017/2021/2025) tentait un new Chart() sur le même
  * canvas déjà utilisé, provoquant "Uncaught (in promise) Error: Canvas is already in use." */
 let owaspBarChartInstance = null;
 
+/**
+ * [Description for dessineMoiUneBarre]
+ *
+ * @param mixed referential
+ *
+ * @return void
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ */
 const dessineMoiUneBarre = function (referential, data){
 
   // Données statiques pour les pourcentages de chaque type de vulnérabilité

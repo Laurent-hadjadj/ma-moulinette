@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Cosui;
@@ -41,17 +41,15 @@ class CosuiController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 13/02/2023, 08:57:23 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
         private ProjetCosuiService $cosuiService,
         private UserAgentTrackingFacade $tracking
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for listeProjet]
@@ -65,9 +63,8 @@ class CosuiController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 16/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function listeProjet(string $maven_key, array $groupes): array
     {
@@ -118,9 +115,8 @@ class CosuiController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 06/03/2025 12:17:33 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function addFlashAndRender(int $code, string $type, string $message, string|null $trace, array $render): Response
     {
@@ -150,9 +146,8 @@ class CosuiController extends AbstractController
      *
      * @return int
      *
-     * Created at: 14/07/2026 16:25:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function toHttpStatus(int $code): int
     {
@@ -168,9 +163,8 @@ class CosuiController extends AbstractController
      * @param string $token
      * @return string|null
      *
-     * Created at: 06/03/2025 12:13:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeToken(string $token): ?string
     {
@@ -193,7 +187,7 @@ class CosuiController extends AbstractController
             return null;
         }
 
-        $result =$parts[1];
+        $result = $parts[1];
         $this->logger->info("[COSUI] ℹ️ Token décodé avec succès", ['valeur_extraite' => $result]);
 
         return $result;
@@ -207,9 +201,8 @@ class CosuiController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 15/12/2022, 22:18:08 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
     public function projetCosui(Request $request): Response

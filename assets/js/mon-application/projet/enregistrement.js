@@ -29,8 +29,8 @@ import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/
  *
  * @return void
  *
- * Created at: 13/12/2022, 12:58:45 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const log = function (txt) {
   const textarea = document.getElementById('log');
@@ -47,8 +47,8 @@ const log = function (txt) {
 *
 * @return [type]
 *
-* Created at: 13/12/2022, 12:59:18 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
 */
 export const enregistrement = async function (maven_key) {
   /** On récupère les informations sur les versions */

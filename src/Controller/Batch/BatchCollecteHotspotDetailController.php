@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -32,8 +32,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -49,9 +49,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
      *
      * @return int
      *
-     * Created at: 26/05/2024 16:04:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function vulnerabilityProbability(string $probability): int
     {
@@ -72,9 +71,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 24/10/2025 15:23:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function vulnerabilityProbabilityListe(array $niveaux): array
     {
@@ -106,9 +104,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 31/05/2024 15:02:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function hotspotDetail(string $maven_key, string $hotspotKey): array
     {
@@ -247,9 +244,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 31/05/2024 14:52:44 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function batchCollecteHotspotDetail(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {

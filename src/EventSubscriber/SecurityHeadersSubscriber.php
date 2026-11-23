@@ -50,6 +50,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * avec `<script type="importmap">`/`type="module">`) est désactivé par
  * ailleurs (`config/packages/asset_mapper.yaml`, `importmap_polyfill: false`)
  * — inutile sur les navigateurs réellement ciblés, ça évite d'avoir à le couvrir aussi.
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 class SecurityHeadersSubscriber implements EventSubscriberInterface
 {
@@ -82,10 +85,8 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
      * @param ResponseEvent $event
      *
      * @return void
-     *
-     * Created at: 21/10/2026 08:53:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function onKernelResponse(ResponseEvent $event): void
     {
@@ -129,10 +130,8 @@ class SecurityHeadersSubscriber implements EventSubscriberInterface
      * @param Response $response
      *
      * @return void
-     *
-     * Created at: 03/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function injectScriptNonce(Response $response): void
     {

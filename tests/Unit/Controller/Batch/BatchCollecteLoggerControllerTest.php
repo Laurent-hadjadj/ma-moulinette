@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -64,7 +64,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
          * les nouveaux repos Logger / LoggerDetail / InformationProjet appeles par le controller. */
         $this->em->expects($this->atLeastOnce())
             ->method('getRepository')
-            ->willReturnCallback(fn ($class) => match ($class) {
+            ->willReturnCallback(fn($class) => match ($class) {
                 LoggerEntity::class      => $this->repo,
                 LoggerDetail::class      => $this->loggerDetailRepo,
                 InformationProjet::class => $this->informationProjetRepo,
@@ -80,7 +80,11 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteLoggerController(
-            $this->em, $this->client, $this->urlBuilder, $this->sonarVersion, $this->logger
+            $this->em,
+            $this->client,
+            $this->urlBuilder,
+            $this->sonarVersion,
+            $this->logger
         );
         $this->controller->setContainer($container);
     }
@@ -274,7 +278,8 @@ class BatchCollecteLoggerControllerTest extends TestCase
         ]);
 
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 200, 'json' => ['paging' => ['total' => 1]],
+            'code' => 200,
+            'json' => ['paging' => ['total' => 1]],
         ]);
         $this->repo->method('deleteLoggerMavenKey')->willReturn(['code' => 200]);
         $this->repo->expects($this->once())

@@ -61,7 +61,6 @@ class ChangeMeController extends AbstractController
      *
      * @return bool
      *
-     * Created at: 10/04/2026 13:45:44 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -90,7 +89,6 @@ class ChangeMeController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 01/02/2024 20:07:33 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

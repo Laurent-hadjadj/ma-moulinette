@@ -31,7 +31,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
 
   public function __construct(ManagerRegistry $registry)
   {
-      parent::__construct($registry, BatchExecutionJournal::class);
+    parent::__construct($registry, BatchExecutionJournal::class);
   }
 
   /**
@@ -40,8 +40,6 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 07/07/2025 09:36:06 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -51,17 +49,17 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = self::$noDataBase;
+      $message = self::$noDataBase;
     }
 
     // state = '23502'
     if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-        $message = $e->getMessage();
+      $message = $e->getMessage();
     }
 
     // state = '23505'
     if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
     }
 
     return ['code' => 500, 'erreur' => $message];
@@ -72,8 +70,6 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
    *
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 11/11/2025 13:05:12 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -86,14 +82,14 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-        $conn->beginTransaction();
-        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-          $stmt->bindValue(self::$jobId, $job_id);
-          $stmt->executeStatement();
-        $conn->commit();
+      $conn->beginTransaction();
+      $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$jobId, $job_id);
+      $stmt->executeStatement();
+      $conn->commit();
     } catch (\Throwable $e) {
-        $conn->rollBack();
-        return $this->handleDatabaseException($e);
+      $conn->rollBack();
+      return $this->handleDatabaseException($e);
     }
 
     return ['code' => 200, 'erreur' => ''];
@@ -104,8 +100,6 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
    * [Description for countBatchExecutionJournalCode]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 11/11/2025 13:12:29 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -126,19 +120,19 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$jobId, $job_id);
-            $exec = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
+      $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$jobId, $job_id);
+      $exec = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
 
-      return [
-          'code' => 200,
-          'ok' => $exec[0]['ok_count'],
-          'ko' => $exec[0]['ko_count'],
-          'oko' => $exec[0]['oko_count'],
-          'erreur' => ''
+    return [
+      'code' => 200,
+      'ok' => $exec[0]['ok_count'],
+      'ko' => $exec[0]['ko_count'],
+      'oko' => $exec[0]['oko_count'],
+      'erreur' => ''
     ];
   }
 
@@ -147,8 +141,6 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
    *
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 11/11/2025 13:27:34 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -167,17 +159,17 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$jobId, $job_id);
-            $exec = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
+      $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$jobId, $job_id);
+      $exec = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
 
-      return [
-          'code' => 200,
-          'liste' => $exec,
-          'erreur' => ''
+    return [
+      'code' => 200,
+      'liste' => $exec,
+      'erreur' => ''
     ];
   }
 
@@ -187,8 +179,6 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
    * @param array<string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 11/11/2025 13:27:34 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -202,19 +192,18 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$jobId, $map['job_id']);
-              $stmt->bindValue(':nom_projet', $map['nom_projet']);
-            $exec = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
+      $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$jobId, $map['job_id']);
+      $stmt->bindValue(':nom_projet', $map['nom_projet']);
+      $exec = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
 
-      return [
-          'code' => 200,
-          'journal' => $exec,
-          'erreur' => ''
+    return [
+      'code' => 200,
+      'journal' => $exec,
+      'erreur' => ''
     ];
   }
-
 }

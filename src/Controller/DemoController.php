@@ -30,16 +30,13 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 class DemoController extends AbstractController
 {
-    public function __construct(private readonly ParameterBagInterface $params)
-    {
-    }
+    public function __construct(private readonly ParameterBagInterface $params) {}
 
     /**
      * Affiche la page d'information.
      *
      * @return Response
      *
-     * Created at: 15/11/2026 22:40:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

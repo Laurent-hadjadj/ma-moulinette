@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Exception;
@@ -19,7 +19,8 @@ use RuntimeException;
  * [Description LogArchiveException]
  * Exception de base de l'archivage des journaux (App\Service\LogArchive\LogArchiveService).
  * Permet à l'appelant d'intercepter d'un seul bloc toutes les erreurs du service.
- */
-class LogArchiveException extends RuntimeException
-{
-}
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
+class LogArchiveException extends RuntimeException {}

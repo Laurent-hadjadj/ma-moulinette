@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -51,10 +51,9 @@ Chart.register(ChartDataLabels, zoomPlugin);
   *
   * @return json
   *
-  * Created at: 14/11/2025 11:49:25 (Europe/Paris)
   * @author     Laurent HADJADJ <laurent_h@me.com>
-  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-  */
+  * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 const fetchJSON = async function(url, indicateur = '', type = 'GET') {
   const data = { indicateur };
   const options = {
@@ -108,9 +107,8 @@ const colorMap = new Map();
  *
  * @return object
  *
- * Created at: 16/11/2025 20:29:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const getColor = function(label) {
   if (!label) { return colorPalette[0]; }
@@ -308,11 +306,10 @@ const createChart = function(ctx, data, type = 'line', datasetKey = 'datasetsTim
  * @param mixed tableId
  * @param mixed rows
  *
- * @return [type]
+ * @return void
  *
- * Created at: 16/11/2025 18:50:34 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const fillActivityTable = function(tableId, rows) {
   const tbody = document.querySelector(`#${tableId} tbody`);
@@ -337,11 +334,10 @@ const fillActivityTable = function(tableId, rows) {
  * @param mixed tableId
  * @param mixed summary
  *
- * @return [type]
+ * @return void
  *
- * Created at: 16/11/2025 18:50:31 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const fillSummaryTable = function(tableId, summary)
 {
@@ -366,11 +362,10 @@ const fillSummaryTable = function(tableId, summary)
  * @param mixed colors
  * @param string unit
  *
- * @return [type]
+ * @return void
  *
- * Created at: 16/11/2025 18:50:24 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const createDonutChart = function(ctx, labels, data, colors, unit = '') {
   return new Chart(ctx, {
@@ -416,11 +411,10 @@ const createDonutChart = function(ctx, labels, data, colors, unit = '') {
  * @param mixed colors
  * @param string unit
  *
- * @return [type]
+ * @return void
  *
- * Created at: 16/11/2025 18:50:19 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const createBarChart = function(ctx, labels, data, colors, unit = '') {
   return new Chart(ctx, {
@@ -466,9 +460,8 @@ const createBarChart = function(ctx, labels, data, colors, unit = '') {
  *
  * @return void
  *
- * Created at: 16/11/2025 18:51:57 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const createUserCards = function(data, id) {
 
@@ -515,9 +508,8 @@ const createUserCards = function(data, id) {
   *
   * @return void
   *
-  * Created at: 16/11/2025 20:32:22 (Europe/Paris)
   * @author     Laurent HADJADJ <laurent_h@me.com>
-  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+  * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
   */
 const initDashboard = async function() {
   try {

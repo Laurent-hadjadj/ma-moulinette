@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -91,7 +91,10 @@ class ProjetControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'request_stack', 'parameter_bag', 'security.token_storage',
+                'twig',
+                'request_stack',
+                'parameter_bag',
+                'security.token_storage',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -102,7 +105,12 @@ class ProjetControllerTest extends TestCase
         ]);
 
         $this->controller = new ProjetController(
-            $this->mesProjets, $this->em, $this->params, $this->logger, $this->tracking, $this->analysis,
+            $this->mesProjets,
+            $this->em,
+            $this->params,
+            $this->logger,
+            $this->tracking,
+            $this->analysis,
         );
         $this->controller->setContainer($container);
     }
@@ -113,9 +121,9 @@ class ProjetControllerTest extends TestCase
 
         // 1. Configuration du mock de analysis
         $this->analysis->expects($this->once())
-                ->method('runBatch')
-                ->with($this->anything())
-                ->willReturn(['code' => 200, 'processed' => 50, 'erreurs' => []]);
+            ->method('runBatch')
+            ->with($this->anything())
+            ->willReturn(['code' => 200, 'processed' => 50, 'erreurs' => []]);
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -208,7 +216,8 @@ class ProjetControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($user);
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
+            'code' => 200,
+            'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
 
         $this->historiqueRepo->expects($this->once())
@@ -234,7 +243,8 @@ class ProjetControllerTest extends TestCase
             'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette'], ['id' => 'fr.ma-moulinette:projet-b']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueIndicateurs')->willReturn([
-            'code' => 200, 'indicateur' => [['nom' => 'App', 'bug' => 2]],
+            'code' => 200,
+            'indicateur' => [['nom' => 'App', 'bug' => 2]],
         ]);
 
         /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
@@ -273,9 +283,9 @@ class ProjetControllerTest extends TestCase
     public static function batchAutomatiqueValuesProvider(): array
     {
         return [
-                'Valeur par défaut (50)' => [50, 50],
-                'Valeur null' => [null, 0],
-                'Chaîne vide' => ['', 0],
+            'Valeur par défaut (50)' => [50, 50],
+            'Valeur null' => [null, 0],
+            'Chaîne vide' => ['', 0],
         ];
     }
 
@@ -286,62 +296,60 @@ class ProjetControllerTest extends TestCase
      * @param int $expectedValue
      *
      * @return void
-     *
-     * Created at: 22/09/2026 11:04:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[DataProvider('batchAutomatiqueValuesProvider')]
     public function testRunBatchCallsAnalysisWithVariousAutomatiqueProperties(int|string|null $propertyValue, int $expectedValue): void
     {
-            // 1. Mock du ParameterBag
-            $paramsMock = $this->createMock(ParameterBagInterface::class);
-            $paramsMock->method('get')->willReturnCallback(function ($key) use ($propertyValue) {
-                    return match ($key) {
-                            'user.agent.batch.automatique' => $propertyValue,
-                            'logo.entreprise' => 'logo.png',
-                            'marque.entreprise.short' => 'MM',
-                            'marque.entreprise.long' => 'Ma-Moulinette',
-                            'environnement' => 'test',
-                            'version' => '2.0.0',
-                            'sonar.version' => '10',
-                            default => null
-                    };
-            });
+        // 1. Mock du ParameterBag
+        $paramsMock = $this->createMock(ParameterBagInterface::class);
+        $paramsMock->method('get')->willReturnCallback(function ($key) use ($propertyValue) {
+            return match ($key) {
+                'user.agent.batch.automatique' => $propertyValue,
+                'logo.entreprise' => 'logo.png',
+                'marque.entreprise.short' => 'MM',
+                'marque.entreprise.long' => 'Ma-Moulinette',
+                'environnement' => 'test',
+                'version' => '2.0.0',
+                'sonar.version' => '10',
+                default => null
+            };
+        });
 
-            // 2. Création du contrôleur
-            $ctrl = $this->getMockBuilder(ProjetController::class)
-                    ->setConstructorArgs([
-                            $this->mesProjets,
-                            $this->em,
-                            $paramsMock,
-                            $this->logger,
-                            $this->tracking,
-                            $this->analysis
-                    ])
-                    ->onlyMethods(['addFlash'])
-                    ->getMock();
+        // 2. Création du contrôleur
+        $ctrl = $this->getMockBuilder(ProjetController::class)
+            ->setConstructorArgs([
+                $this->mesProjets,
+                $this->em,
+                $paramsMock,
+                $this->logger,
+                $this->tracking,
+                $this->analysis
+            ])
+            ->onlyMethods(['addFlash'])
+            ->getMock();
 
-            // 3. Configuration du container
-            $this->token->method('getUser')->willReturn($this->makeUser([]));
-            $container = $this->createMock(ContainerInterface::class);
-            $container->method('has')->willReturnCallback(
-                    fn(string $id): bool => in_array($id, ['twig', 'parameter_bag', 'security.token_storage'], true)
-            );
-            $container->method('get')->willReturnMap([
-                    ['twig', 1, $this->twig],
-                    ['parameter_bag', 1, $paramsMock],
-                    ['security.token_storage', 1, $this->tokenStorage],
-            ]);
-            $ctrl->setContainer($container);
+        // 3. Configuration du container
+        $this->token->method('getUser')->willReturn($this->makeUser([]));
+        $container = $this->createMock(ContainerInterface::class);
+        $container->method('has')->willReturnCallback(
+            fn(string $id): bool => in_array($id, ['twig', 'parameter_bag', 'security.token_storage'], true)
+        );
+        $container->method('get')->willReturnMap([
+            ['twig', 1, $this->twig],
+            ['parameter_bag', 1, $paramsMock],
+            ['security.token_storage', 1, $this->tokenStorage],
+        ]);
+        $ctrl->setContainer($container);
 
-            // 4. Configuration du mock de analysis
-            $this->analysis->expects($this->once())
-                    ->method('runBatch')
-                    ->with($expectedValue)
-                    ->willReturn(['code' => 200, 'processed' => $expectedValue, 'erreurs' => []]);
+        // 4. Configuration du mock de analysis
+        $this->analysis->expects($this->once())
+            ->method('runBatch')
+            ->with($expectedValue)
+            ->willReturn(['code' => 200, 'processed' => $expectedValue, 'erreurs' => []]);
 
-            // 5. Exécution du test
-            $ctrl->index();
+        // 5. Exécution du test
+        $ctrl->index();
     }
 }

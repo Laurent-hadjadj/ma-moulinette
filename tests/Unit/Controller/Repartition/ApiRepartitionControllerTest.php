@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -89,7 +89,10 @@ class ApiRepartitionControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->apiRepartitionCollecte($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -104,7 +107,10 @@ class ApiRepartitionControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'fail']);
 
         $response = $this->controller->apiRepartitionCollecte($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -119,7 +125,10 @@ class ApiRepartitionControllerTest extends TestCase
             ->willReturn(['code' => 200, 'data' => ['total' => 42, 'temps' => 1.5]]);
 
         $response = $this->controller->apiRepartitionCollecte($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -143,7 +152,10 @@ class ApiRepartitionControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -159,7 +171,10 @@ class ApiRepartitionControllerTest extends TestCase
             ->willReturn(null);
 
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -174,7 +189,10 @@ class ApiRepartitionControllerTest extends TestCase
         $this->batchCollecte->expects($this->never())->method('batchCollecteRepartitionAnalyse');
 
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'CHECK', 'severity' => 'ANY', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'CHECK',
+            'severity' => 'ANY',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -191,7 +209,10 @@ class ApiRepartitionControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'fail']);
 
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -204,11 +225,18 @@ class ApiRepartitionControllerTest extends TestCase
         $this->tempRepo->method('findOneBy')->willReturn(new RepartitionTemp());
         $this->batchCollecte->method('batchCollecteRepartitionAnalyse')->willReturn([
             'code' => 200,
-            'frontend' => 10, 'backend' => 5, 'autre' => 2, 'inconnu' => 1, 'total' => 18,
+            'frontend' => 10,
+            'backend' => 5,
+            'autre' => 2,
+            'inconnu' => 1,
+            'total' => 18,
         ]);
 
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -225,7 +253,10 @@ class ApiRepartitionControllerTest extends TestCase
             ->willThrowException(new \RuntimeException('boom'));
 
         $response = $this->controller->apiRepartitionAnalyse($this->jsonRequest([
-            'maven_key' => 'k', 'category' => 'BUG', 'severity' => 'BLOCKER', 'setup' => 123,
+            'maven_key' => 'k',
+            'category' => 'BUG',
+            'severity' => 'BLOCKER',
+            'setup' => 123,
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -270,7 +301,8 @@ class ApiRepartitionControllerTest extends TestCase
     {
         $this->authChecker->method('isGranted')->willReturn(true);
         $this->repo->method('findLatestMavenKeyWithControl')->willReturn([
-            'code' => 200, 'result' => [],
+            'code' => 200,
+            'result' => [],
         ]);
 
         $response = $this->controller->apiRepartitionHistorique($this->jsonRequest(['maven_key' => 'k']));
@@ -314,7 +346,9 @@ class ApiRepartitionControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->apiRepartitionAnalyseMaj($this->jsonRequest([
-            'maven_key' => 'k', 'setup' => 123, 'calcul' => ['BUG', 'BLOCKER', 1, 2, 3, 4],
+            'maven_key' => 'k',
+            'setup' => 123,
+            'calcul' => ['BUG', 'BLOCKER', 1, 2, 3, 4],
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -329,7 +363,9 @@ class ApiRepartitionControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'maj fail']);
 
         $response = $this->controller->apiRepartitionAnalyseMaj($this->jsonRequest([
-            'maven_key' => 'k', 'setup' => 123, 'calcul' => ['BUG'],
+            'maven_key' => 'k',
+            'setup' => 123,
+            'calcul' => ['BUG'],
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -340,11 +376,14 @@ class ApiRepartitionControllerTest extends TestCase
     {
         $this->authChecker->method('isGranted')->willReturn(true);
         $this->batchCollecte->method('batchCollecteRepartitionMaJ')->willReturn([
-            'code' => 200, 'message' => 'ok',
+            'code' => 200,
+            'message' => 'ok',
         ]);
 
         $response = $this->controller->apiRepartitionAnalyseMaj($this->jsonRequest([
-            'maven_key' => 'k', 'setup' => 123, 'calcul' => ['BUG'],
+            'maven_key' => 'k',
+            'setup' => 123,
+            'calcul' => ['BUG'],
         ]));
         $data = json_decode((string) $response->getContent(), true);
 

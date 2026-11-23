@@ -5,20 +5,22 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\Zap;
 
 use App\Entity\{OwaspDast, ZapFinding, ZapProcessingQueue, ZapRule, ZapScan};
-use App\Exception\Zap\{ZapEmptyPayloadException,
+use App\Exception\Zap\{
+    ZapEmptyPayloadException,
     ZapGzipDecodeException,
     ZapInvalidJsonException,
     ZapInvalidStructureException,
-    ZapPayloadException};
+    ZapPayloadException
+};
 use App\Repository\{ZapRuleRepository, ZapScanRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -81,9 +83,8 @@ class ZapIngester
      *
      * @return ZapScan
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function ingest(ZapProcessingQueue $queue): ZapScan
     {
@@ -159,10 +160,10 @@ class ZapIngester
             }
 
             $scan->setAlertCountTotal($alertCountTotal)
-                 ->setRiskCountHigh($riskCounts[3])
-                 ->setRiskCountMedium($riskCounts[2])
-                 ->setRiskCountLow($riskCounts[1])
-                 ->setRiskCountInformational($riskCounts[0]);
+                ->setRiskCountHigh($riskCounts[3])
+                ->setRiskCountMedium($riskCounts[2])
+                ->setRiskCountLow($riskCounts[1])
+                ->setRiskCountInformational($riskCounts[0]);
 
             $this->persistOwaspDast($scan, $owaspAccumulator);
 
@@ -196,9 +197,8 @@ class ZapIngester
      *
      * @return string
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractJson(ZapProcessingQueue $queue): string
     {
@@ -242,9 +242,8 @@ class ZapIngester
      *
      * @return array<string, mixed>
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractSite(array $parsed): array
     {
@@ -273,9 +272,8 @@ class ZapIngester
      *
      * @return \DateTimeImmutable
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function parseGeneratedAt(string $raw): \DateTimeImmutable
     {
@@ -301,9 +299,8 @@ class ZapIngester
      *
      * @return ZapRule
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function findOrCreateRule(array $alertRaw): ZapRule
     {
@@ -353,9 +350,8 @@ class ZapIngester
      *
      * @return int
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function toSmallInt(mixed $value): int
     {
@@ -375,9 +371,8 @@ class ZapIngester
      *
      * @return void
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function accumulateOwaspTags(array &$owaspAccumulator, array $tags, int $riskcode): void
     {
@@ -411,9 +406,8 @@ class ZapIngester
      *
      * @return void
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function persistOwaspDast(ZapScan $scan, array $owaspAccumulator): void
     {

@@ -69,7 +69,6 @@ class ZapProcessCommand extends Command
      *
      * @return void
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -89,7 +88,6 @@ class ZapProcessCommand extends Command
      *
      * @return int
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -120,7 +118,6 @@ class ZapProcessCommand extends Command
      *
      * @return int
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -158,7 +155,6 @@ class ZapProcessCommand extends Command
      *
      * @return int
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -198,7 +194,6 @@ class ZapProcessCommand extends Command
      *
      * @return array{claimed: int, done: int, failed: int}
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -244,8 +239,12 @@ class ZapProcessCommand extends Command
                 $this->em->flush();
 
                 $totals['done']++;
-                $io->text(sprintf('  ✓ %s done (scan #%s, %s:%s)',
-                    $ulid, (string) $scan->getId(), $entry->getMavenKey(), $entry->getProjectVersion()
+                $io->text(sprintf(
+                    '  ✓ %s done (scan #%s, %s:%s)',
+                    $ulid,
+                    (string) $scan->getId(),
+                    $entry->getMavenKey(),
+                    $entry->getProjectVersion()
                 ));
             } catch (\Throwable $e) {
                 $message = $e->getMessage();
@@ -271,8 +270,13 @@ class ZapProcessCommand extends Command
                     $totals['failed']++;
                     $io->text(sprintf('  ✗ %s FAILED définitif (%s)', $ulid, $message));
                 } else {
-                    $io->text(sprintf('  ⤴ %s requeue (tentative %d/%d : %s)',
-                        $ulid, $entry->getAttempts(), self::MAX_ATTEMPTS, $message));
+                    $io->text(sprintf(
+                        '  ⤴ %s requeue (tentative %d/%d : %s)',
+                        $ulid,
+                        $entry->getAttempts(),
+                        self::MAX_ATTEMPTS,
+                        $message
+                    ));
                 }
 
                 $this->logger->error('[ZAP-Worker] Échec traitement.', [
@@ -298,7 +302,6 @@ class ZapProcessCommand extends Command
      *
      * @return void
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -313,6 +316,7 @@ class ZapProcessCommand extends Command
     }
 
     /**
+     * [Description for logHeartbeatIfDue]
      * Preuve de vie throttlée : la commande tourne chaque minute via la
      * crontab mais ne journalise rien quand la queue est vide, donc
      * cron.log n'apparaît jamais tant qu'aucun rapport n'a été ingéré. Log
@@ -320,6 +324,11 @@ class ZapProcessCommand extends Command
      * modulo sur la minute courante, aligné sur la fréquence "* * * * *"
      * de la crontab) plutôt qu'à chaque exécution, pour éviter de noyer
      * cron.log une fois les files réellement actives.
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function logHeartbeatIfDue(): void
     {

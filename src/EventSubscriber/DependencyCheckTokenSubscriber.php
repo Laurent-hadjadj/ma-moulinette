@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\EventSubscriber;
@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
+ * [Description DependencyCheckTokenSubscriber]
  * MODIF 2026-05-08 : authentification bearer pour les endpoints
  * /api/secure/dependency-check/*.
  *
@@ -33,6 +34,9 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  * configuration laisse l'endpoint ouvert sans auth.
  *
  * Sécurité : hash_equals() pour comparer en temps constant (anti timing attack).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 class DependencyCheckTokenSubscriber implements EventSubscriberInterface
 {
@@ -50,9 +54,8 @@ class DependencyCheckTokenSubscriber implements EventSubscriberInterface
      *
      * @return array<class-string, array{0: string, 1: int}>
      *
-     * Created at: 13/07/2026 07:40:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getSubscribedEvents(): array
     {
@@ -70,9 +73,8 @@ class DependencyCheckTokenSubscriber implements EventSubscriberInterface
      *
      * @return void
      *
-     * Created at: 13/07/2026 07:40:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function onKernelRequest(RequestEvent $event): void
     {

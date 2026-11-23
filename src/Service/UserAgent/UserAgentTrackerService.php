@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\UserAgent;
@@ -31,20 +31,26 @@ class UserAgentTrackerService
         private string $appSalt //à définir dans service.yml
     ) {}
 
+
     /**
+     * [Description for track]
      * Collecte et enregistre un événement User-Agent.
      *
      * @param string $eventType Type fonctionnel de l'événement (LOGIN_PAGE_VIEW, LOGIN_SUCCESS_REDIRECT, LOGOUT)
      *
      * @return array{code: int, erreur: string} ['code'=>200,'erreur'=>null] ou erreur
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function track(string $eventType): array
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
             return [
-            'code' => 500,
-            'erreur' => 'Pas de requête active'];
+                'code' => 500,
+                'erreur' => 'Pas de requête active'
+            ];
         }
 
         $sessionId = $request->getSession()->getId();

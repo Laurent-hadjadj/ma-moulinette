@@ -23,6 +23,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Un scan = un rapport `npm audit --json` pour (projet, version, date).
  * Compteurs pré-calculés, repris directement de metadata.vulnerabilities
  * et metadata.dependencies du rapport (pas de recalcul applicatif).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: NpmScanRepository::class)]
 #[ORM\Table(name: 'npm_scan', schema: 'ma_moulinette')]

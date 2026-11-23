@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Profil;
@@ -49,11 +49,10 @@ class ApiProfilController extends AbstractController
 
     /**
      * [Description for __construct]
-     *  EntityManagerInterface = em
+     * EntityManagerInterface = em
      *
-     * Created at: 13/02/2023, 08:57:23 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -80,9 +79,8 @@ class ApiProfilController extends AbstractController
      *
      * @return int
      *
-     * Created at: 19/10/2025 10:49:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getCount(ProfilesHistoriqueRepository $repo, string $language, string $action): int
     {
@@ -102,9 +100,8 @@ class ApiProfilController extends AbstractController
      *
      * @return array{date: string}|null
      *
-     * Created at: 19/10/2025 10:49:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getDateTri(ProfilesHistoriqueRepository $repo, string $language, string $tri): ?array
     {
@@ -121,9 +118,8 @@ class ApiProfilController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 19/10/2025 10:49:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericDetailsRender(): array
     {
@@ -148,9 +144,8 @@ class ApiProfilController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -173,9 +168,8 @@ class ApiProfilController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 07/05/2023, 21:12:09 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
     public function listeQualityProfiles(): JsonResponse
@@ -187,7 +181,7 @@ class ApiProfilController extends AbstractController
         $propertiesRepos = $this->em->getRepository(Properties::class);
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$this->security->isGranted('ROLE_REFERENTIAL')){
+        if (!$this->security->isGranted('ROLE_REFERENTIAL')) {
             $this->logger->warning("[Profil] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_REFERENTIAL).");
 
             return new JsonResponse([
@@ -342,9 +336,8 @@ class ApiProfilController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:24:33 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
     public function listeQualityLangage(): JsonResponse
@@ -424,9 +417,8 @@ class ApiProfilController extends AbstractController
      *
      * @return response
      *
-     * Created at: 11/03/2023, 23:08:43 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/profil/details', name: 'profil_details', methods: ['GET'])]
     public function profilDetails(Request $request)
@@ -649,9 +641,8 @@ class ApiProfilController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/07/2025 09:50:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/quality/off', name: 'liste_quality_off', methods: ['POST'])]
     public function listeQualityOff(Request $request): JsonResponse

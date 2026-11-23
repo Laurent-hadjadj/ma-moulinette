@@ -7,10 +7,10 @@ declare(strict_types=1);
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service;
@@ -38,10 +38,8 @@ class UserRoleLoggerService
      * @param array<int, string> $alerts
      *
      * @return void
-     *
-     * Created at: 23/04/2026 14:37:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function log(
         Utilisateur $user,
@@ -50,8 +48,8 @@ class UserRoleLoggerService
         array $newRoles,
         bool $oldActive,
         bool $newActive,
-        array $alerts): void
-    {
+        array $alerts
+    ): void {
         $log = new UserRoleLog(
             $user->getCourriel(),
             $editor->getCourriel(),
@@ -59,7 +57,8 @@ class UserRoleLoggerService
             $newRoles,
             $oldActive,
             $newActive,
-            $alerts);
+            $alerts
+        );
 
         $this->em->persist($log);
         $this->em->flush();

@@ -4,6 +4,20 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.10.1]
+
+### Modifié
+
+- **Licence des en-têtes de fichiers — migration CC-BY-NC-SA 4.0 → AGPL 3.0-or-later achevée** : relecture complète des blocs PHPDoc du code applicatif (suppression de la ligne `Created at:` devenue obsolète, ajout des en-têtes manquants sur les méthodes qui n'en avaient pas, correction de blocs mal formés), puis correction systématique des en-têtes de fichier et URLs restés en CC-BY-NC-SA après cette première relecture (620 fichiers additionnels), y compris le pied de page mkDocs qui affichait encore « CC 4.0 ». Plus aucune occurrence de l'ancien en-tête dans le code applicatif (hors `LICENSES/CC-BY-NC-SA-4.0.txt`, conservé comme texte historique pour les versions ≤2.5.0). Nouveau script dev `bin/cli/remove_created_date_cli.php` pour automatiser la suppression de la ligne `Created at:` sur un dossier donné.
+- **`app:sonar:update-tags` — exceptions dédiées pour la lecture du fichier de tags métier** : `loadBusinessTagMap()` levait un `\RuntimeException` générique dans ses deux cas d'erreur (fichier illisible, structure JSON inattendue) ; remplacés par `BusinessTagFileReadException`/`BusinessTagFileFormatException`, dédiées et explicites.
+- **Exceptions npm audit déplacées** : `NpmAuditIngestException`/`NpmAuditPayloadDecodeException` passent de `src/Service/NpmAudit/` à `src/Exception/Npm/`, cohérent avec le découpage déjà en place pour Dependency-Check et ZAP (les exceptions dédiées vivent dans `src/Exception/`, pas dans la couche service).
+
+### Corrigé
+
+- **`NpmAuditPayloadDecoderTest` n'important plus la bonne classe** après le déplacement ci-dessus (`use App\Service\NpmAudit\NpmAuditPayloadDecodeException` resté sur l'ancien namespace) — corrigé, `App\Exception\Npm\NpmAuditPayloadDecodeException`.
+- **PHPStan niveau 7 — 11 erreurs trouvées et corrigées après la relecture des 873 fichiers** : docblock de `NpmAuditPageController::buildStackedSeverityChartData()` avec un `@return` dupliqué (un type précis suivi d'un second, générique, qui masquait le premier aux yeux de PHPStan) ; `@phpstan-ignore-next-line` devenu orphelin dans `BatchCrudController::deleteEntity()` ; generics manquants (`FormBuilderInterface<T>`) sur `ActuatorFormType`/`ActuatorInfoFormType`/`ResetPasswordFormType` ; typage du nouveau script `remove_created_date_cli.php`.
+- **Rattrapage — script SQL de version 2.10.0 jamais suivi** : `migrations/POSTGRESQL/updates/24_insert_ma_moulinette_version.sql` avait été créé localement mais oublié lors de la publication de la 2.10.0 — committé maintenant, avec son équivalent pour la 2.10.1 (`25_insert_ma_moulinette_version.sql`).
+
 ## [2.10.0]
 
 ### Ajouté

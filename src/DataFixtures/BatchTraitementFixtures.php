@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -28,13 +28,14 @@ use Doctrine\Persistence\ObjectManager;
  * dans les 5 success=true. Constructeur (titre, portefeuille, responsable,
  * responsableShort, modeCollecte, nombreProjet) + init traitementId/dateEnregistrement.
  */
+
 class BatchTraitementFixtures extends Fixture
 {
     private const MODE_COLLECTE = 'TRAITEMENT MANUEL';
     private const RESPONSABLE = 'Laurent HADJADJ';
     private const RESPONSABLE_SHORT = 'lhadjadj';
 
-public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
         $debut = new \DateTimeImmutable('2026-01-01 09:00:00');
         $fin   = new \DateTimeImmutable('2026-01-01 09:30:00');

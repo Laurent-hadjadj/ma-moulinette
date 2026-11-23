@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\EventSubscriber;
@@ -32,7 +32,10 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  * l'endpoint répond 503 Service Unavailable.
  *
  * Sécurité : hash_equals() pour comparer en temps constant (anti timing attack).
- */
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 class ZapIngestTokenSubscriber implements EventSubscriberInterface
 {
     private const HEADER_NAME  = 'X-Zap-Token';
@@ -48,10 +51,8 @@ class ZapIngestTokenSubscriber implements EventSubscriberInterface
      * [Description for getSubscribedEvents]
      *
      * @return array<class-string, array{0: string, 1: int}>
-     *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getSubscribedEvents(): array
     {
@@ -69,10 +70,8 @@ class ZapIngestTokenSubscriber implements EventSubscriberInterface
      * @param RequestEvent $event
      *
      * @return void
-     *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function onKernelRequest(RequestEvent $event): void
     {

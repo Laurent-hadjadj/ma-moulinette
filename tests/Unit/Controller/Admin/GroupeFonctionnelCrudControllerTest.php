@@ -4,10 +4,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class GroupeFonctionnelCrudControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */     private MockObject $em;
-    /** @var GroupeFonctionnelRepository&MockObject */private MockObject $repo;
+    /** @var GroupeFonctionnelRepository&MockObject */ private MockObject $repo;
     /** @var Connection&MockObject */                 private MockObject $connection;
     /** @var FlashBag&MockObject */                   private MockObject $flashBag;
 
@@ -110,7 +110,7 @@ class GroupeFonctionnelCrudControllerTest extends TestCase
         $result = $this->controller->configureAssets(Assets::new());
 
         $jsPaths = array_map(
-            static fn ($asset) => $asset->getValue(),
+            static fn($asset) => $asset->getValue(),
             $result->getAsDto()->getJsAssets()
         );
         $this->assertContains('js/easy-admin/groupe-fonctionnel.js', $jsPaths);

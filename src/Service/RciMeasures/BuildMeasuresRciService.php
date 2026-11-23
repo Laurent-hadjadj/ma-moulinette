@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Service\RciMeasures;
@@ -75,8 +75,6 @@ class BuildMeasuresRciService
     /**
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
-     *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
     public function __construct(
@@ -84,8 +82,7 @@ class BuildMeasuresRciService
         private UrlBuilderService $urlBuilder,
         private ParameterBagInterface $params,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for buildRegexModules]
@@ -95,9 +92,8 @@ class BuildMeasuresRciService
      *
      * @return array{0: string, 1: string, 2: string}
      *
-     * Created at: 25/09/2026 12:40:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildRegexModules(): array
     {
@@ -119,9 +115,8 @@ class BuildMeasuresRciService
      *
      * @param array{0: string, 1: string, 2: string} $regexModules
      *
-     * Created at: 25/09/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function classifieModule(string $path, array $regexModules): string
     {
@@ -147,9 +142,8 @@ class BuildMeasuresRciService
      *
      * @return array<string, string>
      *
-     * Created at: 25/09/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function severityMetrics(int $version): array
     {
@@ -168,9 +162,8 @@ class BuildMeasuresRciService
      *
      * @return int
      *
-     * Created at: 28/09/2026 13:50:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function weightedWeights(int $blocker, int $critical, int $major, int $minor, int $info): int
     {
@@ -194,9 +187,9 @@ class BuildMeasuresRciService
      * @return float|null RCI value, ou null si non calculable (ncloc absent
      *                     ou nul — un projet sans code n'a pas de RCI, pas un
      *                     RCI de 0).
-     * Created at: 25/09/2026 13:09:42 (Europe/Paris)
+     *
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function calculateRci(?int $ncloc, int $poidsTotal): ?float
     {
@@ -214,9 +207,8 @@ class BuildMeasuresRciService
      *
      * @return string|null
      *
-     * Created at: 24/09/2026 18:54:33 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getRCIRating(?float $rci): ?string
     {
@@ -226,10 +218,18 @@ class BuildMeasuresRciService
 
         $tauxDette = 100 - $rci;
 
-        if ($tauxDette <= 5) { return 'A'; }
-        if ($tauxDette <= 10) { return 'B'; }
-        if ($tauxDette <= 20) { return 'C'; }
-        if ($tauxDette <= 50) { return 'D'; }
+        if ($tauxDette <= 5) {
+            return 'A';
+        }
+        if ($tauxDette <= 10) {
+            return 'B';
+        }
+        if ($tauxDette <= 20) {
+            return 'C';
+        }
+        if ($tauxDette <= 50) {
+            return 'D';
+        }
         return 'E';
     }
 
@@ -246,9 +246,8 @@ class BuildMeasuresRciService
      *
      * @return array<string, mixed>
      *
-     * Created at: 25/09/2026 12:40:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function calculateMeasuresByModule(string $maven_key, int $version): array
     {
@@ -259,7 +258,8 @@ class BuildMeasuresRciService
         // On charge les fonctions de traitements des regex et des mesures en fonction de la version.
         $regexModules = $this->buildRegexModules();
         $severityMetrics = $this->severityMetrics($version);
-        /* component_tree n'accepte pas toutes les métriques de metricsKey()
+        /**
+         * component_tree n'accepte pas toutes les métriques de metricsKey()
          * (les métriques de type "distribution", comme ncloc_language_distribution,
          * ne sont interrogeables que via measures/component).
          * On ne demande donc que le strict nécessaire. */
@@ -267,7 +267,7 @@ class BuildMeasuresRciService
 
         $page = 1;
         $pageSize = 500;
-        /* L'API SonarQube refuse de paginer au-delà de 10 000 résultats
+        /** L'API SonarQube refuse de paginer au-delà de 10 000 résultats
          * (p * ps <= 10000). Contrairement à issues/search, les fichiers n'ont
          * pas d'axe naturel (comme la sévérité) pour découper la requête en
          * plusieurs tranches : au-delà, les mesures par module restent une
@@ -280,7 +280,7 @@ class BuildMeasuresRciService
             do {
                 $url = $this->urlBuilder->build(
                     $this->params->get(self::$sonarUrl),
-                        '/api/measures/component_tree',
+                    '/api/measures/component_tree',
                     [
                         'component' => $maven_key,
                         'metricKeys' => $metricKeys,
@@ -361,9 +361,8 @@ class BuildMeasuresRciService
      *
      * @return array<string, mixed>
      *
-     * Created at: 28/09/2026 15:56:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function calculateGlobalMeasures(string $maven_key, int $version): array
     {
@@ -371,7 +370,8 @@ class BuildMeasuresRciService
         $metric_keys = implode(',', array_merge(['ncloc'], array_values($severityMetrics)));
         $url = $this->urlBuilder->build(
             $this->params->get(self::$sonarUrl),
-            '/api/measures/component', [
+            '/api/measures/component',
+            [
                 'component' => $maven_key,
                 'metricKeys' => $metric_keys
             ]
@@ -383,12 +383,14 @@ class BuildMeasuresRciService
             /** On récupère les mesures depuis l'API */
             $response = $this->client->httpSonarQube($url);
 
-            if (isset($response['code']) && in_array($response['code'],
-                [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
+            if (isset($response['code']) && in_array(
+                $response['code'],
+                [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505]
+            )) {
                 throw new SonarApiException(
-                            sprintf('Erreur API Sonar (HTTP %s) pour %s', $response['code'], $url),
-                            $response
-                        );
+                    sprintf('Erreur API Sonar (HTTP %s) pour %s', $response['code'], $url),
+                    $response
+                );
             }
         } catch (SonarApiException $e) {
             // MODIF 2026-09-28 : la méthode laissait auparavant l'exception
@@ -411,7 +413,8 @@ class BuildMeasuresRciService
             $global_measures[(string) ($measure['metric'] ?? '')] = (int) ($measure['value'] ?? 0);
         }
 
-        /* MODIF 2026-09-28 : compteurs par sévérité normalisés (BLOCKER/
+        /**
+         * MODIF 2026-09-28 : compteurs par sévérité normalisés (BLOCKER/
          * CRITICAL/MAJOR/MINOR/INFO) à partir de la bonne taxonomie
          * ($severityMetrics, déjà choisie selon $version plus haut) — sans
          * ça l'appelant devait relire directement les clés brutes de

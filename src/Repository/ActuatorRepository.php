@@ -23,14 +23,14 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ActuatorRepository extends ServiceEntityRepository
 {
-    private static string $removeReturnLine = "/\s+/u";
-    private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(
-      ManagerRegistry $registry,
-      private ActuatorCredentialCipher $cipher
+    ManagerRegistry $registry,
+    private ActuatorCredentialCipher $cipher
   ) {
-      parent::__construct($registry, Actuator::class);
+    parent::__construct($registry, Actuator::class);
   }
 
 
@@ -39,9 +39,7 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 07/07/2025 09:36:59 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -51,17 +49,17 @@ class ActuatorRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = self::$noDataBase;
+      $message = self::$noDataBase;
     }
 
     // state = '23502'
     if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-        $message = $e->getMessage();
+      $message = $e->getMessage();
     }
 
     // state = '23505'
     if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
     }
 
     return ['code' => 500, 'erreur' => $message];
@@ -73,86 +71,80 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * @param array<string, mixed> $map
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 23/06/2024 14:56:24 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function deleteActuatorUrl(array $map): array
+  public function deleteActuatorUrl(array $map): array
   {
     $sql = "DELETE
             FROM actuator
             WHERE url = :url";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':url', $map['url']);
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(':url', $map['url']);
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollback();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollback();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
 
-    /** Colonnes triables autorisees (defense en profondeur cote repo) */
-    private const ALLOWED_SORT_COLUMNS = ['nom_application', 'url', 'personne', 'date_modification', 'date_enregistrement'];
+  /** Colonnes triables autorisees (defense en profondeur cote repo) */
+  private const ALLOWED_SORT_COLUMNS = ['nom_application', 'url', 'personne', 'date_modification', 'date_enregistrement'];
 
-    /**
-     * Sanitize la direction de tri (ASC ou DESC, fallback DESC).
-     */
-    private static function sanitizeSortDirection(string $direction): string
-    {
-        $direction = strtoupper($direction);
-        return ($direction === 'ASC' || $direction === 'DESC') ? $direction : 'DESC';
-    }
+  /**
+   * Sanitize la direction de tri (ASC ou DESC, fallback DESC).
+   */
+  private static function sanitizeSortDirection(string $direction): string
+  {
+    $direction = strtoupper($direction);
+    return ($direction === 'ASC' || $direction === 'DESC') ? $direction : 'DESC';
+  }
 
   /**
    * [Description for findActuatorOrderBy]
    *
-     * @param string $sortColumn
-     * @param string $sortDirection
+   * @param string $sortColumn
+   * @param string $sortDirection
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 23/06/2024 14:56:20 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function findActuatorOrderBy(string $sortColumn, string $sortDirection): array
+  public function findActuatorOrderBy(string $sortColumn, string $sortDirection): array
   {
-        $sortColumn = in_array($sortColumn, self::ALLOWED_SORT_COLUMNS, true) ? $sortColumn : 'nom_application';
-        $sortDirection = self::sanitizeSortDirection((string) $sortDirection);
+    $sortColumn = in_array($sortColumn, self::ALLOWED_SORT_COLUMNS, true) ? $sortColumn : 'nom_application';
+    $sortDirection = self::sanitizeSortDirection((string) $sortDirection);
 
     $sql = "SELECT *
             FROM ma_moulinette.actuator
                 ORDER BY {$sortColumn} {$sortDirection}";
 
     try {
-         $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-         $paginator = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'paginator_query' => $paginator, 'erreur' => ''];
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $paginator = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'paginator_query' => $paginator, 'erreur' => ''];
   }
 
   /**
    * [Description for findActuatorOrderByDate]
    *
-     * @param string $sortDirection
+   * @param string $sortDirection
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 23/06/2024 14:56:13 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function findActuatorOrderByDate(string $sortDirection): array
+  public function findActuatorOrderByDate(string $sortDirection): array
   {
-        $sortDirection = self::sanitizeSortDirection((string) $sortDirection);
+    $sortDirection = self::sanitizeSortDirection((string) $sortDirection);
 
     $sql = "SELECT * FROM ma_moulinette.actuator
             ORDER BY
@@ -161,12 +153,12 @@ class ActuatorRepository extends ServiceEntityRepository
                     ELSE date_enregistrement
                     END {$sortDirection}";
     try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $paginator = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'paginator_query' => $paginator, 'erreur' => ''];
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $paginator = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'paginator_query' => $paginator, 'erreur' => ''];
   }
 
   /**
@@ -174,33 +166,31 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * @param array<string, mixed> $map
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 26/06/2024 18:57:59 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function findActuatorMavenKey(array $map): array
+  public function findActuatorMavenKey(array $map): array
   {
     $sql = "SELECT id, url, actuator_user, actuator_password
             FROM ma_moulinette.actuator
             WHERE LOWER(maven_key) = LOWER(:maven_key)";
     try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(':maven_key', $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-            if (empty($liste)) {
-                return ['code' => 404, 'message' => "Le projet n'a pas de point d'accès défini"];
-            }
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(':maven_key', $map['maven_key']);
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
+      if (empty($liste)) {
+        return ['code' => 404, 'message' => "Le projet n'a pas de point d'accès défini"];
       }
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
 
-        $id = $liste[0]['id'];
-        $url = $liste[0]['url'];
-        $user = $liste[0]['actuator_user'] ?? null;
-        $password = $this->cipher->decrypt($liste[0]['actuator_password'] ?? null);
+    $id = $liste[0]['id'];
+    $url = $liste[0]['url'];
+    $user = $liste[0]['actuator_user'] ?? null;
+    $password = $this->cipher->decrypt($liste[0]['actuator_password'] ?? null);
 
-      return ['code' => 200, 'erreur' => ''] + compact('url', 'user', 'password', 'id');
+    return ['code' => 200, 'erreur' => ''] + compact('url', 'user', 'password', 'id');
   }
 }

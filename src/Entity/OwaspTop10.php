@@ -20,8 +20,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * [Description OwaspTop10]
- *
  * MODIF 2026-05-07 : ajout Assert NotBlank/Length/PositiveOrZero.
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: OwaspTop10Repository::class)]
 #[ORM\Table(name: 'owasp_top10', schema: 'ma_moulinette')]

@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -52,8 +52,7 @@ class BatchCollecteOwaspController extends AbstractController
         private GetSonarVersionService $sonarVersion,
         private OwaspRuleClassifierService $ruleClassifier,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for fetchAllOwaspIssues]
@@ -63,9 +62,8 @@ class BatchCollecteOwaspController extends AbstractController
      *
      * @return array{code: 200, issues: array<int, array{rule: string, component: string, severity: string, line: ?int, message: string}>, effortTotal: int}|array{code: 400|401|403|404|407|414|418|422|429|500|502|503|504|505, erreur: string}
      *
-     * Created at: 27/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function fetchAllOwaspIssues(string $maven_key, string $componentKeyParam, string $statusParam, string $statusValue): array
     {
@@ -100,7 +98,8 @@ class BatchCollecteOwaspController extends AbstractController
                     'rule' => (string) ($issue['rule'] ?? ''),
                     'component' => (string) ($issue['component'] ?? ''),
                     'severity' => (string) ($issue['severity'] ?? ''),
-                    /* MODIF 28/10/2026 : line/message déjà présents dans la réponse
+                    /**
+                     * MODIF 28/10/2026 : line/message déjà présents dans la réponse
                      * SonarQube, jusqu'ici jamais capturés — nécessaires au détail
                      * individuel des vulnérabilités (table owasp_details). */
                     'line' => isset($issue['line']) ? (int) $issue['line'] : null,
@@ -124,9 +123,8 @@ class BatchCollecteOwaspController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/05/2024 23:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteOwasp(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -158,7 +156,7 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map = [ 'maven_key' => $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $select_information = $informationProjetRepos->selectInformationProjetVersion($map);
         if ($select_information['code'] != 200) {
             $this->logger->error("[Batch OWASP] ❌ Erreur selectInformationProjetVersion pour {$maven_key} : {$select_information['code']}");
@@ -190,7 +188,8 @@ class BatchCollecteOwaspController extends AbstractController
                 'maven_key' => $maven_key,
                 'version' => $select_information['info']['version'] ?? 'N.C',
                 'date_version' => $date_version,
-                /* MODIF 27/10/2026 : effort_total reste une simplification assumée (cf. historique du
+                /**
+                 * MODIF 27/10/2026 : effort_total reste une simplification assumée (cf. historique du
                  * fichier) — l'appel étant désormais unique pour les deux référentiels, la même valeur
                  * globale (toutes règles OWASP confondues) est reportée sur chaque ligne construite,
                  * plutôt qu'un effort recalculé règle par règle et séparé par référentiel. */
@@ -205,7 +204,8 @@ class BatchCollecteOwaspController extends AbstractController
             ];
         };
 
-        /* 2017 : toujours construite (même comportement que l'ancienne facette owaspTop10, toujours
+        /**
+         * 2017 : toujours construite (même comportement que l'ancienne facette owaspTop10, toujours
          * disponible quelle que soit la version du serveur). 2021 : seulement si le serveur la supporte
          * (même seuil que le bouton front) — une ligne « tout à zéro » est construite même sans aucune
          * catégorie touchée, pour que la page affiche un vrai 0 plutôt qu'un 406 "aucune donnée". */
@@ -218,12 +218,14 @@ class BatchCollecteOwaspController extends AbstractController
             $total_2021 = array_sum(array_column($classified[2021], 'total'));
         }
 
-        /* MODIF 28/10/2026 : détail individuel de chaque vulnérabilité classée
+        /**
+         * MODIF 28/10/2026 : détail individuel de chaque vulnérabilité classée
          * (table owasp_details) — mêmes gardes 2017/2021 que $owaspDataList
          * ci-dessus, construit à partir de $classified['details'] (déjà
          * calculé par OwaspRuleClassifierService::classify(), aucun appel
          * SonarQube supplémentaire). */
-        /* MODIF 28/10/2026 : BUG CORRIGÉ — le message d'une issue SonarQube (texte
+        /**
+         * MODIF 28/10/2026 : BUG CORRIGÉ — le message d'une issue SonarQube (texte
          * libre, parfois long sur FindSecBugs) n'était jamais borné avant
          * l'insertion, alors que owasp_details.message est VARCHAR(255) : une
          * collecte réelle sur un projet avec des messages longs faisait échouer
@@ -261,7 +263,7 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
         $this->logger->debug("[Batch OWASP] 🛠️ Suppression OWASP existant pour {$maven_key}");
-        $map = [ 'maven_key' => $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $delete = $owaspRepos->deleteOwaspMavenKey($map);
         if ($delete['code'] != 200) {
             $this->logger->error("[Batch OWASP] ❌ Échec de la requête suppression OWASP deleteOwaspMavenKey : {$delete['erreur']}");
@@ -309,6 +311,6 @@ class BatchCollecteOwaspController extends AbstractController
             'owasp2017' => $total_2017,
             'owasp2021' => $total_2021,
             'message' => "La collecte des menaces OWASP pour ce projet est terminée."
-            ];
+        ];
     }
 }

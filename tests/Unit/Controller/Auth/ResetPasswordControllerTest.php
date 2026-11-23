@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -71,7 +71,8 @@ class ResetPasswordControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'security.token_storage', 'parameter_bag',
+                'security.token_storage',
+                'parameter_bag',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -80,7 +81,11 @@ class ResetPasswordControllerTest extends TestCase
         ]);
 
         $this->controller = new ResetPasswordController(
-            $this->em, $this->params, $this->logger, $this->passwordHasher, $this->tracking
+            $this->em,
+            $this->params,
+            $this->logger,
+            $this->passwordHasher,
+            $this->tracking
         );
         $this->controller->setContainer($container);
     }
@@ -172,7 +177,8 @@ class ResetPasswordControllerTest extends TestCase
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())
             ->method('render')
-            ->with('auth/reset.html.twig', $this->callback(fn($ctx) =>
+            ->with('auth/reset.html.twig', $this->callback(
+                fn($ctx) =>
                 isset($ctx['resetPasswordForm']) && $ctx['courriel'] === 'u@ma-moulinette.fr'
             ))
             ->willReturn('<html>reset</html>');
@@ -180,7 +186,10 @@ class ResetPasswordControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'security.token_storage', 'parameter_bag', 'form.factory', 'twig',
+                'security.token_storage',
+                'parameter_bag',
+                'form.factory',
+                'twig',
             ], true)
         );
         $container->method('get')->willReturnMap([

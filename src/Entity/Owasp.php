@@ -29,6 +29,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  mkDocs/docs/ma-moulinette/application/owasp.md) + ajout de module_frontend/backend/autre
  *  (répartition par module des vulnérabilités OWASP, remplace l'ancienne répartition
  *  basée sur les hotspots).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: OwaspRepository::class)]
 #[ORM\Table(name: "owasp", schema: "ma_moulinette")]

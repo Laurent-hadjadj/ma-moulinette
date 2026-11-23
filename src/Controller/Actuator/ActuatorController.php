@@ -66,7 +66,6 @@ class ActuatorController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/12/2024 20:50:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -90,7 +89,6 @@ class ActuatorController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 23/07/2026 16:05:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -162,7 +160,6 @@ class ActuatorController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 23/07/2026 16:04:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -225,7 +222,6 @@ class ActuatorController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 23/07/2026 16:04:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -305,7 +301,6 @@ class ActuatorController extends AbstractController
      *
      * @return string
      *
-     * Created at: 24/07/2026 19:34:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -330,7 +325,6 @@ class ActuatorController extends AbstractController
      *
      * @return bool
      *
-     * Created at: 24/07/2026 19:33:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -371,7 +365,6 @@ class ActuatorController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 23/07/2026 16:06:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

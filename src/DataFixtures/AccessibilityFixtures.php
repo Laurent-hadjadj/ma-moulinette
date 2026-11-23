@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -19,7 +19,8 @@ use App\Entity\Accessibility;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/* MODIF 2026-10-27 : fixtures pour accessibility, même contrat que RciFixtures.php :
+/**
+ * MODIF 2026-10-27 : fixtures pour accessibility, même contrat que RciFixtures.php :
  *  - AccessibilityRepositoryTest::testSelectAccessibilityReturnsMostRecentFixtureRow :
  *    selectAccessibility(mavenKey) → la ligne la plus récente (LIMIT 1).
  * Seed 3 rows jamais collectées (compteurs/notes null), dates différentes pour

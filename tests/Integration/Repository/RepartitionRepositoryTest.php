@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -52,10 +52,8 @@ class RepartitionRepositoryTest extends KernelTestCase
      * [Description for loadFixtures]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 12:07:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function loadFixtures(): void
     {
@@ -67,10 +65,8 @@ class RepartitionRepositoryTest extends KernelTestCase
      * [Description for getRepository]
      *
      * @return RepartitionRepository
-     *
-     * Created at: 06/07/2025 12:07:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getRepository(): RepartitionRepository
     {
@@ -81,40 +77,100 @@ class RepartitionRepositoryTest extends KernelTestCase
      * [Description for buildCompleteMap]
      *
      * @return array<string, mixed>
-     *
-     * Created at: 06/07/2025 12:07:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    private function buildCompleteMap(): array {
-        $defaultFields = ['bug_blocker', 'bug_critical', 'bug_major', 'bug_minor', 'bug_info',
-            'vulnerability_blocker', 'vulnerability_critical', 'vulnerability_major', 'vulnerability_minor', 'vulnerability_info',
-            'code_smell_blocker', 'code_smell_critical', 'code_smell_major', 'code_smell_minor', 'code_smell_info',
-            'frontend', 'backend',  'autre','inconnue'
+    private function buildCompleteMap(): array
+    {
+        $defaultFields = [
+            'bug_blocker',
+            'bug_critical',
+            'bug_major',
+            'bug_minor',
+            'bug_info',
+            'vulnerability_blocker',
+            'vulnerability_critical',
+            'vulnerability_major',
+            'vulnerability_minor',
+            'vulnerability_info',
+            'code_smell_blocker',
+            'code_smell_critical',
+            'code_smell_major',
+            'code_smell_minor',
+            'code_smell_info',
+            'frontend',
+            'backend',
+            'autre',
+            'inconnue'
         ];
 
         $fieldsBug = [
-            'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnue_bug_blocker',
-            'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnue_bug_critical',
-            'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnue_bug_major',
-            'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnue_bug_minor',
-            'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnue_bug_info',
+            'frontend_bug_blocker',
+            'backend_bug_blocker',
+            'autre_bug_blocker',
+            'inconnue_bug_blocker',
+            'frontend_bug_critical',
+            'backend_bug_critical',
+            'autre_bug_critical',
+            'inconnue_bug_critical',
+            'frontend_bug_major',
+            'backend_bug_major',
+            'autre_bug_major',
+            'inconnue_bug_major',
+            'frontend_bug_minor',
+            'backend_bug_minor',
+            'autre_bug_minor',
+            'inconnue_bug_minor',
+            'frontend_bug_info',
+            'backend_bug_info',
+            'autre_bug_info',
+            'inconnue_bug_info',
         ];
 
         $fieldsVulnerability = [
-            'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnue_vulnerability_blocker',
-            'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnue_vulnerability_critical',
-            'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnue_vulnerability_major',
-            'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnue_vulnerability_minor',
-            'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnue_vulnerability_info',
+            'frontend_vulnerability_blocker',
+            'backend_vulnerability_blocker',
+            'autre_vulnerability_blocker',
+            'inconnue_vulnerability_blocker',
+            'frontend_vulnerability_critical',
+            'backend_vulnerability_critical',
+            'autre_vulnerability_critical',
+            'inconnue_vulnerability_critical',
+            'frontend_vulnerability_major',
+            'backend_vulnerability_major',
+            'autre_vulnerability_major',
+            'inconnue_vulnerability_major',
+            'frontend_vulnerability_minor',
+            'backend_vulnerability_minor',
+            'autre_vulnerability_minor',
+            'inconnue_vulnerability_minor',
+            'frontend_vulnerability_info',
+            'backend_vulnerability_info',
+            'autre_vulnerability_info',
+            'inconnue_vulnerability_info',
         ];
 
         $fieldsCodeSmell = [
-            'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnue_code_smell_blocker',
-            'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnue_code_smell_critical',
-            'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnue_code_smell_major',
-            'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnue_code_smell_minor',
-            'frontend_code_smell_info', 'backend_code_smell_info', 'autre_code_smell_info', 'inconnue_code_smell_info',
+            'frontend_code_smell_blocker',
+            'backend_code_smell_blocker',
+            'autre_code_smell_blocker',
+            'inconnue_code_smell_blocker',
+            'frontend_code_smell_critical',
+            'backend_code_smell_critical',
+            'autre_code_smell_critical',
+            'inconnue_code_smell_critical',
+            'frontend_code_smell_major',
+            'backend_code_smell_major',
+            'autre_code_smell_major',
+            'inconnue_code_smell_major',
+            'frontend_code_smell_minor',
+            'backend_code_smell_minor',
+            'autre_code_smell_minor',
+            'inconnue_code_smell_minor',
+            'frontend_code_smell_info',
+            'backend_code_smell_info',
+            'autre_code_smell_info',
+            'inconnue_code_smell_info',
         ];
 
         $allFields = array_merge($defaultFields, $fieldsBug, $fieldsVulnerability, $fieldsCodeSmell);
@@ -140,10 +196,8 @@ class RepartitionRepositoryTest extends KernelTestCase
      * [Description for testInitialInsert]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 12:07:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testInitialInsert(): void
     {
@@ -164,10 +218,8 @@ class RepartitionRepositoryTest extends KernelTestCase
      * [Description for testUpdateExistingRepartition]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 12:07:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testUpdateExistingRepartition(): void
     {
@@ -193,10 +245,8 @@ class RepartitionRepositoryTest extends KernelTestCase
      * [Description for testDirectUpdateRepartition]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 12:07:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testDirectUpdateRepartition(): void
     {

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Owasp;
@@ -51,9 +51,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return JsonResponse|null null si autorisé, sinon la réponse JSON à renvoyer telle quelle.
      *
-     * Created at: 17/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function checkPerimetre(string $maven_key): ?JsonResponse
     {
@@ -86,9 +85,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return int
      *
-     * Created at: 19/10/2025 09:19:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function somme(array $categories, string $field): int
     {
@@ -105,6 +103,9 @@ class ApiOwaspPeintureController extends AbstractController
      * que le front expose la source par catégorie individuellement.
      *
      * @param array<string, array{source: string}> $categories
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function deriveSource(array $categories): string
     {
@@ -123,9 +124,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:19:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
     public function peintureOwaspListe(Request $request): JsonResponse
@@ -209,7 +209,8 @@ class ApiOwaspPeintureController extends AbstractController
         $payload = [
             'code' => 200,
             'referential_owasp' => $referential_owasp,
-            /* MODIF 27/10/2026 : 'core' (règle SonarSource), 'findsecbugs' (règle
+            /**
+             * MODIF 27/10/2026 : 'core' (règle SonarSource), 'findsecbugs' (règle
              * FindSecBugs, tag owasp-aXX jamais indexé par la facette officielle)
              * ou 'mixed' — dérivé des sources par catégorie (cf. owasp.md). */
             'source' => self::deriveSource($categories),
@@ -251,9 +252,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 28/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/owasp/details', name: 'peinture_owasp_details', methods: ['POST'])]
     public function peintureOwaspDetails(Request $request): JsonResponse
@@ -342,9 +342,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:11:35 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
     public function peintureOwaspHotspotInfo(Request $request): JsonResponse
@@ -471,9 +470,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:20:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
     public function peintureOwaspHotspotListe(Request $request): JsonResponse
@@ -546,9 +544,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:20:54 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
     public function peintureOwaspHotspotDetails(Request $request): JsonResponse
@@ -612,9 +609,8 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:21:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
     public function peintureOwaspSeverity(Request $request): JsonResponse

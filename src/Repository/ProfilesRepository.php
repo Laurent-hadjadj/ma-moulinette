@@ -36,31 +36,29 @@ class ProfilesRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+   * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
-
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -68,10 +66,8 @@ class ProfilesRepository extends ServiceEntityRepository
    * Retourne le nombre de profils correspondant au filtre (profils actifs par défaut)
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 27/10/2023 13:56:31 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+   * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function countProfiles(string $referential_default = 'true', ?string $langage = null): array
   {
@@ -90,7 +86,7 @@ class ProfilesRepository extends ServiceEntityRepository
       }
       $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['request' => $request, 'code' => 200, 'erreur' => ''];
   }
@@ -100,10 +96,8 @@ class ProfilesRepository extends ServiceEntityRepository
    * On récupère la liste des profils (par default on récupère les profils actifs)
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 19/02/2024 17:08:03 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+   * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function selectProfiles(string $referential_default = 'true', ?string $langage = null): array
   {
@@ -119,7 +113,7 @@ class ProfilesRepository extends ServiceEntityRepository
               ) AS nb_profils_par_langage
             FROM ma_moulinette.profiles p1
             WHERE referential_default = :referential_default";
-            //ORDER BY langage, name;
+    //ORDER BY langage, name;
     try {
       $avecLangage = $langage !== null;
       if ($avecLangage) {
@@ -132,7 +126,7 @@ class ProfilesRepository extends ServiceEntityRepository
       }
       $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['liste' => $liste, 'code' => 200, 'erreur' => ''];
   }
@@ -142,23 +136,21 @@ class ProfilesRepository extends ServiceEntityRepository
    * Suppression des enregistrements de la table profiles
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 19/02/2024 17:11:56 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+   * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function deleteProfiles(): array
   {
     $sql = "DELETE FROM ma_moulinette.profiles";
 
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -167,10 +159,8 @@ class ProfilesRepository extends ServiceEntityRepository
    * [Description for selectProfilesLanguage]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 20/02/2024 11:15:53 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+   * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function selectProfilesLanguage(): array
   {
@@ -179,9 +169,9 @@ class ProfilesRepository extends ServiceEntityRepository
             WHERE referential_default = true";
     try {
       $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-          $labels = $stmt->executeQuery()->fetchAllAssociative();
+      $labels = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'labels' => $labels, 'erreur' => ''];
   }
@@ -191,23 +181,21 @@ class ProfilesRepository extends ServiceEntityRepository
    * Remonte le nombre de règle active pour un profil
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 27/02/2024 21:36:40 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+   * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function selectProfilesRuleCount(): array
   {
-      $sql = "SELECT active_rule_count AS total
+    $sql = "SELECT active_rule_count AS total
               FROM ma_moulinette.profiles
               WHERE referential_default = true";
-      try {
+    try {
       $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $dataSets = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'data-set' => $dataSets, 'erreur' => ''];
+      $dataSets = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'data-set' => $dataSets, 'erreur' => ''];
   }
 
   /**
@@ -217,40 +205,38 @@ class ProfilesRepository extends ServiceEntityRepository
    * @param array{profiles: array<int, array<string, mixed>>, date_enregistrement: \DateTimeImmutable} $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 07/11/2024 14:01:38 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+   * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function insertProfiles(array $map): array
   {
-      $sql = "INSERT INTO ma_moulinette.profiles
+    $sql = "INSERT INTO ma_moulinette.profiles
                   (key, name, language_name, referential_default, active_rule_count, rules_updated_at, date_enregistrement)
               VALUES
                   (:key, :name, :language_name, :referential_default, :active_rule_count, :rules_updated_at, :date_enregistrement)";
-      try {
-            $nombre = 0;
-            $this->getEntityManager()->getConnection()->beginTransaction();
+    try {
+      $nombre = 0;
+      $this->getEntityManager()->getConnection()->beginTransaction();
       foreach ($map['profiles'] as $profil) {
-                $nombre = $nombre + 1;
+        $nombre = $nombre + 1;
         $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':key', $profil['key']);
-                    $stmt->bindValue(':name', $profil['name']);
-                    $stmt->bindValue(':language_name', $profil['languageName']);
-                    $stmt->bindValue(':referential_default', $profil['isDefault'] === true ? 'true' : 'false');
-                    $stmt->bindValue(':active_rule_count', $profil['activeRuleCount']);
-                    $rulesUpdatedAt = new \DateTimeImmutable($profil['rulesUpdatedAt']);
-                    $formattedRulesUpdatedAt = $rulesUpdatedAt->format('Y-m-d H:i:sO');
+        $stmt->bindValue(':key', $profil['key']);
+        $stmt->bindValue(':name', $profil['name']);
+        $stmt->bindValue(':language_name', $profil['languageName']);
+        $stmt->bindValue(':referential_default', $profil['isDefault'] === true ? 'true' : 'false');
+        $stmt->bindValue(':active_rule_count', $profil['activeRuleCount']);
+        $rulesUpdatedAt = new \DateTimeImmutable($profil['rulesUpdatedAt']);
+        $formattedRulesUpdatedAt = $rulesUpdatedAt->format('Y-m-d H:i:sO');
 
-                    $stmt->bindValue(':rules_updated_at', $formattedRulesUpdatedAt);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                    $stmt->executeStatement();
-                }
-            $this->getEntityManager()->getConnection()->commit();
-      } catch (\Throwable $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
-          return $this->handleDatabaseException($e);
+        $stmt->bindValue(':rules_updated_at', $formattedRulesUpdatedAt);
+        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+        $stmt->executeStatement();
       }
-      return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
+      $this->getEntityManager()->getConnection()->commit();
+    } catch (\Throwable $e) {
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 }

@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -48,9 +48,8 @@ class BatchController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -69,6 +68,8 @@ class BatchController extends AbstractController
     }
 
     /**
+     * [Description for genericRender]
+     *
      * @return array{
      *     type_footer: null,
      *     logo_entreprise: string,
@@ -78,6 +79,9 @@ class BatchController extends AbstractController
      *     version: string,
      *     date_copyright: string
      * }
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -99,9 +103,8 @@ class BatchController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 10/11/2025 14:57:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/traitement/information', name: 'traitement_information', methods: 'POST')]
     public function traitementInformation(Request $request): JsonResponse
@@ -260,9 +263,8 @@ class BatchController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 11/11/2025 19:05:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('api/secure/traitement/journal', name: 'traitement_journal', methods: 'POST')]
     public function traitementJournal(Request $request): JsonResponse
@@ -398,9 +400,8 @@ class BatchController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 04/12/2022, 08:54:16 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/traitement/suivi', name: 'traitement_suivi', methods: 'GET')]
     public function traitementSuivi(): Response
@@ -514,6 +515,14 @@ class BatchController extends AbstractController
         return $this->render(self::$page, $render);
     }
 
+    /**
+     * [Description for rapports]
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route('/rapports', name: 'rapport_index')]
     public function rapports(): Response
     {
@@ -530,9 +539,15 @@ class BatchController extends AbstractController
         /* MODIF 2026-05-07 : fix post-increment dans ternaire (sans effet) + in_array d'un tableau (toujours faux). */
         foreach ($traitements as $traitement) {
             $codes = array_map(fn($j) => $j->getCode(), $traitement->getCollectes()->toArray());
-            if (in_array(200, $codes, true)) { $nombre_success++; }
-            if (in_array(202, $codes, true)) { $nombre_bypass++; }
-            if (!empty(array_intersect([400, 404, 422, 500, 503], $codes))) { $nombre_erreur++; }
+            if (in_array(200, $codes, true)) {
+                $nombre_success++;
+            }
+            if (in_array(202, $codes, true)) {
+                $nombre_bypass++;
+            }
+            if (!empty(array_intersect([400, 404, 422, 500, 503], $codes))) {
+                $nombre_erreur++;
+            }
         }
 
         // Récupération des utilisateurs distincts
@@ -559,9 +574,8 @@ class BatchController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 25/10/2025 22:15:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/public/traitement/rapport/pdf/{token}/{download?0}', name: 'rapport_execution_pdf')]
     public function rapportExecutionPdf(string $token, bool $download = false): Response

@@ -24,8 +24,7 @@ class IsValideMavenKey
 {
     public function __construct(
         private EntityManagerInterface $em,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for isValide]
@@ -38,7 +37,6 @@ class IsValideMavenKey
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 20/05/2024 21:38:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -50,11 +48,18 @@ class IsValideMavenKey
         /** On regarde si une analyse a été réalisée. */
         $map = ['maven_key' => $mavenKey];
         $request = $informationProjetRepository->selectInformationProjetIsValide($map);
-        return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
+        return ['code' => $request['code'], 'request' => $request['is_valide'] ?? $request['erreur']];
     }
 
     /**
+     * [Description for isValideHistorique]
+     *
+     * @param string $mavenKey
+     *
      * @return array<int|string, mixed>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function isValideHistorique(string $mavenKey): array
     {

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Zap;
@@ -57,9 +57,8 @@ class ApiZapUploadController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route(path: '/api/secure/zap/upload', name: 'api_zap_upload', methods: ['POST'])]
     public function upload(Request $request): JsonResponse
@@ -212,12 +211,13 @@ class ApiZapUploadController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route(
-        path: '/api/secure/zap/status/{ulid}', name: 'api_zap_status', methods: ['GET'],
+        path: '/api/secure/zap/status/{ulid}',
+        name: 'api_zap_status',
+        methods: ['GET'],
         requirements: ['ulid' => '[A-HJKMNP-TV-Z0-9]{26}']
     )]
     public function status(string $ulid): JsonResponse
@@ -273,9 +273,8 @@ class ApiZapUploadController extends AbstractController
      *
      * @return string
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function httpStatusToType(int $status): string
     {
@@ -297,10 +296,8 @@ class ApiZapUploadController extends AbstractController
      * @param int $maxLength
      *
      * @return string|null
-     *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function trimHeader(?string $raw, int $maxLength): ?string
     {

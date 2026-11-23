@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -37,10 +37,8 @@ class MesuresRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 18/12/2024 15:29:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -71,10 +69,8 @@ class MesuresRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 17/03/2024 22:51:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectMesuresVersionLast(array $map): array
     {
@@ -87,7 +83,7 @@ class MesuresRepository extends ServiceEntityRepository
 
         try {
             $stmt = $con->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             //on returne un tableau associatif (une ligne) ou false si aucune ligne trouvée
             $mesures = $stmt->executeQuery()->fetchAssociative();
         } catch (\Throwable $e) {
@@ -102,10 +98,8 @@ class MesuresRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 21/05/2024 22:57:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function insertMesures(array $map): array
     {
@@ -234,19 +228,19 @@ class MesuresRepository extends ServiceEntityRepository
         try {
             $conn->beginTransaction();
             $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                // Bind automatique sécurisé
-                foreach ($columns as $column) {
-                    if ($column === 'date_enregistrement') {
-                        $stmt->bindValue(
-                            ':' . $column,
-                            $map[$column]->format('Y-m-d H:i:s')
-                        );
-                    } else {
-                        $stmt->bindValue(':' . $column, $map[$column] ?? null);
-                    }
+            // Bind automatique sécurisé
+            foreach ($columns as $column) {
+                if ($column === 'date_enregistrement') {
+                    $stmt->bindValue(
+                        ':' . $column,
+                        $map[$column]->format('Y-m-d H:i:s')
+                    );
+                } else {
+                    $stmt->bindValue(':' . $column, $map[$column] ?? null);
                 }
+            }
 
-                $stmt->executeStatement();
+            $stmt->executeStatement();
             $conn->commit();
         } catch (\Throwable $e) {
             $conn->rollBack();
@@ -263,10 +257,8 @@ class MesuresRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 26/05/2024 10:51:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function deleteMesuresMavenKey(array $map): array
     {
@@ -275,9 +267,9 @@ class MesuresRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                $stmt->executeStatement();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollback();

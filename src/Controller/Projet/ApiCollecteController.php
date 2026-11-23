@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Projet;
@@ -20,8 +20,6 @@ use \Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
-/** Gestion de accès aux API */
-
 use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController, BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController, BatchCollecteActuatorController, BatchCollecteLoggerController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController, BatchCollecteAccessibilityController};
 
 /**
@@ -30,7 +28,6 @@ use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollect
 class ApiCollecteController extends AbstractController
 {
     use AppUserAware;
-
 
     /** Définition des constantes */
     private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
@@ -73,9 +70,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 30/06/2024 14:18:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/information', name: 'api_collecte_information', methods: ['POST'])]
     public function apiCollecteInformation(Request $request): JsonResponse
@@ -177,9 +173,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 30/06/2024 18:09:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/mesure', name: 'api_collecte_mesure', methods: ['POST'])]
     public function apiCollecteMesure(Request $request): JsonResponse
@@ -276,9 +271,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 28/09/2026 18:51:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/rci', name: 'api_collecte_rci', methods: ['POST'])]
     public function apiCollecteRci(Request $request): JsonResponse
@@ -378,9 +372,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 11/11/2024 11:05:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
     public function apiCollecteOwasp(Request $request): JsonResponse
@@ -474,9 +467,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 30/06/2024 19:07:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/hotspot', name: 'api_collecte_hotspot', methods: ['POST'])]
     public function apiCollecteHotspot(Request $request): JsonResponse
@@ -572,9 +564,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 30/06/2024 19:16:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/anomalie', name: 'api_collecte_anomalie', methods: ['POST'])]
     public function apiCollecteAnomalie(Request $request): JsonResponse
@@ -652,7 +643,8 @@ class ApiCollecteController extends AbstractController
             'nombre_code_smell' => $anomalie['historique']['nombre_code_smell']
         ]);
 
-        /* MODIF 2026-05-17 : collecte des indicateurs
+        /**
+         * MODIF 2026-05-17 : collecte des indicateurs
          * SonarQube 10+ en tâche de fond silencieuse (n'impacte pas la réponse
          * en cas d'échec — SonarQube < 10 ou facettes non supportées). */
         $cleanCode = $this->batchCollecteCleanCode->BatchCollecteCleanCode(
@@ -687,9 +679,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 30/06/2024 19:30:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/anomalie/detail', name: 'api_collecte_anomalie_detail', methods: ['POST'])]
     public function apiCollecteAnomalieDetail(Request $request): JsonResponse
@@ -777,9 +768,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 30/06/2024 21:55:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/hotspot/owasp', name: 'api_collecte_hotspot_owasp', methods: ['POST'])]
     public function apiCollecteHotspotOwasp(Request $request): JsonResponse
@@ -878,9 +868,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 02/07/2024 20:19:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/hotspot/detail', name: 'api_collecte_hotspot_detail', methods: ['POST'])]
     public function apiCollecteHotspotDetail(Request $request): JsonResponse
@@ -968,9 +957,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 11/07/2024 22:05:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/nosonar', name: 'api_collecte_nosonar', methods: ['POST'])]
     public function apiCollecteNoSonar(Request $request): JsonResponse
@@ -1061,9 +1049,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 11/07/2024 22:05:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/todo', name: 'api_collecte_todo', methods: ['POST'])]
     public function apiCollecteTodo(Request $request): Response
@@ -1152,9 +1139,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 11/07/2024 22:00:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/actuator/info', name: 'api_collecte_actuator_info', methods: ['POST'])]
     public function apiCollecteActuator(Request $request): JsonResponse
@@ -1237,9 +1223,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 11/07/2024 22:05:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/logger', name: 'api_collecte_logger', methods: ['POST'])]
     public function apiCollecteLogger(Request $request): JsonResponse
@@ -1326,9 +1311,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/empreinte-ecologique', name: 'api_collecte_empreinte_ecologique', methods: ['POST'])]
     public function apiCollecteEmpreinteEcologique(Request $request): JsonResponse
@@ -1414,9 +1398,8 @@ class ApiCollecteController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/collecte/accessibility', name: 'api_collecte_accessibility', methods: ['POST'])]
     public function apiCollecteAccessibility(Request $request): JsonResponse

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -19,7 +19,8 @@ use App\Entity\ActivityHistorique;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/* MODIF 2026-05-08 : creation ActivityHistoriqueFixtures.
+/**
+ * MODIF 2026-05-08 : creation ActivityHistoriqueFixtures.
  * Contrat : 1 ligne avec year=2024 pour satisfaire
  * ActivityHistoriqueKernelTest::testActivityHistoriqueFindOneBy (findOneBy year=2024 : 1
  * résultat). ActivityHistoriqueRepositoryTest (insert/update/select) ne contrôle que
@@ -27,6 +28,7 @@ use Doctrine\Persistence\ObjectManager;
  * Champs non-nullable : year (positif), day (1..366), analyse, analyseAverage, success,
  * failed, successRate (0..100), maxTime, dateEnregistrement.
  */
+
 class ActivityHistoriqueFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void

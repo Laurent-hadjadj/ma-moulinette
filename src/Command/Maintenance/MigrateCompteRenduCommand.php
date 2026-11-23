@@ -12,6 +12,7 @@
 */
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Maintenance. */
+
 namespace App\Command\Maintenance;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -52,7 +53,6 @@ class MigrateCompteRenduCommand extends Command
      *
      * @return void
      *
-     * Created at: 12/11/2025 19:50:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -64,7 +64,8 @@ class MigrateCompteRenduCommand extends Command
             ->addOption('start-id', null, InputOption::VALUE_OPTIONAL, 'ID de départ (inclus).', 0)
             ->addOption('max-rows', null, InputOption::VALUE_OPTIONAL, "Nombre max d'enregistrements à traiter.", 0)
             ->addOption('content-type', null, InputOption::VALUE_OPTIONAL, 'Type de contenu à traiter (texte).', '')
-            ->setHelp(<<<'HELP'
+            ->setHelp(
+                <<<'HELP'
 Parcourt les enregistrements et compresses les champ `compte_rendu` non compressés (gzencode niveau 9).
 Utiliser --dry-run pour simuler.
 HELP
@@ -79,7 +80,6 @@ HELP
      *
      * @return int
      *
-     * Created at: 12/11/2025 20:24:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -160,7 +160,7 @@ HELP
                         $updated++;
                     }
                 } else {
-                        $this->logger->debug("ID {$id} -> déjà gz, skip");
+                    $this->logger->debug("ID {$id} -> déjà gz, skip");
                 }
 
                 // Flush par lot pour limiter la mémoire

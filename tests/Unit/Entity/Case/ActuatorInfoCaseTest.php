@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -36,10 +36,10 @@ class ActuatorInfoCaseTest extends TestCase
 
         $actuatorInfo = new ActuatorInfo();
         $actuatorInfo->setActuator($actuator)
-                    ->setActuatorInfoDescription(self::$actuatorInfoDescription)
-                    ->setActuatorInfoCle(self::$actuatorInfoCle);
-    return $actuatorInfo;
-}
+            ->setActuatorInfoDescription(self::$actuatorInfoDescription)
+            ->setActuatorInfoCle(self::$actuatorInfoCle);
+        return $actuatorInfo;
+    }
 
     protected function setUp(): void
     {
@@ -64,5 +64,4 @@ class ActuatorInfoCaseTest extends TestCase
         $this->actuatorInfo->setActuatorInfoCle(self::$actuatorInfoCle);
         $this->assertEquals(self::$actuatorInfoCle, $this->actuatorInfo->getActuatorInfoCle());
     }
-
 }

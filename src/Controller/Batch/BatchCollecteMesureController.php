@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -19,6 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Mesures;
 use App\Service\{ClientService, UrlBuilderService};
 use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
+
 /**
  * [Description BatchCollecteMesureController]
  */
@@ -31,8 +32,8 @@ class BatchCollecteMesureController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -40,8 +41,7 @@ class BatchCollecteMesureController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger,
         private BuildMapHistoryService $apiBuildRequest
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for BatchCollecteMesure]
@@ -52,9 +52,8 @@ class BatchCollecteMesureController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/05/2024 23:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteMesure(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -91,7 +90,7 @@ class BatchCollecteMesureController extends AbstractController
         }
 
         // [2] Suppression des anciennes mesures
-        $delete = $mesuresRepos->deleteMesuresMavenKey([ 'maven_key' => $maven_key ]);
+        $delete = $mesuresRepos->deleteMesuresMavenKey(['maven_key' => $maven_key]);
         if ($delete['code'] !== 200) {
             $this->logger->error('[Batch Mesure] ❌ Échec de suppression des mesures', [
                 'code' => $delete['code'],
@@ -115,10 +114,11 @@ class BatchCollecteMesureController extends AbstractController
         $metrics = $this->apiBuildRequest->metricsKey($versionSonar);
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
-            '/api/measures/component', [
+            '/api/measures/component',
+            [
                 'component' => $maven_key,
                 'metricKeys' => $metrics
-                ]
+            ]
         );
 
         $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component', ['url' => $url]);
@@ -132,7 +132,8 @@ class BatchCollecteMesureController extends AbstractController
             $result[$measure['metric']] = $measure['value'] ?? 0;
         }
 
-        /* MODIF 2026-10-11 : métriques "optionnelles" (maintainability/reliability/
+        /**
+         * MODIF 2026-10-11 : métriques "optionnelles" (maintainability/reliability/
          * security_issue_severity, apparues entre SonarQube 26.3.0 et 26.9.0, pas
          * encore documentées par SonarSource) — appel SÉPARÉ et non bloquant. Une
          * seule clé de métrique inconnue fait échouer tout l'appel
@@ -141,10 +142,11 @@ class BatchCollecteMesureController extends AbstractController
          * null, sans jamais impacter la collecte des autres mesures. */
         $urlOptionnel = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
-            '/api/measures/component', [
+            '/api/measures/component',
+            [
                 'component' => $maven_key,
                 'metricKeys' => $this->apiBuildRequest->optionalMetricsKey()
-                ]
+            ]
         );
         $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component (métriques optionnelles)', ['url' => $urlOptionnel]);
         $resultsOptionnel = $this->client->httpSonarQube($urlOptionnel);
@@ -176,7 +178,7 @@ class BatchCollecteMesureController extends AbstractController
 
         $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
 
-        $mesureData = array_merge ($rebuild_metrics, [
+        $mesureData = array_merge($rebuild_metrics, [
             'maven_key' => $maven_key,
             'project_name' => strtolower($analysis['json']['projectName'] ?? 'inconnu'),
             'mode_collecte' => $mode_collecte,
@@ -209,5 +211,4 @@ class BatchCollecteMesureController extends AbstractController
             'historique' => $mesureData
         ];
     }
-
 }

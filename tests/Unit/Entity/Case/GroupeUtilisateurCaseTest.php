@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -103,8 +103,10 @@ class GroupeUtilisateurCaseTest extends TestCase
         $this->assertCount(1, $attributes);
 
         $args = $attributes[0]->getArguments();
-        $this->assertTrue($args['unique'] ?? false,
-            'GroupeUtilisateur::$groupeUtilisateur doit avoir unique: true (alignement DDL).');
+        $this->assertTrue(
+            $args['unique'] ?? false,
+            'GroupeUtilisateur::$groupeUtilisateur doit avoir unique: true (alignement DDL).'
+        );
     }
 
     public function testGroupeIdMappingIsUnique(): void
@@ -114,7 +116,9 @@ class GroupeUtilisateurCaseTest extends TestCase
         $this->assertCount(1, $attributes);
 
         $args = $attributes[0]->getArguments();
-        $this->assertTrue($args['unique'] ?? false,
-            'GroupeUtilisateur::$groupeId doit avoir unique: true (alignement DDL).');
+        $this->assertTrue(
+            $args['unique'] ?? false,
+            'GroupeUtilisateur::$groupeId doit avoir unique: true (alignement DDL).'
+        );
     }
 }

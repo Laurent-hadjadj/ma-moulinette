@@ -60,7 +60,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-        {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" #}
         <nav aria-label="Fil d'Ariane, vous êtes ici">
             <ol class="claire-hand breadcrumbs">
                 <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
@@ -226,7 +225,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         <div id="tableau-repartition" class="table-scroll margin-top-1">
             <h3 class="h3 claire-hand">Répartition des défauts.</h3>
             <table class="hover">
-                {# WCAG 1.3.1 : caption réelle (anciennement vide avec aria-hidden). Masquée visuellement via .show-for-sr pour ne pas casser la présentation #}
                 <caption class="show-for-sr">Répartition des défauts par critère (maintenabilité, fiabilité,
                     vulnérabilité) et par module (métier, présentation), entre la version de référence et la version
                     courante.</caption>

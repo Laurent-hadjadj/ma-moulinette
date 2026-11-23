@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -128,7 +128,7 @@ class SonarAnalysisFetcherServiceTest extends TestCase
             ->method('error')
             ->with(
                 '[SonarAnalysisFetcher] ❌ Erreur API Sonar',
-                $this->callback(fn (array $ctx) => $ctx['status'] === 503)
+                $this->callback(fn(array $ctx) => $ctx['status'] === 503)
             );
 
         // Pas d'exception : la méthode sort de la boucle et retourne un tableau (vide ici)

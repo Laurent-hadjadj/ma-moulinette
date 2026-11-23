@@ -22,6 +22,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * [Description DcCve]
  * MODIF 2026-05-08 : référentiel global des CVE.
  * Une row = une CVE unique (deduplication par cve_id).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: DcCveRepository::class)]
 #[ORM\Table(name: 'dc_cve', schema: 'ma_moulinette')]

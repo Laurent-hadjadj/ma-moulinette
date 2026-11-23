@@ -5,16 +5,16 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Assets, Crud, Filters, };
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Assets, Crud, Filters,};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, ChoiceField, DateTimeField};
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -32,23 +32,20 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      * [Description for __construct]
      * emm = EntityManagerInterface
      *
-     * Created at: 12/02/2023, 10:08:05 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $emm
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for getEntityFqcn]
      *
      * @return string
      *
-     * Created at: 02/01/2023, 18:35:35 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getEntityFqcn(): string
     {
@@ -62,9 +59,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return Actions
      *
-     * Created at: 09/11/2025 15:10:42 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureActions(Actions $actions): Actions
     {
@@ -81,9 +77,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return Filters
      *
-     * Created at: 11/02/2023, 20:49:10 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -97,9 +92,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return Crud
      *
-     * Created at: 06/04/2026 22:22:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureCrud(Crud $crud): Crud
     {
@@ -107,7 +101,7 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des groupes fonctionnels')
             ->setPageTitle(Crud::PAGE_NEW, 'Créer un groupe fonctionnel')
             ->setPageTitle(Crud::PAGE_EDIT, function ($entity) {
-                            return sprintf('Modifier le groupe "%s"', $entity->getGroupeFonctionnel());
+                return sprintf('Modifier le groupe "%s"', $entity->getGroupeFonctionnel());
             })
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détail du groupe fonctionnel')
             ->setFormThemes([
@@ -123,9 +117,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return Assets
      *
-     * Created at: 07/04/2026 14:26:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureAssets(Assets $assets): Assets
     {
@@ -139,9 +132,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return string
      *
-     * Created at: 06/04/2026 22:25:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function normalize(string $value): string
     {
@@ -155,29 +147,28 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 07/04/2026 10:49:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function listeTags(): array
     {
-            // Modifier la requête SQL pour exclure les tags indésirables
-            $sql = "SELECT DISTINCT tag
+        // Modifier la requête SQL pour exclure les tags indésirables
+        $sql = "SELECT DISTINCT tag
                     FROM ma_moulinette.liste_projet
                     CROSS JOIN LATERAL json_array_elements_text(tags) AS tag
                     WHERE tag NOT IN ('@AUCUN', 'aucun', 'test')
                     ORDER BY tag ASC";
 
-            // Utiliser Doctrine pour exécuter la requête
-            $conn = $this->emm->getConnection();
-            $stmt = $conn->prepare($sql);
-            $result = $stmt->executeQuery();
+        // Utiliser Doctrine pour exécuter la requête
+        $conn = $this->emm->getConnection();
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
 
-            // Récupérer les résultats
-            $results = $result->fetchAllAssociative();
+        // Récupérer les résultats
+        $results = $result->fetchAllAssociative();
 
-            // Extraire les tags des résultats
-            return array_map(fn($result) => $result['tag'], $results);
+        // Extraire les tags des résultats
+        return array_map(fn($result) => $result['tag'], $results);
     }
 
     /**
@@ -187,9 +178,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return iterable<FieldInterface>
      *
-     * Created at: 02/01/2023, 18:35:41 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFields(string $pageName): iterable
     {
@@ -209,9 +199,10 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
             ->setFormTypeOption('choice_translation_domain', false)
             ->setFormTypeOption('mapped', false)
             ->setFormTypeOption('attr', [
-                    'mapped', false,
-                    'class' => 'js-tags',
-                    'disabled' => $pageName === Crud::PAGE_EDIT
+                'mapped',
+                false,
+                'class' => 'js-tags',
+                'disabled' => $pageName === Crud::PAGE_EDIT
             ])
             ->setHelp('Sélectionnez le tag associé à ce groupe fonctionnel. Les tags sont utilisés pour regrouper les projets par thème ou technologie.');
 
@@ -220,17 +211,17 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
         yield TextField::new('groupeFonctionnel')
             ->setLabel('Groupe fonctionnel')
             ->setFormTypeOption('attr', [
-                    'placeholder' => 'java-c-cool',
-                    'class' => 'js-groupe',
-                    'readonly' => $pageName === Crud::PAGE_EDIT
+                'placeholder' => 'java-c-cool',
+                'class' => 'js-groupe',
+                'readonly' => $pageName === Crud::PAGE_EDIT
             ])
             ->setHelp('Nom UNIQUE du groupe. Les caractères autorisés sont [a-zA-Z0-9_-].');
 
         yield FormField::addColumn(12);
         yield TextField::new('description')
-        ->addCssClass('mb-4')
-        ->setFormTypeOption('attr', ['placeholder' => 'Application - JAVA'])
-        ->setHelp('Description du groupe. Par exemple, Application - ?[language]');
+            ->addCssClass('mb-4')
+            ->setFormTypeOption('attr', ['placeholder' => 'Application - JAVA'])
+            ->setHelp('Description du groupe. Par exemple, Application - ?[language]');
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
@@ -248,9 +239,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      *
      * @return void
      *
-     * Created at: 02/01/2023, 18:35:44 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -277,5 +267,4 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
 
         parent::persistEntity($em, $entityInstance);
     }
-
 }

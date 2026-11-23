@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -142,12 +142,13 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/dashboard.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/dashboard.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['postgresql_version'] === '16.2'
-                && $ctx['application_nombre_version'] === 42
-                && $ctx['application_table'] === 55
-                && isset($ctx['php'])
-                && isset($ctx['php_version'])
+                    && $ctx['application_nombre_version'] === 42
+                    && $ctx['application_table'] === 55
+                    && isset($ctx['php'])
+                    && isset($ctx['php_version'])
             ))
             ->willReturn('<html>dashboard</html>');
 
@@ -170,9 +171,10 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/dashboard.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/dashboard.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['pg_stat_activity_idle'] === null
-                && $ctx['pg_stat_activity_not_idle'] === null
+                    && $ctx['pg_stat_activity_not_idle'] === null
             ))
             ->willReturn('<html>dashboard-fallback</html>');
 
@@ -203,10 +205,11 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/dashboard.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/dashboard.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['pg_stat_activity_idle'] === 3
-                && $ctx['pg_stat_activity_not_idle'] === 2
-                && $ctx['pg_stat_statements'] === $pgStmtRow[0]
+                    && $ctx['pg_stat_activity_not_idle'] === 2
+                    && $ctx['pg_stat_statements'] === $pgStmtRow[0]
             ))
             ->willReturn('<html>ok</html>');
 
@@ -220,20 +223,21 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/dashboard.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/dashboard.html.twig', $this->callback(
+                fn($ctx) =>
                 array_key_exists('html', $ctx)
-                && array_key_exists('php', $ctx)
-                && array_key_exists('css', $ctx)
-                && array_key_exists('js', $ctx)
-                && array_key_exists('md', $ctx)
-                && array_key_exists('sql', $ctx)
-                && array_key_exists('migration', $ctx)
-                && isset($ctx['html']['fichier'])
-                && isset($ctx['php']['code'])
-                // nouvelles variables dynamic-stats
-                && array_key_exists('stats_generated_at', $ctx)
-                && array_key_exists('phpunit_unit', $ctx)
-                && array_key_exists('phpunit_integration', $ctx)
+                    && array_key_exists('php', $ctx)
+                    && array_key_exists('css', $ctx)
+                    && array_key_exists('js', $ctx)
+                    && array_key_exists('md', $ctx)
+                    && array_key_exists('sql', $ctx)
+                    && array_key_exists('migration', $ctx)
+                    && isset($ctx['html']['fichier'])
+                    && isset($ctx['php']['code'])
+                    // nouvelles variables dynamic-stats
+                    && array_key_exists('stats_generated_at', $ctx)
+                    && array_key_exists('phpunit_unit', $ctx)
+                    && array_key_exists('phpunit_integration', $ctx)
             ))
             ->willReturn('<html>code-stats</html>');
 
@@ -247,12 +251,13 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/dashboard.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/dashboard.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['stats_generated_at'] === null
-                && $ctx['phpunit_unit'] === null
-                // fallback : valeurs hardcodées connues
-                && $ctx['php']['fichier'] === 64
-                && $ctx['html']['code'] === 3389
+                    && $ctx['phpunit_unit'] === null
+                    // fallback : valeurs hardcodées connues
+                    && $ctx['php']['fichier'] === 64
+                    && $ctx['html']['code'] === 3389
             ))
             ->willReturn('<html>fallback-hardcoded</html>');
 
@@ -313,12 +318,13 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/dashboard.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/dashboard.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['stats_generated_at'] === '2026-06-08T10:00:00+00:00'
-                && $ctx['phpunit_unit'] === 2854
-                && $ctx['phpunit_integration'] === 455
-                && $ctx['php']['fichier'] === 99
-                && $ctx['sql']['fichier'] === 60
+                    && $ctx['phpunit_unit'] === 2854
+                    && $ctx['phpunit_integration'] === 455
+                    && $ctx['php']['fichier'] === 99
+                    && $ctx['sql']['fichier'] === 60
             ))
             ->willReturn('<html>dynamic-stats</html>');
 
@@ -337,9 +343,10 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/dashboard.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/dashboard.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['application_local_version'] === '2.0.0'
-                && $ctx['app_version'] === '2.0.0-RELEASE'
+                    && $ctx['app_version'] === '2.0.0-RELEASE'
             ))
             ->willReturn('<html>ok</html>');
 
@@ -387,18 +394,19 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/ma-moulinette.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/ma-moulinette.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['application_utilisateur'] === 5
-                && $ctx['projet_projet'] === 10
-                && $ctx['projet_profile'] === 3
-                && $ctx['projet_regle'] === 500
-                && $ctx['projet_historique'] === 200
-                && $ctx['projet_anomalie'] === 8
-                && $ctx['mesure_bug'] === 400
-                && $ctx['mesure_vulnerability'] === 150
-                && $ctx['mesure_code_smell'] === 450
-                && $ctx['projet_line'] === 4000
-                && $ctx['projet_test'] === 550
+                    && $ctx['projet_projet'] === 10
+                    && $ctx['projet_profile'] === 3
+                    && $ctx['projet_regle'] === 500
+                    && $ctx['projet_historique'] === 200
+                    && $ctx['projet_anomalie'] === 8
+                    && $ctx['mesure_bug'] === 400
+                    && $ctx['mesure_vulnerability'] === 150
+                    && $ctx['mesure_code_smell'] === 450
+                    && $ctx['projet_line'] === 4000
+                    && $ctx['projet_test'] === 550
             ))
             ->willReturn('<html>stats</html>');
 
@@ -465,9 +473,10 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/ma-moulinette.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/ma-moulinette.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['projet_line'] === 0
-                && $ctx['projet_test'] === 0
+                    && $ctx['projet_test'] === 0
             ))
             ->willReturn('<html>no-mesures</html>');
 
@@ -716,11 +725,11 @@ class StatistiqueControllerTest extends TestCase
      */
     public static function batchManuelValuesProvider(): array
     {
-            return [
-                    'Valeur par défaut (100)' => [100, 100],
-                    'Valeur null' => [null, 0],
-                    'Chaîne vide' => ['', 0],
-            ];
+        return [
+            'Valeur par défaut (100)' => [100, 100],
+            'Valeur null' => [null, 0],
+            'Chaîne vide' => ['', 0],
+        ];
     }
 
     /**
@@ -730,66 +739,64 @@ class StatistiqueControllerTest extends TestCase
      * @param int $expectedValue
      *
      * @return void
-     *
-     * Created at: 22/09/2026 11:04:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[DataProvider('batchManuelValuesProvider')]
     public function testRunBatchCallsAnalysisWithVariousManuelProperties(int|string|null $propertyValue, int $expectedValue): void
     {
-            // 1. Mock du ParameterBag
-            $paramsMock = $this->createMock(ParameterBagInterface::class);
-            $paramsMock->method('get')->willReturnCallback(function ($key) use ($propertyValue) {
-                    return match ($key) {
-                            'user.agent.batch.manuel' => $propertyValue,
-                            'logo.entreprise' => 'logo.png',
-                            'marque.entreprise.short' => 'MM',
-                            'marque.entreprise.long' => 'Ma-Moulinette',
-                            'environnement' => 'dev',
-                            'version' => '2.0.0-RELEASE',
-                            'date' => '2026-04-23',
-                            'kernel.project_dir' => sys_get_temp_dir() . '/mm-test-no-stats',
-                            default => null,
-                    };
-            });
+        // 1. Mock du ParameterBag
+        $paramsMock = $this->createMock(ParameterBagInterface::class);
+        $paramsMock->method('get')->willReturnCallback(function ($key) use ($propertyValue) {
+            return match ($key) {
+                'user.agent.batch.manuel' => $propertyValue,
+                'logo.entreprise' => 'logo.png',
+                'marque.entreprise.short' => 'MM',
+                'marque.entreprise.long' => 'Ma-Moulinette',
+                'environnement' => 'dev',
+                'version' => '2.0.0-RELEASE',
+                'date' => '2026-04-23',
+                'kernel.project_dir' => sys_get_temp_dir() . '/mm-test-no-stats',
+                default => null,
+            };
+        });
 
-            // 2. Mock du Router
-            $routerMock = $this->createMock(RouterInterface::class);
-            $routerMock->method('generate')->willReturn('/statistiques/utilisateur');
+        // 2. Mock du Router
+        $routerMock = $this->createMock(RouterInterface::class);
+        $routerMock->method('generate')->willReturn('/statistiques/utilisateur');
 
-            // 3. Création du contrôleur
-            $ctrl = $this->getMockBuilder(StatistiqueController::class)
-                    ->setConstructorArgs([
-                            $paramsMock,
-                            $this->em,
-                            $this->tracking,
-                            $this->analysis,
-                            $this->mesProjets,
-                            $this->logger,
-                    ])
-                    ->onlyMethods(['addFlash'])
-                    ->getMock();
+        // 3. Création du contrôleur
+        $ctrl = $this->getMockBuilder(StatistiqueController::class)
+            ->setConstructorArgs([
+                $paramsMock,
+                $this->em,
+                $this->tracking,
+                $this->analysis,
+                $this->mesProjets,
+                $this->logger,
+            ])
+            ->onlyMethods(['addFlash'])
+            ->getMock();
 
-            // 4. Configuration du container
-            $container = $this->createMock(ContainerInterface::class);
-            $container->method('has')->willReturnCallback(
-                    fn(string $id): bool => in_array($id, ['twig', 'parameter_bag', 'router'], true)
-            );
-            $container->method('get')->willReturnMap([
-                    ['twig', 1, $this->twig],
-                    ['parameter_bag', 1, $paramsMock],
-                    ['router', 1, $routerMock],
-            ]);
-            $ctrl->setContainer($container);
+        // 4. Configuration du container
+        $container = $this->createMock(ContainerInterface::class);
+        $container->method('has')->willReturnCallback(
+            fn(string $id): bool => in_array($id, ['twig', 'parameter_bag', 'router'], true)
+        );
+        $container->method('get')->willReturnMap([
+            ['twig', 1, $this->twig],
+            ['parameter_bag', 1, $paramsMock],
+            ['router', 1, $routerMock],
+        ]);
+        $ctrl->setContainer($container);
 
-            // 5. Configuration du mock de analysis
-            $this->analysis->expects($this->once())
-                    ->method('runBatch')
-                    ->with($expectedValue)
-                    ->willReturn(['code' => 200, 'processed' => $expectedValue, 'erreurs' => []]);
+        // 5. Configuration du mock de analysis
+        $this->analysis->expects($this->once())
+            ->method('runBatch')
+            ->with($expectedValue)
+            ->willReturn(['code' => 200, 'processed' => $expectedValue, 'erreurs' => []]);
 
-            // 6. Exécution du test
-            $ctrl->runBatchAnalysis();
+        // 6. Exécution du test
+        $ctrl->runBatchAnalysis();
     }
 }

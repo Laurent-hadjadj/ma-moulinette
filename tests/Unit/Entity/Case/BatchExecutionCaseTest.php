@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -71,8 +71,10 @@ class BatchExecutionCaseTest extends TestCase
     public function testIdHasNoSetter(): void
     {
         $entity = $this->getEntity();
-        $this->assertFalse(method_exists($entity, 'setId'),
-            'BatchExecution::setId() ne devrait pas exister (ID auto-genere).');
+        $this->assertFalse(
+            method_exists($entity, 'setId'),
+            'BatchExecution::setId() ne devrait pas exister (ID auto-genere).'
+        );
     }
 
     public function testSettingAndGettingExecutionId(): void

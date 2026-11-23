@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -69,7 +69,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $this->sonarVersion->method('componentKeyParam')->willReturn('components');
         $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED']);
         $this->extractName->method('extractNameFromMavenKey')->willReturn('app');
-        $this->dateTools->method('minutesTo')->willReturnCallback(fn ($min) => (string) $min . 'min');
+        $this->dateTools->method('minutesTo')->willReturnCallback(fn($min) => (string) $min . 'min');
 
         $this->parameterBag->method('get')->willReturnMap([
             ['sonar.url', 'https://sonar.example.com'],
@@ -83,8 +83,13 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteAnomalieController(
-            $this->em, $this->client, $this->extractName, $this->dateTools, $this->urlBuilder,
-            $this->sonarVersion, $this->logger
+            $this->em,
+            $this->client,
+            $this->extractName,
+            $this->dateTools,
+            $this->urlBuilder,
+            $this->sonarVersion,
+            $this->logger
         );
         $this->controller->setContainer($container);
     }
@@ -154,7 +159,9 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $this->client->method('httpSonarQube')->willReturn([
             'code' => 200,
             'json' => [
-                'paging' => ['total' => 5], 'total' => 5, 'effortTotal' => 60,
+                'paging' => ['total' => 5],
+                'total' => 5,
+                'effortTotal' => 60,
                 'facets' => [],
             ],
         ]);
@@ -177,7 +184,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             'code' => 200,
             'json' => [
                 'paging' => ['total' => 10],
-                'total' => 10, 'effortTotal' => 120,
+                'total' => 10,
+                'effortTotal' => 120,
                 'facets' => [
                     [
                         'property' => 'severities',
@@ -274,7 +282,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             'code' => 200,
             'json' => [
                 'paging' => ['total' => 10],
-                'total' => 10, 'effortTotal' => 120,
+                'total' => 10,
+                'effortTotal' => 120,
                 'facets' => [
                     ['property' => 'severities', 'values' => []],
                     ['property' => 'types', 'values' => []],
@@ -290,7 +299,9 @@ class BatchCollecteAnomalieControllerTest extends TestCase
                 [
                     'code' => 200,
                     'json' => [
-                        'paging' => ['total' => 3], 'total' => 3, 'effortTotal' => 30,
+                        'paging' => ['total' => 3],
+                        'total' => 3,
+                        'effortTotal' => 30,
                         'facets' => [[
                             'property' => 'scopes',
                             'values' => [['val' => 'MAIN', 'count' => 2], ['val' => 'TEST', 'count' => 1]],
@@ -300,7 +311,9 @@ class BatchCollecteAnomalieControllerTest extends TestCase
                 [
                     'code' => 200,
                     'json' => [
-                        'paging' => ['total' => 2], 'total' => 2, 'effortTotal' => 20,
+                        'paging' => ['total' => 2],
+                        'total' => 2,
+                        'effortTotal' => 20,
                         'facets' => [[
                             'property' => 'scopes',
                             'values' => [['val' => 'MAIN', 'count' => 2], ['val' => 'TEST', 'count' => 0]],
@@ -310,7 +323,9 @@ class BatchCollecteAnomalieControllerTest extends TestCase
                 [
                     'code' => 200,
                     'json' => [
-                        'paging' => ['total' => 5], 'total' => 5, 'effortTotal' => 70,
+                        'paging' => ['total' => 5],
+                        'total' => 5,
+                        'effortTotal' => 70,
                         'facets' => [[
                             'property' => 'scopes',
                             'values' => [['val' => 'MAIN', 'count' => 3], ['val' => 'TEST', 'count' => 2]],
@@ -355,7 +370,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             'code' => 200,
             'json' => [
                 'paging' => ['total' => 12],
-                'total' => 12, 'effortTotal' => 120,
+                'total' => 12,
+                'effortTotal' => 120,
                 'facets' => [
                     [
                         'property' => 'severities',

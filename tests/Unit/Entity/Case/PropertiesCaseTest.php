@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -35,14 +35,14 @@ class PropertiesCaseTest extends TestCase
     private function getEntity(): Properties
     {
         return (new properties())
-        ->setType(self::$type)
-        ->setProjetBd(self::$projetBd)
-        ->setProjetSonar(self::$projetSonar)
-        ->setProfilBd(self::$profilBd)
-        ->setProfilSonar(self::$profilSonar)
-        ->setDateCreation(new \DateTimeImmutable(self::$dateCreation))
-        ->setDateModificationProjet(new \DateTime(self::$dateModificationProjet))
-        ->setDateModificationProfil(new \DateTime(self::$dateModificationProfil));
+            ->setType(self::$type)
+            ->setProjetBd(self::$projetBd)
+            ->setProjetSonar(self::$projetSonar)
+            ->setProfilBd(self::$profilBd)
+            ->setProfilSonar(self::$profilSonar)
+            ->setDateCreation(new \DateTimeImmutable(self::$dateCreation))
+            ->setDateModificationProjet(new \DateTime(self::$dateModificationProjet))
+            ->setDateModificationProfil(new \DateTime(self::$dateModificationProfil));
     }
 
     protected function setUp(): void
@@ -88,21 +88,21 @@ class PropertiesCaseTest extends TestCase
     }
     public function testSettingAndGettingDateCreation(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateCreation);
+        $newDate = new \DateTimeImmutable(self::$dateCreation);
         $this->properties->setDateCreation($newDate);
         $this->assertEquals($newDate, $this->properties->getDateCreation());
     }
 
     public function testSettingAndGettingDateModificationProjet(): void
     {
-        $newDate=new \DateTime(self::$dateModificationProjet);
+        $newDate = new \DateTime(self::$dateModificationProjet);
         $this->properties->setDatemodificationProjet($newDate);
         $this->assertEquals($newDate, $this->properties->getDatemodificationProjet());
     }
 
     public function testSettingAndGettingDateModificationProfil(): void
     {
-        $newDate=new \DateTime(self::$dateModificationProfil);
+        $newDate = new \DateTime(self::$dateModificationProfil);
         $this->properties->setDateModificationProfil($newDate);
         $this->assertEquals($newDate, $this->properties->getDateModificationProfil());
     }

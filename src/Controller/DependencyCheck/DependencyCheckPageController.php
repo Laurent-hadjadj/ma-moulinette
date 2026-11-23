@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\DependencyCheck;
@@ -85,9 +85,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return array<string, mixed>
      *
-     * Created at: 08/05/2026 18:06:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -111,9 +110,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return bool
      *
-     * Created at: 11/05/2026 10:01:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function isAnalyticsMode(): bool
     {
@@ -128,9 +126,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return string
      *
-     * Created at: 11/05/2026 10:01:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function currentScopeLabel(): string
     {
@@ -159,9 +156,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return array<string, true>|null
      *
-     * Created at: 11/05/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function allowedMavenKeys(): ?array
     {
@@ -183,6 +179,9 @@ class DependencyCheckPageController extends AbstractController
      *
      * @param array<int, string> $groupes
      * @return array<string, true>|null
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function allowedMavenKeysForGroupes(array $groupes): ?array
     {
@@ -219,13 +218,13 @@ class DependencyCheckPageController extends AbstractController
      * @param string $artifact
      * @return bool
      *
-     * Created at: 10/05/2026 18:30:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function isProjectAccessible(string $group, string $artifact): bool
     {
-        /* MODIF 2026-05-16 : en mode analytics
+        /**
+         * MODIF 2026-05-16 : en mode analytics
          * (ROLE_SECURITY_ANALYTICS) allowedMavenKeys() retourne null car l'user
          * n'a pas de groupes. null != accès interdit = accès global. */
         if ($this->isAnalyticsMode()) {
@@ -244,9 +243,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 08/05/2026 18:06:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/dependency-check', name: 'dc_index', methods: ['GET'])]
     public function index(Request $request): Response
@@ -255,7 +253,8 @@ class DependencyCheckPageController extends AbstractController
 
         $render = $this->genericRender();
 
-        /* MODIF 2026-05-14 : lecture du mode
+        /**
+         * MODIF 2026-05-14 : lecture du mode
          * de vue depuis le query param ?vue=prod|dev (default = prod).
          * En mode PROD on est permissif : un couple sans release ingérée
          * apparaît quand meme avec un flag has_release=false que le template
@@ -302,8 +301,7 @@ class DependencyCheckPageController extends AbstractController
 
     /**
      * [Description for history]
-     * Page historique
-     * d'une application — vue d'évolution temporelle CVE par sévérité sur tous
+     * Page historique d'une application — vue d'évolution temporelle CVE par sévérité sur tous
      * les scans du couple (group, artifact), toutes versions confondues.
      *
      * @param string $group
@@ -311,9 +309,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 12/07/2026 09:03:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route(
         '/dependency-check/projet/{group}/{artifact}/history',
@@ -357,7 +354,8 @@ class DependencyCheckPageController extends AbstractController
             'listHistoryForProject'
         );
 
-        /* Calcul des deltas vs scan précédent (côté PHP).
+        /**
+         * Calcul des deltas vs scan précédent (côté PHP).
          * Pour chaque scan (à partir du 2e), on ajoute delta_critical, delta_high,
          * delta_medium, delta_low. Premier scan : tous null (= "1ère analyse"). */
         $previous = null;
@@ -421,9 +419,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 08/05/2026 18:07:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route(
         '/dependency-check/projet/{group}/{artifact}/{version}',
@@ -437,7 +434,8 @@ class DependencyCheckPageController extends AbstractController
 
         $render = $this->genericRender();
 
-        /* MODIF 2026-05-10 : ACL stricte HTTP 403
+        /**
+         * MODIF 2026-05-10 : ACL stricte HTTP 403
          * si le projet n'est pas dans le périmètre groupe_fonctionnel de
          * l'utilisateur connecte (faille IDOR sur URL trafiquée). */
         if (!$this->isProjectAccessible($group, $artifact)) {
@@ -447,7 +445,8 @@ class DependencyCheckPageController extends AbstractController
         }
         $scan = $this->scanRepository->findLatestForProject($group, $artifact, $version);
         if ($scan === null) {
-            /* MODIF 2026-05-10 : flash enrichi qui
+            /**
+             * MODIF 2026-05-10 : flash enrichi qui
              * remplace le callout doublon supprime du template. Inclut
              * le rappel de verifier la CI (ancien texte du callout). */
             $this->addFlash('notice', [
@@ -502,9 +501,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 08/05/2026 18:15:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route(
         '/dependency-check/projet/{group}/{artifact}/{version}/pdf',
@@ -514,7 +512,8 @@ class DependencyCheckPageController extends AbstractController
     )]
     public function projetPdf(string $group, string $artifact, string $version, Request $request): Response
     {
-        /* MODIF 2026-05-10 : ACL stricte HTTP 403
+        /**
+         * MODIF 2026-05-10 : ACL stricte HTTP 403
          * même pour l'export PDF (anti-IDOR). */
         if (!$this->isProjectAccessible($group, $artifact)) {
             throw $this->createAccessDeniedException(
@@ -523,7 +522,8 @@ class DependencyCheckPageController extends AbstractController
         }
         $scan = $this->scanRepository->findLatestForProject($group, $artifact, $version);
 
-        /* MODIF 2026-07-22 : un scan absent ne doit pas produire un PDF
+        /**
+         * MODIF 2026-07-22 : un scan absent ne doit pas produire un PDF
          * silencieux (garde + glossaire seuls, sans le moindre signal). On
          * redirige vers la page Détail scan, qui affiche déjà le flash
          * "Aucun scan trouvé..." dans ce cas. */
@@ -560,9 +560,10 @@ class DependencyCheckPageController extends AbstractController
         $topDeps = $this->computeTopDeps($findings, 5);
         $topCwes = $this->dcAnalytics->computeTopCwes($findings, 5);
 
-        /* alignement avec generateSuiviPdf.
-         * ?type=... pilote la mention bas-de-page + texte du filigrane.
-         * ?watermark=on|off prime sur RAPPORT_PDF_WATERMARK_MODE (env). */
+        /**
+         * alignement avec generateSuiviPdf.
+         * "?type=... pilote la mention bas-de-page + texte du filigrane.
+         * "?watermark=on|off prime sur RAPPORT_PDF_WATERMARK_MODE (env). */
         $documentType = (string) $request->query->get('type', 'Document confidentiel');
         $wmParam = strtolower((string) $request->query->get('watermark', ''));
         $watermarkOverride = match ($wmParam) {
@@ -602,7 +603,7 @@ class DependencyCheckPageController extends AbstractController
      * @return array<int, array{label: string, nb_cves: int, version: ?string}>
      *
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function computeTopDeps(array $findings, int $limit): array
     {
@@ -627,9 +628,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 08/05/2026 18:19:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/dependency-check/dashboard', name: 'dc_dashboard', methods: ['GET'])]
     public function dashboard(Request $request): Response
@@ -643,7 +643,8 @@ class DependencyCheckPageController extends AbstractController
         $render['analytics_mode'] = $this->isAnalyticsMode();
         $render['scope_label']    = $this->currentScopeLabel();
 
-        /* MODIF 2026-05-11 : calcule la liste des
+        /**
+         * MODIF 2026-05-11 : calcule la liste des
          * maven_keys autorisées. null si analytics_mode (= org-wide), sinon
          * liste plate des clés autorisées pour les 4 requêtes filtrées.
          * Si l'utilisateur n'a aucun périmètre valide (helper retourne null),
@@ -673,7 +674,8 @@ class DependencyCheckPageController extends AbstractController
         $render['available_groupes']     = $this->isAnalyticsMode() ? [] : $userGroupes;
         $render['current_groupe_filter'] = $isGroupeFilterValid ? $groupeFilter : null;
 
-        /* MODIF 2026-05-14 : mode de vue
+        /**
+         * MODIF 2026-05-14 : mode de vue
          * prod/dev. Strict ici (pas de fallback permissif comme dc_index) :
          *   - vue=prod : ne montre que les couples avec une release ingérée
          *   - vue=dev  : ne montre que les couples avec un scan latest_overall
@@ -686,7 +688,8 @@ class DependencyCheckPageController extends AbstractController
         $vue = ScanViewMode::normalize($request->query->get('vue'));
         $render['vue'] = $vue;
 
-        /* MODIF 2026-05-12 : chargement de
+        /**
+         * MODIF 2026-05-12 : chargement de
          * scans_resume EN PREMIER pour pouvoir en dériver la liste des
          * archétypes disponibles + appliquer le filtre éventuel AVANT les
          * autres requêtes repo (cwes_breakdown, top_deps, critical_cves).
@@ -697,7 +700,8 @@ class DependencyCheckPageController extends AbstractController
             'listLatestPerCoupleForView'
         );
 
-        /* MODIF 2026-05-12 : nommage UI "socle" au
+        /**
+         * MODIF 2026-05-12 : nommage UI "socle" au
          * lieu de "archétype" cote affichage. Le `parent_label`/`parent_version`
          * du pom.xml représente le SOCLE (module deps + logique technique/sécurité,
          * ex: springboot-socle-config) — distinct de l'ARCHETYPE qui est le template
@@ -768,7 +772,8 @@ class DependencyCheckPageController extends AbstractController
             25
         );
 
-        /* MODIF 2026-05-11 :
+        /**
+         * MODIF 2026-05-11 :
          * mes_projets_exposes = top 5 trie par cve_count_critical desc, derive
          * de scans_resume deja charge (pas de requête SQL en plus).
          * mes_critical_cves  = top 10 CVE CRITICAL du périmètre, par CVSS desc. */
@@ -784,7 +789,8 @@ class DependencyCheckPageController extends AbstractController
             'listTopCriticalCves'
         );
 
-        /* MODIF 2026-05-11 :
+        /**
+         * MODIF 2026-05-11 :
          * Top 10 dépendances mutualisables (>= 2 projets) classées par "Gain
          * mutualisation" = JH unitaire * (nb_projets - 1). On récupère toutes
          * les deps eligibles (hardLimit 200), on calcule JH par dep, on trie
@@ -798,7 +804,8 @@ class DependencyCheckPageController extends AbstractController
             $m['jh_gain'] = $m['jh_unit'] * max(0, ((int) $m['nb_projets']) - 1);
         }
         unset($m);
-        /* MODIF 2026-05-12 : tri enrichi.
+        /**
+         * MODIF 2026-05-12 : tri enrichi.
          * À gain égal (cas frequent avec la formule paramétrable), tie-breakers :
          *   1. sévérité max (CRITICAL en tête -> rank ASC)
          *   2. nb_projets DESC (impact plus large)
@@ -822,7 +829,8 @@ class DependencyCheckPageController extends AbstractController
         });
         $render['mes_mutualisables'] = array_slice($mutualisables, 0, 10);
 
-        /* MODIF 2026-05-12 :
+        /**
+         * MODIF 2026-05-12 :
          * Vraie diff scan précédent : CVE CRITICAL apparues dans le dernier
          * scan d'un projet et absentes de son scan immédiatement antérieur.
          * Si pas de scan antérieur (premier passage), is_first_scan=true et
@@ -840,7 +848,8 @@ class DependencyCheckPageController extends AbstractController
             'listNewCriticalCvesGroupedByCve'
         );
 
-        /* MODIF 2026-05-11 :
+        /**
+         * MODIF 2026-05-11 :
          * Cartographie complete : projets du périmètre tries par sévérité max
          * desc (CRITICAL > HIGH > MEDIUM > LOW > NONE) puis cve_count_total desc.
          * Derive de scans_resume, pas de SQL en plus. */
@@ -855,7 +864,7 @@ class DependencyCheckPageController extends AbstractController
         });
         $render['mes_cartographie'] = $cartographie;
 
-        /*
+        /**
          * MODIF 2026-05-12 : synthèse par
          * archétype. 1 ligne = 1 (parent_label, parent_version) référencé
          * par >=1 app du périmètre. Compteurs = SOMME des CVE des apps
@@ -929,7 +938,7 @@ class DependencyCheckPageController extends AbstractController
         });
         $render['mes_socles_synthese'] = $archetypes;
 
-        /*
+        /**
          * MODIF 2026-05-13 : table de
          * fragmentation socle × archétype. 1 ligne par triplet
          * (parent_label, parent_version, archetype_version) référencé par
@@ -1009,7 +1018,7 @@ class DependencyCheckPageController extends AbstractController
         });
         $render['mes_socle_archetype_distribution'] = $distribution;
 
-        /*
+        /**
          * MODIF 2026-05-11 : 4 datasets pour les
          * charts JS (line timeseries + scatter projets + stacked bar top 15
          * + donut global). Bundle en une seule var charts_data, sérialisée
@@ -1057,7 +1066,8 @@ class DependencyCheckPageController extends AbstractController
             'donut'      => $donut,
         ];
 
-        /* MODIF 2026-05-12 : paramètres de la formule
+        /**
+         * MODIF 2026-05-12 : paramètres de la formule
          * JH pour la modale "Méthode de calcul JH" partagée avec la page exec. */
         $render['jh_params'] = [
             'upgrade_overhead'      => $this->dcAnalytics->getUpgradeOverhead(),
@@ -1077,9 +1087,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 12/07/2026 08:56:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/dependency-check/kpi', name: 'dc_kpi', methods: ['GET'])]
     public function kpi(Request $request): Response
@@ -1112,7 +1121,8 @@ class DependencyCheckPageController extends AbstractController
         $render['analytics_mode'] = $this->isAnalyticsMode();
         $render['scope_label']    = $this->currentScopeLabel();
 
-        /* MODIF 2026-05-14 : mode de vue
+        /**
+         * MODIF 2026-05-14 : mode de vue
          * prod/dev strict. En prod : 1 ligne par app = dernière release.
          * En dev : 1 ligne par app en mouvement.
          * Le score sécu et les top 5 risque/sain sont calcules sur cette
@@ -1221,9 +1231,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 12/07/2026 08:58:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/dependency-check/comparer', name: 'dc_comparer', methods: ['GET'])]
     public function comparer(Request $request): Response
@@ -1383,9 +1392,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 12/07/2026 08:59:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/dependency-check/mutualisables', name: 'dc_mutualisables', methods: ['GET'])]
     public function mutualisables(Request $request): Response
@@ -1494,7 +1502,9 @@ class DependencyCheckPageController extends AbstractController
                 ((int) ($m['nb_low']      ?? 0)) > 0 => 1,
                 default                              => 0,
             };
-            /* MODIF 2026-05-13 : flag
+
+            /**
+             * MODIF 2026-05-13 : flag
              * is_accessible sur chaque triplet using_projects pour rendre
              * conditionnellement le badge en lien (vrai) ou en span non
              * cliquable (faux) cote Twig. La page projet impose une ACL
@@ -1522,7 +1532,8 @@ class DependencyCheckPageController extends AbstractController
             ));
         }
 
-        /* MODIF 2026-05-16: tri et pagination délégués à
+        /**
+         * MODIF 2026-05-16: tri et pagination délégués à
          * DataTables côté client. Tri par défaut jh_gain DESC pour rendu
          * sans JS ; DataTables ré-ordonnera au chargement. */
         usort(
@@ -1558,9 +1569,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 10/05/2026 17:01:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/dependency-check/projet/{group}/{artifact}/{version}/executive', name: 'dc_projet_executive', methods: ['GET'], requirements: ['group' => self::REGEX, 'artifact' => self::REGEX, 'version' => self::REGEX])]
     public function executive(string $group, string $artifact, string $version): Response
@@ -1611,7 +1621,8 @@ class DependencyCheckPageController extends AbstractController
         }
         $render['findings'] = $findings;
 
-        /* MODIF 2026-05-12 : retrouve le scan
+        /**
+         * MODIF 2026-05-12 : retrouve le scan
          * archetype/parent-POM correspondant pour afficher un lien dans la
          * cellule "Archetype" du bloc Contexte. null si l'app est standalone
          * (pas de parent_label) ou si le scan archetype n'est pas en base
@@ -1631,7 +1642,8 @@ class DependencyCheckPageController extends AbstractController
         $render['plan_remediation']  = $this->dcAnalytics->computeRemediationPlan($findings);
         $render['top_actions']       = $this->dcAnalytics->computeTopActions($findings, 5);
 
-        /* MODIF 2026-05-12 : 2 diffs distinctes.
+        /**
+         * MODIF 2026-05-12 : 2 diffs distinctes.
          *
          * (A) intra-version : re-scan de la même version (group+artifact+version
          *     match en LOWER) → "depuis le dernier scan de cette version, NVD
@@ -1667,7 +1679,8 @@ class DependencyCheckPageController extends AbstractController
             $render['count_prev_any_findings']    = count($prevAnyFindings);
         }
 
-        /* MODIF 2026-05-12 : paramètres de la formule
+        /**
+         * MODIF 2026-05-12 : paramètres de la formule
          * JH pour la modale "méthode de calcul JH" partagée avec le dashboard. */
         $render['jh_params'] = [
             'upgrade_overhead'      => $this->dcAnalytics->getUpgradeOverhead(),
@@ -1688,9 +1701,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return array<int, array<string, mixed>>
      *
-     * Created at: 12/05/2026 14:27:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function fetchFindingsOrEmpty(int $scanId): array
     {
@@ -1714,9 +1726,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return array<int, array<string, mixed>>
      *
-     * Created at: 10/05/2026 17:02:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractListeOrFlash(array $result, string $tag): array
     {
@@ -1750,9 +1761,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return int
      *
-     * Created at: 12/07/2026 09:08:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function severityRank(array $scan): int
     {
@@ -1787,9 +1797,8 @@ class DependencyCheckPageController extends AbstractController
      *
      * @return float
      *
-     * Created at: 15/05/2026 09:06:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function computeDepJh(array $dep): float
     {

@@ -22,10 +22,8 @@ namespace App\Security;
  * - Refuse    : le jeton fourni est absent, vide, d'un mauvais type ou différent du jeton attendu ;
  * - Desactive : le jeton attendu n'est pas configuré côté serveur (absent, vide ou valeur d'exemple) :
  *               le service doit être fermé, quelle que soit la valeur fournie.
- *
- * Created at: 15/11/2026
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 enum ResultatJeton: string
 {

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\CleanCode;
@@ -24,12 +24,12 @@ use App\Entity\Historique;
 use App\Service\{MesProjets, PdfExportService};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 
-/* MODIF 2026-05-19 : tableau de bord multi-projets clean code
- * Affiche la dernière collecte par projet du portefeuille utilisateur avec les 14 indicateurs macro (notes A-E, score risque CC, RESPONSIBLE%, compteurs qualité/conformité).
- */
 
 /**
  * [Description CleanCodeSyntheseController]
+ * MODIF 2026-05-19 : tableau de bord multi-projets clean code
+ * Affiche la dernière collecte par projet du portefeuille utilisateur avec les 14 indicateurs macro
+ * (notes A-E, score risque CC, RESPONSIBLE%, compteurs qualité/conformité).
  */
 class CleanCodeSyntheseController extends AbstractController
 {
@@ -75,10 +75,8 @@ class CleanCodeSyntheseController extends AbstractController
      *     version: string,
      *     date_copyright: string,
      * }
-     *
-     * Created at: 19/05/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -99,9 +97,8 @@ class CleanCodeSyntheseController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 19/05/2026 09:23:48 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/clean-code/synthese', name: 'clean_code_synthese')]
     public function index(): Response
@@ -124,7 +121,7 @@ class CleanCodeSyntheseController extends AbstractController
         } elseif ($data['code'] === 503) {
             $this->logger->warning('[CleanCode Synthèse] ⚠️ Aucune donnée clean code dans l\'historique.');
             $this->addFlash('notice', ['type' => 'warning', 'message' => self::$erreur503, 'trace' => null]);
-        // MODIF 2026-05-26 : else terminal requis par S126 (code 200 = succès, aucune action requise).
+            // MODIF 2026-05-26 : else terminal requis par S126 (code 200 = succès, aucune action requise).
         } else {
             $this->logger->debug('[CleanCode Synthèse] ✅ Données synthèse chargées avec succès.');
         }
@@ -139,9 +136,8 @@ class CleanCodeSyntheseController extends AbstractController
      *
      * @return array{code: int, scope_label: string, groupes: array<int, string>, projets: array<int, array<string, mixed>>}
      *
-     * Created at: 19/05/2026 09:23:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildSyntheseData(): array
     {
@@ -172,8 +168,7 @@ class CleanCodeSyntheseController extends AbstractController
         }
 
         $ratingMap = ['1' => 'A', '2' => 'B', '3' => 'C', '4' => 'D', '5' => 'E'];
-        $normalizeNote = static fn(?string $v): string =>
-            ($v === null || $v === '') ? '—' : ($ratingMap[$v] ?? strtoupper($v));
+        $normalizeNote = static fn(?string $v): string => ($v === null || $v === '') ? '—' : ($ratingMap[$v] ?? strtoupper($v));
 
         $levelOrder = ['critical' => 0, 'high' => 1, 'medium' => 2, 'low' => 3];
         $projets = [];
@@ -181,12 +176,12 @@ class CleanCodeSyntheseController extends AbstractController
         foreach ($result['liste'] as $row) {
             $violations = (int)($row['violations'] ?? 0);
             $rawRisk    = ((int)($row['impact_blocker'] ?? 0) * 4)
-                        + ((int)($row['impact_high']    ?? 0) * 3)
-                        + ((int)($row['impact_medium']  ?? 0) * 2)
-                        + ((int)($row['impact_low']     ?? 0) * 1)
-                        + ((int)($row['impact_info']    ?? 0) * 0.5);
+                + ((int)($row['impact_high']    ?? 0) * 3)
+                + ((int)($row['impact_medium']  ?? 0) * 2)
+                + ((int)($row['impact_low']     ?? 0) * 1)
+                + ((int)($row['impact_info']    ?? 0) * 0.5);
             $riskScore  = $violations > 0 ? round($rawRisk / $violations, 2) : 0;
-            $riskLevel  = match(true) {
+            $riskLevel  = match (true) {
                 $riskScore >= 3.0 => 'critical',
                 $riskScore >= 2.0 => 'high',
                 $riskScore >= 1.0 => 'medium',
@@ -194,7 +189,7 @@ class CleanCodeSyntheseController extends AbstractController
             };
 
             $ccTotal        = (int)($row['cc_consistent'] ?? 0) + (int)($row['cc_intentional'] ?? 0)
-                            + (int)($row['cc_adaptable']  ?? 0) + (int)($row['cc_responsible'] ?? 0);
+                + (int)($row['cc_adaptable']  ?? 0) + (int)($row['cc_responsible'] ?? 0);
             $responsiblePct = $ccTotal > 0
                 ? round(((int)($row['cc_responsible'] ?? 0) / $ccTotal) * 100, 1)
                 : 0;
@@ -238,9 +233,8 @@ class CleanCodeSyntheseController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 19/05/2026 09:24:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/clean-code/synthese/pdf', name: 'clean_code_synthese_pdf', methods: ['GET'])]
     public function pdf(): Response

@@ -5,15 +5,16 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /* MODIF 2026-05-24 : réécriture complète des tests.
  * sauvegardeHistorique est désormais stats-only (plus de ClientService /
  * MessageBusInterface / lancerBatch). 11 scénarios → 7 scénarios.*/
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Activity;
@@ -98,16 +99,20 @@ class ApiActivityControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $this->activityRepo->method('premiereDate')->willReturn([
-            'code' => 200, 'liste' => ['date' => '2026-01-15 00:00:00'],
+            'code' => 200,
+            'liste' => ['date' => '2026-01-15 00:00:00'],
         ]);
         $this->activityRepo->method('nombreAnalyse')->willReturn([
-            'code' => 200, 'request' => ['nb_analyse' => 50],
+            'code' => 200,
+            'request' => ['nb_analyse' => 50],
         ]);
         $this->activityRepo->method('nombreStatus')->willReturn([
-            'code' => 200, 'request' => ['nb_status' => 45],
+            'code' => 200,
+            'request' => ['nb_status' => 45],
         ]);
         $this->activityRepo->method('tempsExecutionMax')->willReturn([
-            'code' => 200, 'request' => ['max_time' => 120],
+            'code' => 200,
+            'request' => ['max_time' => 120],
         ]);
 
         // selectActivity() renvoie la clé 'liste' : vide au 1er appel → insert.
@@ -147,16 +152,20 @@ class ApiActivityControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $this->activityRepo->method('premiereDate')->willReturn([
-            'code' => 200, 'liste' => ['date' => '2026-01-15 00:00:00'],
+            'code' => 200,
+            'liste' => ['date' => '2026-01-15 00:00:00'],
         ]);
         $this->activityRepo->method('nombreAnalyse')->willReturn([
-            'code' => 200, 'request' => ['nb_analyse' => 100],
+            'code' => 200,
+            'request' => ['nb_analyse' => 100],
         ]);
         $this->activityRepo->method('nombreStatus')->willReturn([
-            'code' => 200, 'request' => ['nb_status' => 90],
+            'code' => 200,
+            'request' => ['nb_status' => 90],
         ]);
         $this->activityRepo->method('tempsExecutionMax')->willReturn([
-            'code' => 200, 'request' => ['max_time' => 200],
+            'code' => 200,
+            'request' => ['max_time' => 200],
         ]);
 
         // selectActivity() renvoie la clé 'liste' : non vide au 1er appel → update.

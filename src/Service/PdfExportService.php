@@ -39,9 +39,7 @@ class PdfExportService
         private ParameterBagInterface $params,
         #[Autowire('%kernel.project_dir%')]
         private string $projectDir,
-)
-    {
-    }
+    ) {}
 
     private function logoBase64(): string
     {
@@ -59,14 +57,13 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 13/11/2025 21:05:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateRapportPdf(BatchExecution $batchExecution, ?string $document_type = null): string
     {
         // Préparer les données pour le template
-        $collectes = $batchExecution->getCollectes()->map(function($journal) {
+        $collectes = $batchExecution->getCollectes()->map(function ($journal) {
             return [
                 'id' => $journal->getId(),
                 'nomProjet' => $journal->getNomProjet(),
@@ -109,7 +106,7 @@ class PdfExportService
         // --- Rendu principal ---
         $dompdf->render();
 
-       // --- Après $dompdf->render() ---
+        // --- Après $dompdf->render() ---
         $canvas = $dompdf->getCanvas();
         $pageWidth = $canvas->get_width();
         $pageHeight = $canvas->get_height();
@@ -122,11 +119,11 @@ class PdfExportService
         $y = $pageHeight - 30;
 
         // Couleur ligne et texte (RGB float 0-1)
-        $colorLine = [0/255, 68/255, 91/255]; // #00445b
-        $colorText = [0/255, 68/255, 91/255]; // #00445b
+        $colorLine = [0 / 255, 68 / 255, 91 / 255]; // #00445b
+        $colorText = [0 / 255, 68 / 255, 91 / 255]; // #00445b
 
         // Ligne horizontale sur toutes les pages
-        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics) use ($pageWidth, $y, $document_type, $colorLine, $colorText, $font, $fontSize) {
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($pageWidth, $y, $document_type, $colorLine, $colorText, $font, $fontSize) {
             // Ligne
             $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
 
@@ -155,6 +152,7 @@ class PdfExportService
     }
 
     /**
+     * [Description for generateSuiviPdf]
      * Génère le rapport PDF de la page Suivi.
      *
      * MODIF 2026-05-11 : refonte sur le modèle
@@ -179,6 +177,9 @@ class PdfExportService
      * @param array<string, mixed> $data
      * @param string|null $document_type
      * @param bool|null $watermarkOverride
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function generateSuiviPdf(array $data, ?string $document_type = null, ?bool $watermarkOverride = null): string
     {
@@ -221,7 +222,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 11/05/2026 18:40:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -263,7 +263,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 11/05/2026 18:41:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -297,9 +296,15 @@ class PdfExportService
 
             public function Rotate(float $angle, ?float $x = null, ?float $y = null): void
             {
-                if ($x === null) { $x = $this->x; }
-                if ($y === null) { $y = $this->y; }
-                if ($this->angle != 0) { $this->_out('Q'); }
+                if ($x === null) {
+                    $x = $this->x;
+                }
+                if ($y === null) {
+                    $y = $this->y;
+                }
+                if ($this->angle != 0) {
+                    $this->_out('Q');
+                }
                 $this->angle = $angle;
                 if ($angle != 0) {
                     $angle *= M_PI / 180;
@@ -309,7 +314,14 @@ class PdfExportService
                     $cy = ($this->h - $y) * $this->k;
                     $this->_out(sprintf(
                         'q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',
-                        $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy
+                        $c,
+                        $s,
+                        -$s,
+                        $c,
+                        $cx,
+                        $cy,
+                        -$cx,
+                        -$cy
                     ));
                 }
             }
@@ -328,7 +340,9 @@ class PdfExportService
              * l'ancien filigrane Dompdf (opacity 0.08 sur gris). */
             public function DrawSuiviWatermark(string $text): void
             {
-                if ($text === '') { return; }
+                if ($text === '') {
+                    return;
+                }
                 $this->SetFont('Helvetica', 'B', 50);
                 $this->SetTextColor(244, 244, 244);
                 $w = $this->GetPageWidth();
@@ -379,7 +393,9 @@ class PdfExportService
 
             return $merger->Output('S');
         } finally {
-            foreach ($tmpFiles as $tmp) { @unlink($tmp); }
+            foreach ($tmpFiles as $tmp) {
+                @unlink($tmp);
+            }
         }
     }
 
@@ -391,7 +407,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 11/05/2026 00:17:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -421,10 +436,10 @@ class PdfExportService
         $fontSize = 9;
         $font = $dompdf->getFontMetrics()->getFont(self::$logo);
         $y = $pageHeight - 30;
-        $colorLine = [0/255, 68/255, 91/255];
-        $colorText = [0/255, 68/255, 91/255];
+        $colorLine = [0 / 255, 68 / 255, 91 / 255];
+        $colorText = [0 / 255, 68 / 255, 91 / 255];
 
-        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics) use ($pageWidth, $y, $document_type, $colorLine, $colorText, $font, $fontSize) {
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($pageWidth, $y, $document_type, $colorLine, $colorText, $font, $fontSize) {
             $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
 
             $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
@@ -468,7 +483,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 11/05/2026 00:17:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -489,20 +503,28 @@ class PdfExportService
         $watermarkText = strtoupper($documentType);
 
         $pdfPart1 = $this->renderDcSubPdf(
-            'rapport/dc/_part1-portrait.html.twig', $data, 'portrait'
+            'rapport/dc/_part1-portrait.html.twig',
+            $data,
+            'portrait'
         );
         $pdfPart3 = $this->renderDcSubPdf(
-            'rapport/dc/_part3-portrait.html.twig', $data, 'portrait'
+            'rapport/dc/_part3-portrait.html.twig',
+            $data,
+            'portrait'
         );
         // Sous-PDF 2 (paysage) génère uniquement si findings non vide
         $pdfPart2 = !empty($data['findings'])
             ? $this->renderDcSubPdf(
-                'rapport/dc/_part2-landscape.html.twig', $data, 'landscape'
+                'rapport/dc/_part2-landscape.html.twig',
+                $data,
+                'landscape'
             )
             : null;
 
         $parts = [$pdfPart1];
-        if ($pdfPart2 !== null) { $parts[] = $pdfPart2; }
+        if ($pdfPart2 !== null) {
+            $parts[] = $pdfPart2;
+        }
         $parts[] = $pdfPart3;
 
         return $this->mergeDcSubPdfs($parts, $data, $documentType, $watermarkEnabled, $watermarkText);
@@ -518,7 +540,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 11/05/2026 19:05:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -555,7 +576,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 11/05/2026 19:07:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -569,7 +589,8 @@ class PdfExportService
         $merger = new class extends Fpdi {
             public string $dcDocumentType = '';
             public string $dcDateGenerated = '';
-            /* MODIF 2026-05-08 [dc-ingest] : état de rotation FPDF (script Rotate
+            /**
+             * MODIF 2026-05-08 [dc-ingest] : état de rotation FPDF (script Rotate
              * canonique - FPDF n'a pas de transformation native). */
             private float $angle = 0;
 
@@ -592,14 +613,21 @@ class PdfExportService
                 $this->Cell(60, 6, 'Page ' . $this->PageNo() . ' / {nb}', 0, 0, 'R');
             }
 
-            /* MODIF 2026-05-08 : Rotate canonique FPDF
+            /**
+             * MODIF 2026-05-08 : Rotate canonique FPDF
              * (https://www.fpdf.org/en/script/script2.php). Permet de pivoter le
              * texte autour d'un point pour dessiner un filigrane oblique. */
             public function Rotate(float $angle, ?float $x = null, ?float $y = null): void
             {
-                if ($x === null) { $x = $this->x; }
-                if ($y === null) { $y = $this->y; }
-                if ($this->angle != 0) { $this->_out('Q'); }
+                if ($x === null) {
+                    $x = $this->x;
+                }
+                if ($y === null) {
+                    $y = $this->y;
+                }
+                if ($this->angle != 0) {
+                    $this->_out('Q');
+                }
                 $this->angle = $angle;
                 if ($angle != 0) {
                     $angle *= M_PI / 180;
@@ -609,12 +637,20 @@ class PdfExportService
                     $cy = ($this->h - $y) * $this->k;
                     $this->_out(sprintf(
                         'q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',
-                        $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy
+                        $c,
+                        $s,
+                        -$s,
+                        $c,
+                        $cx,
+                        $cy,
+                        -$cx,
+                        -$cy
                     ));
                 }
             }
 
-            /* MODIF 2026-05-08 : annulation de la rotation a la fermeture
+            /**
+             * MODIF 2026-05-08 : annulation de la rotation a la fermeture
              * de page (sinon l’état graphique fuit sur les pages suivantes). */
             protected function _endpage(): void
             {
@@ -625,7 +661,8 @@ class PdfExportService
                 parent::_endpage();
             }
 
-            /* MODIF 2026-05-08 : dessine le filigrane oblique centre
+            /**
+             * MODIF 2026-05-08 : dessine le filigrane oblique centre
              * sur la page courante. Couleur gris tres clair pour simuler la
              * transparence (FPDF n'a pas d'opacity natif).
              *
@@ -639,7 +676,9 @@ class PdfExportService
              * a une position absolue, sans wrapping ni clipping de cell. */
             public function DrawDcWatermark(string $text): void
             {
-                if ($text === '') { return; }
+                if ($text === '') {
+                    return;
+                }
                 $this->SetFont('Helvetica', 'B', 50);
                 // MODIF 2026-05-11 : RGB(220) -> RGB(244)
                 // pour aligner sur le filigrane du rapport Suivi (preserve la
@@ -667,7 +706,8 @@ class PdfExportService
         $merger->setAutoPageBreak(false);
 
         // Metadata
-        $projectLabel = sprintf('%s:%s:%s',
+        $projectLabel = sprintf(
+            '%s:%s:%s',
             $data['project_group'] ?? '?',
             $data['project_artifact'] ?? '?',
             $data['project_version'] ?? '?'
@@ -687,9 +727,10 @@ class PdfExportService
                 $tmpFiles[] = $tmp;
             }
 
-            // Importer toutes les pages : Footer() est appelé automatiquement
-            // a chaque AddPage / fermeture de page.
-            /* MODIF 2026-05-10 : filigrane dessine
+            /**
+             * Importer toutes les pages : Footer() est appelé automatiquement
+             * a chaque AddPage / fermeture de page.
+             * MODIF 2026-05-10 : filigrane dessine
              * AVANT useTemplate() pour rester en arrière-plan (était apres,
              * il masquait le texte du document). Les sous-PDFs dompdf ont un
              * <body> transparent par défaut donc le filigrane reste visible
@@ -712,7 +753,9 @@ class PdfExportService
 
             return $merger->Output('S');
         } finally {
-            foreach ($tmpFiles as $tmp) { @unlink($tmp); }
+            foreach ($tmpFiles as $tmp) {
+                @unlink($tmp);
+            }
         }
     }
 
@@ -727,7 +770,6 @@ class PdfExportService
      *
      * @return string contenu binaire du PDF
      *
-     * Created at: 19/05/2026 09:32:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -757,12 +799,12 @@ class PdfExportService
         $pageHeight = $canvas->get_height();
         $fontSize  = 9;
         $font      = $dompdf->getFontMetrics()->getFont(self::$police);
-        $colorLine = [0/255, 68/255, 91/255];
-        $colorText = [0/255, 68/255, 91/255];
+        $colorLine = [0 / 255, 68 / 255, 91 / 255];
+        $colorText = [0 / 255, 68 / 255, 91 / 255];
         $y = $pageHeight - 30;
 
-        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics)
-            use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics)
+        use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
             $canvas->line(30, $y - 5, $pageWidth - 30, $y - 5, $colorLine, 0.5);
 
             $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
@@ -791,7 +833,6 @@ class PdfExportService
      *
      * @return string contenu binaire du PDF
      *
-     * Created at: 20/07/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -821,12 +862,12 @@ class PdfExportService
         $pageHeight = $canvas->get_height();
         $fontSize   = 9;
         $font       = $dompdf->getFontMetrics()->getFont(self::$police);
-        $colorLine  = [0/255, 68/255, 91/255];
-        $colorText  = [0/255, 68/255, 91/255];
+        $colorLine  = [0 / 255, 68 / 255, 91 / 255];
+        $colorText  = [0 / 255, 68 / 255, 91 / 255];
         $y = $pageHeight - 30;
 
-        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics)
-            use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
+        $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics)
+        use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
             $canvas->line(30, $y - 5, $pageWidth - 30, $y - 5, $colorLine, 0.5);
 
             $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
@@ -855,7 +896,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -883,12 +923,12 @@ class PdfExportService
         $pageHeight = $canvas->get_height();
         $fontSize   = 9;
         $font       = $dompdf->getFontMetrics()->getFont(self::$police);
-        $colorLine  = [0/255, 68/255, 91/255];
-        $colorText  = [0/255, 68/255, 91/255];
+        $colorLine  = [0 / 255, 68 / 255, 91 / 255];
+        $colorText  = [0 / 255, 68 / 255, 91 / 255];
         $y = $pageHeight - 30;
 
         $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics)
-            use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
+        use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
             $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
 
             $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
@@ -916,7 +956,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -944,12 +983,12 @@ class PdfExportService
         $pageHeight = $canvas->get_height();
         $fontSize   = 9;
         $font       = $dompdf->getFontMetrics()->getFont(self::$police);
-        $colorLine  = [0/255, 68/255, 91/255];
-        $colorText  = [0/255, 68/255, 91/255];
+        $colorLine  = [0 / 255, 68 / 255, 91 / 255];
+        $colorText  = [0 / 255, 68 / 255, 91 / 255];
         $y = $pageHeight - 30;
 
         $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics)
-            use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
+        use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
             $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
 
             $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
@@ -967,6 +1006,7 @@ class PdfExportService
     }
 
     /**
+     * [Description for generateNpmAuditPdf]
      * Génère le rapport PDF npm audit — orientation mixte (portrait puis
      * paysage en dernier, pas de retour en portrait après : contrairement à
      * generateDcPdf, le détail paysage est la dernière partie du document,
@@ -983,6 +1023,9 @@ class PdfExportService
      * @param array<string, mixed> $data
      *
      * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function generateNpmAuditPdf(array $data, ?string $document_type = null, ?bool $watermarkOverride = null): string
     {
@@ -1001,26 +1044,40 @@ class PdfExportService
         $watermarkText = strtoupper($documentType);
 
         $pdfPart1 = $this->renderNpmAuditSubPdf(
-            'rapport/npm-audit/_part1-portrait.html.twig', $data, 'portrait'
+            'rapport/npm-audit/_part1-portrait.html.twig',
+            $data,
+            'portrait'
         );
         $pdfPart2 = !empty($data['findings'])
             ? $this->renderNpmAuditSubPdf(
-                'rapport/npm-audit/_part2-landscape.html.twig', $data, 'landscape'
+                'rapport/npm-audit/_part2-landscape.html.twig',
+                $data,
+                'landscape'
             )
             : null;
 
         $parts = [$pdfPart1];
-        if ($pdfPart2 !== null) { $parts[] = $pdfPart2; }
+        if ($pdfPart2 !== null) {
+            $parts[] = $pdfPart2;
+        }
 
         return $this->mergeNpmAuditSubPdfs($parts, $data, $documentType, $watermarkEnabled, $watermarkText);
     }
 
     /**
+     * [Description for renderNpmAuditSubPdf]
      * Génère un sous-PDF Dompdf a partir d'un template Twig + une
      * orientation. Pas de footer (ajouté après la fusion FPDI pour une
      * numérotation de pages continue) — même pattern que renderDcSubPdf.
      *
+     * @param string $template
      * @param array<string, mixed> $data
+     * @param string $orientation
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function renderNpmAuditSubPdf(string $template, array $data, string $orientation): string
     {
@@ -1044,6 +1101,7 @@ class PdfExportService
     }
 
     /**
+     * [Description for mergeNpmAuditSubPdfs]
      * Fusionne les sous-PDF npm audit via FPDI en préservant l'orientation
      * et la taille de chaque page source. Même mécanisme que
      * mergeDcSubPdfs (dupliqué plutôt que partagé — convention du projet,
@@ -1051,6 +1109,14 @@ class PdfExportService
      *
      * @param string[] $pdfBinaries
      * @param array<string, mixed> $data
+     * @param string $documentType
+     * @param bool $watermarkEnabled
+     * @param string $watermarkText
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function mergeNpmAuditSubPdfs(
         array $pdfBinaries,
@@ -1082,9 +1148,15 @@ class PdfExportService
 
             public function Rotate(float $angle, ?float $x = null, ?float $y = null): void
             {
-                if ($x === null) { $x = $this->x; }
-                if ($y === null) { $y = $this->y; }
-                if ($this->angle != 0) { $this->_out('Q'); }
+                if ($x === null) {
+                    $x = $this->x;
+                }
+                if ($y === null) {
+                    $y = $this->y;
+                }
+                if ($this->angle != 0) {
+                    $this->_out('Q');
+                }
                 $this->angle = $angle;
                 if ($angle != 0) {
                     $angle *= M_PI / 180;
@@ -1094,11 +1166,26 @@ class PdfExportService
                     $cy = ($this->h - $y) * $this->k;
                     $this->_out(sprintf(
                         'q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',
-                        $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy
+                        $c,
+                        $s,
+                        -$s,
+                        $c,
+                        $cx,
+                        $cy,
+                        -$cx,
+                        -$cy
                     ));
                 }
             }
 
+            /**
+             * [Description for _endpage]
+             *
+             * @return void
+             *
+             * @author     Laurent HADJADJ <laurent_h@me.com>
+             * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+             */
             protected function _endpage(): void
             {
                 if ($this->angle != 0) {
@@ -1108,9 +1195,21 @@ class PdfExportService
                 parent::_endpage();
             }
 
+            /**
+             * [Description for DrawNpmAuditWatermark]
+             *
+             * @param string $text
+             *
+             * @return void
+             *
+             * @author     Laurent HADJADJ <laurent_h@me.com>
+             * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+             */
             public function DrawNpmAuditWatermark(string $text): void
             {
-                if ($text === '') { return; }
+                if ($text === '') {
+                    return;
+                }
                 $this->SetFont('Helvetica', 'B', 50);
                 $this->SetTextColor(244, 244, 244);
                 $w = $this->GetPageWidth();
@@ -1129,7 +1228,8 @@ class PdfExportService
         $merger->AliasNbPages();
         $merger->setAutoPageBreak(false);
 
-        $projectLabel = sprintf('%s:%s:%s',
+        $projectLabel = sprintf(
+            '%s:%s:%s',
             $data['project_group'] ?? '?',
             $data['project_artifact'] ?? '?',
             $data['project_version'] ?? '?'
@@ -1165,7 +1265,9 @@ class PdfExportService
 
             return $merger->Output('S');
         } finally {
-            foreach ($tmpFiles as $tmp) { @unlink($tmp); }
+            foreach ($tmpFiles as $tmp) {
+                @unlink($tmp);
+            }
         }
     }
 
@@ -1177,7 +1279,6 @@ class PdfExportService
      *
      * @return string
      *
-     * Created at: 11/05/2026 19:10:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

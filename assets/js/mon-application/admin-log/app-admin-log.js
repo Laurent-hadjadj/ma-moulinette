@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -64,9 +64,8 @@ import { showMessage, prepareTechnicalDetails } from '../../common/messageHelper
      *
      * @return json
      *
-     * Created at: 15/12/2025 08:37:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     const getFilters = function() {
         const params = {};
@@ -93,9 +92,8 @@ import { showMessage, prepareTechnicalDetails } from '../../common/messageHelper
      *
      * @return integer
      *
-     * Created at: 15/12/2025 08:37:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     const formatSize = function(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -110,9 +108,8 @@ import { showMessage, prepareTechnicalDetails } from '../../common/messageHelper
      *
      * @return json
      *
-     * Created at: 15/12/2025 08:38:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     const loadLogs = async function(params = {}) {
         const options = {
@@ -192,9 +189,8 @@ import { showMessage, prepareTechnicalDetails } from '../../common/messageHelper
      *
      * @return void
      *
-     * Created at: 15/12/2025 08:40:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     const downloadSelection = function() {
         const files = [];

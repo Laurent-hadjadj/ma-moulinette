@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -31,15 +31,16 @@ class ProfilesCaseTest extends TestCase
     private static bool $referentialDefault = true;
     private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
-    private function getEntity(): Profiles    {
+    private function getEntity(): Profiles
+    {
         return (new profiles())
-        ->setKey(self::$key)
-        ->setName(self::$name)
-        ->setLanguageName(self::$languageName)
-        ->setActiveRuleCount(self::$activeRuleCount)
-        ->setRulesUpdatedAt(new \DateTimeImmutable(self::$rulesUpdatedAt))
-        ->setReferentialDefault(self::$referentialDefault)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setKey(self::$key)
+            ->setName(self::$name)
+            ->setLanguageName(self::$languageName)
+            ->setActiveRuleCount(self::$activeRuleCount)
+            ->setRulesUpdatedAt(new \DateTimeImmutable(self::$rulesUpdatedAt))
+            ->setReferentialDefault(self::$referentialDefault)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -78,7 +79,7 @@ class ProfilesCaseTest extends TestCase
 
     public function testSettingAndGettingRulesUpdateAt(): void
     {
-        $newDate=new \DateTimeImmutable(self::$rulesUpdatedAt);
+        $newDate = new \DateTimeImmutable(self::$rulesUpdatedAt);
         $this->profiles->setRulesUpdatedAt($newDate);
         $this->assertEquals($newDate, $this->profiles->getRulesUpdatedAt());
     }
@@ -91,9 +92,8 @@ class ProfilesCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->profiles->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->profiles->getDateEnregistrement());
     }
-
 }

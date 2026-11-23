@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Repository;
@@ -66,10 +66,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
      *              date_enregistrement: \DateTimeInterface}> $data
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function insertHistoriqueActivity(array $data): array
     {
@@ -81,25 +79,25 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
                         :success, :failed, :success_rate, :max_time, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                foreach ($data as $year => $valeur) {
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$year, $year);
-                    $stmt->bindValue(':day', $valeur['day']);
-                    $stmt->bindValue(':analyse', $valeur['analyse']);
-                    $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
-                    $stmt->bindValue(':success', $valeur['success']);
-                    $stmt->bindValue(':failed', $valeur['failed']);
-                    $stmt->bindValue(':success_rate', $valeur['success_rate']);
-                    $stmt->bindValue(':max_time', $valeur['max_time']);
-                    $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(self::$formatDate));
-                    $stmt->executeStatement();
-                }
+            foreach ($data as $year => $valeur) {
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$year, $year);
+                $stmt->bindValue(':day', $valeur['day']);
+                $stmt->bindValue(':analyse', $valeur['analyse']);
+                $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
+                $stmt->bindValue(':success', $valeur['success']);
+                $stmt->bindValue(':failed', $valeur['failed']);
+                $stmt->bindValue(':success_rate', $valeur['success_rate']);
+                $stmt->bindValue(':max_time', $valeur['max_time']);
+                $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(self::$formatDate));
+                $stmt->executeStatement();
+            }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'erreur' => ''];
+        return ['code' => 200, 'erreur' => ''];
     }
 
     /**
@@ -111,10 +109,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
      *              date_enregistrement: \DateTimeInterface}> $data
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function updateHistoriqueActivity(array $data): array
     {
@@ -129,21 +125,21 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
                     date_enregistrement = :date_enregistrement
                 WHERE year = :year";
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                foreach ($data as $year => $valeur) {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+            foreach ($data as $year => $valeur) {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$year, $year);
-                    $stmt->bindValue(':day', $valeur['day']);
-                    $stmt->bindValue(':analyse', $valeur['analyse']);
-                    $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
-                    $stmt->bindValue(':success', $valeur['success']);
-                    $stmt->bindValue(':failed', $valeur['failed']);
-                    $stmt->bindValue(':success_rate', $valeur['success_rate']);
-                    $stmt->bindValue(':max_time', $valeur['max_time']);
-                    $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(self::$formatDate));
-                    $stmt->executeStatement();
-                }
-                $this->getEntityManager()->getConnection()->commit();
+                $stmt->bindValue(self::$year, $year);
+                $stmt->bindValue(':day', $valeur['day']);
+                $stmt->bindValue(':analyse', $valeur['analyse']);
+                $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
+                $stmt->bindValue(':success', $valeur['success']);
+                $stmt->bindValue(':failed', $valeur['failed']);
+                $stmt->bindValue(':success_rate', $valeur['success_rate']);
+                $stmt->bindValue(':max_time', $valeur['max_time']);
+                $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(self::$formatDate));
+                $stmt->executeStatement();
+            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
@@ -156,10 +152,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
      * On récupère la liste de toute les activities
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectActivity(int|string|null $year = null): array
     {
@@ -184,9 +178,9 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
 
             $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+            return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'liste' => $liste, 'erreur' => '' ];
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
 
     /**
@@ -197,10 +191,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countOlderThan(int $days): int
     {
@@ -222,10 +214,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int nombre de lignes supprimées
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function purge(int $days): int
     {

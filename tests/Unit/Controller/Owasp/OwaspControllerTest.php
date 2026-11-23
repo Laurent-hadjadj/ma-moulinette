@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -247,7 +247,8 @@ class OwaspControllerTest extends TestCase
         $this->authorizeMavenKey($mixedCaseKey);
 
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
-            'code' => 200, 'liste' => [['menace' => 1]],
+            'code' => 200,
+            'liste' => [['menace' => 1]],
         ]);
         $this->repoOwasp->expects($this->once())
             ->method('selectOwaspVersion')
@@ -346,11 +347,15 @@ class OwaspControllerTest extends TestCase
     {
         $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
-            'code' => 200, 'liste' => [],
+            'code' => 200,
+            'liste' => [],
         ]);
         // selectOwaspVersion appelé apres les 3 référentiels
         $this->repoOwasp->method('selectOwaspVersion')->willReturn([
-            'code' => 200, 'application' => self::MAVEN_KEY, 'version' => '1.0.0', 'erreur' => '',
+            'code' => 200,
+            'application' => self::MAVEN_KEY,
+            'version' => '1.0.0',
+            'erreur' => '',
         ]);
 
         // 1 add (warning référentiels vides). selectOwaspVersion = 200 -> pas d'autre flash.
@@ -433,7 +438,8 @@ class OwaspControllerTest extends TestCase
     {
         $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
-            'code' => 200, 'liste' => [['menace' => 1]],
+            'code' => 200,
+            'liste' => [['menace' => 1]],
         ]);
         // Breadcrumb OWASP absent (cas reel) : application=null, version=null
         $this->repoOwasp->method('selectOwaspVersion')->willReturn([
@@ -477,7 +483,8 @@ class OwaspControllerTest extends TestCase
     {
         $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
-            'code' => 200, 'liste' => [['menace' => 1]],
+            'code' => 200,
+            'liste' => [['menace' => 1]],
         ]);
         // selectOwaspVersion en erreur DB
         $this->repoOwasp->expects($this->once())
@@ -521,7 +528,8 @@ class OwaspControllerTest extends TestCase
     {
         $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
-            'code' => 200, 'liste' => [['menace' => 1]],
+            'code' => 200,
+            'liste' => [['menace' => 1]],
         ]);
         $this->repoOwasp->expects($this->once())
             ->method('selectOwaspVersion')
@@ -581,32 +589,42 @@ class OwaspControllerTest extends TestCase
 
     public function testComputeFailleRatingReturnsE(): void
     {
-        $this->assertSame('E', self::callStatic('computeFailleRating',
-            ['blocker' => 2, 'critical' => 0, 'major' => 0, 'minor' => 0]));
+        $this->assertSame('E', self::callStatic(
+            'computeFailleRating',
+            ['blocker' => 2, 'critical' => 0, 'major' => 0, 'minor' => 0]
+        ));
     }
 
     public function testComputeFailleRatingReturnsD(): void
     {
-        $this->assertSame('D', self::callStatic('computeFailleRating',
-            ['blocker' => 0, 'critical' => 2, 'major' => 0, 'minor' => 0]));
+        $this->assertSame('D', self::callStatic(
+            'computeFailleRating',
+            ['blocker' => 0, 'critical' => 2, 'major' => 0, 'minor' => 0]
+        ));
     }
 
     public function testComputeFailleRatingReturnsC(): void
     {
-        $this->assertSame('C', self::callStatic('computeFailleRating',
-            ['blocker' => 0, 'critical' => 0, 'major' => 2, 'minor' => 0]));
+        $this->assertSame('C', self::callStatic(
+            'computeFailleRating',
+            ['blocker' => 0, 'critical' => 0, 'major' => 2, 'minor' => 0]
+        ));
     }
 
     public function testComputeFailleRatingReturnsB(): void
     {
-        $this->assertSame('B', self::callStatic('computeFailleRating',
-            ['blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 2]));
+        $this->assertSame('B', self::callStatic(
+            'computeFailleRating',
+            ['blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 2]
+        ));
     }
 
     public function testComputeFailleRatingReturnsAWhenAllZero(): void
     {
-        $this->assertSame('A', self::callStatic('computeFailleRating',
-            ['blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 0]));
+        $this->assertSame('A', self::callStatic(
+            'computeFailleRating',
+            ['blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 0]
+        ));
     }
 
     /* ============ computeHotspotNoteFromTaux ============ */

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Suivi;
@@ -52,9 +52,8 @@ class SuiviController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 15/12/2022, 22:34:06 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -78,9 +77,8 @@ class SuiviController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -103,9 +101,8 @@ class SuiviController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 16/07/2024 20:05:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function listeProjet(string $maven_key, array $groupes): array
     {
@@ -158,9 +155,8 @@ class SuiviController extends AbstractController
      * @param string $token
      * @return string|null
      *
-     * Created at: 16/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeToken(string $token): ?string
     {
@@ -194,17 +190,16 @@ class SuiviController extends AbstractController
      *
      * @param Request $request
      *
-     *
-     * Created at: 12/11/2024 17:39:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
     public function setSession(Request $request): RedirectResponse
     {
         $token = $request->query->get('token');
         $maven_key = null;
-        /* MODIF 2026-07-22 : distingue "token absent" (navigation sans contexte,
+        /**
+         * MODIF 2026-07-22 : distingue "token absent" (navigation sans contexte,
          * pas une anomalie) de "token présent mais indécodable" (lien corrompu ou
          * trafiqué, vraie erreur 400) — les deux aboutissaient jusqu'ici au même
          * maven_key=null en session, donc au même message générique dans suivi(). */
@@ -233,9 +228,8 @@ class SuiviController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 17/07/2024 08:58:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
     {
@@ -256,10 +250,8 @@ class SuiviController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 17/07/2024 08:58:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     * @param array<int|string, mixed> $map
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function fetchData($repository, string $method, array $map)
     {
@@ -283,9 +275,8 @@ class SuiviController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 17/07/2024 08:58:34 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function processGraphData(array $graphRequest): array
     {
@@ -313,9 +304,8 @@ class SuiviController extends AbstractController
      *
      * @return array{labels: list<mixed>, datasets: list<array<string, mixed>>}
      *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildRciScopeChartData(array $suivi): array
     {
@@ -353,9 +343,8 @@ class SuiviController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 15/12/2022, 22:34:25 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
     public function suivi(Request $request): Response
@@ -382,7 +371,7 @@ class SuiviController extends AbstractController
         $render['suivi'] = $render['mesure'] = $render['severity'] = $render['details'] = [];
         $render['nom'] = 'N.C';
         $render['mavenKey'] = $maven_key ?? '';
-        $render['langueDistribution']= $this->languageDistribution->buildDistributionMatrix([]);
+        $render['langueDistribution'] = $this->languageDistribution->buildDistributionMatrix([]);
         $render['data1'] = $render['data2'] = $render['data3'] = $render['labels'] = 0;
         $render['rciScopeChart'] = json_encode(['labels' => [], 'datasets' => []]);
 
@@ -451,7 +440,8 @@ class SuiviController extends AbstractController
             $render['mesure'] = $mesure['request'];
             $render['severity'] = $severity['request'];
             $render['details'] = $details['request'];
-            /* MODIF 2026-05-06 : pre-calcul de la
+            /**
+             * MODIF 2026-05-06 : pre-calcul de la
              * matrice de distribution langage (parsing ncloc_language_distribution +
              * tri par lignes desc + datasets Chart.js stackes). */
             $render['langueDistribution'] = $this->languageDistribution->buildDistributionMatrix($suivi['request']);
@@ -498,9 +488,8 @@ class SuiviController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 12/07/2026 21:52:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/suivi/rapport/pdf', name: 'suivi_rapport_pdf', methods: ['GET'])]
     public function rapportPdf(Request $request): Response
@@ -514,12 +503,13 @@ class SuiviController extends AbstractController
             throw $this->createNotFoundException('Clé Maven manquante.');
         }
 
-        // MODIF 2026-07-16 : le rapport PDF ne vérifiait que l'existence d'un
-        // historique pour la clé Maven, pas son appartenance au groupe fonctionnel
-        // de l'utilisateur connecté — contrairement à la route web /suivi. Un
-        // utilisateur connaissant la clé Maven exacte d'un projet hors de son
-        // périmètre pouvait donc en générer le PDF alors que la page HTML le lui
-        // refusait. Alignement sur le même contrôle que suivi().
+        /**
+         * MODIF 2026-07-16 : le rapport PDF ne vérifiait que l'existence d'un
+         * historique pour la clé Maven, pas son appartenance au groupe fonctionnel
+         * de l'utilisateur connecté — contrairement à la route web /suivi. Un
+         * utilisateur connaissant la clé Maven exacte d'un projet hors de son
+         * périmètre pouvait donc en générer le PDF alors que la page HTML le lui
+         * refusait. Alignement sur le même contrôle que suivi().*/
         $groupes = $this->appUser()->getListeGroupeFonctionnel();
         if (empty($groupes)) {
             throw $this->createNotFoundException(self::$erreur404);
@@ -531,13 +521,13 @@ class SuiviController extends AbstractController
 
         $download = (bool) $request->query->get('download', false);
         $documentType = (string) ($request->query->get('type', 'Document confidentiel'));
-        /* MODIF 2026-05-11 :
-         * le query param ?orientation= est supprime. La refonte FPDI
+        /**
+         * MODIF 2026-05-11 : le query param ?orientation= est supprime. La refonte FPDI
          * (rapport-suivi-fpdi) impose des orientations mixtes par section :
          * page 1-2 portrait, tableaux paysage, glossaire portrait. */
 
-        /* MODIF 2026-05-06 :
-         * ?watermark=on|off prime sur le mode .env (RAPPORT_PDF_WATERMARK_MODE).
+        /**
+         * MODIF 2026-05-06 : "?watermark=on|off prime sur le mode .env (RAPPORT_PDF_WATERMARK_MODE).
          * Utile pour tester sans toucher la conf. Toute autre valeur (ou absence)
          * laisse la logique standard mode .env x document_type. */
         $wmParam = strtolower((string) $request->query->get('watermark', ''));
@@ -555,8 +545,8 @@ class SuiviController extends AbstractController
             throw $this->createNotFoundException("Aucune version d'historique pour ce projet.");
         }
 
-        /* MODIF 2026-05-06 :
-         * Le rapport PDF affiche les 10 dernières versions (toutes confondues, l'user
+        /**
+         * MODIF 2026-05-06 : Le rapport PDF affiche les 10 dernières versions (toutes confondues, l'user
          * choisira ses versions a l'usage). Method dédiée selectHistoriqueProjetForRapport
          * (la route web /suivi reste sur selectUnionHistoriqueProjet : toutes versions
          * + version initiale). */
@@ -592,7 +582,8 @@ class SuiviController extends AbstractController
         $pdfContent = $this->pdfExportService->generateSuiviPdf($rapport, $documentType, $watermarkOverride);
 
         $disposition = $download ? ResponseHeaderBag::DISPOSITION_ATTACHMENT : ResponseHeaderBag::DISPOSITION_INLINE;
-        $filename = sprintf('rapport_suivi_%s_%s.pdf',
+        $filename = sprintf(
+            'rapport_suivi_%s_%s.pdf',
             preg_replace('/[^a-z0-9_-]/i', '_', $mavenKey),
             date('Y-m-d_H-i')
         );

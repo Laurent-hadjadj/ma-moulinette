@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Form;
@@ -24,50 +24,83 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
  */
 class ActuatorInfoFormType extends AbstractType
 {
+    /**
+     * [Description for buildForm]
+     *
+     * @param FormBuilderInterface<ActuatorInfo|null> $builder
+     * @param array<string, mixed> $options
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('actuatorInfoCle', TextType::class,
-            [
-                'required' => true,
-                'label' => 'label.actuator.info.cle',
-                'label_attr' => [
-                    'class' => 'color-bleu open-sans font-size-08 margin-left-05',
-                ],
-                'trim' => true,
-                'attr' => [ 'placeholder' => 'placeholder.actuator.info.cle',
-                            'class' => 'color-bleu open-sans margin-left-05' ],
-                'constraints' => [
-                    new NotBlank(message : "Entrez le nom de la clé (nœud JSON)."),
-                    new Length(
-                        min: 2,
-                        max: 255,
-                        minMessage: "Le nom de la clé doit comporter au moins {{ limit }} caractères.",
-                        maxMessage: "Le nom de la clé ne doit pas comporter plus de {{ limit }} caractères.",
-                    ), ],
-            ])
-            ->add('actuatorInfoDescription', TextType::class,
-            [
-                'required' => true,
-                'label' => 'label.actuator.info.description',
-                'label_attr' => [
-                    'class' => 'color-bleu open-sans font-size-08',
-                ],
-                'trim' => true,
-                'attr' => [ 'placeholder' => 'placeholder.actuator.info.description',
-                            'class' => 'color-bleu open-sans' ],
-                'constraints' => [
-                    new NotBlank(message:  "Entrez une description courte."),
-                    new Length(
-                        min: 1,
-                        max: 255,
-                        minMessage: "La description doit comporter au moins {{ limit }} caractère.",
-                        maxMessage: "La description ne doit pas comporter plus de {{ limit }} caractères.",
-                    ), ],
-            ])
+            ->add(
+                'actuatorInfoCle',
+                TextType::class,
+                [
+                    'required' => true,
+                    'label' => 'label.actuator.info.cle',
+                    'label_attr' => [
+                        'class' => 'color-bleu open-sans font-size-08 margin-left-05',
+                    ],
+                    'trim' => true,
+                    'attr' => [
+                        'placeholder' => 'placeholder.actuator.info.cle',
+                        'class' => 'color-bleu open-sans margin-left-05'
+                    ],
+                    'constraints' => [
+                        new NotBlank(message: "Entrez le nom de la clé (nœud JSON)."),
+                        new Length(
+                            min: 2,
+                            max: 255,
+                            minMessage: "Le nom de la clé doit comporter au moins {{ limit }} caractères.",
+                            maxMessage: "Le nom de la clé ne doit pas comporter plus de {{ limit }} caractères.",
+                        ),
+                    ],
+                ]
+            )
+            ->add(
+                'actuatorInfoDescription',
+                TextType::class,
+                [
+                    'required' => true,
+                    'label' => 'label.actuator.info.description',
+                    'label_attr' => [
+                        'class' => 'color-bleu open-sans font-size-08',
+                    ],
+                    'trim' => true,
+                    'attr' => [
+                        'placeholder' => 'placeholder.actuator.info.description',
+                        'class' => 'color-bleu open-sans'
+                    ],
+                    'constraints' => [
+                        new NotBlank(message: "Entrez une description courte."),
+                        new Length(
+                            min: 1,
+                            max: 255,
+                            minMessage: "La description doit comporter au moins {{ limit }} caractère.",
+                            maxMessage: "La description ne doit pas comporter plus de {{ limit }} caractères.",
+                        ),
+                    ],
+                ]
+            )
         ;
     }
 
+    /**
+     * [Description for configureOptions]
+     *
+     * @param OptionsResolver $resolver
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

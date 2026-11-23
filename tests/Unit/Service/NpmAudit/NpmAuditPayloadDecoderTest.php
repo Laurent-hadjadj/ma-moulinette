@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\NpmAudit;
 
 use App\Entity\NpmProcessingQueue;
-use App\Service\NpmAudit\NpmAuditPayloadDecodeException;
+use App\Exception\Npm\NpmAuditPayloadDecodeException;
 use App\Service\NpmAudit\NpmAuditPayloadDecoder;
 use PHPUnit\Framework\TestCase;
 

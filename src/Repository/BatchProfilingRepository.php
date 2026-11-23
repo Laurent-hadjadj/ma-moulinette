@@ -36,8 +36,6 @@ class BatchProfilingRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 26/10/2025 12:19:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -67,8 +65,6 @@ class BatchProfilingRepository extends ServiceEntityRepository
    * [Description for getGlobalKpi]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/11/2025 15:21:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -87,8 +83,8 @@ class BatchProfilingRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
-        $result = $stmt->executeQuery()->fetchAllAssociative();
+      $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
+      $result = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
       return $this->handleDatabaseException($e);
     }
@@ -101,8 +97,6 @@ class BatchProfilingRepository extends ServiceEntityRepository
    * @param string $indicateur
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/11/2025 21:00:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -121,7 +115,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
 
     // Vérifie que l'indicateur fourni est valide
     if (!in_array($indicateur, $validIndicators)) {
-        throw new \InvalidArgumentException("Indicateur invalide : {$indicateur}");
+      throw new \InvalidArgumentException("Indicateur invalide : {$indicateur}");
     }
 
     // Construire la requête avec l'indicateur en dur
@@ -136,8 +130,8 @@ class BatchProfilingRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
-        $result = $stmt->executeQuery()->fetchAllAssociative();
+      $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
+      $result = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
       return $this->handleDatabaseException($e);
     }
@@ -151,109 +145,99 @@ class BatchProfilingRepository extends ServiceEntityRepository
    * @param int $limit
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/11/2025 15:10:36 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findLatest(int $limit = 10): array
   {
-      return $this->createQueryBuilder('b')
-          ->orderBy('b.dateExecution', 'DESC')
-          ->setMaxResults($limit)
-          ->getQuery()
-          ->getArrayResult();
+    return $this->createQueryBuilder('b')
+      ->orderBy('b.dateExecution', 'DESC')
+      ->setMaxResults($limit)
+      ->getQuery()
+      ->getArrayResult();
   }
 
   /**
    * [Description for findStatsByPortefeuille]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/11/2025 15:10:29 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findStatsByPortefeuille(): array
   {
     return $this->getEntityManager()
-        ->getConnection()
-        ->executeQuery('SELECT
+      ->getConnection()
+      ->executeQuery('SELECT
             portefeuille,
               AVG(temps_moyen) AS average_time,
               AVG(memoire_moyenne) AS average_memory
             FROM batch_profiling
             GROUP BY portefeuille
             ORDER BY portefeuille')
-        ->fetchAllAssociative();
+      ->fetchAllAssociative();
   }
 
   /**
    * [Description for findWeeklyStats]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/11/2025 15:10:26 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findWeeklyStats(): array
   {
     return $this->getEntityManager()
-        ->getConnection()
-        ->executeQuery('SELECT
+      ->getConnection()
+      ->executeQuery('SELECT
                 semaine,
                 portefeuille,
                 temps_total_moyen_s AS average_time,
                 memoire_peak_moyenne_mo AS average_memory
             FROM ma_moulinette.vw_batch_profiling_weekly
             ORDER BY semaine ASC, portefeuille ASC')
-        ->fetchAllAssociative();
+      ->fetchAllAssociative();
   }
 
   /**
    * [Description for findMonthlyStats]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/11/2025 15:10:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findMonthlyStats(): array
   {
     return $this->getEntityManager()
-        ->getConnection()
-        ->executeQuery('SELECT
+      ->getConnection()
+      ->executeQuery('SELECT
                 mois,
                 portefeuille,
                 temps_total_moyen_s AS average_time,
                 memoire_peak_moyenne_mo AS average_memory
             FROM ma_moulinette.vw_batch_profiling_monthly
             ORDER BY mois ASC')
-        ->fetchAllAssociative();
+      ->fetchAllAssociative();
   }
 
   /**
    * [Description for findUsersStats]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/11/2025 15:10:18 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findUsersStats(): array
   {
-      return $this->getEntityManager()
-          ->getConnection()
-          ->executeQuery('SELECT
+    return $this->getEntityManager()
+      ->getConnection()
+      ->executeQuery('SELECT
                 utilisateur,
                 temps_total_moyen_s AS average_time,
                 memoire_peak_moyenne_mo AS average_memory
             FROM ma_moulinette.vw_batch_profiling_global
             ORDER BY utilisateur ASC')
-          ->fetchAllAssociative();
+      ->fetchAllAssociative();
   }
 
   /**
@@ -263,21 +247,19 @@ class BatchProfilingRepository extends ServiceEntityRepository
    * @param int $days
    *
    * @return int
-   *
-   * Created at: 20/07/2026 00:00:00 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function countOlderThan(int $days): int
   {
-      return (int) $this->getEntityManager()
-          ->getConnection()
-          ->executeQuery(
-              'SELECT COUNT(*) FROM ma_moulinette.batch_profiling
+    return (int) $this->getEntityManager()
+      ->getConnection()
+      ->executeQuery(
+        'SELECT COUNT(*) FROM ma_moulinette.batch_profiling
                 WHERE date_execution < NOW() - (:days || \' days\')::INTERVAL',
-              ['days' => $days]
-          )
-          ->fetchOne();
+        ['days' => $days]
+      )
+      ->fetchOne();
   }
 
   /**
@@ -288,19 +270,17 @@ class BatchProfilingRepository extends ServiceEntityRepository
    * @param int $days
    *
    * @return int nombre de lignes supprimées
-   *
-   * Created at: 20/07/2026 00:00:00 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function purge(int $days = 90): int
   {
-      return (int) $this->getEntityManager()
-          ->getConnection()
-          ->executeQuery(
-              'SELECT ma_moulinette.purge_batch_profiling(:days) AS deleted',
-              ['days' => $days]
-          )
-          ->fetchOne();
+    return (int) $this->getEntityManager()
+      ->getConnection()
+      ->executeQuery(
+        'SELECT ma_moulinette.purge_batch_profiling(:days) AS deleted',
+        ['days' => $days]
+      )
+      ->fetchOne();
   }
 }

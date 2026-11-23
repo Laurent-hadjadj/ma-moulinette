@@ -27,6 +27,17 @@ use App\Entity\Utilisateur;
  */
 class ResetPasswordFormType extends AbstractType
 {
+    /**
+     * [Description for buildForm]
+     *
+     * @param FormBuilderInterface<Utilisateur|null> $builder
+     * @param array<string, mixed> $options
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -89,6 +100,16 @@ class ResetPasswordFormType extends AbstractType
         ]);
     }
 
+    /**
+     * [Description for configureOptions]
+     *
+     * @param OptionsResolver $resolver
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

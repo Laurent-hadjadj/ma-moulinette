@@ -47,7 +47,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 16/11/2025 09:08:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -126,7 +125,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 12/07/2026 10:01:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -190,7 +188,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 16/11/2025 20:12:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -225,7 +222,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 16/11/2025 20:11:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -260,7 +256,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 16/11/2025 20:12:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -301,7 +296,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 16/11/2025 20:12:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -342,7 +336,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 16/11/2025 20:12:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -383,7 +376,6 @@ class ProfilingApiController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 16/11/2025 20:12:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

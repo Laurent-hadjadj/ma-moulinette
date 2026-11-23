@@ -45,8 +45,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 21/12/2024 19:59:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -80,8 +78,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 16/02/2024 12:08:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -110,10 +106,8 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int, string> $versions
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 27/10/2023 15:37:32 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getProjetFavori(string $mavenKey, array $versions): array
     {
@@ -155,8 +149,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 16/02/2024 10:57:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -209,8 +201,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/02/2024 10:29:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -243,8 +233,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 25/02/2024 10:13:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -372,8 +360,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map  attend `maven_key` et `limit`
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 06/05/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -441,8 +427,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 20/01/2025 11:28:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -492,8 +476,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 25/02/2024 12:38:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -541,8 +523,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 25/02/2024 12:48:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -755,8 +735,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 25/02/2024 17:31:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -798,8 +776,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map  [maven_key, versions: string[]]
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 16/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -844,8 +820,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 25/02/2024 17:34:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1282,8 +1256,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param string $version
      *
      * @return string|null
-     *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1314,8 +1286,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param string $b
      *
      * @return int -1 si $a < $b, 0 si égale, 1 si $a > $b
-     *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1359,8 +1329,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 27/02/2024 19:08:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1391,8 +1359,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 29/02/2024 18:15:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1404,8 +1370,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 23/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1471,8 +1435,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 29/02/2024 18:49:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1507,8 +1469,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map  ['liste_projet' => string[], 'nombre_projet_favori' => int]
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 27/03/2024 19:07:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1567,8 +1527,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 18/06/2024 21:12:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1601,8 +1559,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int, string> $mavenKeys
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 24/09/2024 16:47:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1654,8 +1610,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int, string> $mavenKeys
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 19/05/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

@@ -20,6 +20,9 @@ use App\Repository\BatchProfilingRepository;
 
 /**
  * [Description BatchProfiling]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: BatchProfilingRepository::class)]
 #[ORM\Table(name: "batch_profiling", schema: "ma_moulinette")]
@@ -211,8 +214,6 @@ class BatchProfiling
      * [Description for __toString]
      *
      * @return string
-     *
-     * Created at: 13/11/2025 21:17:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

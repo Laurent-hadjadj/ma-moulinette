@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -87,8 +87,8 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->em->getConnection()->executeStatement(
             "DELETE FROM ma_moulinette.liste_projet WHERE maven_key IN ("
-            . "'fr.ma-moulinette:demo', 'fr.ma-moulinette:bravo', 'fr.ma-moulinette:projet-a', "
-            . "'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-wip', 'fr.hors-perimetre:projet-externe')"
+                . "'fr.ma-moulinette:demo', 'fr.ma-moulinette:bravo', 'fr.ma-moulinette:projet-a', "
+                . "'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-wip', 'fr.hors-perimetre:projet-externe')"
         );
     }
 

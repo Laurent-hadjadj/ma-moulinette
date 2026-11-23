@@ -22,13 +22,13 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class HotspotOwaspRepository extends ServiceEntityRepository
 {
-    private static string $removeReturnLine = "/\s+/u";
-    private static string $mavenKey = ':maven_key';
-    private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $mavenKey = ':maven_key';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
-      parent::__construct($registry, HotspotOwasp::class);
+    parent::__construct($registry, HotspotOwasp::class);
   }
 
   /**
@@ -36,73 +36,67 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 21/12/2024 19:47:50 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
-
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
    * [Description for countHotspotOwaspStatus]
    * On compte le nombre de hotspot REVIEWED
-     * @param array<int|string, mixed> $map
+   * @param array<int|string, mixed> $map
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 02/03/2024 23:23:25 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function countHotspotOwaspStatus(array $map): array
+  public function countHotspotOwaspStatus(array $map): array
   {
-      $sql = "SELECT count(*) AS nombre
+    $sql = "SELECT count(*) AS nombre
               FROM ma_moulinette.hotspot_owasp
               WHERE maven_key=:maven_key AND status=:status";
-      try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $stmt->bindValue(':status', $map['status']);
-          $nombre = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'request' => $nombre, 'erreur' => ''];
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(':status', $map['status']);
+      $nombre = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'request' => $nombre, 'erreur' => ''];
   }
 
   /**
    * [Description for countOwaspStatus]
    * On récupère le nombre de hotspot owasp par niveau de sévérité potentiel.
    *
-     * @param array<int|string, mixed> $map
-     * @return array<int|string, mixed>
-   *
-   * Created at: 02/03/2024 23:37:22 (Europe/Paris)
+   * @param array<int|string, mixed> $map
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function countHotspotOwaspProbability(array $map): array
+  public function countHotspotOwaspProbability(array $map): array
   {
     $sql = "SELECT probability, count(*) as total
             FROM ma_moulinette.hotspot_owasp
@@ -110,27 +104,25 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND status='TO_REVIEW' GROUP BY probability";
 
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-          $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-          $nombre = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $nombre = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 
   /**
    * [Description for countHotspotOwaspMenaces]
    * On récupère le nombre de hotspot au status TO_REVIEW
-     * @param array<int|string, mixed> $map
+   * @param array<int|string, mixed> $map
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 03/03/2024 12:38:43 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function countHotspotOwaspMenaces(array $map): array
+  public function countHotspotOwaspMenaces(array $map): array
   {
     $sql = "SELECT menace, count(*) as total
             FROM ma_moulinette.hotspot_owasp
@@ -138,11 +130,11 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND status='TO_REVIEW' GROUP BY menace";
 
     try {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-        $nombre = $stmt->executeQuery()->fetchAllAssociative();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'menaces' => $nombre, 'erreur' => ''];
   }
@@ -151,15 +143,13 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    * [Description for countHotspotOwaspMenaceByStatus]
    *  On compte le nombre de menace probable par type de status
    *
-     * @param array<int|string, mixed> $map
+   * @param array<int|string, mixed> $map
    *
-     * @return array<int|string, mixed>
-   *
-   * Created at: 03/03/2024 16:01:48 (Europe/Paris)
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function countHotspotOwaspMenaceByStatus(array $map): array
+  public function countHotspotOwaspMenaceByStatus(array $map): array
   {
     /* MODIF 26/10/2026 : BUG CORRIGÉ — cette requête ne filtrait pas par
      * referential_owasp, alors que hotspot_owasp porte une ligne par
@@ -177,14 +167,14 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND probability=:probability";
 
     try {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-          $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-          $stmt->bindValue(':menace', $map['menace']);
-          $stmt->bindValue(':referential_owasp', $map['referential_owasp']);
-          $stmt->bindValue(':probability', $map['probability']);
-        $nombre = $stmt->executeQuery()->fetchAllAssociative();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(':menace', $map['menace']);
+      $stmt->bindValue(':referential_owasp', $map['referential_owasp']);
+      $stmt->bindValue(':probability', $map['probability']);
+      $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'nombre' => $nombre[0], 'erreur' => ''];
   }
@@ -193,27 +183,25 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    * [Description for deleteHotpotOwaspMavenKey]
    * Supprime les hotspots de type owasp pour la version courante (i.e. correspondant à la maven_key)
    *
-     * @param array<int|string, mixed> $map
-     * @return array<int|string, mixed>
-   *
-   * Created at: 14/03/2024 08:21:10 (Europe/Paris)
+   * @param array<int|string, mixed> $map
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function deleteHotspotOwaspMavenKey(array $map): array
+  public function deleteHotspotOwaspMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.hotspot_owasp
             WHERE maven_key=:maven_key";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -222,43 +210,41 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    * [Description for insertHotspotOwasp]
    *
    *
-     * @param array<int, array<string, mixed>> $map
-     * @return array<int|string, mixed>
-   *
-   * Created at: 30/05/2024 15:54:30 (Europe/Paris)
+   * @param array<int, array<string, mixed>> $map
+   * @return array<int|string, mixed>
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
-    public function insertHotspotOwasp(array $map): array
+  public function insertHotspotOwasp(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.hotspot_owasp
               (referential_owasp, maven_key, version, date_version, menace, security_category, rule_key, probability, status, resolution, niveau, mode_collecte, utilisateur_collecte, date_enregistrement)
             VALUES
               (:referential_owasp, :maven_key, :version, :date_version, :menace, :security_category, :rule_key, :probability, :status, :resolution, :niveau, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
-        $this->getEntityManager()->getConnection()->beginTransaction();
-            foreach ($map as $ref) {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':referential_owasp', $ref['referential_owasp']);
-                    $stmt->bindValue(self::$mavenKey, $ref['maven_key']);
-                    $stmt->bindValue(':version', $ref['version']);
-                    $stmt->bindValue(':date_version', $ref['date_version']->format('Y-m-d H:i:sO'));
-                    $stmt->bindValue(':menace', $ref['menace']);
-                    $stmt->bindValue(':security_category', $ref['security_category']);
-                    $stmt->bindValue(':rule_key', $ref['rule_key']);
-                    $stmt->bindValue(':probability', $ref['probability']);
-                    $stmt->bindValue(':status', $ref['status']);
-                    $stmt->bindValue(':resolution', $ref['resolution']);
-                    $stmt->bindValue(':niveau', $ref['niveau']);
-                    $stmt->bindValue(':mode_collecte', $ref['mode_collecte']);
-                    $stmt->bindValue(':utilisateur_collecte', $ref['utilisateur_collecte']);
-                    $stmt->bindValue(':date_enregistrement', $ref['date_enregistrement']->format('Y-m-d H:i:sO'));
-                    $stmt->executeStatement();
-            }
-        $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      foreach ($map as $ref) {
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+        $stmt->bindValue(':referential_owasp', $ref['referential_owasp']);
+        $stmt->bindValue(self::$mavenKey, $ref['maven_key']);
+        $stmt->bindValue(':version', $ref['version']);
+        $stmt->bindValue(':date_version', $ref['date_version']->format('Y-m-d H:i:sO'));
+        $stmt->bindValue(':menace', $ref['menace']);
+        $stmt->bindValue(':security_category', $ref['security_category']);
+        $stmt->bindValue(':rule_key', $ref['rule_key']);
+        $stmt->bindValue(':probability', $ref['probability']);
+        $stmt->bindValue(':status', $ref['status']);
+        $stmt->bindValue(':resolution', $ref['resolution']);
+        $stmt->bindValue(':niveau', $ref['niveau']);
+        $stmt->bindValue(':mode_collecte', $ref['mode_collecte']);
+        $stmt->bindValue(':utilisateur_collecte', $ref['utilisateur_collecte']);
+        $stmt->bindValue(':date_enregistrement', $ref['date_enregistrement']->format('Y-m-d H:i:sO'));
+        $stmt->executeStatement();
+      }
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }

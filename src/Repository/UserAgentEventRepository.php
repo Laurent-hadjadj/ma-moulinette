@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -36,10 +36,8 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 14/12/2025 18:04:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -72,10 +70,8 @@ class UserAgentEventRepository extends ServiceEntityRepository
      *              processing_status: string, ip_hash: string, created_at: \DateTimeImmutable} $map
      *
      * @return array{code: 200, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 14/12/2025 18:05:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function insertUserAgentEvent(array $map): array
     {
@@ -120,10 +116,8 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * @param int $limit
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 14/12/2025 18:05:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectPendingEvents(int $limit = 20): array
     {
@@ -164,10 +158,8 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * @param int $limit
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 25/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function claimPendingEvents(int $limit): array
     {
@@ -217,10 +209,8 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * @param \DateTimeImmutable|null $processedAt
      *
      * @return array{code: 200, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 14/12/2025 18:05:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function updateProcessingStatus(
         int $id,
@@ -255,10 +245,8 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countOlderThan(int $days): int
     {
@@ -280,10 +268,8 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int nombre de lignes supprimées
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function purge(int $days): int
     {

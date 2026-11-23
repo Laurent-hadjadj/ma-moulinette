@@ -60,7 +60,6 @@ class MaskSensitiveEnvVariablesProcessor implements ProcessorInterface
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 05/02/2026 14:56:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -84,7 +83,6 @@ class MaskSensitiveEnvVariablesProcessor implements ProcessorInterface
      *
      * @return string
      *
-     * Created at: 05/02/2026 14:56:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

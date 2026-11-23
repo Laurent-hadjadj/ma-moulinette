@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -164,7 +164,8 @@ class ApiProfilControllerTest extends TestCase
         $this->security->method('isGranted')->willReturn(true);
         $profiles = [['key' => 'p1', 'language' => 'java']];
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 200, 'json' => ['profiles' => $profiles],
+            'code' => 200,
+            'json' => ['profiles' => $profiles],
         ]);
         $this->profilesRepo->method('deleteProfiles')->willReturn(['code' => 200]);
         $this->profilesRepo->method('insertProfiles')->willReturn(['code' => 200, 'nombre' => 1]);
@@ -195,7 +196,8 @@ class ApiProfilControllerTest extends TestCase
     public function testListeQualityLangageReturnsErrorWhenRuleCountFails(): void
     {
         $this->profilesRepo->method('selectProfilesLanguage')->willReturn([
-            'code' => 200, 'labels' => [['profile' => 'java']],
+            'code' => 200,
+            'labels' => [['profile' => 'java']],
         ]);
         $this->profilesRepo->expects($this->once())
             ->method('selectProfilesRuleCount')
@@ -337,7 +339,8 @@ class ApiProfilControllerTest extends TestCase
         $token = $this->buildToken('salt|java|profil');
 
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 503, 'erreur' => 'timeout',
+            'code' => 503,
+            'erreur' => 'timeout',
         ]);
 
         $twig = $this->createMock(\Twig\Environment::class);
@@ -360,10 +363,21 @@ class ApiProfilControllerTest extends TestCase
             'code' => 200,
             'json' => [
                 'events' => [
-                    ['date' => '2026-04-20T10:00:00+0200', 'action' => 'ACTIVATED',
-                    'authorName' => 'alice', 'ruleKey' => 'R1', 'ruleName' => 'Rule 1', 'params' => []],
-                    ['date' => '2026-04-21T10:00:00+0200', 'action' => 'UPDATED',
-                    'ruleKey' => 'R2', 'ruleName' => 'Rule 2', 'params' => []],
+                    [
+                        'date' => '2026-04-20T10:00:00+0200',
+                        'action' => 'ACTIVATED',
+                        'authorName' => 'alice',
+                        'ruleKey' => 'R1',
+                        'ruleName' => 'Rule 1',
+                        'params' => []
+                    ],
+                    [
+                        'date' => '2026-04-21T10:00:00+0200',
+                        'action' => 'UPDATED',
+                        'ruleKey' => 'R2',
+                        'ruleName' => 'Rule 2',
+                        'params' => []
+                    ],
                 ],
                 'total' => 2,
             ],
@@ -376,16 +390,29 @@ class ApiProfilControllerTest extends TestCase
             ->willReturn(['liste' => [['date_courte' => '2026-04-21']]]);
         $this->historiqueRepo->method('selectProfilesHistoriqueLangageDateCourte')
             ->willReturn(['liste' => [
-                ['date' => '2026-04-21T10:00:00+0200', 'action' => 'UPDATED',
-                'auteur' => 'alice', 'rule' => 'R2', 'description' => 'Rule 2', 'detail' => '{}'],
-                ['date' => '2026-04-21T11:00:00+0200', 'action' => 'ACTIVATED',
-                'auteur' => 'bob', 'rule' => 'R3', 'description' => 'Rule 3', 'detail' => '{}'],
+                [
+                    'date' => '2026-04-21T10:00:00+0200',
+                    'action' => 'UPDATED',
+                    'auteur' => 'alice',
+                    'rule' => 'R2',
+                    'description' => 'Rule 2',
+                    'detail' => '{}'
+                ],
+                [
+                    'date' => '2026-04-21T11:00:00+0200',
+                    'action' => 'ACTIVATED',
+                    'auteur' => 'bob',
+                    'rule' => 'R3',
+                    'description' => 'Rule 3',
+                    'detail' => '{}'
+                ],
             ]]);
 
         $twig = $this->createMock(\Twig\Environment::class);
         $twig->expects($this->once())
             ->method('render')
-            ->with('profil/details.html.twig', $this->callback(fn($ctx) =>
+            ->with('profil/details.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['profil'] === 'my-profil' && $ctx['langage'] === 'java'
             ))
             ->willReturn('<html>ok</html>');
@@ -458,7 +485,9 @@ class ApiProfilControllerTest extends TestCase
             $requestStack->method('getSession')->willReturn($session);
 
             $container->method('has')->willReturnMap([
-                ['twig', true], ['parameter_bag', true], ['request_stack', true],
+                ['twig', true],
+                ['parameter_bag', true],
+                ['request_stack', true],
             ]);
             $container->method('get')->willReturnMap([
                 ['twig', 1, $twig],
@@ -467,7 +496,8 @@ class ApiProfilControllerTest extends TestCase
             ]);
         } else {
             $container->method('has')->willReturnMap([
-                ['twig', true], ['parameter_bag', true],
+                ['twig', true],
+                ['parameter_bag', true],
             ]);
             $container->method('get')->willReturnMap([
                 ['twig', 1, $twig],

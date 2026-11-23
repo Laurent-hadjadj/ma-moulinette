@@ -5,13 +5,14 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Dev. */
+
 namespace App\Command\Dev;
 
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -49,9 +50,8 @@ class LdapTestCommand extends Command
      *
      * @return int
      *
-     * Created at: 11/02/2026 15:33:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -69,15 +69,15 @@ class LdapTestCommand extends Command
         $ldapEncryption = $_ENV['LDAP_ENCRYPTION'];
 
         $ldap = Ldap::create('ext_ldap', [
-                'host' => $ldapHost,
-                'port' => $ldapPort,
-                'encryption' => $ldapEncryption,
-                'options' => [
-                        'protocol_version' => 3,
-                        'referrals' => false,
-                        'network_timeout' => 3,
-                        'x_tls_require_cert' => 0
-                ],
+            'host' => $ldapHost,
+            'port' => $ldapPort,
+            'encryption' => $ldapEncryption,
+            'options' => [
+                'protocol_version' => 3,
+                'referrals' => false,
+                'network_timeout' => 3,
+                'x_tls_require_cert' => 0
+            ],
         ]);
 
         try {
@@ -88,18 +88,18 @@ class LdapTestCommand extends Command
 
             $output->writeln('<info>✅ Connexion LDAP OK</info>');
         } catch (LdapException $e) {
-                        $output->writeln('<error>❌ Erreur LDAP: ' . $e->getMessage() . self::TAG_ERROR_CLOSE);
-                        $output->writeln('<error>❌ Code d\'erreur LDAP: ' . $e->getCode() . self::TAG_ERROR_CLOSE);
-                        $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . self::TAG_ERROR_CLOSE);
-                        // MODIF 2026-07-21 : le code retournait toujours Command::SUCCESS,
-                        // y compris quand le bind LDAP échouait.
-                        return Command::FAILURE;
-                } catch (\Exception $e) {
-                        $output->writeln('<error>❌ Erreur générale: ' . $e->getMessage() . self::TAG_ERROR_CLOSE);
-                        $output->writeln('<error>❌ Code d\'erreur: ' . $e->getCode() . self::TAG_ERROR_CLOSE);
-                        $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . self::TAG_ERROR_CLOSE);
-                        return Command::FAILURE;
-                }
+            $output->writeln('<error>❌ Erreur LDAP: ' . $e->getMessage() . self::TAG_ERROR_CLOSE);
+            $output->writeln('<error>❌ Code d\'erreur LDAP: ' . $e->getCode() . self::TAG_ERROR_CLOSE);
+            $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . self::TAG_ERROR_CLOSE);
+            // MODIF 2026-07-21 : le code retournait toujours Command::SUCCESS,
+            // y compris quand le bind LDAP échouait.
+            return Command::FAILURE;
+        } catch (\Exception $e) {
+            $output->writeln('<error>❌ Erreur générale: ' . $e->getMessage() . self::TAG_ERROR_CLOSE);
+            $output->writeln('<error>❌ Code d\'erreur: ' . $e->getCode() . self::TAG_ERROR_CLOSE);
+            $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . self::TAG_ERROR_CLOSE);
+            return Command::FAILURE;
+        }
 
         return Command::SUCCESS;
     }

@@ -49,11 +49,10 @@ class ZapPayloadDecoder
      *
      * @param string $rawBody
      * @param string|null $declaredContentType
-     * @throws ZapPayloadDecodeException si une etape echoue
+     * @throws ZapPayloadDecodeException si une etape échoue
      *
      * @return ZapPayloadDecodeResult
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -109,10 +108,10 @@ class ZapPayloadDecoder
         $sha256 = hash('sha256', $jsonString);
 
         return new ZapPayloadDecodeResult(
-            jsonString:  $jsonString,
+            jsonString: $jsonString,
             decodedSize: $decodedSize,
             contentType: $detectedFormat,
-            sha256:      $sha256,
+            sha256: $sha256,
         );
     }
 
@@ -124,7 +123,6 @@ class ZapPayloadDecoder
      *
      * @return string
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -170,7 +168,6 @@ class ZapPayloadDecoder
      *
      * @return bool
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -216,7 +213,6 @@ class ZapPayloadDecoder
      *
      * @return void
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -247,7 +243,6 @@ class ZapPayloadDecoder
      *
      * @return string
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -267,7 +262,6 @@ class ZapPayloadDecoder
      *
      * @return string
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -317,7 +311,6 @@ class ZapPayloadDecoder
      *
      * @return string
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -365,7 +358,6 @@ class ZapPayloadDecoder
      *
      * @return string
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -397,7 +389,6 @@ class ZapPayloadDecoder
      *
      * @return void
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

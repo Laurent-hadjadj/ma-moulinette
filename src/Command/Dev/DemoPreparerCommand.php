@@ -43,7 +43,7 @@ use Symfony\Component\Security\Core\User\InMemoryUser;
  * L'export vers docker/demo/donnees/demo.sql.gz est fait par docker/demo/preparer-donnees.sh.
  *
  * Garde-fous : environnement `dev` uniquement ET connexion obligatoirement dirigée vers la pile de préparation
- * (hôte local, port {@see self::PORT_PREPARATION}). Sans cela la commande refuse de s'exécuter : elle vide et réécrit
+ * (hôte local, port {see \\App\\Command\\Dev\\DemoPreparerCommand::PORT_PREPARATION}). Sans cela la commande refuse de s'exécuter : elle vide et réécrit
  * des tables, elle ne doit jamais atteindre une base de développement partagée ni de production.
  *
  * Usage :
@@ -68,6 +68,8 @@ class DemoPreparerCommand extends Command
     /** @var array<string, string> cause du dernier échec par projet (affichée au compte-rendu) */
     private array $messages = [];
 
+    private const FAILED = 'ÉCHEC';
+
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly ApiAccueilController $accueil,
@@ -82,9 +84,15 @@ class DemoPreparerCommand extends Command
     }
 
     /**
+     * [Description for baseAutorisee]
      * La connexion pointe-t-elle vers la pile de préparation (hôte local et port dédié) ?
      *
      * @param array<string, mixed> $params paramètres de connexion DBAL (host, port)
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function baseAutorisee(array $params): bool
     {
@@ -95,16 +103,20 @@ class DemoPreparerCommand extends Command
     }
 
     /**
+     * [Description for retenirProjets]
      * Garde les projets demandés (tous si aucune clé n'est donnée) et signale les clés introuvables.
      *
      * @param array<int, array{id: string, text?: string}> $liste projets de la liste (clé Maven dans « id »)
      * @param array<int, string>                           $cles  clés demandées (option --projet)
      *
      * @return array{retenus: array<int, string>, inconnus: array<int, string>}
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function retenirProjets(array $liste, array $cles): array
     {
-        $disponibles = array_values(array_unique(array_map(static fn (array $p): string => (string) $p['id'], $liste)));
+        $disponibles = array_values(array_unique(array_map(static fn(array $p): string => (string) $p['id'], $liste)));
         sort($disponibles);
 
         if ($cles === []) {
@@ -118,6 +130,14 @@ class DemoPreparerCommand extends Command
         return ['retenus' => $retenus, 'inconnus' => $inconnus];
     }
 
+    /**
+     * [Description for configure]
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function configure(): void
     {
         $this
@@ -127,6 +147,17 @@ class DemoPreparerCommand extends Command
             ->addOption('liste-seulement', null, InputOption::VALUE_NONE, 'Rafraîchit les projets et profils, affiche les projets retenus, ne collecte rien.');
     }
 
+    /**
+     * [Description for execute]
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -140,7 +171,7 @@ class DemoPreparerCommand extends Command
         if (!self::baseAutorisee($params)) {
             $io->error(sprintf(
                 "Connexion refusée : cette commande n'écrit que dans la pile de préparation (hôte local, port %d). "
-                . 'Connexion courante : %s:%s. Lancez-la par docker/demo/preparer-donnees.sh.',
+                    . 'Connexion courante : %s:%s. Lancez-la par docker/demo/preparer-donnees.sh.',
                 self::PORT_PREPARATION,
                 (string) ($params['host'] ?? '?'),
                 (string) ($params['port'] ?? '?')
@@ -217,14 +248,14 @@ class DemoPreparerCommand extends Command
             if ($collecteOk && !$input->getOption('sans-historique')) {
                 $historiqueOk = $this->reconstruireHistorique($cle);
             }
-            if (!$collecteOk || $etatCleanCode === 'ÉCHEC' || $historiqueOk === false) {
+            if (!$collecteOk || $etatCleanCode === self::FAILED || $historiqueOk === false) {
                 ++$erreurs;
             }
             $lignes[] = [
                 $cle,
-                $etatCollecte ?? 'ÉCHEC',
+                $etatCollecte ?? self::FAILED,
                 $etatCleanCode ?? '-',
-                $historiqueOk === null ? '-' : ($historiqueOk ? 'OK' : 'ÉCHEC'),
+                $historiqueOk === null ? '-' : ($historiqueOk ? 'OK' : self::FAILED),
                 (string) $this->compterHistorique($cle),
             ];
         }
@@ -242,8 +273,15 @@ class DemoPreparerCommand extends Command
         return Command::SUCCESS;
     }
 
+
     /**
+     * [Description for rafraichirProfils]
      * Les profils exigent ROLE_GESTIONNAIRE (contrôle interne du contrôleur) : jeton temporaire, restauré ensuite.
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function rafraichirProfils(): bool
     {
@@ -262,8 +300,15 @@ class DemoPreparerCommand extends Command
     }
 
     /**
+     * [Description for collecter]
+     *
+     * @param string $cle
+     *
      * @return string|null « OK » (collecté), « À JOUR » (code 202 : l'analyse locale est déjà celle de SonarQube, la
      *                     collecte s'arrête volontairement) ou null en cas d'échec
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function collecter(string $cle): ?string
     {
@@ -287,10 +332,15 @@ class DemoPreparerCommand extends Command
     }
 
     /**
-     * Collecte les indicateurs Clean Code (SonarQube 10+) dans la table clean_code.
+     * [Description for collecterCleanCode]
+     *
+     * @param string $cle
      *
      * @return string « OK », « NON SUPPORTÉ » (serveur SonarQube sans facettes 10+ : silencieux dans l'application, ce
      *                n'est pas un échec) ou « ÉCHEC »
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function collecterCleanCode(string $cle): string
     {
@@ -298,22 +348,43 @@ class DemoPreparerCommand extends Command
             $resultat = $this->cleanCode->BatchCollecteCleanCode($cle, 'COLLECTE', self::COURRIEL_COLLECTE);
         } catch (\Throwable $e) {
             $this->ajouterMessage($cle, 'clean code : ' . $e->getMessage());
-            return 'ÉCHEC';
+            return self::FAILED;
         }
 
         if (($resultat['code'] ?? null) !== 200) {
             $this->ajouterMessage($cle, sprintf('clean code : code %s', (string) ($resultat['code'] ?? '?')));
-            return 'ÉCHEC';
+            return self::FAILED;
         }
 
         return empty($resultat['skipped']) ? 'OK' : 'NON SUPPORTÉ';
     }
 
+    /**
+     * [Description for ajouterMessage]
+     *
+     * @param string $cle
+     * @param string $message
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function ajouterMessage(string $cle, string $message): void
     {
         $this->messages[$cle] = isset($this->messages[$cle]) ? $this->messages[$cle] . ' ; ' . $message : $message;
     }
 
+    /**
+     * [Description for reconstruireHistorique]
+     *
+     * @param string $cle
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function reconstruireHistorique(string $cle): bool
     {
         $application = $this->getApplication();
@@ -340,6 +411,16 @@ class DemoPreparerCommand extends Command
         return true;
     }
 
+    /**
+     * [Description for compterHistorique]
+     *
+     * @param string $cle
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function compterHistorique(string $cle): int
     {
         return (int) $this->em->getConnection()->fetchOne(
@@ -348,8 +429,16 @@ class DemoPreparerCommand extends Command
         );
     }
 
+
     /**
+     * [Description for decoder]
+     *
+     * @param JsonResponse $reponse
+     *
      * @return array<string, mixed>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decoder(JsonResponse $reponse): array
     {

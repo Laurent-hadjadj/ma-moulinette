@@ -37,22 +37,21 @@ class ActivityReportService
      *
      * @return void
      *
-     * Created at: 31/12/2024 16:28:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function generateReport(array $infos, int $successfulTasksCount, array $errors): void
     {
         $report = new ActivityBatchReport();
-            $report->setDateStart($infos['date_start']);
-            $report->setDateEnd($infos['date_end']);
-            $report->setTaskCount($infos['task_count']);
-            $report->setTaskDone($successfulTasksCount);
-            $report->setPage($infos['page']);
-            $report->setLastError($errors);
-            $report->setDateEnregistrement(new \DateTimeImmutable());
+        $report->setDateStart($infos['date_start']);
+        $report->setDateEnd($infos['date_end']);
+        $report->setTaskCount($infos['task_count']);
+        $report->setTaskDone($successfulTasksCount);
+        $report->setPage($infos['page']);
+        $report->setLastError($errors);
+        $report->setDateEnregistrement(new \DateTimeImmutable());
 
-            $this->em->persist($report);
-            $this->em->flush();
+        $this->em->persist($report);
+        $this->em->flush();
     }
 }

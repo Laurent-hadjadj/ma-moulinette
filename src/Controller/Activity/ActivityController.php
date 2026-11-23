@@ -52,9 +52,8 @@ class ActivityController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -77,7 +76,6 @@ class ActivityController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/12/2024 20:50:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -99,9 +97,8 @@ class ActivityController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/activity', name: 'activity', methods: 'GET')]
     #[IsGranted('ROLE_ACTIVITY')]
@@ -255,7 +252,6 @@ class ActivityController extends AbstractController
      *
      * @return array<string, mixed>
      *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -335,7 +331,9 @@ class ActivityController extends AbstractController
         foreach ($heureRows as $h) {
             $parHeure[(int) $h['heure']] = ['analyse' => (int) $h['analyse'], 'projet' => (int) $h['projet']];
         }
-        /* Le graphique garde les 13 heures (7h-19h) avec des zéros, pour
+
+        /**
+         * Le graphique garde les 13 heures (7h-19h) avec des zéros, pour
          * visualiser les creux de la journée ; le tableau, lui, ne liste que
          * les heures avec des données — même convention que semaine_table/
          * mois_table (listeAnalyseProjetPeriode ne retourne déjà que les
@@ -406,7 +404,6 @@ class ActivityController extends AbstractController
      *
      * @return array{table: array<int, array<string, mixed>>, total: int}
      *
-     * Created at: 19/11/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -449,7 +446,6 @@ class ActivityController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

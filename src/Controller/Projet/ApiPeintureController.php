@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Projet;
@@ -32,9 +32,8 @@ class ApiPeintureController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 11/10/2023 13:38:04 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -58,9 +57,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return string
      *
-     * Created at: 20/03/2024 19:34:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function calculNoteHotspot($toReview, $reviewed): string
     {
@@ -93,9 +91,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 05/02/2025 08:09:44 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function vulnerabilityProbability(array $niveaux): array
     {
@@ -132,9 +129,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:53:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/version', name: 'peinture_projet_version', methods: ['POST'])]
     public function peintureProjetVersion(Request $request): JsonResponse
@@ -230,9 +226,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 29/09/2026 20:48:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/rci', name: 'peinture_projet_rci', methods: ['POST'])]
     public function peintureProjetRci(Request $request): JsonResponse
@@ -296,7 +291,8 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /* MODIF 2026-09-29 : selectMesuresRci() utilise fetchAssociative() —
+        /**
+         * MODIF 2026-09-29 : selectMesuresRci() utilise fetchAssociative() —
          * 'liste' vaut soit la ligne (array), soit false si le projet n'a
          * jamais eu de collecte RCI. Lecture via '??' (silencieuse si la clé
          * est absente) puis normalisation en [] pour éviter tout accès à un
@@ -344,9 +340,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/eco-conception', name: 'peinture_projet_eco_conception', methods: ['POST'])]
     public function peintureProjetEcoConception(Request $request): JsonResponse
@@ -410,7 +405,8 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /* selectEcoConception() utilise fetchAssociative() — 'liste' vaut soit
+        /**
+         * selectEcoConception() utilise fetchAssociative() — 'liste' vaut soit
          * la ligne (array), soit false si le projet n'a jamais eu de collecte
          * Empreinte Écologique. Même pattern que peintureProjetRci. */
         $ecoConceptionListe = $ecoConception['liste'] ?? false;
@@ -447,9 +443,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/accessibility', name: 'peinture_projet_accessibility', methods: ['POST'])]
     public function peintureProjetAccessibility(Request $request): JsonResponse
@@ -513,7 +508,8 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /* selectAccessibility() utilise fetchAssociative() — 'liste' vaut soit
+        /**
+         * selectAccessibility() utilise fetchAssociative() — 'liste' vaut soit
          * la ligne (array), soit false si le projet n'a jamais eu de collecte
          * Accessibilité. Même pattern que peintureProjetEcoConception. */
         $accessibilityListe = $accessibility['liste'] ?? false;
@@ -551,9 +547,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:53:58 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/mesures', name: 'peinture_projet_mesures', methods: ['POST'])]
     public function peintureProjetMesures(Request $request): JsonResponse
@@ -598,7 +593,8 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /* MODIF 2026-05-04 :
+        /**
+         * MODIF 2026-05-04 :
          *   1. Renommage variable locale $request → $result (le paramètre $request était écrasé,
          *      anti-pattern déjà corrigé sur ApiSuiviController).
          *   2. Ajout d'un guard sur $result['mesures'] === false : fetchAssociative() renvoie false
@@ -642,8 +638,9 @@ class ApiPeintureController extends AbstractController
          */
         $languageDistribution = $this->parseLanguageDistribution($result['mesures']['ncloc_language_distribution'] ?? null);
 
-        /*
-        * MODIF 2026-05-06 : Comptes NoSonar et To do par langage : la table mesures ne les stocke pas, il faut interroger les tables de detail (no_sonar, to do) qui ont 1 ligne
+        /**
+         * MODIF 2026-05-06 : Comptes NoSonar et To do par langage : la table mesures ne les stocke pas,
+         * il faut interroger les tables de detail (no_sonar, to do) qui ont 1 ligne
          * par occurrence. Les repos exposent deja un GROUP BY rule, on mappe ensuite
          * vers les noms de colonnes attendus par historique. Ces valeurs partent
          * via window.peintureData -> spread payload -> insert historique. */
@@ -780,10 +777,8 @@ class ApiPeintureController extends AbstractController
      *   java_no_sonar: int, python_no_sonar: int, php_no_sonar: int,
      *   suppress_warning: int, no_pmd: int, check_style: int
      * }
-     *
-     * Created at: 12/07/2026 11:23:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function aggregateNoSonarByRule(array $rows): array
     {
@@ -827,10 +822,8 @@ class ApiPeintureController extends AbstractController
      *   java_todo: int, python_todo: int, php_todo: int, xml_todo: int,
      *   web_todo: int, javascript_todo: int, typescript_todo: int, ruby_todo: int
      * }
-     *
-     * Created at: 12/07/2026 11:22:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function aggregateTodoByRule(array $rows): array
     {
@@ -873,9 +866,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:54:30 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['POST'])]
     public function peintureProjetAnomalie(Request $request): JsonResponse
@@ -963,7 +955,8 @@ class ApiPeintureController extends AbstractController
         $severityInfo = $anomalie['liste'][0]['info'];
         $severityMinor = $anomalie['liste'][0]['minor'];
 
-        /* MODIF 2026-10-11 : ?? 0 -> ?? null (frontend/backend/autre/inconnu + scope) —
+        /**
+         * MODIF 2026-10-11 : ?? 0 -> ?? null (frontend/backend/autre/inconnu + scope) —
          * une mesure jamais collectée (aucune ligne anomalie pour ce projet) doit
          * déclencher l'affichage "-" côté UI, pas laisser croire à "zéro anomalie
          * mesurée". Colonnes NOT NULL en base, seule la ligne elle-même peut être
@@ -974,7 +967,8 @@ class ApiPeintureController extends AbstractController
         $autre = $anomalie['liste'][0]['autre'] ?? null;
         $inconnu = $anomalie['liste'][0]['inconnu'] ?? null;
 
-        /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
+        /**
+         * MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
          * globale et par catégorie. */
         $scopeMain = $anomalie['liste'][0]['scope_main'] ?? null;
         $scopeTest = $anomalie['liste'][0]['scope_test'] ?? null;
@@ -1030,11 +1024,11 @@ class ApiPeintureController extends AbstractController
      * isValideMavenKey, 4 queries repo, JsonResponse.
      *
      * @param Request $request
+     *
      * @return JsonResponse
      *
-     * Created at: 15/05/2026 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/logger-details', name: 'peinture_projet_logger_details', methods: ['POST'])]
     public function peintureProjetLoggerDetails(Request $request): Response
@@ -1102,9 +1096,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:56:17 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['POST'])]
     public function peintureProjetAnomalieDetails(Request $request): Response
@@ -1226,9 +1219,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:56:43 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['POST'])]
     public function peintureProjetHotspots(Request $request): JsonResponse
@@ -1334,9 +1326,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:57:40 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/hotspots/details', name: 'peinture_projet_hotspots_details', methods: ['POST'])]
     public function peintureProjetHotspotsDetails(Request $request): JsonResponse
@@ -1445,9 +1436,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:58:42 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/nosonar', name: 'peinture_projet_nosonar', methods: ['POST'])]
     public function peintureProjetNoSonar(Request $request): JsonResponse
@@ -1542,7 +1532,8 @@ class ApiPeintureController extends AbstractController
         $totalNoSonar = $javaNoSonar + $pythonNoSonar + $phpNoSonar;
         $total = $suppressWarning + $noPmd + $checkStyle + $totalNoSonar;
 
-        /* MODIF 2026-05-06 : ajout de la liste détaillée
+        /**
+         * MODIF 2026-05-06 : ajout de la liste détaillée
          * (rule + component + line) pour alimenter le tableau "Liste des fichiers"
          * de la modale Detail NoSonar. */
         $details = $noSonarRepos->selectNoSonarComponentOrderByRule($map);
@@ -1587,9 +1578,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 10/04/2023, 17:54:08 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/todo', name: 'peinture_projet_todo', methods: ['POST'])]
     public function peintureProjetTodo(Request $request): JsonResponse
@@ -1650,7 +1640,8 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /* MODIF 2026-05-06 : ajout python, php, ruby
+        /**
+         * MODIF 2026-05-06 : ajout python, php, ruby
          * (l'API renvoyait 5 langages, modale incomplete cote front).
          * `web` correspond au scope HTML/JSP/templates SonarQube (rule Web:S1135). */
         $todo = $java = $javascript = $typescript = $html = $xml = 0;
@@ -1696,7 +1687,8 @@ class ApiPeintureController extends AbstractController
         /** On récupère la liste détaillée. */
         $map = ['maven_key' => $maven_key];
         $details = $todoRepos->selectTodoComponentOrderByRule($map);
-        /* MODIF 2026-05-04 : ajout logger->error + alignement pattern.
+        /**
+         * MODIF 2026-05-04 : ajout logger->error + alignement pattern.
          * Bug corrigé au passage : le message utilisait $rules['code'] au lieu de $details['code']. */
         if ($details['code'] !== 200) {
             $this->logger->error('[Collecte-Peinture] ❌ Échec de la requête selectTodoComponentOrderByRule.', [
@@ -1738,9 +1730,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 12/09/2024 21:57:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/logger', name: 'peinture_projet_logger', methods: ['POST'])]
     public function peintureProjetLogger(Request $request): JsonResponse
@@ -1801,7 +1792,8 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /* MODIF 2026-05-04 : sentinel -1 → null.
+        /**
+         * MODIF 2026-05-04 : sentinel -1 → null.
          * `null` signifie "pas de données" (plugin SonarQube logger inactif sur ce projet),
          * différent de `0` qui signifie "0 logger collecté".
          * Le frontend (displayHelper.displayNumber) affiche '-' pour null et '0' pour 0. */
@@ -1856,9 +1848,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 23/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/peinture/projet/actuator', name: 'peinture_projet_actuator', methods: ['POST'])]
     public function peintureProjetActuator(Request $request): JsonResponse
@@ -1935,9 +1926,8 @@ class ApiPeintureController extends AbstractController
      *
      * @return array<string,int>  ex: ['java' => 1234, 'ruby' => 56]
      *
-     * Created at: 12/07/2026 11:44:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function parseLanguageDistribution(?string $raw): array
     {

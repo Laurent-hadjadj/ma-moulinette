@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Admin;
@@ -65,9 +65,8 @@ class UserRoleLogController extends AbstractController
      *
      * @return array<string, mixed>
      *
-     * Created at: 21/07/2026 19:12:33 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -88,9 +87,8 @@ class UserRoleLogController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 21/07/2026 19:12:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/admin/journal-roles', name: 'admin_user_role_log_index')]
     public function index(): Response
@@ -108,10 +106,8 @@ class UserRoleLogController extends AbstractController
      * @param array<string, mixed> $row
      *
      * @return array<string, mixed>
-     *
-     * Created at: 21/07/2026 19:13:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function formatRow(array $row): array
     {
@@ -138,9 +134,8 @@ class UserRoleLogController extends AbstractController
      *
      * @return array<string, mixed>
      *
-     * Created at: 21/07/2026 19:13:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildFilters(Request $request): array
     {
@@ -171,9 +166,8 @@ class UserRoleLogController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 21/07/2026 19:14:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/admin/journal-roles/list', name: 'admin_user_role_log_api_list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
@@ -190,7 +184,7 @@ class UserRoleLogController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $lignes = array_map(fn (array $row) => $this->formatRow($row), $result['liste']);
+        $lignes = array_map(fn(array $row) => $this->formatRow($row), $result['liste']);
 
         return new JsonResponse([
             'code' => 200,
@@ -206,14 +200,13 @@ class UserRoleLogController extends AbstractController
      *
      * @return int[]
      *
-     * Created at: 21/07/2026 19:14:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function requestedIds(Request $request): array
     {
         return array_values(array_filter(array_map(
-            static fn ($id) => (int) $id,
+            static fn($id) => (int) $id,
             $request->request->all('ids')
         )));
     }
@@ -224,10 +217,8 @@ class UserRoleLogController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     *
-     * Created at: 21/07/2026 19:14:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/admin/journal-roles/archive', name: 'admin_user_role_log_archive', methods: ['POST'])]
     public function archive(Request $request): Response
@@ -251,7 +242,7 @@ class UserRoleLogController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $lignes = array_map(fn (array $row) => $this->formatRow($row), $result['liste']);
+        $lignes = array_map(fn(array $row) => $this->formatRow($row), $result['liste']);
 
         $this->logger->info('[Journal-Roles-Archive] ℹ️ Export CSV de la sélection', [
             'count' => count($lignes),
@@ -295,9 +286,8 @@ class UserRoleLogController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 21/07/2026 19:16:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/admin/journal-roles/delete', name: 'admin_user_role_log_delete', methods: ['POST'])]
     public function delete(Request $request): JsonResponse
@@ -352,9 +342,8 @@ class UserRoleLogController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 21/07/2026 19:16:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/admin/journal-roles/pdf', name: 'admin_user_role_log_pdf', methods: ['POST'])]
     public function pdf(Request $request): Response
@@ -378,7 +367,7 @@ class UserRoleLogController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $lignes = array_map(fn (array $row) => $this->formatRow($row), $result['liste']);
+        $lignes = array_map(fn(array $row) => $this->formatRow($row), $result['liste']);
 
         $pdf = $this->pdfExport->generateUserRoleLogPdf($lignes, count($lignes) . ' ligne(s) sélectionnée(s)');
 

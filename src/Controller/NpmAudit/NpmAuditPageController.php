@@ -77,7 +77,12 @@ class NpmAuditPageController extends AbstractController
     }
 
     /**
+     * [Description for genericRender]
+     *
      * @return array<string, mixed>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -93,11 +98,15 @@ class NpmAuditPageController extends AbstractController
     }
 
     /**
+     * [Description for allowedMavenKeys]
      * Même pattern que DependencyCheckPageController::allowedMavenKeys() —
      * ensemble des "{group}:{artifact}" accessibles à l'utilisateur connecté
      * selon ses groupes_fonctionnels.
      *
      * @return array<string, true>|null
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function allowedMavenKeys(): ?array
     {
@@ -118,9 +127,19 @@ class NpmAuditPageController extends AbstractController
         return $set;
     }
 
+
     /**
+     * [Description for isProjectAccessible]
      * Anti-IDOR : la clé npm "{group}:{artifact}" doit appartenir au
      * périmètre groupe_fonctionnel de l'utilisateur connecté.
+     *
+     * @param string $group
+     * @param string $artifact
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function isProjectAccessible(string $group, string $artifact): bool
     {
@@ -131,6 +150,14 @@ class NpmAuditPageController extends AbstractController
         return isset($allowed["{$group}:{$artifact}"]);
     }
 
+    /**
+     * [Description for index]
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route('/npm-audit', name: 'npm_audit_index', methods: ['GET'])]
     public function index(): Response
     {
@@ -160,12 +187,18 @@ class NpmAuditPageController extends AbstractController
     }
 
     /**
+     * [Description for paquets]
      * Vue cross-projets : pour chaque paquet npm touché par au moins un
      * avis de sécurité, nombre de projets distincts concernés (sur le
      * dernier scan de chacun). Gardée par `ROLE_SECURITY_ANALYTICS` en plus
      * de `ROLE_SECURITY` (classe) — volontairement globale, pas d'anti-IDOR
      * par périmètre groupe_fonctionnel : c'est une vue organisation entière
      * pour le pilotage sécurité, pas une page "par projet".
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[IsGranted('ROLE_SECURITY_ANALYTICS')]
     #[Route('/npm-audit/paquets', name: 'npm_audit_paquets', methods: ['GET'])]
@@ -215,6 +248,16 @@ class NpmAuditPageController extends AbstractController
         return $this->render('npm_audit/paquets.html.twig', $render);
     }
 
+    /**
+     * [Description for severityFromRank]
+     *
+     * @param int $rank
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private static function severityFromRank(int $rank): string
     {
         return match ($rank) {
@@ -226,6 +269,18 @@ class NpmAuditPageController extends AbstractController
         };
     }
 
+    /**
+     * [Description for projet]
+     *
+     * @param string $group
+     * @param string $artifact
+     * @param string $version
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route(
         '/npm-audit/projet/{group}/{artifact}/{version}',
         name: 'npm_audit_projet',
@@ -287,6 +342,19 @@ class NpmAuditPageController extends AbstractController
         return $this->render('npm_audit/projet.html.twig', $render);
     }
 
+    /**
+     * [Description for projetPdf]
+     *
+     * @param string $group
+     * @param string $artifact
+     * @param string $version
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route(
         '/npm-audit/projet/{group}/{artifact}/{version}/pdf',
         name: 'npm_audit_projet_pdf',
@@ -380,6 +448,7 @@ class NpmAuditPageController extends AbstractController
     }
 
     /**
+     * [Description for countPackagesByOrigin]
      * Décompte des paquets de `package_summary` par origine — pour les
      * tuiles de la page Résumé du rapport PDF (pas le total brut
      * `metadata.vulnerabilities` de npm audit, qui compte des paquets
@@ -388,6 +457,9 @@ class NpmAuditPageController extends AbstractController
      * @param array<int, array{name: string, is_direct: bool, is_prod: ?bool, cvss_max: ?float, cwe_count: int}> $packageSummary
      *
      * @return array{prod: int, dev: int, unknown: int}
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function countPackagesByOrigin(array $packageSummary): array
     {
@@ -405,6 +477,7 @@ class NpmAuditPageController extends AbstractController
     }
 
     /**
+     * [Description for buildPackageSummary]
      * Tableau de synthèse par paquet (1 ligne par paquet distinct ayant au
      * moins un finding — PAS le "N paquets" de `metadata.vulnerabilities`
      * de npm audit, qui peut inclure un paquet signalé uniquement par
@@ -419,6 +492,9 @@ class NpmAuditPageController extends AbstractController
      * @param array<int, array<string, mixed>> $findings
      *
      * @return array<int, array{name: string, is_direct: bool, is_prod: ?bool, cvss_max: ?float, cwe_count: int}>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildPackageSummary(array $findings): array
     {
@@ -459,6 +535,18 @@ class NpmAuditPageController extends AbstractController
         return $summary;
     }
 
+    /**
+     * [Description for dashboard]
+     *
+     * @param string $group
+     * @param string $artifact
+     * @param string $version
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route(
         '/npm-audit/dashboard/{group}/{artifact}/{version}',
         name: 'npm_audit_dashboard',
@@ -527,6 +615,7 @@ class NpmAuditPageController extends AbstractController
     }
 
     /**
+     * [Description for buildStackedSeverityChartData]
      * Transforme le résultat de `countByOriginAndSeverity()`/`countByDirectAndSeverity()`
      * (lignes {group_key, severity, cnt}) en structure prête pour un bar
      * chart empilé par sévérité côté JS : {labels: [...], severities: {sev
@@ -536,8 +625,13 @@ class NpmAuditPageController extends AbstractController
      *
      * @param array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500|23505, erreur: string} $result
      * @param array<string, string> $groupLabels clé brute (group_key) => libellé affiché, dans l'ordre d'affichage souhaité
+     * @param int $scanId
+     * @param string $method
      *
      * @return array{labels: array<int, string>, severities: array<string, array<int, int>>}
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildStackedSeverityChartData(array $result, array $groupLabels, int $scanId, string $method): array
     {
@@ -570,7 +664,14 @@ class NpmAuditPageController extends AbstractController
     }
 
     /**
+     * [Description for buildTopPackagesChartData]
+     *
+     * @param int $scanId
+     *
      * @return array{labels: array<int, string>, counts: array<int, int>}
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildTopPackagesChartData(int $scanId): array
     {

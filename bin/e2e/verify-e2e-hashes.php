@@ -1,6 +1,6 @@
 <?php
 /**
- * Verifie que les hashes generes par generate-e2e-hashes.php matchent
+ * Vérifie que les hashes générés par generate-e2e-hashes.php matchent
  * bien le password (= courriel).
  */
 

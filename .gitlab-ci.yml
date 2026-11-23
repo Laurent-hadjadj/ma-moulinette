@@ -125,7 +125,7 @@ build_ma_moulinette_job:
         fi
       fi
     - apk update
-    - apk add --no-cache openldap-dev libldap postgresql-dev php82-pgsql php82-pdo_pgsql php84-pgsql php84-pdo_pgsql
+    - apk add --no-cache openldap-dev libldap postgresql-dev php85-pgsql php85-pdo_pgsql
     - docker-php-ext-configure ldap
     - docker-php-ext-install ldap
     - docker-php-ext-install pdo pdo_pgsql
@@ -137,11 +137,33 @@ build_ma_moulinette_job:
     - ls -lathr ./assets/js/common
   script:
     - |
+      # Retry autour de composer install : erreurs reseau transitoires observees
+      # en pratique (ex. 504 Gateway Timeout sur api.github.com/.../zipball/...,
+      # plusieurs paquets distincts simultanement) - rien a voir avec composer.lock,
+      # 3 tentatives avec backoff (10s/20s/30s) avant d'abandonner pour de bon.
+      retry_composer() {
+        n=1
+        max=3
+        while [ "$n" -le "$max" ]; do
+          if "$@"; then
+            return 0
+          fi
+          echo "composer install a echoue (tentative $n/$max)."
+          if [ "$n" -lt "$max" ]; then
+            wait_time=$((n * 10))
+            echo "Nouvelle tentative dans ${wait_time}s..."
+            sleep "$wait_time"
+          fi
+          n=$((n + 1))
+        done
+        return 1
+      }
+
       unset DATABASE_URL
       echo "==========================="
       echo "-------- Compiling the code... --------"
       echo "---- Composer install ----"
-      composer install -n --ignore-platform-req=ext-gd
+      retry_composer composer install -n --ignore-platform-req=ext-gd || exit 1
       echo "---- PHP importmap:update ----"
       php ./bin/console importmap:update
       echo "---- PHP importmap:require jquery@3.7.1 ----"
@@ -151,11 +173,11 @@ build_ma_moulinette_job:
         echo "---- Composer dump-env prod ----"
         composer dump-env prod
         echo "---- Composer install --no-dev --optimize-autoloader ----"
-        composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
+        retry_composer composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd || exit 1
       else
         echo "APP_ENV is either unset or not equal to prod"
         echo "---- Composer install --optimize-autoloader ----"
-        composer install --optimize-autoloader --ignore-platform-req=ext-gd
+        retry_composer composer install --optimize-autoloader --ignore-platform-req=ext-gd || exit 1
       fi
       echo "---- PHP asset-map:compile ----"
       php bin/console asset-map:compile

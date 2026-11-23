@@ -32,9 +32,8 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     /**
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
-     *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -43,8 +42,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for makeRequest]
@@ -54,7 +52,6 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 25/01/2025 21:27:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -98,7 +95,6 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 26/01/2025 00:29:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -131,7 +127,6 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 03/06/2024 14:14:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -155,9 +150,9 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
         $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParamsList = [
-            'BUG' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'BUG', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ],
-            'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'VULNERABILITY', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ],
-            'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'CODE_SMELL', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ]
+            'BUG' => [$componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'BUG', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1],
+            'VULNERABILITY' => [$componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'VULNERABILITY', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1],
+            'CODE_SMELL' => [$componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'CODE_SMELL', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1]
         ];
 
         /* On appelle les API en passant les querryParams à la fonction générique */
@@ -173,7 +168,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
                 ];
             }
         }
-        $issueTypes = [ 'BUG', 'VULNERABILITY', 'CODE_SMELL' ];
+        $issueTypes = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
         $pagingTotals = [];
 
         /** On map pour chaque type les tableau de résultats qui nous intéresse */
@@ -211,7 +206,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         }
 
         /** On supprime l'enregistrement correspondant à la clé */
-        $map = [ 'maven_key' => $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $delete = $anomalieDetailsRepos->deleteAnomalieDetailsMavenKey($map);
 
         if ($delete['code'] != 200) {
@@ -231,62 +226,62 @@ class BatchCollecteAnomalieDetailController extends AbstractController
 
         /** On prépare les données */
         $mapData = [
-                    'maven_key' => $maven_key,
-                    'name' => $this->serviceExtractName->extractNameFromMavenKey($maven_key),
-                    'bug_blocker' => $bugSeverities['BLOCKER'],
-                    'bug_critical' => $bugSeverities['CRITICAL'],
-                    'bug_major' => $bugSeverities['MAJOR'],
-                    'bug_minor' => $bugSeverities['MINOR'],
-                    'bug_info' => $bugSeverities['INFO'],
+            'maven_key' => $maven_key,
+            'name' => $this->serviceExtractName->extractNameFromMavenKey($maven_key),
+            'bug_blocker' => $bugSeverities['BLOCKER'],
+            'bug_critical' => $bugSeverities['CRITICAL'],
+            'bug_major' => $bugSeverities['MAJOR'],
+            'bug_minor' => $bugSeverities['MINOR'],
+            'bug_info' => $bugSeverities['INFO'],
 
-                    'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'],
-                    'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'],
-                    'vulnerability_major' => $vulnerabilitySeverities['MAJOR'],
-                    'vulnerability_minor' => $vulnerabilitySeverities['MINOR'],
-                    'vulnerability_info' => $vulnerabilitySeverities['INFO'],
+            'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'],
+            'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'],
+            'vulnerability_major' => $vulnerabilitySeverities['MAJOR'],
+            'vulnerability_minor' => $vulnerabilitySeverities['MINOR'],
+            'vulnerability_info' => $vulnerabilitySeverities['INFO'],
 
-                    'code_smell_blocker' => $codeSmellSeverities['BLOCKER'],
-                    'code_smell_critical' => $codeSmellSeverities['CRITICAL'],
-                    'code_smell_major' => $codeSmellSeverities['MAJOR'],
-                    'code_smell_minor' => $codeSmellSeverities['MINOR'],
-                    'code_smell_info' => $codeSmellSeverities['INFO'],
+            'code_smell_blocker' => $codeSmellSeverities['BLOCKER'],
+            'code_smell_critical' => $codeSmellSeverities['CRITICAL'],
+            'code_smell_major' => $codeSmellSeverities['MAJOR'],
+            'code_smell_minor' => $codeSmellSeverities['MINOR'],
+            'code_smell_info' => $codeSmellSeverities['INFO'],
 
-                    'mode_collecte' => $mode_collecte,
-                    'utilisateur_collecte' => $utilisateur_collecte,
-                    'date_enregistrement' => $date
+            'mode_collecte' => $mode_collecte,
+            'utilisateur_collecte' => $utilisateur_collecte,
+            'date_enregistrement' => $date
+        ];
+
+        $insert = $anomalieDetailsRepos->insertAnomalieDetail($mapData);
+
+        if ($insert['code'] !== 200) {
+            $this->logger->error("[Batch AnomalieDétail] ❌ Échec de la requête insertAnomalieDetail.", [
+                'code' => $insert['code'],
+                'erreur' => $insert['erreur']
+            ]);
+
+            return [
+                'code' => $insert['code'],
+                'erreur' => $insert['erreur']
             ];
+        }
 
-            $insert = $anomalieDetailsRepos->insertAnomalieDetail($mapData);
-
-            if ($insert['code'] !== 200) {
-                $this->logger->error("[Batch AnomalieDétail] ❌ Échec de la requête insertAnomalieDetail.", [
-                    'code' => $insert['code'],
-                    'erreur' => $insert['erreur']
-                ]);
-
-                return [
-                    'code' => $insert['code'],
-                    'erreur' => $insert['erreur']
-                ];
-            }
-
-            $historique = [
-                    'bug_blocker' => $bugSeverities['BLOCKER'] ?? 0,
-                    'bug_critical' => $bugSeverities['CRITICAL'] ?? 0,
-                    'bug_major' => $bugSeverities['MAJOR'] ?? 0,
-                    'bug_minor' => $bugSeverities['MINOR'] ?? 0,
-                    'bug_info' => $bugSeverities['INFO'] ?? 0,
-                    'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'] ?? 0,
-                    'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'] ?? 0,
-                    'vulnerability_major' => $vulnerabilitySeverities['MAJOR'] ?? 0,
-                    'vulnerability_minor' => $vulnerabilitySeverities['MINOR'] ?? 0,
-                    'vulnerability_info' => $vulnerabilitySeverities['INFO'] ?? 0,
-                    'code_smell_blocker' => $codeSmellSeverities['BLOCKER'] ?? 0,
-                    'code_smell_critical' => $codeSmellSeverities['CRITICAL'] ?? 0,
-                    'code_smell_major' => $codeSmellSeverities['MAJOR'] ?? 0,
-                    'code_smell_minor' => $codeSmellSeverities['MINOR'] ?? 0,
-                    'code_smell_info' => $codeSmellSeverities['INFO'] ?? 0
-            ];
+        $historique = [
+            'bug_blocker' => $bugSeverities['BLOCKER'] ?? 0,
+            'bug_critical' => $bugSeverities['CRITICAL'] ?? 0,
+            'bug_major' => $bugSeverities['MAJOR'] ?? 0,
+            'bug_minor' => $bugSeverities['MINOR'] ?? 0,
+            'bug_info' => $bugSeverities['INFO'] ?? 0,
+            'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'] ?? 0,
+            'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'] ?? 0,
+            'vulnerability_major' => $vulnerabilitySeverities['MAJOR'] ?? 0,
+            'vulnerability_minor' => $vulnerabilitySeverities['MINOR'] ?? 0,
+            'vulnerability_info' => $vulnerabilitySeverities['INFO'] ?? 0,
+            'code_smell_blocker' => $codeSmellSeverities['BLOCKER'] ?? 0,
+            'code_smell_critical' => $codeSmellSeverities['CRITICAL'] ?? 0,
+            'code_smell_major' => $codeSmellSeverities['MAJOR'] ?? 0,
+            'code_smell_minor' => $codeSmellSeverities['MINOR'] ?? 0,
+            'code_smell_info' => $codeSmellSeverities['INFO'] ?? 0
+        ];
 
         $this->logger->info("[Batch AnomalieDétail] ℹ️ Collecte et insertion terminées.", [
             'maven_key' => $maven_key,

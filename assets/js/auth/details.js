@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Intégration de jquery */
@@ -104,18 +104,18 @@ $('#js-reset-password').on('click', async function () {
  *
  * @return void
  *
- * Created at: 07/07/2025 12:30:10 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-/* MODIF 2026-09-14 : `contentType,` (raccourci ES6)
- * référençait une variable inexistante (seul `content_type` est importe) :
- * ReferenceError immédiat, hors du try/catch, a chaque clic sur un avatar
- * -> aucune requête envoyée, aucun changement visuel. Meme bug que celui
- * corrige le 2026-07-19 sur le handler mot-de-passe : `$.ajax()` sans
- * `await`. Le bloc catch référençait en plus `t`/`trace`/`erreur` hors de
- * portée ou jamais déclarés. */
 const changeMe = async function(avatar){
+  /**
+    * MODIF 2026-09-14 : `contentType,` (raccourci ES6)
+    * référençait une variable inexistante (seul `content_type` est importe) :
+    * ReferenceError immédiat, hors du try/catch, a chaque clic sur un avatar
+    * -> aucune requête envoyée, aucun changement visuel. Meme bug que celui
+    * corrige le 2026-07-19 sur le handler mot-de-passe : `$.ajax()` sans
+    * `await`. Le bloc catch référençait en plus `t`/`trace`/`erreur` hors de
+    * portée ou jamais déclarés. */
   const data = { avatar };
   const options = {
     url: serveur() + `/api/secure/utilisateur/change-me`,

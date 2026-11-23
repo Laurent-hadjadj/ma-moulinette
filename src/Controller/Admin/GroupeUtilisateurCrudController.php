@@ -34,22 +34,17 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      * [Description for __construct]
      * emm = EntityManagerInterface
      *
-     * Created at: 12/02/2023, 10:08:05 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    public function __construct(
-    ) {
-    }
+    public function __construct() {}
 
     /**
      * [Description for getEntityFqcn]
      *
      * @return string
-     *
-     * Created at: 02/01/2023, 18:35:35 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public static function getEntityFqcn(): string
     {
@@ -63,7 +58,6 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      *
      * @return Actions
      *
-     * Created at: 09/11/2025 15:10:42 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -82,9 +76,8 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      *
      * @return Filters
      *
-     * Created at: 11/02/2023, 20:49:10 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -98,7 +91,7 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des groupes utilisateurs')
             ->setPageTitle(Crud::PAGE_NEW, 'Créer un groupe utilisateur')
             ->setPageTitle(Crud::PAGE_EDIT, function ($entity) {
-                            return sprintf('Modifier le groupe "%s"', $entity->getGroupeUtilisateur());
+                return sprintf('Modifier le groupe "%s"', $entity->getGroupeUtilisateur());
             })
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détail du groupe utilisateur')
             ->setFormThemes([
@@ -114,7 +107,6 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      *
      * @return string
      *
-     * Created at: 06/04/2026 18:24:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -132,9 +124,8 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      *
      * @return iterable<FieldInterface>
      *
-     * Created at: 02/01/2023, 18:35:41 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function configureFields(string $pageName): iterable
     {
@@ -178,9 +169,8 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      *
      * @return void
      *
-     * Created at: 02/01/2023, 18:35:44 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -213,5 +203,4 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
 
         parent::persistEntity($em, $entityInstance);
     }
-
 }

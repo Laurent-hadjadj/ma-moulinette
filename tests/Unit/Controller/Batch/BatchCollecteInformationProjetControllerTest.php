@@ -4,10 +4,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -61,7 +61,11 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteInformationProjetController(
-            $this->em, $this->isValidMavenKey, $this->client, $this->urlBuilder, $this->logger
+            $this->em,
+            $this->isValidMavenKey,
+            $this->client,
+            $this->urlBuilder,
+            $this->logger
         );
         $this->controller->setContainer($container);
     }
@@ -76,7 +80,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
 
     // Test removed : refacto a typé `array $analyses` → la défense runtime est désormais au niveau type-system
 
-public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
+    public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
     {
         $analyses = [
             ['projectVersion' => '1.0-RELEASE'],
@@ -99,7 +103,8 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
     public function testControlVersionProjetFoundOnSonarAndInBase(): void
     {
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 200, 'json' => ['analyses' => [['key' => 'k1', 'projectVersion' => '1.0', 'date' => '2026-01-01']]]
+            'code' => 200,
+            'json' => ['analyses' => [['key' => 'k1', 'projectVersion' => '1.0', 'date' => '2026-01-01']]]
         ]);
         $this->isValidMavenKey->method('isValideInformation')->willReturn(['code' => 200, 'request' => ['x' => 1]]);
         $this->isValidMavenKey->method('isValideHistorique')->willReturn(['code' => 200, 'request' => ['y' => 2]]);
@@ -113,7 +118,8 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
     public function testControlVersionProjetFoundOnSonarButNotInBase(): void
     {
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 200, 'json' => ['analyses' => [['key' => 'k1']]]
+            'code' => 200,
+            'json' => ['analyses' => [['key' => 'k1']]]
         ]);
         $this->isValidMavenKey->method('isValideInformation')->willReturn(['code' => 404]);
         $this->isValidMavenKey->method('isValideHistorique')->willReturn(['code' => 404]);
@@ -414,7 +420,8 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
             ->willReturn(['code' => 200]);
 
         $this->repo->method('selectInformationProjetVersion')->willReturn([
-            'code' => 200, 'info' => [],
+            'code' => 200,
+            'info' => [],
         ]);
 
         $r = $this->controller->batchCollecteInformation(self::MAVEN_KEY, 'auto', 'u');

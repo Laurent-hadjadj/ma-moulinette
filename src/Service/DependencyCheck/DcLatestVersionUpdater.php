@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -39,8 +39,7 @@ class DcLatestVersionUpdater
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for recomputeFor]
@@ -51,9 +50,8 @@ class DcLatestVersionUpdater
      *
      * @return array{overall_id: int|null, release_id: int|null}
      *
-     * Created at: 14/05/2026 09:30:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function recomputeFor(string $group, string $artifact): array
     {
@@ -135,9 +133,8 @@ class DcLatestVersionUpdater
      *
      * @return int Nombre de couples traites
      *
-     * Created at: 14/05/2026 09:30:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function recomputeAll(): int
     {

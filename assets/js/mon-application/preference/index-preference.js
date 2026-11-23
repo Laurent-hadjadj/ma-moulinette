@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -51,9 +51,8 @@ const poubelleSVG=`
  * @param mixed statut
  * @param mixed category
  *
- * Created at: 17/05/2023, 15:55:05 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const modifierStatut = async function(statut, category) {
   /** on récupère les préférences */
@@ -96,9 +95,8 @@ const modifierStatut = async function(statut, category) {
  *
  * @return void
  *
- * Created at: 18/05/2023, 16:59:18 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author    Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const favori = async function(){
   /** on récupère les préférences */
@@ -219,9 +217,8 @@ $('#bouton-fermer-preference-favori').on('click', () => {
  *
  * @return void
  *
- * Created at: 12/06/2023, 13:48:34 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author    Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const version=async function(){
   /** on récupère les préférences */
@@ -367,9 +364,8 @@ $('#bouton-fermer-preference-version').on('click', () => {
  *
  * @return void
  *
- * Created at: 19/05/2023, 10:48:28 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author    Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const projet = async function(){
   /** on récupère les préférences */

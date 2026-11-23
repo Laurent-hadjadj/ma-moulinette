@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -19,7 +19,7 @@ use App\Entity\BatchTraitement;
 use App\Repository\BatchTraitementRepository;
 use Doctrine\DBAL\{Connection, ParameterType, Result, Statement};
 use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException,UniqueConstraintViolationException};
+use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException, UniqueConstraintViolationException};
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
@@ -71,7 +71,10 @@ class BatchTraitementRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionConnection(): void
     {
         $e = new class('SQLSTATE[08006]') extends ConnectionException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
         $r = $this->repo->handleDatabaseException($e);
         $this->assertSame(500, $r['code']);
@@ -81,7 +84,10 @@ class BatchTraitementRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionNotNull(): void
     {
         $e = new class('responsable not null') extends NotNullConstraintViolationException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
         $r = $this->repo->handleDatabaseException($e);
         $this->assertSame(500, $r['code']);
@@ -91,7 +97,10 @@ class BatchTraitementRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionUnique(): void
     {
         $e = new class('dup') extends UniqueConstraintViolationException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
         $r = $this->repo->handleDatabaseException($e);
         $this->assertSame(23505, $r['code']);

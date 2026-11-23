@@ -5,15 +5,16 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Dev. */
+
 namespace App\Command\Dev;
 
 use App\Entity\{DcCve, DcDependency, DcFinding, DcScan, ListeProjet};
@@ -59,7 +60,7 @@ class DevSeedDcScansCommand extends Command
         ['vendor' => 'org.springframework',       'product' => 'spring-core',        'version' => '5.2.0',   'file' => 'spring-core-5.2.0.jar'],
         ['vendor' => 'org.springframework',       'product' => 'spring-webmvc',      'version' => '5.2.3',   'file' => 'spring-webmvc-5.2.3.jar'],
         ['vendor' => 'com.rabbitmq',              'product' => 'amqp-client',        'version' => '5.9.0',   'file' => 'amqp-client-5.9.0.jar'],
-        ['vendor' => 'commons-collections',       'product' => 'commons-collections','version' => '3.2.1',   'file' => 'commons-collections-3.2.1.jar'],
+        ['vendor' => 'commons-collections',       'product' => 'commons-collections', 'version' => '3.2.1',   'file' => 'commons-collections-3.2.1.jar'],
         ['vendor' => 'commons-fileupload',        'product' => 'commons-fileupload', 'version' => '1.3.2',   'file' => 'commons-fileupload-1.3.2.jar'],
         ['vendor' => 'org.apache.tomcat',         'product' => 'tomcat-embed-core',  'version' => '9.0.30',  'file' => 'tomcat-embed-core-9.0.30.jar'],
         ['vendor' => 'org.apache.struts',         'product' => 'struts2-core',       'version' => '2.5.20',  'file' => 'struts2-core-2.5.20.jar'],
@@ -149,6 +150,14 @@ class DevSeedDcScansCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * [Description for configure]
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function configure(): void
     {
         $this
@@ -163,10 +172,8 @@ class DevSeedDcScansCommand extends Command
      * @param OutputInterface $output
      *
      * @return int
-     *
-     * Created at: 11/05/2026 09:27:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -221,7 +228,10 @@ class DevSeedDcScansCommand extends Command
         $picked = $this->pickRandomProjects($eligibles, $count);
         $io->note(sprintf(
             '%d projet(s) sélectionné(s) sur %d éligible(s) (%d total en base, %d non éligibles écartés).',
-            count($picked), count($eligibles), count($allProjets), count($allProjets) - count($eligibles)
+            count($picked),
+            count($eligibles),
+            count($allProjets),
+            count($allProjets) - count($eligibles)
         ));
 
         $totalFindings = 0;
@@ -230,9 +240,14 @@ class DevSeedDcScansCommand extends Command
             $totalFindings += $scanInfo['nb_findings'];
             $io->writeln(sprintf(
                 '  · %s:%s v%s — %d findings (C:%d H:%d M:%d L:%d)',
-                $scanInfo['group'], $scanInfo['artifact'], $scanInfo['version'],
+                $scanInfo['group'],
+                $scanInfo['artifact'],
+                $scanInfo['version'],
                 $scanInfo['nb_findings'],
-                $scanInfo['nb_critical'], $scanInfo['nb_high'], $scanInfo['nb_medium'], $scanInfo['nb_low']
+                $scanInfo['nb_critical'],
+                $scanInfo['nb_high'],
+                $scanInfo['nb_medium'],
+                $scanInfo['nb_low']
             ));
         }
 
@@ -254,10 +269,8 @@ class DevSeedDcScansCommand extends Command
      * @param SymfonyStyle $io
      *
      * @return void
-     *
-     * Created at: 11/05/2026 09:32:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function cleanDcTables(SymfonyStyle $io): void
     {
@@ -277,9 +290,8 @@ class DevSeedDcScansCommand extends Command
      * @param ListeProjet[] $allProjets
      * @return ListeProjet[]
      *
-     * Created at: 11/05/2026 09:32:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function pickRandomProjects(array $allProjets, int $count): array
     {
@@ -299,9 +311,8 @@ class DevSeedDcScansCommand extends Command
      *
      * @return array{group:string, artifact:string, version:string, nb_findings:int, nb_critical:int, nb_high:int, nb_medium:int, nb_low:int}
      *
-     * Created at: 11/05/2026 09:31:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function generateScanForProject(ListeProjet $projet, int $index): array
     {
@@ -318,7 +329,8 @@ class DevSeedDcScansCommand extends Command
         // Scan date : échelonne sur 30 derniers jours, ordre chronologique
         $daysAgo  = random_int(0, 30);
         $scanDate = (new \DateTimeImmutable('now'))->modify("-{$daysAgo} days")->setTime(
-            random_int(8, 18), random_int(0, 59)
+            random_int(8, 18),
+            random_int(0, 59)
         );
 
         // Nombre de findings : 3 a 30 par scan, plus pour les "gros" projets
@@ -347,7 +359,8 @@ class DevSeedDcScansCommand extends Command
             ->setCveCountLow($bySev['LOW']);
         $this->em->persist($scan);
 
-        /* Fix affichage console : on copie
+        /**
+         * Fix affichage console : on copie
          * les compteurs AVANT le for qui décrémente $bySev par référence via
          * randomSeverityForFinding(). Sans cette copie, le retour de fonction
          * ressort tous les compteurs à 0 (alors que les findings sont bien créés
@@ -387,9 +400,8 @@ class DevSeedDcScansCommand extends Command
      *
      * @return void
      *
-     * Created at: 11/05/2026 09:30:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function generateFinding(DcScan $scan, int $findingIndex, string $severity): void
     {
@@ -407,7 +419,8 @@ class DevSeedDcScansCommand extends Command
             ->setVersion($tplDep['version']);
         $this->em->persist($dep);
 
-        /* MODIF 2026-05-11 : on pioche un cve_id dans
+        /**
+         * MODIF 2026-05-11 : on pioche un cve_id dans
          * un pool fixe au lieu de générer un id unique. La première fois
          * qu'on rencontre ce cve_id durant le run on crée la DcCve ; sinon
          * on réutilise celle déjà persisté (via cache local ou lookup DB
@@ -472,10 +485,8 @@ class DevSeedDcScansCommand extends Command
      * Tirage pondère selon SEVERITY_DISTRIBUTION.
      *
      * @return string
-     *
-     * Created at: 11/05/2026 09:30:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function pickWeightedSeverity(): string
     {
@@ -500,9 +511,8 @@ class DevSeedDcScansCommand extends Command
      *
      * @return string
      *
-     * Created at: 11/05/2026 09:30:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function randomSeverityForFinding(array &$bySev): string
     {

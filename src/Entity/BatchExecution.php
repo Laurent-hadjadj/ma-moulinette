@@ -23,6 +23,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * [Description BatchExecution]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: BatchExecutionRepository::class)]
 #[ORM\Table(name: "batch_execution", schema: "ma_moulinette")]
@@ -124,8 +127,6 @@ class BatchExecution
      * @param BatchExecutionJournal $journal
      *
      * @return void
-     *
-     * Created at: 25/10/2025 21:58:34 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

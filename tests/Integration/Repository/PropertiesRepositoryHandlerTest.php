@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -61,9 +61,9 @@ class PropertiesRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(PropertiesRepository::class)
-                    ->setConstructorArgs([$registry])
-                    ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                    ->getMock();
+            ->setConstructorArgs([$registry])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         // 6) On s'attend à handleDatabaseException() appelé une fois avec notre exception
         $expected = ['code' => 500, 'erreur' => 'test-error'];
@@ -86,7 +86,10 @@ class PropertiesRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -98,7 +101,7 @@ class PropertiesRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -110,25 +113,27 @@ class PropertiesRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(PropertiesRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
-        $map = ['projet_bd' => 100,
-                'projet_sonar' => 12,
-                'profil_bd' => 12,
-                'profil_sonar' => 18,
-                'date_creation' => new \DateTimeImmutable('2024-03-26 14:46:38'),
-                'date_modification_projet' => new \DateTimeImmutable('2024-03-27 10:26:32'),
-                'date_modification_profil' => new \DateTimeImmutable('2024-04-12 16:23:11')];
+        $map = [
+            'projet_bd' => 100,
+            'projet_sonar' => 12,
+            'profil_bd' => 12,
+            'profil_sonar' => 18,
+            'date_creation' => new \DateTimeImmutable('2024-03-26 14:46:38'),
+            'date_modification_projet' => new \DateTimeImmutable('2024-03-27 10:26:32'),
+            'date_modification_profil' => new \DateTimeImmutable('2024-04-12 16:23:11')
+        ];
         $result = $repo->insertProperties($map);
         $this->assertSame($expected, $result);
     }
@@ -137,7 +142,10 @@ class PropertiesRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur update') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -149,7 +157,7 @@ class PropertiesRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -161,22 +169,24 @@ class PropertiesRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(PropertiesRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
-        $map = ['projet_bd' => 100,
-                'projet_sonar'=> 12,
-                'date_modification_projet' =>new \DateTimeImmutable('2024-03-27 10:26:31'),
-                'type' => 'properties'];
+        $map = [
+            'projet_bd' => 100,
+            'projet_sonar' => 12,
+            'date_modification_projet' => new \DateTimeImmutable('2024-03-27 10:26:31'),
+            'type' => 'properties'
+        ];
         $result = $repo->updatePropertiesProjet($map);
         $this->assertSame($expected, $result);
     }
@@ -185,7 +195,10 @@ class PropertiesRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur update') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -197,7 +210,7 @@ class PropertiesRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -209,24 +222,25 @@ class PropertiesRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(PropertiesRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
-        $map = ['profil_bd' => 12,
-                'profil_sonar'=> 18,
-                'date_modification_profil' =>new \DateTimeImmutable('2024-03-27 10:26:33'),
-                'type' => 'properties'];
+        $map = [
+            'profil_bd' => 12,
+            'profil_sonar' => 18,
+            'date_modification_profil' => new \DateTimeImmutable('2024-03-27 10:26:33'),
+            'type' => 'properties'
+        ];
         $result = $repo->updatePropertiesProfiles($map);
         $this->assertSame($expected, $result);
     }
-
 }

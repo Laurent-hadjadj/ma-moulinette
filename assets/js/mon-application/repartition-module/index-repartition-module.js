@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -111,11 +111,10 @@ sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'false');
  * @param mixed alertClass
  * @param mixed idc
  *
- * @return [type]
+ * @return void
  *
- * Created at: 29/08/2025 12:56:41 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildTabHistorique = function(css, severity, frontend, backend, autre, inconnu, calculIdc) {
     let idc = '---';
@@ -156,9 +155,8 @@ const buildTabHistorique = function(css, severity, frontend, backend, autre, inc
  *
  * @return string
  *
- * Created at: 29/08/2025 16:00:51 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const generateTableRow = (css, category, severity, data) => {
     return buildTabHistorique(css, severity.toUpperCase(), data[`frontend_${category}_${severity}`],
@@ -178,8 +176,8 @@ const generateTableRow = (css, category, severity, data) => {
  *
  * @returns void
  *
- * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
  * @author Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const analyse = async function (maven_key, category, severity, css, setup) {
   /**
@@ -300,8 +298,8 @@ const analyse = async function (maven_key, category, severity, css, setup) {
  *
  * @returns void
  *
- * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
  * @author Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const historique = async function (maven_key) {
   /**
@@ -426,8 +424,8 @@ const historique = async function (maven_key) {
  *
  * @returns void
  *
- * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
  * @author Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const collecte = async function (maven_key, category, severity, counter, timer) {
   // Vérification immédiate pour éviter les traitements inutiles
@@ -528,9 +526,8 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
  *
  * @return void
  *
- * Created at: 16/02/2025 22:40:19 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const updateRepartition = async function(phase){
     const data = { maven_key, setup, calcul: analyseCollecteRepartition };

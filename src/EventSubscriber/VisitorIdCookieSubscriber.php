@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\EventSubscriber;
@@ -26,7 +26,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * projet n'écrit jamais le Set-Cookie correspondant : un nouvel identifiant
  * est régénéré à chaque requête, sans continuité (voir analyse RGPD,
  * mkDocs/docs/ma-moulinette/conformite/rgpd.md, section 2).
- */
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 class VisitorIdCookieSubscriber implements EventSubscriberInterface
 {
     private const COOKIE_NAME = 'visitor_id';

@@ -60,7 +60,6 @@ class BatchAutoController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 08/11/2025 19:17:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -126,7 +125,6 @@ class BatchAutoController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 10/04/2024 07:48:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -186,14 +184,14 @@ class BatchAutoController extends AbstractController
         // Création du job principal
         $execution_id = new Ulid();
 
-        try{
-        $batchExecution = new BatchExecution(
-            'Collecte du ' . date('d/m/Y H:i'),
-            $execution_id,
-            Ulid::fromString($data->traitement_id),
-            $utilisateur_collecte,
-            self::$traitementAutomatique
-        );
+        try {
+            $batchExecution = new BatchExecution(
+                'Collecte du ' . date('d/m/Y H:i'),
+                $execution_id,
+                Ulid::fromString($data->traitement_id),
+                $utilisateur_collecte,
+                self::$traitementAutomatique
+            );
         } catch (\Throwable $e) {
             $this->logger->error("[Traitement-Automatique] 🔴 Erreur lors de la création de l'exécution du batch.", [
                 'traitement_id' => $data->traitement_id,
@@ -428,6 +426,7 @@ class BatchAutoController extends AbstractController
     }
 
     /**
+     * [Description for refuserSiJetonInvalide]
      * Contrôle le jeton client des routes publiques de traitement automatique.
      *
      * - jeton attendu non configuré (absent, vide ou `changeme`) : 503, service fermé (échec fermé) ;
@@ -438,7 +437,13 @@ class BatchAutoController extends AbstractController
      * dans les journaux (il pourrait être l'ancien jeton valide, ou le bon jeton envoyé par erreur) : seule l'adresse
      * du client est conservée.
      *
-     * @param mixed $jetonFourni valeur de la clé `token` du corps JSON
+     * @param Request $request
+     *  @param mixed $jetonFourni valeur de la clé `token` du corps JSON
+     *
+     * @return JsonResponse|null
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function refuserSiJetonInvalide(Request $request, mixed $jetonFourni): ?JsonResponse
     {
@@ -474,8 +479,16 @@ class BatchAutoController extends AbstractController
     }
 
     /**
+     * [Description for chargeUtileSansJeton]
      * Charge utile décodée, sans la clé `token`, pour qu'un journal d'erreur ne contienne jamais le jeton
      * (un client légitime qui envoie le bon jeton avec un JSON incomplet le voyait écrit en clair).
+     *
+     * @param mixed $data
+     *
+     * @return mixed
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function chargeUtileSansJeton(mixed $data): mixed
     {

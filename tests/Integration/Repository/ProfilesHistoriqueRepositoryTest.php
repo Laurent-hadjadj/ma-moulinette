@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -68,10 +68,17 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
 
         /* MODIF 2026-07-19 : (date/rule) distincts de ProfilesHistoriqueFixtures — sinon
          * la contrainte d'unicité (language, date, rule, action) rejette l'insertion. */
-        $map=[  'date_courte'=>self::$dateCourte, 'language'=>self::$language,
-                'date'=>'2022-09-15T09:12:00+0200', 'action'=>self::$action, 'auteur'=>self::$auteur,
-                'rule'=>'java:S9999', 'description'=>self::$description,
-                'detail'=>self::$detail, 'date_enregistrement'=> new \DateTimeImmutable(self::$dateEnregistrement)];
+        $map = [
+            'date_courte' => self::$dateCourte,
+            'language' => self::$language,
+            'date' => '2022-09-15T09:12:00+0200',
+            'action' => self::$action,
+            'auteur' => self::$auteur,
+            'rule' => 'java:S9999',
+            'description' => self::$description,
+            'detail' => self::$detail,
+            'date_enregistrement' => new \DateTimeImmutable(self::$dateEnregistrement)
+        ];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
@@ -92,10 +99,17 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map=[  'date_courte'=>self::$dateCourte, 'language'=>self::$language,
-                'date'=>self::$date, 'action'=>self::$action, 'auteur'=>self::$auteur,
-                'rule'=>self::$rule, 'description'=>self::$description,
-                'detail'=>self::$detail, 'date_enregistrement'=> new \DateTimeImmutable(self::$dateEnregistrement)];
+        $map = [
+            'date_courte' => self::$dateCourte,
+            'language' => self::$language,
+            'date' => self::$date,
+            'action' => self::$action,
+            'auteur' => self::$auteur,
+            'rule' => self::$rule,
+            'description' => self::$description,
+            'detail' => self::$detail,
+            'date_enregistrement' => new \DateTimeImmutable(self::$dateEnregistrement)
+        ];
 
         // L'événement identique existe déjà via ProfilesHistoriqueFixtures.
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
@@ -113,7 +127,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map=[ 'language' => self::$language, 'action' => self::$action];
+        $map = ['language' => self::$language, 'action' => self::$action];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);

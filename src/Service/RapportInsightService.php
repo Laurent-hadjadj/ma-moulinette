@@ -5,7 +5,7 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 */
 
@@ -22,12 +22,9 @@ namespace App\Service;
  *
  * Pas d'IO, pas de DB : pur calcul sur le tableau passe en paramètre.
  *
- * Created at: 06/05/2026
- * @author     Laurent HADJADJ <laurent_h@me.com>
- *
- * @phpstan-type Trend 'up'|'down'|'flat'|'na'
- * @phpstan-type Severity 'ok'|'warn'|'error'|'na'
- * @phpstan-type Kpi array{
+ * @phpstan-type Trend = 'up'|'down'|'flat'|'na'
+ * @phpstan-type Severity = 'ok'|'warn'|'error'|'na'
+ * @phpstan-type Kpi = array{
  *     label: string,
  *     value: string|null,
  *     note: string|null,
@@ -35,6 +32,8 @@ namespace App\Service;
  *     delta_label: string|null,
  *     severity: Severity
  * }
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 class RapportInsightService
 {
@@ -45,12 +44,10 @@ class RapportInsightService
      * KPIs de la dernière version + delta vs N-1.
      *
      * @param array<int, array<string, mixed>> $suivi
-     * @return array<int, Kpi>
+    * @phpstan-return array<int, Kpi>
      *
-     *
-     * Created at: 14/07/2026 20:15:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function extractKpi(array $suivi): array
     {
@@ -82,9 +79,8 @@ class RapportInsightService
      *     severity: 'warn'|'error'
      * }>
      *
-     * Created at: 14/07/2026 20:16:48 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function extractTopAlerts(array $suivi, int $limit = 5): array
     {
@@ -150,28 +146,34 @@ class RapportInsightService
                 $sev = $covF < 30.0 ? 'error' : 'warn';
                 $delta = '';
                 if ($firstCov !== null && $count >= 2) {
-                    $delta = sprintf(' (de %s %% à %s %% sur %d versions)',
+                    $delta = sprintf(
+                        ' (de %s %% à %s %% sur %d versions)',
                         number_format((float) $firstCov, 1, ',', ' '),
                         number_format($covF, 1, ',', ' '),
-                        $count);
+                        $count
+                    );
                 }
                 $alerts[] = [
                     'titre' => sprintf('Couverture faible : %s %%', number_format($covF, 1, ',', ' ')),
-                    'phrase' => sprintf('La couverture globale (%s %%) est sous le seuil%s%s.',
+                    'phrase' => sprintf(
+                        'La couverture globale (%s %%) est sous le seuil%s%s.',
                         number_format($covF, 1, ',', ' '),
                         $covF < 30.0 ? ' critique de 30 %' : ' recommandé de 50 %',
-                        $delta),
+                        $delta
+                    ),
                     'severity' => $sev,
                     'score' => $sev === 'error' ? 85 : 70,
                 ];
             } elseif ($firstCov !== null && $count >= 2 && (float) $firstCov - $covF >= 10.0) {
                 $alerts[] = [
                     'titre' => 'Couverture en forte baisse',
-                    'phrase' => sprintf('La couverture est passée de %s %% à %s %% sur %d versions (-%s pts).',
+                    'phrase' => sprintf(
+                        'La couverture est passée de %s %% à %s %% sur %d versions (-%s pts).',
                         number_format((float) $firstCov, 1, ',', ' '),
                         number_format($covF, 1, ',', ' '),
                         $count,
-                        number_format((float) $firstCov - $covF, 1, ',', ' ')),
+                        number_format((float) $firstCov - $covF, 1, ',', ' ')
+                    ),
                     'severity' => 'warn',
                     'score' => 65,
                 ];
@@ -187,8 +189,11 @@ class RapportInsightService
         if ($te + $tf > 0) {
             $alerts[] = [
                 'titre' => sprintf('Tests en échec : %d', $te + $tf),
-                'phrase' => sprintf('La dernière exécution rapporte %d erreur(s) et %d échec(s) — la suite de tests est instable.',
-                    $te, $tf),
+                'phrase' => sprintf(
+                    'La dernière exécution rapporte %d erreur(s) et %d échec(s) — la suite de tests est instable.',
+                    $te,
+                    $tf
+                ),
                 'severity' => 'error',
                 'score' => 75,
             ];
@@ -215,10 +220,12 @@ class RapportInsightService
             if ($cFirst !== null && $cLast !== null && (float) $cLast - (float) $cFirst >= 5.0) {
                 $alerts[] = [
                     'titre' => 'Complexité cyclomatique en hausse',
-                    'phrase' => sprintf('Le ratio de complexité cyclomatique est passé de %s %% à %s %% (+%s pts).',
+                    'phrase' => sprintf(
+                        'Le ratio de complexité cyclomatique est passé de %s %% à %s %% (+%s pts).',
                         number_format((float) $cFirst, 1, ',', ' '),
                         number_format((float) $cLast, 1, ',', ' '),
-                        number_format((float) $cLast - (float) $cFirst, 1, ',', ' ')),
+                        number_format((float) $cLast - (float) $cFirst, 1, ',', ' ')
+                    ),
                     'severity' => 'warn',
                     'score' => 55,
                 ];
@@ -242,9 +249,15 @@ class RapportInsightService
     // ---- KPI helpers (1 par carte) ----
 
     /**
+     * [Description for kpiQualityGate]
+     *
      * @param array<string, mixed> $last
      * @param array<string, mixed>|null $prev
+     *
      * @return Kpi
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function kpiQualityGate(array $last, ?array $prev): array
     {
@@ -274,9 +287,8 @@ class RapportInsightService
      *
      * @return Kpi
      *
-     * Created at: 14/07/2026 20:17:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function kpiCoverage(array $last, ?array $prev): array
     {
@@ -311,9 +323,8 @@ class RapportInsightService
      *
      * @return Kpi
      *
-     * Created at: 14/07/2026 20:17:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function kpiBugs(array $last, ?array $prev): array
     {
@@ -332,9 +343,8 @@ class RapportInsightService
      *
      * @return Kpi
      *
-     * Created at: 14/07/2026 20:18:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function kpiVulnerabilities(array $last, ?array $prev): array
     {
@@ -353,9 +363,8 @@ class RapportInsightService
      *
      * @return Kpi
      *
-     * Created at: 14/07/2026 20:18:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function kpiHotspots(array $last, ?array $prev): array
     {
@@ -375,9 +384,8 @@ class RapportInsightService
      *
      * @return Kpi
      *
-     * Created at: 14/07/2026 20:18:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function kpiMaintainability(array $last, ?array $prev): array
     {
@@ -405,9 +413,8 @@ class RapportInsightService
      *
      * @return Kpi
      *
-     * Created at: 14/07/2026 20:19:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function kpiCount(string $label, mixed $current, ?string $note, ?string $valueStr, string $sev, mixed $previous, bool $higherIsBetter): array
     {
@@ -441,9 +448,8 @@ class RapportInsightService
      *
      * @return string|null
      *
-     * Created at: 14/07/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function toNote(mixed $value): ?string
     {
@@ -461,9 +467,8 @@ class RapportInsightService
      *
      * @return Severity
      *
-     * Created at: 14/07/2026 20:19:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function severityFromNote(?string $note): string
     {
@@ -487,9 +492,8 @@ class RapportInsightService
      *
      * @return Trend
      *
-     * Created at: 14/07/2026 20:20:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function trendByScale(mixed $first, mixed $last, array $scale): string
     {
@@ -512,9 +516,8 @@ class RapportInsightService
      *
      * @return string|null
      *
-     * Created at: 14/07/2026 20:20:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function deltaLabelByScale(mixed $first, mixed $last): ?string
     {
