@@ -28,6 +28,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *   processing -> claim par le worker (commande app:npm-audit:process)
  *   done       -> traitement OK
  *   failed     -> attempts >= 3 ou erreur fatale
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: NpmProcessingQueueRepository::class)]
 #[ORM\Table(name: 'npm_processing_queue', schema: 'ma_moulinette')]

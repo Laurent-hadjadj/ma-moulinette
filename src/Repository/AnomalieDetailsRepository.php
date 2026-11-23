@@ -29,7 +29,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
   public function __construct(
     ManagerRegistry $registry
   ) {
-      parent::__construct($registry, AnomalieDetails::class);
+    parent::__construct($registry, AnomalieDetails::class);
   }
 
   /**
@@ -38,8 +38,6 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 07/07/2025 09:36:06 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -49,17 +47,17 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = self::$noDataBase;
+      $message = self::$noDataBase;
     }
 
     // state = '23502'
     if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-        $message = $e->getMessage();
+      $message = $e->getMessage();
     }
 
     // state = '23505'
     if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
     }
 
     return ['code' => 500, 'erreur' => $message];
@@ -72,8 +70,6 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 13/03/2024 18:39:13 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -83,14 +79,14 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
             FROM ma_moulinette.anomalie_details
             WHERE maven_key=:maven_key";
     try {
-        $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $stmt->executeStatement();
-        $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -102,8 +98,6 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    * @param array<string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 20/03/2024 16:33:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -113,13 +107,13 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
             FROM ma_moulinette.anomalie_details
             WHERE maven_key=:maven_key";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -128,8 +122,6 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    * @param array<string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 03/06/2024 17:18:16 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -141,38 +133,38 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
                 (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
+      $this->getEntityManager()->getConnection()->beginTransaction();
       $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(':name', $map['name']);
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(':name', $map['name']);
 
-              $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
-              $stmt->bindValue(':bug_critical', $map['bug_critical']);
-              $stmt->bindValue(':bug_major', $map['bug_major']);
-              $stmt->bindValue(':bug_minor', $map['bug_minor']);
-              $stmt->bindValue(':bug_info', $map['bug_info']);
+      $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
+      $stmt->bindValue(':bug_critical', $map['bug_critical']);
+      $stmt->bindValue(':bug_major', $map['bug_major']);
+      $stmt->bindValue(':bug_minor', $map['bug_minor']);
+      $stmt->bindValue(':bug_info', $map['bug_info']);
 
-              $stmt->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
-              $stmt->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
-              $stmt->bindValue(':vulnerability_major', $map['vulnerability_major']);
-              $stmt->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
-              $stmt->bindValue(':vulnerability_info', $map['vulnerability_info']);
+      $stmt->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
+      $stmt->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
+      $stmt->bindValue(':vulnerability_major', $map['vulnerability_major']);
+      $stmt->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
+      $stmt->bindValue(':vulnerability_info', $map['vulnerability_info']);
 
-              $stmt->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
-              $stmt->bindValue(':code_smell_critical', $map['code_smell_critical']);
-              $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
-              $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
-              $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
+      $stmt->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
+      $stmt->bindValue(':code_smell_critical', $map['code_smell_critical']);
+      $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
+      $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
+      $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
 
-              $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-              $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-              /** on formate la date avant de l'enregistrer */
-              $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-              $stmt->executeStatement();
-            $this->getEntityManager()->getConnection()->commit();
+      $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+      $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+      /** on formate la date avant de l'enregistrer */
+      $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }

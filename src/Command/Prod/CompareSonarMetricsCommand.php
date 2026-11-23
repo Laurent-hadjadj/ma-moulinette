@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Command\Prod;
@@ -33,24 +33,32 @@ use App\Exception\UnexpectedExecutionPathException;
 class CompareSonarMetricsCommand extends Command
 {
 
+    /**
+     * [Description for configure]
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function configure(): void
-        {
-            /* MODIF 2026-07-21 : setName()/setDescription() étaient en
+    {
+        /* MODIF 2026-07-21 : setName()/setDescription() étaient en
              * conflit avec l'attribut #[AsCommand] ci-dessus (nom
              * "-v1" jamais utilisé nulle part ailleurs dans le dépôt,
              * ni dans les exemples de ce fichier) — supprimés pour que
              * l'attribut fasse foi, seul nom réellement documenté. */
-            $this
-                ->addArgument('source', InputArgument::REQUIRED, 'Fichier JSON ou version source (ex: metrics_8.9.json).')
-                ->addArgument('target', InputArgument::REQUIRED, 'Fichier JSON ou version cible (ex: metrics_9.8.json).')
-                ->addOption('dir', null, InputOption::VALUE_OPTIONAL, 'Répertoire contenant les fichiers JSON.', './bin/metrics/')
-                ->addOption('ignore-id', null, InputOption::VALUE_NONE, 'Ignore la comparaison des IDs des metrics.')
-                ->addOption('sonar-query-only', null, InputOption::VALUE_NONE, "Affiche uniquement la requête de l'API SonarQube.")
-                ->addOption('sonar-project-key', null, InputOption::VALUE_OPTIONAL, "Ajoute la maven_key (ex. fr.ma-moulinette:monapplication) pour sonar-query-only.")
-                ->addOption('summary-only', null, InputOption::VALUE_NONE, 'Affiche uniquement le résumé (sans détails)')
-                ->addOption('min-impact', null, InputOption::VALUE_OPTIONAL, 'Impact minimum.', 0)
-                ->addOption('format', null, InputOption::VALUE_OPTIONAL, 'Format de sortie (cli|md|html|json).', 'cli');
-        }
+        $this
+            ->addArgument('source', InputArgument::REQUIRED, 'Fichier JSON ou version source (ex: metrics_8.9.json).')
+            ->addArgument('target', InputArgument::REQUIRED, 'Fichier JSON ou version cible (ex: metrics_9.8.json).')
+            ->addOption('dir', null, InputOption::VALUE_OPTIONAL, 'Répertoire contenant les fichiers JSON.', './bin/metrics/')
+            ->addOption('ignore-id', null, InputOption::VALUE_NONE, 'Ignore la comparaison des IDs des metrics.')
+            ->addOption('sonar-query-only', null, InputOption::VALUE_NONE, "Affiche uniquement la requête de l'API SonarQube.")
+            ->addOption('sonar-project-key', null, InputOption::VALUE_OPTIONAL, "Ajoute la maven_key (ex. fr.ma-moulinette:monapplication) pour sonar-query-only.")
+            ->addOption('summary-only', null, InputOption::VALUE_NONE, 'Affiche uniquement le résumé (sans détails)')
+            ->addOption('min-impact', null, InputOption::VALUE_OPTIONAL, 'Impact minimum.', 0)
+            ->addOption('format', null, InputOption::VALUE_OPTIONAL, 'Format de sortie (cli|md|html|json).', 'cli');
+    }
 
     /**
      * [Description for execute]
@@ -77,9 +85,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return int
      *
-     * Created at: 24/03/2026 11:21:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -141,16 +148,17 @@ class CompareSonarMetricsCommand extends Command
 
             switch ($format) {
                 case 'json':
-                    $io->writeln($this->renderJsonSummary([
-                        'source' => $sourceFile,
-                        'target' => $targetFile,
-                        'stats1' => $stats1,
-                        'stats2' => $stats2,
-                        'added' => $added,
-                        'removed' => $removed,
-                        'modified' => $modified,
-                        'impactScore' => $impactScore
-                    ]
+                    $io->writeln($this->renderJsonSummary(
+                        [
+                            'source' => $sourceFile,
+                            'target' => $targetFile,
+                            'stats1' => $stats1,
+                            'stats2' => $stats2,
+                            'added' => $added,
+                            'removed' => $removed,
+                            'modified' => $modified,
+                            'impactScore' => $impactScore
+                        ]
                     ));
                     break;
 
@@ -168,15 +176,16 @@ class CompareSonarMetricsCommand extends Command
                     break;
 
                 case 'md':
-                    $io->writeln($this->renderStaticSummary([
-                        'source' => $sourceFile,
-                        'target' => $targetFile,
-                        'stats1' => $stats1,
-                        'stats2' => $stats2,
-                        'added' => $added,
-                        'removed' => $removed,
-                        'modified' => $modified,
-                        'impactScore' => $impactScore
+                    $io->writeln($this->renderStaticSummary(
+                        [
+                            'source' => $sourceFile,
+                            'target' => $targetFile,
+                            'stats1' => $stats1,
+                            'stats2' => $stats2,
+                            'added' => $added,
+                            'removed' => $removed,
+                            'modified' => $modified,
+                            'impactScore' => $impactScore
                         ]
                     ));
                     break;
@@ -208,7 +217,7 @@ class CompareSonarMetricsCommand extends Command
         $domains = $this->extractPublicMetricsByDomain($v2);
         $this->printMetricsByDomain($io, $domains);
 
-        $io->success("Impact global : {$result['impactScore']} (".$this->impactLevel($result['impactScore']).")");
+        $io->success("Impact global : {$result['impactScore']} (" . $this->impactLevel($result['impactScore']) . ")");
         return Command::SUCCESS;
     }
 
@@ -220,9 +229,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:34:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function resolveFiles(string $input, string $dir): string
     {
@@ -248,9 +256,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return array<string, array<string, mixed>>
      *
-     * Created at: 25/03/2026 14:34:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function loadMetrics(string $file): array
     {
@@ -276,9 +283,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return array{total: int, public: int, hidden: int}
      *
-     * Created at: 25/03/2026 14:34:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function computeStats(array $metrics): array
     {
@@ -308,14 +314,17 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:34:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function formatValue(mixed $value): string
     {
-        if ($value === null) { return 'null'; }
-        if (is_bool($value)) { return $value ? 'true' : 'false'; }
+        if ($value === null) {
+            return 'null';
+        }
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
         return (string) $value;
     }
 
@@ -328,9 +337,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return array<string, array{v1: mixed, v2: mixed}>
      *
-     * Created at: 25/03/2026 14:35:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function compareMetric(array $m1, array $m2, bool $ignoreId): array
     {
@@ -372,9 +380,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return int
      *
-     * Created at: 25/03/2026 14:35:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function computeImpact(string $metricKey, array $diff): int
     {
@@ -416,9 +423,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:35:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function impactLevel(int $score): string
     {
@@ -437,9 +443,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return float
      *
-     * Created at: 25/03/2026 14:35:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function metricWeight(string $key): float
     {
@@ -472,9 +477,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:35:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printLegacyMapping(array $removed, OutputInterface $output): void
     {
@@ -510,9 +514,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return array{added: array<int, string>, removed: array<int, string>, modified: array<string, array{diff: array<string, array{v1: mixed, v2: mixed}>, impact: int}>, impactScore: int}
      *
-     * Created at: 25/03/2026 14:35:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function computeDiff(array $v1, array $v2, bool $ignoreId): array
     {
@@ -534,7 +537,7 @@ class CompareSonarMetricsCommand extends Command
             $diff = $this->compareMetric($metricV1, $metricV2, $ignoreId);
 
             // Forcer la détection pour les champs critiques
-            foreach (['name','description','hidden'] as $field) {
+            foreach (['name', 'description', 'hidden'] as $field) {
                 $v1Field = $metricV1[$field] ?? null;
                 $v2Field = $metricV2[$field] ?? null;
 
@@ -559,7 +562,7 @@ class CompareSonarMetricsCommand extends Command
         $impactScore += count($removed) * 5;
 
         // Filtrage et tri : d'abord par impact décroissant, ensuite par clé alphabétique
-        uasort($modified, function($a, $b) {
+        uasort($modified, function ($a, $b) {
             if ($a['impact'] === $b['impact']) {
                 return strcmp($a['diff']['name']['v1'] ?? '', $b['diff']['name']['v1'] ?? '');
             }
@@ -577,9 +580,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return array<string, array{diff: array<string, array{v1: mixed, v2: mixed}>, impact: int}>
      *
-     * Created at: 25/03/2026 14:35:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function filterAndSort(array $modified, int $minImpact): array
     {
@@ -587,7 +589,7 @@ class CompareSonarMetricsCommand extends Command
         $filtered = array_filter($modified, fn($m) => $m['impact'] >= $minImpact);
 
         // Trier par impact décroissant, puis par clé alphabétique si égal
-        uasort($filtered, function($a, $b) use ($filtered) {
+        uasort($filtered, function ($a, $b) use ($filtered) {
             // Impact décroissant
             $impactCompare = $b['impact'] <=> $a['impact'];
             if ($impactCompare !== 0) {
@@ -614,9 +616,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:35:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printContext(SymfonyStyle $io, string $dir, string $src, string $tgt): void
     {
@@ -635,9 +636,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:35:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printSummary(SymfonyStyle $io, array $result): void
     {
@@ -661,13 +661,14 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:35:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printAdded(SymfonyStyle $io, array $added, array $metricsV2): void
     {
-        if (empty($added)) { return; }
+        if (empty($added)) {
+            return;
+        }
 
         $io->section('➕ Ajouts');
 
@@ -691,13 +692,14 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:35:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printRemoved(SymfonyStyle $io, array $removed): void
     {
-        if (empty($removed))  { return; }
+        if (empty($removed)) {
+            return;
+        }
 
         $io->section('❌ Suppressions');
         $io->listing(array_values($removed));
@@ -711,9 +713,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:35:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printModified(SymfonyStyle $io, array $modified): void
     {
@@ -738,8 +739,8 @@ class CompareSonarMetricsCommand extends Command
             if (isset($data['diff']['hidden'])) {
                 $io->writeln(
                     $data['diff']['hidden']['v2'] === true
-                    ? "  ⚠️ métrique désormais cachée (API)"
-                    : "  ✅ métrique désormais exposée (API)"
+                        ? "  ⚠️ métrique désormais cachée (API)"
+                        : "  ✅ métrique désormais exposée (API)"
                 );
             }
 
@@ -763,9 +764,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:35:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function colorImpact(int $impact): string
     {
@@ -785,9 +785,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:35:34 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printGlobalImpact(SymfonyStyle $io, int $score): void
     {
@@ -806,9 +805,8 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:35:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function formatDelta(int $value): string
     {
@@ -822,11 +820,11 @@ class CompareSonarMetricsCommand extends Command
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:35:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    private function renderStaticSummary(array $data): string {
+    private function renderStaticSummary(array $data): string
+    {
 
         $source = $data['source'];
         $target = $data['target'];
@@ -843,7 +841,7 @@ class CompareSonarMetricsCommand extends Command
 
         $level = $this->impactLevel($impactScore);
 
-    return <<<MD
+        return <<<MD
 # 📊 SonarQube Metrics Comparison
 
 ## Versions
@@ -883,9 +881,8 @@ MD;
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:35:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function renderJsonSummary(array $data): string
     {
@@ -945,9 +942,8 @@ MD;
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:36:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function cssLevel(string $level): string
     {
@@ -967,11 +963,11 @@ MD;
      *
      * @return string
      *
-     * Created at: 25/03/2026 14:36:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    private function renderHtmlSummary(array $data): string {
+    private function renderHtmlSummary(array $data): string
+    {
 
         $source = $data['source'];
         $target = $data['target'];
@@ -988,7 +984,7 @@ MD;
         $deltaPublic = $stats2['public'] - $stats1['public'];
         $deltaHidden = $stats2['hidden'] - $stats1['hidden'];
 
-    return <<<HTML
+        return <<<HTML
 <!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
@@ -1057,9 +1053,8 @@ HTML;
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:36:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printApiQueries(SymfonyStyle $io, array $domains, $sonarProjectKey): void
     {
@@ -1086,9 +1081,8 @@ HTML;
      *
      * @return void
      *
-     * Created at: 25/03/2026 14:36:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function printMetricsByDomain(SymfonyStyle $io, array $domains): void
     {
@@ -1113,9 +1107,8 @@ HTML;
      *
      * @return array<string, array<int, string>>
      *
-     * Created at: 25/03/2026 14:36:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractPublicMetricsByDomain(array $metrics): array
     {

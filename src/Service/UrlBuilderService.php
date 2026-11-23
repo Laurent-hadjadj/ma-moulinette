@@ -23,8 +23,7 @@ class UrlBuilderService
 
     public function __construct(
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for build]
@@ -35,7 +34,6 @@ class UrlBuilderService
      *
      * @return string
      *
-     * Created at: 13/07/2025 11:44:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

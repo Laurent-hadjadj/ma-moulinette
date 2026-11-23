@@ -17,7 +17,10 @@ use RuntimeException;
 
 /**
  * [Description UnexpectedExecutionPathException]
- */
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 class UnexpectedExecutionPathException extends RuntimeException
 {
   /** Pour faire plaisir à SonarQube  */

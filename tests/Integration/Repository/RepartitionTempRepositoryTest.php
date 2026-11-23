@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -64,10 +64,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for loadFixtures]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 12:07:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function loadFixtures(): void
     {
@@ -79,10 +77,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for getRepository]
      *
      * @return RepartitionTempRepository
-     *
-     * Created at: 06/07/2025 12:07:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getRepository(): RepartitionTempRepository
     {
@@ -93,10 +89,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testBatchInsertIssuesSQLSuccess]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 17:34:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testBatchInsertIssuesSQLSuccess(): void
     {
@@ -146,10 +140,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * @param int $setup
      *
      * @return void
-     *
-     * Created at: 06/07/2025 17:40:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function insertTempIssue(string $mavenKey, string $component, string $type, string $severity, int $setup): void
     {
@@ -169,10 +161,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testDeleteOldRecords]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 17:40:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testDeleteOldRecords(): void
     {
@@ -203,10 +193,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testDeleteOldRecordsMissingParams]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 17:41:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testDeleteOldRecordsMissingParams(): void
     {
@@ -221,10 +209,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testSelectRepartitionByTypeAndSeveritySuccess]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 17:43:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testSelectRepartitionByTypeAndSeveritySuccess(): void
     {
@@ -259,10 +245,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testSelectRepartitionByTypeAndSeverityNotFound]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 17:45:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testSelectRepartitionByTypeAndSeverityNotFound(): void
     {
@@ -288,10 +272,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testBatchInsertIssuesSQL_WithSingleIssueAsArray]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 19:17:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
     public function testBatchInsertIssuesSQL_WithSingleIssueAsArray(): void
@@ -334,10 +316,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testBatchInsertIssuesSQL_WithEmptyArray]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 19:23:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testBatchInsertIssuesSQL_WithEmptyArray(): void
     {
@@ -358,10 +338,8 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * [Description for testBatchInsertIssuesSQL_SkipIncompleteIssue]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 19:25:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
     public function testBatchInsertIssuesSQL_SkipIncompleteIssue(): void

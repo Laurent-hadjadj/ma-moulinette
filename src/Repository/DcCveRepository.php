@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -38,10 +38,8 @@ class DcCveRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array{code: int, erreur: string}
-     *
-     * Created at: 11/05/2026 10:28:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -68,10 +66,8 @@ class DcCveRepository extends ServiceEntityRepository
      * @param string $cveId
      *
      * @return DcCve|null
-     *
-     * Created at: 13/07/2026 09:09:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findByCveId(string $cveId): ?DcCve
     {
@@ -86,10 +82,8 @@ class DcCveRepository extends ServiceEntityRepository
      * @param array<int, int>|null    $allowedScanIds
      *
      * @return array{code: 200, liste: array<int, array{cwe: string, nb_projets: int, projets: array<int, string>}>, erreur: string}|array{code: int, erreur: string}
-     *
-     * Created at: 08/05/2026 18:27:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countProjectsByCwe(
         ?array $allowedMavenKeys = null,
@@ -106,8 +100,12 @@ class DcCveRepository extends ServiceEntityRepository
             return ['code' => 200, 'liste' => [], 'erreur' => ''];
         }
         $whereClauses = [];
-        if ($allowedMavenKeys !== null) { $whereClauses[] = 's.maven_key IN (:keys)'; }
-        if ($allowedScanIds  !== null) { $whereClauses[] = 's.id IN (:scan_ids)'; }
+        if ($allowedMavenKeys !== null) {
+            $whereClauses[] = 's.maven_key IN (:keys)';
+        }
+        if ($allowedScanIds  !== null) {
+            $whereClauses[] = 's.id IN (:scan_ids)';
+        }
         $whereScope = $whereClauses !== [] ? 'WHERE ' . implode(' AND ', $whereClauses) : '';
         $sql = <<<SQL
             SELECT
@@ -157,10 +155,8 @@ class DcCveRepository extends ServiceEntityRepository
      * @param array<int, int>|null    $allowedScanIds
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
-     *
-     * Created at: 08/05/2026 18:28:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findCriticalCvesAcrossProjects(
         int $minProjects = 2,
@@ -178,8 +174,12 @@ class DcCveRepository extends ServiceEntityRepository
             return ['code' => 200, 'liste' => [], 'erreur' => ''];
         }
         $andClauses = [];
-        if ($allowedMavenKeys !== null) { $andClauses[] = 'AND s.maven_key IN (:keys)'; }
-        if ($allowedScanIds  !== null) { $andClauses[] = 'AND s.id IN (:scan_ids)'; }
+        if ($allowedMavenKeys !== null) {
+            $andClauses[] = 'AND s.maven_key IN (:keys)';
+        }
+        if ($allowedScanIds  !== null) {
+            $andClauses[] = 'AND s.id IN (:scan_ids)';
+        }
         $andScope = implode(' ', $andClauses);
         $sql = <<<SQL
             SELECT
@@ -259,8 +259,12 @@ class DcCveRepository extends ServiceEntityRepository
         }
         $limit = max(1, $limit);
         $andClauses = [];
-        if ($allowedMavenKeys !== null) { $andClauses[] = 'AND s.maven_key IN (:keys)'; }
-        if ($allowedScanIds  !== null) { $andClauses[] = 'AND s.id IN (:scan_ids)'; }
+        if ($allowedMavenKeys !== null) {
+            $andClauses[] = 'AND s.maven_key IN (:keys)';
+        }
+        if ($allowedScanIds  !== null) {
+            $andClauses[] = 'AND s.id IN (:scan_ids)';
+        }
         $andScope = implode(' ', $andClauses);
         $sql = <<<SQL
             SELECT
@@ -459,10 +463,8 @@ class DcCveRepository extends ServiceEntityRepository
      * @param array<int, string>|null   $allowedMavenKeys  périmètre user
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
-     *
-     * Created at: 14/05/2026 14:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function listNewCriticalCvesGroupedByCve(
         int $hardLimit = 25,
@@ -599,10 +601,8 @@ class DcCveRepository extends ServiceEntityRepository
      * @param string|null $raw
      *
      *@return array<int, string>
-     *
-     * Created at: 08/05/2026 18:29:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     /**
      * MODIF 2026-05-13 : retourne les CVE présentes dans ≥2 des scans donnés.
@@ -674,10 +674,8 @@ class DcCveRepository extends ServiceEntityRepository
      * @param string|null $raw
      *
      * @return array<int, string>
-     *
-     * Created at: 13/07/2026 09:11:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function parsePgArray(?string $raw): array
     {

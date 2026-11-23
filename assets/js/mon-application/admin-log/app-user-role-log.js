@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -102,9 +102,8 @@ $('#role-log-table').on('click', 'tbody tr', function (e) {
  *
  * @return json
  *
- * Created at: 20/07/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const getFilters = function() {
     const params = {};
@@ -126,9 +125,8 @@ const getFilters = function() {
  *
  * @return array
  *
- * Created at: 20/07/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const selectedIds = function() {
     const ids = [];
@@ -150,9 +148,8 @@ const selectedIds = function() {
  *
  * @return void
  *
- * Created at: 21/07/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const setActionsBusy = function(busy) {
     $('#bouton-archiver, #bouton-rapport-pdf, #bouton-supprimer').toggleClass('disabled-bouton', busy);
@@ -166,9 +163,8 @@ const setActionsBusy = function(busy) {
  *
  * @return json
  *
- * Created at: 20/07/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const loadJournal = async function(params = {}) {
     const options = {
@@ -271,9 +267,8 @@ const loadJournal = async function(params = {}) {
  *
  * @return void
  *
- * Created at: 20/07/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const downloadSelection = function(action, filename) {
     const ids = selectedIds();
@@ -344,9 +339,8 @@ const downloadSelection = function(action, filename) {
  *
  * @return void
  *
- * Created at: 20/07/2026 00:00:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const deleteSelection = async function() {
     const ids = selectedIds();

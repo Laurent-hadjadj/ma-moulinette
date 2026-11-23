@@ -44,4 +44,4 @@ if ($requestedFile !== $docRoot . '/index.php' && is_file($requestedFile)) {
     return false;
 }
 
-return require $docRoot . '/index.php';
+return require_once $docRoot . '/index.php';

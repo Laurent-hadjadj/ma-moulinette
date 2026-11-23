@@ -14,6 +14,7 @@
 namespace App\Service\NpmAudit;
 
 use App\Entity\NpmProcessingQueue;
+use App\Exception\Npm\NpmAuditPayloadDecodeException;
 
 /**
  * [Description NpmAuditPayloadDecoder]
@@ -38,6 +39,17 @@ class NpmAuditPayloadDecoder
         private int $maxDecodedSize = 50 * 1024 * 1024,    // 50 MB
     ) {}
 
+    /**
+     * [Description for decode]
+     *
+     * @param string $rawBody
+     * @param string|null $declaredContentType
+     *
+     * @return NpmAuditPayloadDecodeResult
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function decode(string $rawBody, ?string $declaredContentType): NpmAuditPayloadDecodeResult
     {
         // ------- 1. Taille brute --------------------------------------------
@@ -97,6 +109,16 @@ class NpmAuditPayloadDecoder
         );
     }
 
+    /**
+     * [Description for detectFormat]
+     *
+     * @param string $body
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function detectFormat(string $body): string
     {
         if (strlen($body) >= 2 && $body[0] === "\x1F" && $body[1] === "\x8B") {
@@ -114,6 +136,16 @@ class NpmAuditPayloadDecoder
         throw new NpmAuditPayloadDecodeException(415, 'Format non reconnu (magic bytes).');
     }
 
+    /**
+     * [Description for probeGzipForTar]
+     *
+     * @param string $body
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function probeGzipForTar(string $body): bool
     {
         $decoded = @gzdecode($body, 512);
@@ -123,6 +155,17 @@ class NpmAuditPayloadDecoder
         return substr($decoded, 257, 5) === 'ustar';
     }
 
+    /**
+     * [Description for assertFormatMatchesContentType]
+     *
+     * @param string $detected
+     * @param string|null $declared
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function assertFormatMatchesContentType(string $detected, ?string $declared): void
     {
         if ($declared === null || $declared === '') {
@@ -143,6 +186,16 @@ class NpmAuditPayloadDecoder
         }
     }
 
+    /**
+     * [Description for decodeGzip]
+     *
+     * @param string $body
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function decodeGzip(string $body): string
     {
         $decoded = @gzdecode($body, $this->maxDecodedSize);
@@ -152,6 +205,16 @@ class NpmAuditPayloadDecoder
         return $decoded;
     }
 
+    /**
+     * [Description for decodeZip]
+     *
+     * @param string $body
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function decodeZip(string $body): string
     {
         $tmpZip = tempnam(sys_get_temp_dir(), 'npmaudit-zip-');
@@ -191,6 +254,16 @@ class NpmAuditPayloadDecoder
         }
     }
 
+    /**
+     * [Description for decodeTgz]
+     *
+     * @param string $body
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function decodeTgz(string $body): string
     {
         $tar = $this->decodeGzip($body);
@@ -227,7 +300,15 @@ class NpmAuditPayloadDecoder
     }
 
     /**
+     * [Description for readStreamWithLimit]
+     *
      * @param resource $stream
+     * @param int $limit
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function readStreamWithLimit($stream, int $limit): string
     {
@@ -247,12 +328,17 @@ class NpmAuditPayloadDecoder
     }
 
     /**
+     * [Description for validateSchema]
      * Validation du schéma minimal de l'enveloppe npm audit :
      * {"full": {...}, "prodOnly"?: {...}}, chaque rapport présent devant
      * avoir auditReportVersion + vulnerabilities (objet) + metadata
-     * (vulnerabilities + dependencies, objets).
-     *
+     * (vulnerabilities + dependencies, objets).     *
      * @param array<string, mixed> $parsed
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function validateSchema(array $parsed): void
     {
@@ -278,7 +364,15 @@ class NpmAuditPayloadDecoder
     }
 
     /**
+     * [Description for validateAuditReport]
+     *
      * @param array<string, mixed> $report
+     * @param string $label
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function validateAuditReport(array $report, string $label): void
     {

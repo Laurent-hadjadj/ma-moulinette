@@ -7,17 +7,17 @@
 #    de reference 'tetris:TetrisGame' et enregistrer les reponses JSON dans
 #    tests/fixtures/sonarqube/ pour alimenter le MockHttpClient.
 #
-#  Prerequis :
+#  Prérequis :
 #    - SonarQube 2026 joignable sur SONAR_URL
 #    - Le projet 'tetris:TetrisGame' analyse (existe dans SonarQube)
 #    - SONAR_TOKEN valide (scope projet minimum)
-#    - Le fichier .env.test.local definit SONAR_URL + SONAR_TOKEN
+#    - Le fichier .env.test.local définit SONAR_URL + SONAR_TOKEN
 #
 #  Usage :
 #    powershell -ExecutionPolicy Bypass -File bin/e2e/capture-sonar-fixtures.ps1
 #
 #  Recapture :
-#    Re-executer le script ecrase les fichiers .json existants.
+#    Re-executer le script écrase les fichiers .json existants.
 #
 #  Les fixtures suivantes sont produites :
 #    tests/fixtures/sonarqube/issues/search.json
@@ -211,4 +211,4 @@ Get-ChildItem -Path $outputDir -Recurse -File -Filter *.json |
     }
 
 Write-Host ""
-Write-Host "[OK] Capture terminee. Les fichiers sont commitables (tests/fixtures/sonarqube/)." -ForegroundColor Green
+Write-Host "[OK] Capture terminée. Les fichiers sont commitables (tests/fixtures/sonarqube/)." -ForegroundColor Green

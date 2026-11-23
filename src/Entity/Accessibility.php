@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -18,17 +18,19 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/* MODIF 26/10/2026 : entité pour l'indicateur Accessibilité, basé sur le tag
+
+/**
+ * [Description accessibility]
+ * MODIF 26/10/2026 : entité pour l'indicateur Accessibilité, basé sur le tag
  * SonarQube `accessibility` (css/web/javascript/typescript — pas de facette
  * officielle WCAG, cf. mkDocs/docs/ma-moulinette/application/projet.md).
  * Snapshot courant, une ligne par maven_key. Note A-E (seuils SQALE
  * 5/10/20/50%, identiques au RCI et à l'Empreinte Écologique) et détail par
  * langage. Les règles accessibilité sont intégrées aux plugins de
  * langage standards de SonarQube.
- */
-
-/**
- * [Description accessibility]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: AccessibilityRepository::class)]
 #[ORM\Table(name: "accessibility", schema: "ma_moulinette")]

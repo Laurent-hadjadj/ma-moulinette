@@ -5,16 +5,17 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /* MODIF 2026-05-24 : la collecte est désormais assurée par
  * ActivityCollecteCommand (cron ou CLI). La route sauvegardeHistorique ne fait
  * plus de collecte — elle agrège les stats depuis les données existantes en base.
  * Supprimé : ClientService, MessageBusInterface, ActivityMessage, lancerBatch(). */
+
 namespace App\Controller\Activity;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,28 +40,57 @@ class ApiActivityController extends AbstractController
 
     /**
      * [Description for __construct]
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
+    /**
+     * [Description for calculDifferenceDate]
+     *
+     * @param \DateTime $premiereDate
+     * @param \DateTime $secondeDate
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function calculDifferenceDate(\DateTime $premiereDate, \DateTime $secondeDate): int
     {
         return (int) $premiereDate->diff($secondeDate)->format('%a');
     }
 
+    /**
+     * [Description for formatDureeMax]
+     *
+     * @param int $data
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function formatDureeMax(int $data): string
     {
         return gmdate("H:i:s", $data);
     }
 
+    /**
+     * [Description for calculAnalyseMoyenne]
+     *
+     * @param int $nbJour
+     * @param int $nbAnalyse
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function calculAnalyseMoyenne(int $nbJour, int $nbAnalyse): int
     {
         // Moyenne d'analyses PAR JOUR = nombre d'analyses / nombre de jours.
@@ -70,6 +100,17 @@ class ApiActivityController extends AbstractController
         return (int) round($nbAnalyse / $nbJour);
     }
 
+    /**
+     * [Description for calculeTauxReussite]
+     *
+     * @param int $nbAnalyseTotal
+     * @param int $nbAnalyseReussite
+     *
+     * @return float
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function calculeTauxReussite(int $nbAnalyseTotal, int $nbAnalyseReussite): float
     {
         // Taux = réussites / total (borné naturellement à 100 %).
@@ -86,9 +127,8 @@ class ApiActivityController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/activity/sauvegarde', name: 'sauvegarde_historique', methods: ['POST'])]
     public function sauvegardeHistorique(): JsonResponse
@@ -192,9 +232,8 @@ class ApiActivityController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/activity/dessin', name: 'api_dessin', methods: ['POST'])]
     public function apiDessin(Request $request): JsonResponse

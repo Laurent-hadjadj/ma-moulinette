@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -169,8 +169,13 @@ class ZapIngesterTest extends TestCase
         $this->ruleRepo->method('findByAlertRef')->willReturn(null);
 
         $alert = [
-            'pluginid' => '10063', 'alertRef' => '10063', 'name' => 'Leak', 'riskcode' => '1', 'confidence' => '2',
-            'instances' => [], 'tags' => [],
+            'pluginid' => '10063',
+            'alertRef' => '10063',
+            'name' => 'Leak',
+            'riskcode' => '1',
+            'confidence' => '2',
+            'instances' => [],
+            'tags' => [],
         ];
         $report = $this->minimalReport([
             'site' => [['@name' => 'http://exemple.local/', 'alerts' => [$alert, $alert]]],
@@ -178,8 +183,11 @@ class ZapIngesterTest extends TestCase
 
         $this->ingester->ingest($this->buildQueue($report));
 
-        $this->assertCount(1, array_filter($this->persisted, fn($e) => $e instanceof ZapRule),
-            'Meme alert_ref dans 2 alertes -> 1 seul persist ZapRule (cache local)');
+        $this->assertCount(
+            1,
+            array_filter($this->persisted, fn($e) => $e instanceof ZapRule),
+            'Meme alert_ref dans 2 alertes -> 1 seul persist ZapRule (cache local)'
+        );
         $this->assertCount(2, array_filter($this->persisted, fn($e) => $e instanceof ZapFinding));
     }
 
@@ -223,8 +231,11 @@ class ZapIngesterTest extends TestCase
 
         $this->ingester->ingest($this->buildQueue($report));
 
-        $this->assertCount(0, array_filter($this->persisted, fn($e) => $e instanceof ZapRule),
-            'Règle deja en BDD : pas de nouveau persist');
+        $this->assertCount(
+            0,
+            array_filter($this->persisted, fn($e) => $e instanceof ZapRule),
+            'Règle deja en BDD : pas de nouveau persist'
+        );
         $this->assertGreaterThanOrEqual($oldLastSeen, $existingRule->getLastSeenAt());
     }
 
@@ -261,15 +272,25 @@ class ZapIngesterTest extends TestCase
 
         $report = $this->minimalReport([
             'site' => [['@name' => 'x', 'alerts' => [
-                ['pluginid' => '1', 'alertRef' => '1', 'name' => 'x', 'riskcode' => '0', 'confidence' => '0', 'instances' => [],
-                 'tags' => [['tag' => 'WSTG-v42-INFO-02']]],
+                [
+                    'pluginid' => '1',
+                    'alertRef' => '1',
+                    'name' => 'x',
+                    'riskcode' => '0',
+                    'confidence' => '0',
+                    'instances' => [],
+                    'tags' => [['tag' => 'WSTG-v42-INFO-02']]
+                ],
             ]]],
         ]);
 
         $this->ingester->ingest($this->buildQueue($report));
 
-        $this->assertCount(0, array_filter($this->persisted, fn($e) => $e instanceof OwaspDast),
-            'Aucun tag OWASP_<année>_AXX -> aucune ligne owasp_dast créée');
+        $this->assertCount(
+            0,
+            array_filter($this->persisted, fn($e) => $e instanceof OwaspDast),
+            'Aucun tag OWASP_<année>_AXX -> aucune ligne owasp_dast créée'
+        );
     }
 
     /**

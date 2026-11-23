@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Admin;
@@ -40,10 +40,8 @@ class DashboardController extends AbstractDashboardController
 
     /**
      * [Description for __construct]
-     *
-     * Created at: 02/01/2023, 18:33:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private Packages $assets,
@@ -60,9 +58,8 @@ class DashboardController extends AbstractDashboardController
      *
      * @return response
      *
-     * Created at: 15/12/2022, 21:14:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/health', name: 'sonar_health', methods: ['POST'])]
     public function sonarHealth(): Response
@@ -84,9 +81,8 @@ class DashboardController extends AbstractDashboardController
      *
      * @return response
      *
-     * Created at: 15/12/2022, 21:14:39 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/system/info', name: 'information_system', methods: ['POST'])]
     public function informationSystem(): Response
@@ -99,6 +95,14 @@ class DashboardController extends AbstractDashboardController
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
+    /**
+     * [Description for index]
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[IsGranted('ROLE_UTILISATEUR')]
     #[AdminRoute('/admin', name: 'admin')]
     public function index(): Response
@@ -107,6 +111,14 @@ class DashboardController extends AbstractDashboardController
         return $this->render('admin/home.html.twig', ['dateCopyright' => date('Y')]);
     }
 
+    /**
+     * [Description for batchSuivi]
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route('/admin/projet', name: 'admin_projet')]
     public function batchSuivi(): Response
     {
@@ -120,9 +132,8 @@ class DashboardController extends AbstractDashboardController
      *
      * @return Dashboard
      *
-     * Created at: 02/01/2023, 18:34:30 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureDashboard(): Dashboard
     {
@@ -140,9 +151,8 @@ class DashboardController extends AbstractDashboardController
      *
      * @return iterable<MenuItemInterface>
      *
-     * Created at: 02/01/2023, 18:34:47 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureMenuItems(): iterable
     {
@@ -177,9 +187,8 @@ class DashboardController extends AbstractDashboardController
      *
      * @return UserMenu
      *
-     * Created at: 02/01/2023, 18:34:53 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureUserMenu(UserInterface $utilisateur): UserMenu
     {
@@ -202,9 +211,8 @@ class DashboardController extends AbstractDashboardController
      *
      * @return Actions
      *
-     * Created at: 09/11/2025 15:00:08 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureActions(): Actions
     {
@@ -218,15 +226,13 @@ class DashboardController extends AbstractDashboardController
      *
      * @return Assets
      *
-     * Created at: 02/01/2023, 18:35:12 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureAssets(): Assets
     {
         return parent::configureAssets()
-            ->addAssetMapperEntry('easy-admin','easy-footer', 'easy-groupe-fonctionnel')
+            ->addAssetMapperEntry('easy-admin', 'easy-footer', 'easy-groupe-fonctionnel')
             ->addHtmlContentToBody('<!-- generated at ' . time() . ' -->');
     }
-
 }

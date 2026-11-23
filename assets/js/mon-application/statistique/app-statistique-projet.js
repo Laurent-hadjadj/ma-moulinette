@@ -3,14 +3,14 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *
  *  MODIF 2026-06-10 : point d'accès  DataTables pour la page Statistiques — Projets.
  *  Recherche globale + tri par colonne + pagination.
  *
  *  ---
  *  Vous pouvez obtenir une copie de la licence a l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 import 'foundation-sites/dist/css/foundation.min.css';

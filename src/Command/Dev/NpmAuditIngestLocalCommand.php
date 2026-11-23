@@ -75,6 +75,7 @@ class NpmAuditIngestLocalCommand extends Command
     }
 
     /**
+     * [Description for readOptionalJsonFile]
      * Lit, décode et valide un fichier JSON optionnel (prod-only/installed) —
      * factorisé pour éviter de tripler la même logique. `$failed` distingue
      * "option absente" (retour null, `$failed` reste false, l'appelant
@@ -82,7 +83,15 @@ class NpmAuditIngestLocalCommand extends Command
      * `$failed` passe à true, message déjà écrit sur `$io`, l'appelant doit
      * sortir en FAILURE).
      *
+     * @param SymfonyStyle $io
+     * @param mixed $path
+     * @param string $label
+     * @param bool $failed
+     *
      * @return array<string, mixed>|null
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function readOptionalJsonFile(SymfonyStyle $io, mixed $path, string $label, bool &$failed): array|null
     {
@@ -117,6 +126,17 @@ class NpmAuditIngestLocalCommand extends Command
         return $decoded;
     }
 
+    /**
+     * [Description for execute]
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

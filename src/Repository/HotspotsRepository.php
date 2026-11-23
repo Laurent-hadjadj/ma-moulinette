@@ -29,7 +29,7 @@ class HotspotsRepository extends ServiceEntityRepository
 
   public function __construct(ManagerRegistry $registry)
   {
-      parent::__construct($registry, Hotspots::class);
+    parent::__construct($registry, Hotspots::class);
   }
 
   /**
@@ -38,31 +38,29 @@ class HotspotsRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 05/02/2025 09:34:19 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
-
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -72,8 +70,6 @@ class HotspotsRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 12/03/2024 21:49:02 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -83,14 +79,14 @@ class HotspotsRepository extends ServiceEntityRepository
             FROM ma_moulinette.hotspots
             WHERE maven_key=:maven_key";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -101,8 +97,6 @@ class HotspotsRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 14/03/2024 08:50:52 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -113,13 +107,13 @@ class HotspotsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key AND status='TO_REVIEW'
             ORDER BY niveau";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -128,8 +122,6 @@ class HotspotsRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 20/03/2024 16:45:58 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -138,15 +130,15 @@ class HotspotsRepository extends ServiceEntityRepository
     $sql = "SELECT COUNT(*) as nombre
             FROM ma_moulinette.hotspots
             WHERE maven_key=:maven_key AND status=:status";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(self::$status, $map['status']);
-            $nombre = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(self::$status, $map['status']);
+      $nombre = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -155,8 +147,6 @@ class HotspotsRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 20/03/2024 19:50:36 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -166,15 +156,15 @@ class HotspotsRepository extends ServiceEntityRepository
             FROM ma_moulinette.hotspots
             WHERE maven_key=:maven_key AND status=:status
             GROUP BY niveau";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(self::$status, $map['status']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(self::$status, $map['status']);
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -183,42 +173,40 @@ class HotspotsRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 26/05/2024 17:57:58 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function insertHotspots(array $map): array
   {
-      /** Traitement de masse (bulk) */
-      $sql = "INSERT INTO ma_moulinette.hotspots
+    /** Traitement de masse (bulk) */
+    $sql = "INSERT INTO ma_moulinette.hotspots
                 (maven_key, version, date_version, rule_key, security_category, hotspot_key, probability, status, resolution, niveau, mode_collecte, utilisateur_collecte, date_enregistrement)
               VALUES
                 (:maven_key, :version, :date_version, :rule_key, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
-      try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
+    try {
+      $this->getEntityManager()->getConnection()->beginTransaction();
       foreach ($map as $item) {
-              $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-                $stmt->bindValue(self::$mavenKey, $item['maven_key']);
-                $stmt->bindValue(':version', $item['version']);
-                $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
-                $stmt->bindValue(':rule_key', $item['rule_key']);
-                $stmt->bindValue(':security_category', $item['security_category']);
-                $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
-                $stmt->bindValue(':probability', $item['probability']);
-                $stmt->bindValue(self::$status, $item['status']);
-                $stmt->bindValue(':resolution', $item['resolution']);
-                $stmt->bindValue(':niveau', $item['niveau']);
-                $stmt->bindValue(':mode_collecte', $item['mode_collecte']);
-                $stmt->bindValue(':utilisateur_collecte', $item['utilisateur_collecte']);
-                $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
-                $stmt->executeStatement();
-              }
-          $this->getEntityManager()->getConnection()->commit();
-      } catch (\Throwable $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
-          return $this->handleDatabaseException($e);
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->bindValue(self::$mavenKey, $item['maven_key']);
+        $stmt->bindValue(':version', $item['version']);
+        $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
+        $stmt->bindValue(':rule_key', $item['rule_key']);
+        $stmt->bindValue(':security_category', $item['security_category']);
+        $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
+        $stmt->bindValue(':probability', $item['probability']);
+        $stmt->bindValue(self::$status, $item['status']);
+        $stmt->bindValue(':resolution', $item['resolution']);
+        $stmt->bindValue(':niveau', $item['niveau']);
+        $stmt->bindValue(':mode_collecte', $item['mode_collecte']);
+        $stmt->bindValue(':utilisateur_collecte', $item['utilisateur_collecte']);
+        $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
+        $stmt->executeStatement();
       }
-      return ['code' => 200, 'erreur' => ''];
+      $this->getEntityManager()->getConnection()->commit();
+    } catch (\Throwable $e) {
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'erreur' => ''];
   }
 }

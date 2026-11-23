@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -88,11 +88,11 @@ class BatchCollecteRciControllerTest extends TestCase
             ],
         ]);
         $this->buildMeasures->method('weightedWeights')
-            ->willReturnCallback(fn (int $b, int $c, int $m, int $mi, int $i): int => $b * 10 + $c * 5 + $m * 3 + $mi);
+            ->willReturnCallback(fn(int $b, int $c, int $m, int $mi, int $i): int => $b * 10 + $c * 5 + $m * 3 + $mi);
         $this->buildMeasures->method('calculateRci')
-            ->willReturnCallback(fn (?int $ncloc, int $poids): ?float => $ncloc === null || $ncloc <= 0 ? null : 90.0);
+            ->willReturnCallback(fn(?int $ncloc, int $poids): ?float => $ncloc === null || $ncloc <= 0 ? null : 90.0);
         $this->buildMeasures->method('getRCIRating')
-            ->willReturnCallback(fn (?float $rci): ?string => $rci === null ? null : 'B');
+            ->willReturnCallback(fn(?float $rci): ?string => $rci === null ? null : 'B');
     }
 
     public function testBuildRciMeasuresHappyPathDeletesThenInsertsAndReturns200(): void

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Repository;
 use App\Entity\Batch;
 use App\Repository\BatchRepository;
 use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException,UniqueConstraintViolationException};
+use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException, UniqueConstraintViolationException};
 use Doctrine\DBAL\{Connection, Result, Statement};
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -71,7 +71,10 @@ class BatchRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionConnectionUsesNoDataBaseMessage(): void
     {
         $exception = new class('SQLSTATE[08006]') extends ConnectionException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
 
         $result = $this->repo->handleDatabaseException($exception);
@@ -83,7 +86,10 @@ class BatchRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionNotNullKeepsOriginalMessage(): void
     {
         $exception = new class('column responsable cannot be null') extends NotNullConstraintViolationException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
 
         $result = $this->repo->handleDatabaseException($exception);
@@ -95,7 +101,10 @@ class BatchRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionUniqueReturnsCustomCode(): void
     {
         $exception = new class('duplicate') extends UniqueConstraintViolationException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
 
         $result = $this->repo->handleDatabaseException($exception);

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -96,7 +96,11 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'router', 'request_stack', 'parameter_bag', 'security.token_storage',
+                'twig',
+                'router',
+                'request_stack',
+                'parameter_bag',
+                'security.token_storage',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -216,7 +220,8 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
+            'code' => 200,
+            'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueCleanCodeSynthese')
             ->willReturn(['code' => 200, 'liste' => []]);
@@ -241,7 +246,8 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
+            'code' => 200,
+            'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueCleanCodeSynthese')
             ->willReturn(['code' => 200, 'liste' => [$this->buildRow()]]);
@@ -299,7 +305,8 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
+            'code' => 200,
+            'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueCleanCodeSynthese')
             ->willReturn(['code' => 200, 'liste' => [$this->buildRow()]]);

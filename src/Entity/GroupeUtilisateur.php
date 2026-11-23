@@ -19,6 +19,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+/**
+ * [Description GroupeUtilisateur]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ */
 #[ORM\Entity(repositoryClass: GroupeUtilisateurRepository::class)]
 #[ORM\Table(name: "groupe_utilisateur", schema: "ma_moulinette")]
 #[UniqueEntity(fields: ['groupeUtilisateur'], message: 'Ce groupe existe déjà.')]

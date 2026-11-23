@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -44,10 +44,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/12/2025 18:24:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -76,14 +74,13 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * Répartition des types d'appareils
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/12/2025 18:25:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectDeviceTypeStatsByPeriod(
         \DateTimeInterface $start,
-        \DateTimeInterface $end): array {
+        \DateTimeInterface $end
+    ): array {
 
         $sql = "SELECT device_type as name, COUNT(DISTINCT visitor_id) AS total
                 FROM ma_moulinette.user_agent_analysis
@@ -114,13 +111,13 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $end
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 17/12/2025 14:11:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectOsStatsByPeriod(
-        \DateTimeInterface $start, \DateTimeInterface $end): array {
+        \DateTimeInterface $start,
+        \DateTimeInterface $end
+    ): array {
         $sql = "SELECT os_name as name, os_version as version, COUNT(DISTINCT visitor_id) AS total
                 FROM ma_moulinette.user_agent_analysis
                 WHERE created_at BETWEEN :start AND :end
@@ -151,13 +148,13 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $end
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 17/12/2025 14:36:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectBrowserStatsByPeriod(
-        \DateTimeInterface $start, \DateTimeInterface $end): array {
+        \DateTimeInterface $start,
+        \DateTimeInterface $end
+    ): array {
 
         $sql = "SELECT browser_name as name, browser_version as version, COUNT(DISTINCT visitor_id) AS total
                 FROM ma_moulinette.user_agent_analysis
@@ -167,7 +164,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
                 GROUP BY browser_name, browser_version
                 ORDER BY total DESC";
 
-            $conn = $this->getEntityManager()->getConnection();
+        $conn = $this->getEntityManager()->getConnection();
         try {
             $stmt = $conn->prepare($sql);
             $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
@@ -187,14 +184,13 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $end
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 21/12/2025 12:42:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectSessionPagesStats(
-        \DateTimeInterface $start, \DateTimeInterface $end): array
-    {
+        \DateTimeInterface $start,
+        \DateTimeInterface $end
+    ): array {
         $sqlKpi =  "SELECT
                         COUNT(DISTINCT session_id) AS unique_users,
                         COUNT(*) AS page_views
@@ -214,34 +210,32 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         try {
-                $stmt = $conn->prepare($sqlKpi);
-                    $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
-                    $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
-                $kpi = $stmt->executeQuery()->fetchAssociative();
+            $stmt = $conn->prepare($sqlKpi);
+            $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
+            $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
+            $kpi = $stmt->executeQuery()->fetchAssociative();
 
-                $stmt = $conn->prepare($sqlPages);
-                    $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
-                    $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
-                $items = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $conn->prepare($sqlPages);
+            $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
+            $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
+            $items = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
 
-        return [ 'code' => 200, 'kpi' => $kpi, 'items' => $items, 'erreur' => '' ];
+        return ['code' => 200, 'kpi' => $kpi, 'items' => $items, 'erreur' => ''];
     }
 
     /**
      * [Description for selectAvgSessionDurationStats]
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 21/12/2025 18:36:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectAvgSessionDurationStats(): array
     {
-            $sql = "WITH session_bounds AS (
+        $sql = "WITH session_bounds AS (
                         SELECT
                                 session_id,
                                 DATE(created_at) AS session_date,
@@ -276,8 +270,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         try {
-                $stmt = $conn->prepare($sql);
-                $rows = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $conn->prepare($sql);
+            $rows = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -289,10 +283,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * [Description for selectUniqueSessionStats]
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 22/12/2025 08:04:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectUniqueSessionStats(): array
     {
@@ -315,8 +307,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         try {
-                $stmt = $conn->prepare($sql);
-                $rows = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $conn->prepare($sql);
+            $rows = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -328,10 +320,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * [Description for selectSessionDurationByCategoryStats]
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 22/12/2025 10:20:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectSessionDurationByCategoryStats(\DateTimeInterface $start, \DateTimeInterface $end): array
     {
@@ -374,10 +364,10 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         try {
-                $stmt = $conn->prepare($sql);
-                $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
-                $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
-                $rows = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
+            $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
+            $rows = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -392,10 +382,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $end
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 22/12/2025 11:22:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectCategoryByUniqueSessionStats(\DateTimeInterface $start, \DateTimeInterface $end): array
     {
@@ -447,10 +435,10 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         try {
-                $stmt = $conn->prepare($sql);
-                $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
-                $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
-                $rows = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
+            $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
+            $rows = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -465,14 +453,13 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $end
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 22/12/2025 12:11:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectSessionDurationByPeriodStats(
-        \DateTimeInterface $start, \DateTimeInterface $end): array
-    {
+        \DateTimeInterface $start,
+        \DateTimeInterface $end
+    ): array {
         $sql = "WITH session_bounds AS (
                     SELECT
                         session_id,
@@ -525,5 +512,4 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         }
         return ['code' => 200, 'liste' => $result, 'erreur' => ''];
     }
-
 }

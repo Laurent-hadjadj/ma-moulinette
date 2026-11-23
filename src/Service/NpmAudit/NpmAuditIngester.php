@@ -21,6 +21,7 @@ use App\Entity\NpmProcessingQueue;
 use App\Entity\NpmScan;
 use App\Entity\NpmVulnerability;
 use App\Repository\NpmDependencyRepository;
+use App\Exception\Npm\NpmAuditIngestException;
 use App\Repository\NpmFindingRepository;
 use App\Repository\NpmScanRepository;
 use App\Repository\NpmVulnerabilityRepository;
@@ -216,9 +217,8 @@ class NpmAuditIngester
      *
      * @return string
      *
-     * Created at: 22/11/2026 18:44:39 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @author      Laurent HADJADJ <laurent_h@me.com>
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractJson(NpmProcessingQueue $queue): string
     {
@@ -242,10 +242,8 @@ class NpmAuditIngester
      * @param string $json
      *
      * @return array<string, mixed>
-     *
-     * Created at: 22/11/2026 18:44:45 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @author      Laurent HADJADJ <laurent_h@me.com>
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function parseJson(string $json): array
     {
@@ -266,10 +264,8 @@ class NpmAuditIngester
      * @param array<string, mixed> $full
      *
      * @return NpmScan
-     *
-     * Created at: 22/11/2026 18:45:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function createScan(
         NpmProcessingQueue $queue,
@@ -303,6 +299,16 @@ class NpmAuditIngester
             ->setDepCountTotal((int) ($depMeta['total'] ?? 0));
     }
 
+    /**
+     * [Description for findOrCreateDependency]
+     *
+     * @param string $name
+     *
+     * @return NpmDependency
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function findOrCreateDependency(string $name): NpmDependency
     {
         if (isset($this->dependencyCache[$name])) {
@@ -323,7 +329,14 @@ class NpmAuditIngester
     }
 
     /**
+     * [Description for findOrCreateVulnerability]
+     *
      * @param array<string, mixed> $viaRaw
+     *
+     * @return NpmVulnerability
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function findOrCreateVulnerability(array $viaRaw): NpmVulnerability
     {
@@ -364,8 +377,17 @@ class NpmAuditIngester
     }
 
     /**
+     * [Description for extractAdvisoryId]
      * Clé naturelle de dédup globale : GHSA-ID extrait de via[].url, repli
-     * sur un hash du titre si l'URL n'en contient aucun.
+     * sur un hash du titre si l'URL n'en contient aucun
+     *
+     * @param string $url
+     * @param string $title
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractAdvisoryId(string $url, string $title): string
     {
@@ -376,8 +398,14 @@ class NpmAuditIngester
     }
 
     /**
+     * [Description for parseFixAvailable]
+     *
      * @param mixed $raw vulnerabilities[name].fixAvailable : bool ou objet {name, version, isSemVerMajor}
+     *
      * @return array{0: bool, 1: ?string, 2: ?bool}
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function parseFixAvailable(mixed $raw): array
     {
@@ -392,6 +420,7 @@ class NpmAuditIngester
     }
 
     /**
+     * [Description for flattenInstalledVersions]
      * Aplatit récursivement l'arbre `npm ls --all --json` ({"dependencies":
      * {"name": {"version": "x.y.z", "dependencies": {...}}}}) en
      * {nom de paquet => ensemble des versions distinctes trouvées dans
@@ -404,6 +433,9 @@ class NpmAuditIngester
      * @param array<string, mixed> $node
      * @param array<string, array<string, true>> $acc
      * @return array<string, array<string, true>>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function flattenInstalledVersions(array $node, array $acc = []): array
     {
@@ -425,7 +457,14 @@ class NpmAuditIngester
     }
 
     /**
+     * [Description for resolveInstalledVersion]
+     *
      * @param array<string, true>|null $versions ensemble des versions distinctes trouvées pour ce paquet
+     *
+     * @return string|null
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function resolveInstalledVersion(?array $versions): ?string
     {
@@ -437,6 +476,16 @@ class NpmAuditIngester
         return substr(implode(', ', $sorted), 0, 255);
     }
 
+    /**
+     * [Description for normalizeSeverity]
+     *
+     * @param string $raw
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function normalizeSeverity(string $raw): string
     {
         $low = strtolower(trim($raw));

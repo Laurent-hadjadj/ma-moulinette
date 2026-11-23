@@ -35,19 +35,17 @@ class ActuatorInfoRepository extends ServiceEntityRepository
      * @param array<int|string, mixed> $map
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 26/06/2024 21:06:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function findActuatorInfoById(array $map): array
     {
         try {
-                $sql = "SELECT actuator_info_description AS nom, actuator_info_cle as cle
+            $sql = "SELECT actuator_info_description AS nom, actuator_info_cle as cle
                         FROM ma_moulinette.actuator_info
                         WHERE actuator_id= :actuator_id";
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':actuator_id', $map['actuator_id']);
+            $stmt->bindValue(':actuator_id', $map['actuator_id']);
             $exec = $stmt->executeQuery();
             $liste = $exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -55,5 +53,4 @@ class ActuatorInfoRepository extends ServiceEntityRepository
         }
         return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
-
 }

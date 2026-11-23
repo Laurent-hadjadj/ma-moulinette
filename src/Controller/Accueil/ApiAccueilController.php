@@ -35,10 +35,8 @@ class ApiAccueilController extends AbstractController
 
     /**
      * [Description for __construct]
-     *
-     * Created at: 15/12/2022, 21:12:55 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function __construct(
         private ClientService $client,
@@ -54,9 +52,8 @@ class ApiAccueilController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:13:23 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/status', name: 'api_sonar_status', methods: ['POST'])]
     public function apiSonarStatus(Request $request): JsonResponse
@@ -102,9 +99,8 @@ class ApiAccueilController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_REFERENTIAL'])]
     #[IsGranted('ROLE_REFERENTIAL')]
@@ -255,9 +251,9 @@ class ApiAccueilController extends AbstractController
      * [Description for accueilProjetTags]
      * Récupération du nombre de tags des projets.
      * Demandé (#bouton-mise-a-jour-referential).
+     *
      * @return JsonResponse
      *
-     * Created at: 29/07/2024 20:51:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

@@ -37,8 +37,6 @@ class ZapFindingRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array{code: int, erreur: string}
-     *
-     * Created at: 13/10/2026 21:06:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

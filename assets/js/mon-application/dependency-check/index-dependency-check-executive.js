@@ -3,7 +3,7 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *
  *  MODIF 2026-05-09 : entry JS pour la vue exécutive
  *  prise de décision (page /dependency-check/projet/.../executive).
@@ -13,7 +13,7 @@
  *
  *  ---
  *  Vous pouvez obtenir une copie de la licence a l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -78,9 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
  *  On construit le graph de répartition des sévérités
  * @param mixed counts
  *
- * Created at: 10/05/2026 22:17:43 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildSeverityPie = function(counts) {
   const ctx = document.getElementById('dc-exec-severity-pie');
@@ -116,9 +115,8 @@ const buildSeverityPie = function(counts) {
  *
  * @param mixed families
  *
- * Created at: 10/05/2026 22:19:22 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildFamilyBar = function(families) {
   const ctx = document.getElementById('dc-exec-family-bar');
@@ -155,9 +153,8 @@ const buildFamilyBar = function(families) {
  *
  * @param mixed cwes
  *
- * Created at: 10/05/2026 22:20:26 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildCweRadar = function(cwes) {
   const ctx = document.getElementById('dc-exec-cwe-radar');
@@ -195,9 +192,8 @@ const buildCweRadar = function(cwes) {
  * On construit le graph en baton pour les priorités de correction
  * @param mixed cves
  *
- * Created at: 10/05/2026 22:23:09 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const  buildPriorityBar = function(cves) {
   const ctx = document.getElementById('dc-exec-priority-bar');

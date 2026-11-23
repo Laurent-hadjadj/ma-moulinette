@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -24,6 +24,9 @@ use Doctrine\DBAL\Types\Types;
  *
  * Cette table est orientée statistiques et reporting.
  * Les données sont volontairement dénormalisées pour faciliter les agrégations.
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: UserAgentAnalysisRepository::class)]
 #[ORM\Index(name: 'idx_analysis_device_type', columns: ["device_type"])]
@@ -39,8 +42,9 @@ use Doctrine\DBAL\Types\Types;
     name: 'user_agent_analysis',
     schema: 'ma_moulinette',
     options: ['comment' => 'table d’analyse pour le User-Agent']
-    )]
-class UserAgentAnalysis {
+)]
+class UserAgentAnalysis
+{
     /**
      * Identifiant technique unique de l'analyse.
      */
@@ -405,5 +409,4 @@ class UserAgentAnalysis {
         $this->createdAt = $createdAt;
         return $this;
     }
-
 }

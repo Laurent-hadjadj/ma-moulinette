@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -38,7 +38,10 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -50,7 +53,7 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -62,7 +65,7 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ActivityHistoriqueRepository::class)
-                    ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => 'gestion test'];
@@ -75,18 +78,18 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
 
         // 8) Prépare un jeu de données minimal pour le $map
         $map = [
-                [
-                    'year' => 2024,
-                    'day' => 326,
-                    'analyse' => 1253,
-                    'analyse_average' => 87.3,
-                    'success' => 1249,
-                    'failed' => 4,
-                    'success_rate' => 0.99,
-                    'max_time' => 34,
-                    'date_enregistrement' => new \DateTimeImmutable('2024-07-14 19:36:33+02')
-                ]
-            ];
+            [
+                'year' => 2024,
+                'day' => 326,
+                'analyse' => 1253,
+                'analyse_average' => 87.3,
+                'success' => 1249,
+                'failed' => 4,
+                'success_rate' => 0.99,
+                'max_time' => 34,
+                'date_enregistrement' => new \DateTimeImmutable('2024-07-14 19:36:33+02')
+            ]
+        ];
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->insertHistoriqueActivity($map);
 
@@ -97,7 +100,10 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -109,7 +115,7 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -121,7 +127,7 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ActivityHistoriqueRepository::class)
-                    ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => 'gestion test'];
@@ -134,18 +140,18 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
 
         // 8) Prépare un jeu de données minimal pour le $map
         $data = [
-                [
-                    'day' => 326,
-                    'analyse' => 1253,
-                    'analyse_average' => 87.3,
-                    'success' => 1249,
-                    'failed' => 4,
-                    'success_rate' => 0.99,
-                    'max_time' => 34,
-                    'date_enregistrement' => new \DateTimeImmutable('2024-07-14 19:36:33+02'),
-                    'year' => 2024
-                ]
-            ];
+            [
+                'day' => 326,
+                'analyse' => 1253,
+                'analyse_average' => 87.3,
+                'success' => 1249,
+                'failed' => 4,
+                'success_rate' => 0.99,
+                'max_time' => 34,
+                'date_enregistrement' => new \DateTimeImmutable('2024-07-14 19:36:33+02'),
+                'year' => 2024
+            ]
+        ];
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->updateHistoriqueActivity($data);
 
@@ -178,9 +184,9 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ActivityHistoriqueRepository::class)
-                    ->setConstructorArgs([$registry])
-                    ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                    ->getMock();
+            ->setConstructorArgs([$registry])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         // 6) On s'attend à handleDatabaseException() appelé une fois avec notre exception
         $expected = ['code' => 500, 'erreur' => 'test-error'];
@@ -197,5 +203,4 @@ class ActivityHistoriqueRepositoryHandlerTest extends TestCase
         // 9) Vérification
         $this->assertSame($expected, $result);
     }
-
 }

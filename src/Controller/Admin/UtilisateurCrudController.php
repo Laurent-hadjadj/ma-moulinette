@@ -28,8 +28,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * @extends AbstractCrudController<Utilisateur>
- */
-/* MODIF 2026-07-20 : restriction serveur manquante — seule la carte du
+ * MODIF 2026-07-20 : restriction serveur manquante — seule la carte du
  * dashboard (home.html.twig, is_granted('ROLE_GESTIONNAIRE')) filtrait
  * l'accès. */
 #[IsGranted('ROLE_GESTIONNAIRE', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
@@ -43,10 +42,8 @@ class UtilisateurCrudController extends AbstractCrudController
 
     /**
      * [Description for __construct]
-     *
-     * Created at: 02/01/2023, 18:37:26 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $emm,
@@ -56,17 +53,14 @@ class UtilisateurCrudController extends AbstractCrudController
         private UserRoleLoggerService $roleLogger,
         private SuspiciousActivityDetector $detector,
         private Packages $assets,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for getEntityFqcn]
      *
      * @return string
-     *
-     * Created at: 02/01/2023, 18:37:28 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getEntityFqcn(): string
     {
@@ -80,9 +74,8 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * @return Filters
      *
-     * Created at: 02/01/2023, 18:37:30 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -97,7 +90,6 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * @return Crud
      *
-     * Created at: 06/04/2026 18:36:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
@@ -117,7 +109,6 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * @return iterable<\EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface>
      *
-     * Created at: 02/01/2023, 18:37:34 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
@@ -125,18 +116,18 @@ class UtilisateurCrudController extends AbstractCrudController
     {
         // mapping des rôles vers les classes de badge Bootstrap
         $badges = [
-                'ROLE_NONE' => 'secondary',
-                'ROLE_UTILISATEUR' => 'primary',
-                'ROLE_REFERENTIAL' => 'success',
-                'ROLE_COLLECTE' => 'success',
-                'ROLE_SUIVI' => 'warning',
-                'ROLE_BATCH' => 'warning',
-                'ROLE_ACTUATOR' => 'warning',
-                'ROLE_ACTIVITY' => 'info',
-                'ROLE_SECURITY' => 'danger',
-                'ROLE_GESTIONNAIRE' => 'danger',
-                'ROLE_INTERNAL' => 'dark',
-            ];
+            'ROLE_NONE' => 'secondary',
+            'ROLE_UTILISATEUR' => 'primary',
+            'ROLE_REFERENTIAL' => 'success',
+            'ROLE_COLLECTE' => 'success',
+            'ROLE_SUIVI' => 'warning',
+            'ROLE_BATCH' => 'warning',
+            'ROLE_ACTUATOR' => 'warning',
+            'ROLE_ACTIVITY' => 'info',
+            'ROLE_SECURITY' => 'danger',
+            'ROLE_GESTIONNAIRE' => 'danger',
+            'ROLE_INTERNAL' => 'dark',
+        ];
 
         // liste complète des rôles pour les formulaires (filtrée ensuite selon le rôle de l’éditeur et de l’utilisateur édité)
         $allRoles = [
@@ -158,7 +149,7 @@ class UtilisateurCrudController extends AbstractCrudController
         $context = $this->getContext();
         // on récupère l’entité en cours d’édition pour adapter dynamiquement les champs en fonction de son état et du rôle de l’éditeur
         if ($context) {
-                $entityInstance = $context->getEntity()->getInstance();
+            $entityInstance = $context->getEntity()->getInstance();
         }
 
         yield FormField::addColumn(6);
@@ -172,13 +163,16 @@ class UtilisateurCrudController extends AbstractCrudController
                     $this->logger->debug('UtilisateurCrudController::configureFields - avatar - formatValue', [
                         'utilisateur' => $utilisateur?->getCourriel(),
                         'avatar' => $utilisateur?->getAvatar(),
-                        'callback' => $callback,]);
+                        'callback' => $callback,
+                    ]);
                     return $this->assets->getUrl('avatar/' . ($utilisateur?->getAvatar() ?? 'personne.png'));
-                })
+                }
+            )
             ->setFormTypeOption('disabled',  in_array($pageName, [Crud::PAGE_DETAIL, Crud::PAGE_EDIT], true))
             ->hideOnForm();
 
-        /* MODIF 2026-07-20 : 'disabled' retiré — champ calculé (getPersonne()),
+        /**
+         * MODIF 2026-07-20 : 'disabled' retiré — champ calculé (getPersonne()),
          * hideOnForm() le retire déjà des formulaires Créer/Modifier dans tous
          * les cas, l'option précédente était donc morte et trompeuse. */
         yield TextField::new('personne')
@@ -289,8 +283,8 @@ class UtilisateurCrudController extends AbstractCrudController
         $key = [];
         $val = [];
 
-        foreach($result as $value) {
-            array_push($key, $value['groupe_utilisateur']." - ".$value['description']);
+        foreach ($result as $value) {
+            array_push($key, $value['groupe_utilisateur'] . " - " . $value['description']);
             array_push($val, $value['groupe_utilisateur']);
         }
 
@@ -318,13 +312,14 @@ class UtilisateurCrudController extends AbstractCrudController
             $choices[$label] = $value['groupe_fonctionnel'];
         }
 
-        // MODIF 07/11/2026 : BUG CORRIGÉ — champ unique utilisé pour la liste ET le
-        // formulaire, sortable par défaut sur la page d'index alors que la colonne
-        // Doctrine sous-jacente (liste_groupe_fonctionnel) est de type `json`,
-        // sans opérateur d'ordre en PostgreSQL : cliquer sur l'en-tête de
-        // colonne déclenchait "ERROR: could not identify an ordering operator for
-        // type json" (500). Scindé en index/formulaire, même pattern déjà en place
-        // pour `roles` (également Types::JSON) ci-dessus.
+        /**
+         * MODIF 07/11/2026 : BUG CORRIGÉ — champ unique utilisé pour la liste ET le
+         * formulaire, sortable par défaut sur la page d'index alors que la colonne
+         * Doctrine sous-jacente (liste_groupe_fonctionnel) est de type `json`,
+         * sans opérateur d'ordre en PostgreSQL : cliquer sur l'en-tête de
+         * colonne déclenchait "ERROR: could not identify an ordering operator for
+         * type json" (500). Scindé en index/formulaire, même pattern déjà en place
+         * pour `roles` (également Types::JSON) ci-dessus. */
         yield ChoiceField::new('listeGroupeFonctionnel')
             ->onlyOnIndex()
             ->setLabel('Groupe fonctionnel')
@@ -357,7 +352,6 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * @return void
      *
-     * Created at: 05/04/2026 16:13:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
@@ -415,7 +409,6 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * @return void
      *
-     * Created at: 02/01/2023, 18:37:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
@@ -461,13 +454,14 @@ class UtilisateurCrudController extends AbstractCrudController
         // si les rôles ou le statut actif ont changé, on log l’événement avant de mettre à jour l’entité pour conserver les anciennes valeurs dans le log
         if ($oldRoles !== $newRoles || $oldActive !== $newActive) {
             $this->roleLogger->log(
-            $entityInstance,
-            $this->appUser(),
-            $oldRoles,
-            $newRoles,
-            $oldActive,
-            $newActive,
-            $alerts);
+                $entityInstance,
+                $this->appUser(),
+                $oldRoles,
+                $newRoles,
+                $oldActive,
+                $newActive,
+                $alerts
+            );
         }
 
         $entityInstance->setRoles($newRoles);
@@ -511,7 +505,6 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * @return void
      *
-     * Created at: 03/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */

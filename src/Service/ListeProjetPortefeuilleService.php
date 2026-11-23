@@ -29,8 +29,7 @@ class ListeProjetPortefeuilleService
     public function __construct(
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for listeProjet]
@@ -41,9 +40,8 @@ class ListeProjetPortefeuilleService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 09/12/2022, 12:05:30 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeProjet(string $portefeuille, string $groupe_fonctionnel): array
     {
@@ -66,7 +64,7 @@ class ListeProjetPortefeuilleService
                 'erreur' => $liste_projets['erreur'] ?? self::$noError,
                 'portefeuille' => $portefeuille,
                 'groupe_fonctionnel' => $groupe_fonctionnel
-                ]);
+            ]);
 
             return [
                 'code' => $liste_projets['code'],
@@ -83,7 +81,7 @@ class ListeProjetPortefeuilleService
                 'erreur' => $liste_projets['erreur'] ?? self::$noError,
                 'portefeuille' => $portefeuille,
                 'groupe_fonctionnel' => $groupe_fonctionnel
-                ]);
+            ]);
 
             return [
                 'code' => 404,

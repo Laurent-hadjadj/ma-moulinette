@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -77,9 +77,8 @@ class StatistiqueController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -100,9 +99,8 @@ class StatistiqueController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 04/09/2024 14:57:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/statistiques', name: 'statistiques', methods: ['GET'])]
     public function statistique(): Response
@@ -119,9 +117,8 @@ class StatistiqueController extends AbstractController
      *
      * @return RedirectResponse
      *
-     * Created at: 04/09/2024 14:57:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/statistique/run_batch', name: 'runBatchAnalysis', methods: ['GET'])]
     #[IsGranted('ROLE_INTERNAL', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
@@ -159,16 +156,16 @@ class StatistiqueController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 12/07/2026 12:07:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/statistiques/projet', name: 'statistiques_projet', methods: ['GET'])]
     public function statistiquesProjet(): Response
     {
         $this->tracking->track('STATISTIQUES_PROJET');
 
-        /* MODIF 2026-07-22 : ajout du filtrage par groupe fonctionnel, aligné sur
+        /**
+         * MODIF 2026-07-22 : ajout du filtrage par groupe fonctionnel, aligné sur
          * mes_projets/clean_code_synthese — cette page remontait jusqu'ici les
          * métriques de TOUS les projets de la base à n'importe quel utilisateur
          * authentifié, sans restriction de périmètre. */
@@ -180,7 +177,8 @@ class StatistiqueController extends AbstractController
                 'trace'   => null,
             ]);
             return $this->render(self::$page, $this->genericRender() + [
-                'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
+                'projets' => [],
+                'liste_groupe_fonctionnel' => $groupes,
             ]);
         }
 
@@ -192,7 +190,8 @@ class StatistiqueController extends AbstractController
                 'trace'   => null,
             ]);
             return $this->render(self::$page, $this->genericRender() + [
-                'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
+                'projets' => [],
+                'liste_groupe_fonctionnel' => $groupes,
             ]);
         }
 
@@ -210,7 +209,8 @@ class StatistiqueController extends AbstractController
                 'trace'   => $result['erreur'] ?? null,
             ]);
             return $this->render(self::$page, $this->genericRender() + [
-                'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
+                'projets' => [],
+                'liste_groupe_fonctionnel' => $groupes,
             ]);
         }
 
@@ -228,9 +228,8 @@ class StatistiqueController extends AbstractController
      *
      * @return array<int|string, mixed>|null
      *
-     * Created at: 12/07/2026 12:08:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function loadStatsFile(string $path): ?array
     {
@@ -248,9 +247,8 @@ class StatistiqueController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 09/06/2026 13:16:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/statistiques/dashboard', name: 'statistiques_dashboard')]
     public function adminDashboard(): Response
@@ -260,11 +258,13 @@ class StatistiqueController extends AbstractController
         $conn = $this->em->getConnection();
         $results = [];
 
-        foreach ([
-            'postgres_version'    => "SELECT current_setting('server_version') AS version",
-            'ma_moulinette_count' => "SELECT count(*) as total FROM ma_moulinette.ma_moulinette",
-            'table_count'         => "SELECT count(*) as total FROM pg_catalog.pg_tables WHERE schemaname = 'ma_moulinette'",
-        ] as $key => $sql) {
+        foreach (
+            [
+                'postgres_version'    => "SELECT current_setting('server_version') AS version",
+                'ma_moulinette_count' => "SELECT count(*) as total FROM ma_moulinette.ma_moulinette",
+                'table_count'         => "SELECT count(*) as total FROM pg_catalog.pg_tables WHERE schemaname = 'ma_moulinette'",
+            ] as $key => $sql
+        ) {
             $results[$key] = $conn->prepare($sql)->executeQuery()->fetchAllAssociative();
         }
 
@@ -337,9 +337,8 @@ class StatistiqueController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 09/06/2026 13:17:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/statistiques/ma-moulinette', name: 'statistiques_sonar_report')]
     public function adminStats(): Response
@@ -347,19 +346,21 @@ class StatistiqueController extends AbstractController
         $conn = $this->em->getConnection();
         $results = [];
 
-        foreach ([
-            'utilisateur_count'    => "SELECT count(*) as total FROM ma_moulinette.utilisateur",
-            'projet_count'         => "SELECT count(*) as total FROM ma_moulinette.liste_projet",
-            'profile_count'        => "SELECT count(*) as total FROM ma_moulinette.profiles",
-            'rule_count'           => "SELECT sum(active_rule_count) as total FROM ma_moulinette.profiles",
-            'historique_count'     => "SELECT count(*) as total FROM ma_moulinette.historique",
-            'anomalie_count'       => "SELECT count(*) as total FROM ma_moulinette.anomalie",
-            'mesure_signalement'   => "SELECT sum(anomalie_total) as total FROM ma_moulinette.anomalie",
-            'mesure_bug'           => "SELECT sum(bug) as total FROM ma_moulinette.anomalie",
-            'mesure_vulnerability' => "SELECT sum(vulnerability) as total FROM ma_moulinette.anomalie",
-            'mesure_code_smell'    => "SELECT sum(code_smell) as total FROM ma_moulinette.anomalie",
-            'mesure_lines'         => "SELECT count(DISTINCT project_name) as total FROM ma_moulinette.mesures",
-        ] as $key => $sql) {
+        foreach (
+            [
+                'utilisateur_count'    => "SELECT count(*) as total FROM ma_moulinette.utilisateur",
+                'projet_count'         => "SELECT count(*) as total FROM ma_moulinette.liste_projet",
+                'profile_count'        => "SELECT count(*) as total FROM ma_moulinette.profiles",
+                'rule_count'           => "SELECT sum(active_rule_count) as total FROM ma_moulinette.profiles",
+                'historique_count'     => "SELECT count(*) as total FROM ma_moulinette.historique",
+                'anomalie_count'       => "SELECT count(*) as total FROM ma_moulinette.anomalie",
+                'mesure_signalement'   => "SELECT sum(anomalie_total) as total FROM ma_moulinette.anomalie",
+                'mesure_bug'           => "SELECT sum(bug) as total FROM ma_moulinette.anomalie",
+                'mesure_vulnerability' => "SELECT sum(vulnerability) as total FROM ma_moulinette.anomalie",
+                'mesure_code_smell'    => "SELECT sum(code_smell) as total FROM ma_moulinette.anomalie",
+                'mesure_lines'         => "SELECT count(DISTINCT project_name) as total FROM ma_moulinette.mesures",
+            ] as $key => $sql
+        ) {
             $results[$key] = $conn->prepare($sql)->executeQuery()->fetchAllAssociative();
         }
 

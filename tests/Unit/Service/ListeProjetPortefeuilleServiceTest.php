@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -143,7 +143,7 @@ class ListeProjetPortefeuilleServiceTest extends TestCase
             ->method('warning')
             ->with(
                 '[ListeProjetPortefeuilleService] ⚠️ La liste des traitements ne contient pas votre portefeuille !',
-                $this->callback(fn (array $ctx) => $ctx['code'] === 200 && $ctx['portefeuille'] === 'My PF')
+                $this->callback(fn(array $ctx) => $ctx['code'] === 200 && $ctx['portefeuille'] === 'My PF')
             );
         $this->logger->expects($this->never())->method('error');
 

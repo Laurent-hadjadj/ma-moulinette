@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\UserAgent;
@@ -43,15 +43,13 @@ class UserAgentAnalysisService
      *
      * @return array{code: 200, processed: int, erreurs: array<int, array{event_id: int|string, erreur: string}>}|array{code: int<min, 199>|int<201, max>, erreur: string}
      *
-     * Created at: 13/03/2026 13:01:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function runBatch(int $limit = 50): array
     {
         $eventsResult = $this->eventRepository->claimPendingEvents($limit);
-        if ($eventsResult['code'] !== 200)
-        {
+        if ($eventsResult['code'] !== 200) {
             $this->logger->error('[Run-Batch] ❌ Échec de la réclamation du lot (claimPendingEvents).', [
                 'code' => $eventsResult['code'],
                 'erreur' => $eventsResult['erreur']
@@ -63,8 +61,8 @@ class UserAgentAnalysisService
         $erreurs = [];
 
         /* si la liste est vide en renvoie la réponse avec un code => 200.
-           Les événements sont déjà en 'PROCESSING' (verrouillés par claimPendingEvents(),
-           FOR UPDATE SKIP LOCKED) : pas de verrouillage supplémentaire à faire ici. */
+        Les événements sont déjà en 'PROCESSING' (verrouillés par claimPendingEvents(),
+        FOR UPDATE SKIP LOCKED) : pas de verrouillage supplémentaire à faire ici. */
         foreach ($eventsResult['liste'] as $event) {
 
             try {
@@ -78,11 +76,11 @@ class UserAgentAnalysisService
                 $analysisMap['created_at'] = new \DateTimeImmutable();
 
                 $insert = $this->analysisRepository->insertUserAgentAnalysis($analysisMap);
-                    if ($insert['code'] !== 200) {
-                        $this->logger->error('[Run-Batch] ❌ Échec de la requête insertUserAgentAnalysis().', [
-                            'code' => $insert['code'],
-                            'erreur' => $insert['erreur']
-                        ]);
+                if ($insert['code'] !== 200) {
+                    $this->logger->error('[Run-Batch] ❌ Échec de la requête insertUserAgentAnalysis().', [
+                        'code' => $insert['code'],
+                        'erreur' => $insert['erreur']
+                    ]);
                     throw new SqlRequestException('insertUserAgentAnalysis', (int) $insert['code'], $insert['erreur'], null);
                 }
 
@@ -93,7 +91,6 @@ class UserAgentAnalysisService
                 );
 
                 $processed++;
-
             } catch (\Throwable $e) {
 
                 $this->eventRepository->updateProcessingStatus(
@@ -131,9 +128,8 @@ class UserAgentAnalysisService
      *     is_bot: bool
      * }
      *
-     * Created at: 13/03/2026 12:58:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function analyzeUserAgent(string $userAgent): array
     {

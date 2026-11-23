@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -23,7 +23,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
  * [Description BatchCollecteRciController]
  * Calcule le RCI (Risk Criticality Index, plugin sonar-rci) global et par module
  * (frontend/backend/autre).
- *
  */
 class BatchCollecteRciController
 {
@@ -35,16 +34,15 @@ class BatchCollecteRciController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
         private BuildMeasuresRciService $buildMeasuresRci,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for buildRciMeasures]
@@ -58,9 +56,8 @@ class BatchCollecteRciController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 25/09/2026 13:11:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function buildRciMeasures(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -89,8 +86,8 @@ class BatchCollecteRciController
             ]);
 
             return [
-                    'code' => $global_measures['code'],
-                    'erreur' => $global_measures['erreur'] ?? self::$erreurSonarInconnue
+                'code' => $global_measures['code'],
+                'erreur' => $global_measures['erreur'] ?? self::$erreurSonarInconnue
             ];
         }
 
@@ -104,8 +101,8 @@ class BatchCollecteRciController
             ]);
 
             return [
-                    'code' => $module_measures['code'],
-                    'erreur' => $module_measures['erreur'] ?? self::$erreurSonarInconnue
+                'code' => $module_measures['code'],
+                'erreur' => $module_measures['erreur'] ?? self::$erreurSonarInconnue
             ];
         }
 
@@ -120,12 +117,12 @@ class BatchCollecteRciController
         $ncloc = $global_measures['global_measures']['ncloc'];
 
         $global_weight = $this->buildMeasuresRci->weightedWeights(
-                $severities['BLOCKER'],
-                $severities['CRITICAL'],
-                $severities['MAJOR'],
-                $severities['MINOR'],
-                $severities['INFO']
-            );
+            $severities['BLOCKER'],
+            $severities['CRITICAL'],
+            $severities['MAJOR'],
+            $severities['MINOR'],
+            $severities['INFO']
+        );
 
         // On calcul l'indicateur RCI
         $global_rci = $this->buildMeasuresRci->calculateRci($ncloc, $global_weight);
@@ -155,18 +152,18 @@ class BatchCollecteRciController
 
             /** On consolide les données avant l'enregistrement */
             $data_collecte = [
-                $module.'_ncloc' => $module_ncloc,
-                $module.'_weight' => $module_weight,
-                $module.'_indicator' => $module_rci,
+                $module . '_ncloc' => $module_ncloc,
+                $module . '_weight' => $module_weight,
+                $module . '_indicator' => $module_rci,
                 // on calcul la note
-                $module.'_rating' => $this->buildMeasuresRci->getRCIRating($module_rci),
+                $module . '_rating' => $this->buildMeasuresRci->getRCIRating($module_rci),
             ];
 
             $data_module_collecte = array_merge($data_module_collecte, $data_collecte);
         }
 
         // Suppression des données de la table RCI
-        $delete = $rciRepos->deleteRciMavenKey([ 'maven_key' => $maven_key ]);
+        $delete = $rciRepos->deleteRciMavenKey(['maven_key' => $maven_key]);
         if ($delete['code'] !== 200) {
             $this->logger->error('[Batch RCI] ❌ Échec de suppression des indicateurs RCI', [
                 'code' => $delete['code'],
@@ -185,15 +182,16 @@ class BatchCollecteRciController
 
         $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
 
-        $data = array_merge (
+        $data = array_merge(
             $data_global_collecte,
             $data_module_collecte,
             [
-            'maven_key' => $maven_key,
-            'mode_collecte' => $mode_collecte,
-            'utilisateur_collecte' => $utilisateur_collecte,
-            'date_enregistrement' => $date
-        ]);
+                'maven_key' => $maven_key,
+                'mode_collecte' => $mode_collecte,
+                'utilisateur_collecte' => $utilisateur_collecte,
+                'date_enregistrement' => $date
+            ]
+        );
 
         $this->logger->info('[Batch RCI] ℹ️ RCI calculé par module', ['maven_key' => $maven_key]);
 

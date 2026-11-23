@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 /* MODIF 2026-05-21 : converti depuis update_sonarqube_tags_cli.php
    vers Symfony Command (namespace App\Command\Prod, CommandTester, LoggerInterface). */
+
 namespace App\Command\Prod;
 
 use App\Exception\SonarCommandException;
@@ -83,8 +84,8 @@ class UpdateSonarqubeTagsCommand extends Command
     ) {
         parent::__construct();
         $this->sonarTagsTargetGroups = array_values(array_unique(array_filter(
-            array_map(static fn (string $g): string => trim($g), $sonarTagsTargetGroups),
-            static fn (string $g): bool => $g !== ''
+            array_map(static fn(string $g): string => trim($g), $sonarTagsTargetGroups),
+            static fn(string $g): bool => $g !== ''
         )));
     }
 
@@ -93,7 +94,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return void
      *
-     * Created at: 24/05/2026 10:04:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -116,7 +116,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return int
      *
-     * Created at: 24/05/2026 10:04:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -190,7 +189,7 @@ class UpdateSonarqubeTagsCommand extends Command
 
         foreach ($projects as $key) {
             try {
-                /** 
+                /**
                  * MODIF 2026-11-22 : la détection du groupe (déjà nécessaire pour le
                  * tag) sert aussi de critère de périmètre — un seul appel API
                  * /api/permissions/groups par projet (au lieu de 2 : archive + groupe
@@ -248,11 +247,11 @@ class UpdateSonarqubeTagsCommand extends Command
                 }
 
                 $mapping[] = ['maven_key' => $key, 'groupe' => $groupTag, 'tag_metier' => $businessTag];
-
             } catch (\Throwable $e) {
                 $io->error(sprintf('Erreur sur %s : %s', $key, $e->getMessage()));
                 $this->logger->error('[SonarTags] Erreur traitement projet.', [
-                    'key' => $key, 'error' => $e->getMessage(),
+                    'key' => $key,
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -272,11 +271,19 @@ class UpdateSonarqubeTagsCommand extends Command
 
         $io->success(sprintf(
             'Traitement terminé. Archivés: %d | Tagués: %d | Tag métier: %d | Sans tag: %d | Ignorés: %d | Mapping: %s',
-            $archive, $proceeded, $businessTagged, $warning, $skipped, $dryRun ? $mappingFile . ' (non écrit)' : $mappingFile
+            $archive,
+            $proceeded,
+            $businessTagged,
+            $warning,
+            $skipped,
+            $dryRun ? $mappingFile . ' (non écrit)' : $mappingFile
         ));
         $this->logger->info('[SonarTags] Terminé.', [
-            'archive' => $archive, 'proceeded' => $proceeded, 'business_tagged' => $businessTagged,
-            'warning' => $warning, 'skipped' => $skipped,
+            'archive' => $archive,
+            'proceeded' => $proceeded,
+            'business_tagged' => $businessTagged,
+            'warning' => $warning,
+            'skipped' => $skipped,
         ]);
 
         return Command::SUCCESS;
@@ -287,7 +294,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return array{verify_peer: int, verify_host: int, ciphers: non-empty-string}
      *
-     * Created at: 24/05/2026 10:04:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -312,7 +318,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return array{use_proxy: int, proxy_url: string, proxy_userpwd: string, no_proxy: string[]}
      *
-     * Created at: 24/05/2026 10:04:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -325,7 +330,7 @@ class UpdateSonarqubeTagsCommand extends Command
         return [
             'use_proxy'    => $this->mamoulCliUseProxy ?: 0,
             'proxy_url'    => $this->mamoulCliProxyUrl ?: 'https://proxy.example.com:8080',
-            'proxy_userpwd'=> $this->mamoulCliProxyUserPwd ?: 'utilisateur:motdepasse',
+            'proxy_userpwd' => $this->mamoulCliProxyUserPwd ?: 'utilisateur:motdepasse',
             'no_proxy'     => $noProxy,
         ];
     }
@@ -337,7 +342,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return string
      *
-     * Created at: 24/05/2026 10:06:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -364,7 +368,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return array{0: array<string, string>, 1: string|null}
      *
-     * Created at: 22/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -384,15 +387,16 @@ class UpdateSonarqubeTagsCommand extends Command
         try {
             $content = file_get_contents($path);
             if ($content === false) {
-                throw new \RuntimeException('Lecture impossible.');
+                throw new BusinessTagFileReadException('Lecture impossible.');
             }
             $rows = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
             if (!is_array($rows)) {
-                throw new \RuntimeException('Structure JSON inattendue (tableau attendu).');
+                throw new BusinessTagFileFormatException('Structure JSON inattendue (tableau attendu).');
             }
         } catch (\Throwable $e) {
             $this->logger->warning('[SonarTags] Fichier de tags métier illisible, étape ignorée.', [
-                'path' => $path, 'error' => $e->getMessage(),
+                'path' => $path,
+                'error' => $e->getMessage(),
             ]);
             return [[], null];
         }
@@ -431,7 +435,6 @@ class UpdateSonarqubeTagsCommand extends Command
      * @return mixed
      * @throws SonarCommandException sur erreur cURL ou HTTP hors 2xx
      *
-     * Created at: 24/05/2026 10:06:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -466,7 +469,7 @@ class UpdateSonarqubeTagsCommand extends Command
             CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
             CURLOPT_SSL_VERIFYHOST => $sslConfig['verify_host'] === 0 ? 0 : 2,
             CURLOPT_SSL_VERIFYPEER => (bool) $sslConfig['verify_peer'],
-            CURLOPT_SSL_CIPHER_LIST=> $sslConfig['ciphers'],
+            CURLOPT_SSL_CIPHER_LIST => $sslConfig['ciphers'],
             CURLOPT_PROTOCOLS      => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_CONNECTTIMEOUT => 15,
             CURLOPT_TIMEOUT        => 90,
@@ -520,6 +523,22 @@ class UpdateSonarqubeTagsCommand extends Command
      * @param array{use_proxy: int, proxy_url: string, proxy_userpwd: string, no_proxy: string[]} $proxyConfig
      * @return string[]
      */
+    /**
+     * [Description for getAllProjects]
+     *
+     * @param string $sonarUrl
+     * @param string $auth
+     * @param bool $debug
+     * @param SymfonyStyle $io
+     *
+     * @param array{verify_peer: int, verify_host: int, ciphers: non-empty-string} $sslConfig
+     * @param array{use_proxy: int, proxy_url: string, proxy_userpwd: string, no_proxy: string[]} $proxyConfig
+     *
+     * @return string[]
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function getAllProjects(
         string $sonarUrl,
         string $auth,
@@ -531,8 +550,17 @@ class UpdateSonarqubeTagsCommand extends Command
         $projects = [];
         $page = 1;
         while (true) {
-            $data = $this->callApi($sonarUrl, $auth, $sslConfig, $proxyConfig,
-                '/api/components/search_projects', ['p' => $page, 'ps' => 100], 'GET', $debug, $io);
+            $data = $this->callApi(
+                $sonarUrl,
+                $auth,
+                $sslConfig,
+                $proxyConfig,
+                '/api/components/search_projects',
+                ['p' => $page, 'ps' => 100],
+                'GET',
+                $debug,
+                $io
+            );
             if (!is_array($data) || !isset($data['components'])) {
                 break;
             }
@@ -562,7 +590,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return void
      *
-     * Created at: 24/05/2026 10:08:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -593,7 +620,6 @@ class UpdateSonarqubeTagsCommand extends Command
      * @param array{use_proxy: int, proxy_url: string, proxy_userpwd: string, no_proxy: string[]} $proxyConfig
      * @param string[] $tags
      *
-     * Created at: 22/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -608,10 +634,10 @@ class UpdateSonarqubeTagsCommand extends Command
         bool $debug,
         SymfonyStyle $io
     ): void {
-        $sanitized = array_map(fn (string $tag): string => $this->sanitizeTag($tag), $tags);
+        $sanitized = array_map(fn(string $tag): string => $this->sanitizeTag($tag), $tags);
         $sanitized = array_values(array_unique(array_filter(
             $sanitized,
-            static fn (string $tag): bool => $tag !== ''
+            static fn(string $tag): bool => $tag !== ''
         )));
         $tagValue = $sanitized !== [] ? implode(',', $sanitized) : 'aucun';
 
@@ -619,8 +645,17 @@ class UpdateSonarqubeTagsCommand extends Command
             $io->text(sprintf('  [DRY-RUN] Tag simulé : "%s" → %s', $tagValue, $projectKey));
             return;
         }
-        $this->callApi($sonarUrl, $auth, $sslConfig, $proxyConfig,
-            '/api/project_tags/set', ['project' => $projectKey, 'tags' => $tagValue], 'POST', $debug, $io);
+        $this->callApi(
+            $sonarUrl,
+            $auth,
+            $sslConfig,
+            $proxyConfig,
+            '/api/project_tags/set',
+            ['project' => $projectKey, 'tags' => $tagValue],
+            'POST',
+            $debug,
+            $io
+        );
     }
 
     /**
@@ -639,7 +674,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return array<int, array{name?: string, permissions?: string[], description?: string}>
      *
-     * Created at: 22/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -652,8 +686,17 @@ class UpdateSonarqubeTagsCommand extends Command
         bool $debug,
         SymfonyStyle $io
     ): array {
-        $data = $this->callApi($sonarUrl, $auth, $sslConfig, $proxyConfig,
-            '/api/permissions/groups', ['projectKey' => $projectKey], 'GET', $debug, $io);
+        $data = $this->callApi(
+            $sonarUrl,
+            $auth,
+            $sslConfig,
+            $proxyConfig,
+            '/api/permissions/groups',
+            ['projectKey' => $projectKey],
+            'GET',
+            $debug,
+            $io
+        );
         return is_array($data) ? (array) ($data['groups'] ?? []) : [];
     }
 
@@ -678,7 +721,7 @@ class UpdateSonarqubeTagsCommand extends Command
      * projet précis) — `permissions` est un tableau VIDE pour un groupe qui
      * n'a en réalité aucun droit sur ce projet. Sans la vérification
      * `$permissions !== []` ci-dessous, un projet dont le vrai groupe est
-     * hors périmètre se faisait rattacher au premier groupe du périmètre 
+     * hors périmètre se faisait rattacher au premier groupe du périmètre
      * trouvé dans la liste malgré un tableau `permissions` vide pour ce groupe —
      * c'est-à-dire un groupe auquel le projet n'appartient en réalité pas du tout.
      *
@@ -686,7 +729,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return array{name: string, permissions: string[]}|null
      *
-     * Created at: 24/05/2026 10:08:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -703,9 +745,16 @@ class UpdateSonarqubeTagsCommand extends Command
     }
 
     /**
+     * [Description for writeMappingFile]
      * Écriture du fichier de mapping — méthode protégée pour permettre le mock en tests.
      *
+     * @param string $path
      * @param array<int, array<string, string>> $mapping
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function writeMappingFile(string $path, array $mapping): void
     {
@@ -721,7 +770,6 @@ class UpdateSonarqubeTagsCommand extends Command
      *
      * @return bool
      *
-     * Created at: 24/05/2026 10:11:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -734,4 +782,14 @@ class UpdateSonarqubeTagsCommand extends Command
         }
         return false;
     }
+}
+
+/** Dedicated exception for failures reading the business-tag mapping file. */
+final class BusinessTagFileReadException extends \RuntimeException
+{
+}
+
+/** Dedicated exception for an invalid business-tag mapping file structure. */
+final class BusinessTagFileFormatException extends \RuntimeException
+{
 }

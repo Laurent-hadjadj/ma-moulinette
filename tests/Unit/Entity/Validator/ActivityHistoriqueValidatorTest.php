@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Validator;
@@ -35,7 +35,7 @@ class ActivityHistoriqueValidatorTest extends KernelTestCase
 
   private function getEntity(): ActivityHistorique
   {
-      return (new ActivityHistorique())
+    return (new ActivityHistorique())
       ->setYear(self::$year)
       ->setDay(self::$day)
       ->setAnalyse(self::$analyse)
@@ -45,7 +45,7 @@ class ActivityHistoriqueValidatorTest extends KernelTestCase
       ->setSuccessRate(self::$successRate)
       ->setMaxTime(self::$maxTime)
       ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-}
+  }
 
   public function assertHasErrors(ActivityHistorique $entity, int $number = 0): void
   {
@@ -54,7 +54,7 @@ class ActivityHistoriqueValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -128,10 +128,10 @@ class ActivityHistoriqueValidatorTest extends KernelTestCase
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      // 10 attributs : id, year, day, analyse, analyseAverage, success, failed, successRate, maxTime, dateEnregistrement
-      $this->assertEquals(10, $nbAttributs);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    // 10 attributs : id, year, day, analyse, analyseAverage, success, failed, successRate, maxTime, dateEnregistrement
+    $this->assertEquals(10, $nbAttributs);
   }
 }

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -36,10 +36,8 @@ class OwaspTop10RepositoryTest extends KernelTestCase
      * Création des OwaspTop10 en base depuis les fixtures
      *
      * @return void
-     *
-     * Created at: 05/05/2024 18:15:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function setUp(): void
     {
@@ -65,10 +63,8 @@ class OwaspTop10RepositoryTest extends KernelTestCase
      * [Description for testSelectOwaspTop10Referential]
      *
      * @return void
-     *
-     * Created at: 07/07/2025 08:49:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testSelectOwaspTop10Referential(): void
     {
@@ -78,7 +74,7 @@ class OwaspTop10RepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map = [ 'referential_version' => 2017 ];
+        $map = ['referential_version' => 2017];
 
         // Appel de la méthode
         $owaspTop10Repository = $entityManager->getRepository(OwaspTop10::class);
@@ -105,7 +101,7 @@ class OwaspTop10RepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $map = [ 'menace' => 1 ];
+        $map = ['menace' => 1];
 
         // Appel de la méthode
         $owaspTop10Repository = $entityManager->getRepository(OwaspTop10::class);
@@ -123,5 +119,4 @@ class OwaspTop10RepositoryTest extends KernelTestCase
         $this->assertIsInt($liste['year']);
         $this->assertEquals("A1 - Attaques d'injection", $liste['category']);
     }
-
 }

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Service;
@@ -20,7 +20,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpClient\Exception\{ServerException,TimeoutException,TransportException};
+use Symfony\Component\HttpClient\Exception\{ServerException, TimeoutException, TransportException};
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -412,12 +412,15 @@ class ClientTest extends TestCase
         $response->method('getContent')->willReturn('{}');
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getInfo')->willReturnMap([
-            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+            ['http_method', 'GET'],
+            ['http_code', 200],
+            ['total_time', 0.1],
+            ['url', $url],
         ]);
 
         $this->httpClient->expects($this->once())
             ->method('request')
-            ->with('GET', $url, $this->callback(fn ($opts) => ($opts['timeout'] ?? null) === 3))
+            ->with('GET', $url, $this->callback(fn($opts) => ($opts['timeout'] ?? null) === 3))
             ->willReturn($response);
 
         $this->client->httpActuator($url, 'user', 'pass');
@@ -475,7 +478,10 @@ class ClientTest extends TestCase
         $response->method('getContent')->willReturn('{"ok":true}');
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getInfo')->willReturnMap([
-            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+            ['http_method', 'GET'],
+            ['http_code', 200],
+            ['total_time', 0.1],
+            ['url', $url],
         ]);
         $this->httpClient->method('request')->willReturn($response);
 
@@ -504,7 +510,10 @@ class ClientTest extends TestCase
         $response->method('getContent')->willReturn('{}');
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getInfo')->willReturnMap([
-            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+            ['http_method', 'GET'],
+            ['http_code', 200],
+            ['total_time', 0.1],
+            ['url', $url],
         ]);
         $this->httpClient->expects($this->once())
             ->method('request')
@@ -525,7 +534,10 @@ class ClientTest extends TestCase
         $response->method('getContent')->willReturn('10.4.0-SNAPSHOT');
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getInfo')->willReturnMap([
-            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+            ['http_method', 'GET'],
+            ['http_code', 200],
+            ['total_time', 0.1],
+            ['url', $url],
         ]);
         $this->httpClient->method('request')->willReturn($response);
 
@@ -556,7 +568,10 @@ class ClientTest extends TestCase
         $response->method('getContent')->willReturn('{"tasks":[]}');
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getInfo')->willReturnMap([
-            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+            ['http_method', 'GET'],
+            ['http_code', 200],
+            ['total_time', 0.1],
+            ['url', $url],
         ]);
         $this->httpClient->method('request')->willReturn($response);
 
@@ -585,7 +600,10 @@ class ClientTest extends TestCase
         $response->method('getContent')->willReturn('{"tasks":[]}');
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getInfo')->willReturnMap([
-            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+            ['http_method', 'GET'],
+            ['http_code', 200],
+            ['total_time', 0.1],
+            ['url', $url],
         ]);
         $this->httpClient->expects($this->once())
             ->method('request')
@@ -606,7 +624,10 @@ class ClientTest extends TestCase
         $response->method('getContent')->willReturn('{}');
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getInfo')->willReturnMap([
-            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+            ['http_method', 'GET'],
+            ['http_code', 200],
+            ['total_time', 0.1],
+            ['url', $url],
         ]);
         $this->httpClient->expects($this->once())
             ->method('request')

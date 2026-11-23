@@ -26,7 +26,9 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\RouterInterface;
 
+
 /**
+ * [Description DemoModeSubscriber]
  * Applique le mode démo (`APP_MODE_DEMO=1`) : toute requête absente de la liste blanche {@see ModeDemo} est refusée,
  * AVANT le routage et le pare-feu de sécurité (priorité haute), donc même pour une route inconnue ou protégée par un jeton.
  *
@@ -39,6 +41,9 @@ use Symfony\Component\Routing\RouterInterface;
  * - **autre appel d'API** : HTTP 403 et corps JSON `{code: 403, type: warning, message}`.
  *
  * Désactivé par défaut (`APP_MODE_DEMO=0`) : sans effet sur la production.
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 final class DemoModeSubscriber implements EventSubscriberInterface
 {
@@ -51,15 +56,13 @@ final class DemoModeSubscriber implements EventSubscriberInterface
         private readonly bool $modeDemo,
         private readonly LoggerInterface $logger,
         private readonly RouterInterface $router,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for getSubscribedEvents]
      *
      * @return array<string, array{0: string, 1: int}>
      *
-     * Created at: 15/11/2026 10:39:34 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -71,6 +74,16 @@ final class DemoModeSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * [Description for onKernelRequest]
+     *
+     * @param RequestEvent $event
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$this->modeDemo || !$event->isMainRequest()) {
@@ -92,6 +105,16 @@ final class DemoModeSubscriber implements EventSubscriberInterface
         $event->setResponse($this->reponseRefus($request));
     }
 
+    /**
+     * [Description for reponseRefus]
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function reponseRefus(Request $request): Response
     {
         $attendJson = str_starts_with($request->getPathInfo(), '/api/')

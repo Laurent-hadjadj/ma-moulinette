@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -90,7 +90,9 @@ class ApiSuiviControllerTest extends TestCase
         $this->containerMock = $this->createMock(ContainerInterface::class);
         $this->containerMock->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'security.authorization_checker', 'security.token_storage', 'parameter_bag',
+                'security.authorization_checker',
+                'security.token_storage',
+                'parameter_bag',
             ], true)
         );
         $this->containerMock->method('get')->willReturnMap([
@@ -104,12 +106,13 @@ class ApiSuiviControllerTest extends TestCase
         $this->defaultUser->setCourriel('test@ma-moulinette.fr');
         $this->defaultUser->setPreference([
             'statut' => ['favori_projet' => false, 'favori_version' => false],
-            'favori_projet' => [], 'favori_version' => [],
+            'favori_projet' => [],
+            'favori_version' => [],
         ]);
         $token = $this->createMock(TokenInterface::class);
         /* willReturnCallback re-évalue $this->defaultUser à chaque appel,
            ce qui permet aux tests de muter la preference après setUp. */
-        $token->method('getUser')->willReturnCallback(fn () => $this->defaultUser);
+        $token->method('getUser')->willReturnCallback(fn() => $this->defaultUser);
         $this->tokenStorage->method('getToken')->willReturn($token);
 
         $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap, $this->analysisFetcher, $this->getSonarVersionService);
@@ -406,7 +409,10 @@ class ApiSuiviControllerTest extends TestCase
         $this->security->method('isGranted')->willReturn(false);
 
         $response = $this->controller->suiviVersionReference($this->jsonRequest([
-            'maven_key' => 'k', 'initial' => 1, 'version' => '1.0', 'date_version' => '2026-04-10',
+            'maven_key' => 'k',
+            'initial' => 1,
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -422,7 +428,10 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->suiviVersionReference($this->jsonRequest([
-            'maven_key' => 'k', 'initial' => 1, 'version' => '1.0', 'date_version' => '2026-04-10',
+            'maven_key' => 'k',
+            'initial' => 1,
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -443,7 +452,10 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db down']);
 
         $response = $this->controller->suiviVersionReference($this->jsonRequest([
-            'maven_key' => 'k', 'initial' => 1, 'version' => '1.0', 'date_version' => '2026-04-10',
+            'maven_key' => 'k',
+            'initial' => 1,
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -466,7 +478,9 @@ class ApiSuiviControllerTest extends TestCase
         $this->security->method('isGranted')->willReturn(false);
 
         $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
-            'maven_key' => 'k', 'version' => '1.0', 'date_version' => '2026-04-10',
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -486,7 +500,9 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
-            'maven_key' => 'k', 'version' => '1.0', 'date_version' => '2026-04-10',
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
         ]));
         $data = json_decode((string) $response->getContent(), true);
 
@@ -945,18 +961,36 @@ class ApiSuiviControllerTest extends TestCase
     {
         // Payload aligné sur les clés SonarQube (= colonnes DB historique).
         return [
-            'maven_key' => 'k', 'version' => '1.0', 'date_version' => '2026-04-10',
-            'project_name' => 'App', 'initial' => 0,
-            'coverage' => 80, 'duplicated_lines_density' => 1, 'tests' => 10,
-            'skipped_tests' => 0, 'test_errors' => 0, 'test_failures' => 0,
-            'violations' => 5, 'classes' => 10, 'comment_lines' => 100,
-            'comment_lines_density' => 20, 'files' => 5, 'lines' => 1000, 'ncloc' => 800,
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
+            'project_name' => 'App',
+            'initial' => 0,
+            'coverage' => 80,
+            'duplicated_lines_density' => 1,
+            'tests' => 10,
+            'skipped_tests' => 0,
+            'test_errors' => 0,
+            'test_failures' => 0,
+            'violations' => 5,
+            'classes' => 10,
+            'comment_lines' => 100,
+            'comment_lines_density' => 20,
+            'files' => 5,
+            'lines' => 1000,
+            'ncloc' => 800,
             'ncloc_language_distribution' => 'java=800',
-            'functions' => 20, 'sqale_debt_ratio' => 2, 'sqale_index' => 100,
-            'sqale_rating' => 1.0, 'code_smells' => 3,
-            'bugs' => 1, 'reliability_rating' => 2.0,
-            'vulnerabilities' => 0, 'security_rating' => 1.0,
-            'security_review_rating' => 1.0, 'security_hotspots' => 0,
+            'functions' => 20,
+            'sqale_debt_ratio' => 2,
+            'sqale_index' => 100,
+            'sqale_rating' => 1.0,
+            'code_smells' => 3,
+            'bugs' => 1,
+            'reliability_rating' => 2.0,
+            'vulnerabilities' => 0,
+            'security_rating' => 1.0,
+            'security_review_rating' => 1.0,
+            'security_hotspots' => 0,
         ];
     }
 }

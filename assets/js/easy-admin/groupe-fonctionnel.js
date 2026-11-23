@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 document.addEventListener('DOMContentLoaded', init);
@@ -17,9 +17,8 @@ document.addEventListener('turbo:load', init);
  *
  * @return void
  *
- * Created at: 07/04/2026 14:32:23 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 function init() {
   // Récupère les éléments du DOM

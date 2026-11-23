@@ -14,6 +14,7 @@
 namespace App\Service;
 
 /** Gestion de accès aux API */
+
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpClient\Exception\TimeoutException;
 use Symfony\Component\HttpClient\Exception\ClientException;
@@ -58,8 +59,7 @@ class ClientService
         private HttpClientInterface $client,
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for handleTimeoutException]
@@ -67,16 +67,15 @@ class ClientService
      * @param TimeoutException $e
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 30/12/2024 08:05:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function handleTimeoutException(TimeoutException $e): array {
-        $this->logger->error("[handleTimeoutException] ❌ ". self::$erreur504, [
-                'code' => 504,
-                'erreur' => $e->getMessage() ? $e->getMessage() : null,
-            ]);
+    private function handleTimeoutException(TimeoutException $e): array
+    {
+        $this->logger->error("[handleTimeoutException] ❌ " . self::$erreur504, [
+            'code' => 504,
+            'erreur' => $e->getMessage() ? $e->getMessage() : null,
+        ]);
         return ['code' => 504, 'erreur' => self::$erreur504];
     }
 
@@ -93,11 +92,11 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/12/2024 08:05:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function handleTransportException(TransportException $e): array {
+    private function handleTransportException(TransportException $e): array
+    {
         $errorMessage = "Erreur 503|504 de transport non spécifiée.";
         $message = $e->getMessage();
         $isCustomMessage = false;
@@ -120,11 +119,11 @@ class ClientService
             $code = 504;
             $this->logger->error("[handleTransportException] ❌ $errorMessage", [
                 'code' => $code,
-                'erreur' => $e->getMessage() ? $e->getMessage():null,
+                'erreur' => $e->getMessage() ? $e->getMessage() : null,
             ]);
         }
 
-        return [ 'code' => $code, 'erreur' => $errorMessage ];
+        return ['code' => $code, 'erreur' => $errorMessage];
     }
 
     /**
@@ -134,11 +133,11 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/12/2024 08:05:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function handleClientException(HttpExceptionInterface $e): array {
+    private function handleClientException(HttpExceptionInterface $e): array
+    {
         $response = $e->getResponse();
         $body = $response->getContent(false);
         $errorCode = $e->getCode();
@@ -147,7 +146,8 @@ class ClientService
         // Décoder le JSON en tableau associatif
         $data = json_decode($body, true);
 
-        /* MODIF 2026-05-07 : log unique systématique.
+        /**
+         * MODIF 2026-05-07 : log unique systématique.
          * Capture des 1000 premiers chars uniquement si data['detail'] est exploitable, sinon body=null. */
         if (isset($data['detail']) && is_array($data['detail'])) {
             $firstTenLines = substr($body, 0, 1000);
@@ -157,11 +157,12 @@ class ClientService
         if (isset($data['errors']) && is_string($data['errors'][0]['msg']) && !empty(trim($data['errors'][0]['msg']))) {
             $errorMessage = $data['errors'][0]['msg'];
             $this->logger->error("[handleClientException] ❌ Une erreur de l'API SonarQube a été retournée. ", [
-            'code' => $errorCode,
-            'body' => $errorMessage
-        ]);
+                'code' => $errorCode,
+                'body' => $errorMessage
+            ]);
 
-            /* MODIF 2026-10-08 : SonarQube rejette une facette inexistante sur la
+            /**
+             * MODIF 2026-10-08 : SonarQube rejette une facette inexistante sur la
              * version du serveur interrogé (ex. owaspTop10-2021 absent avant la 9.7)
              * avec un message technique peu lisible pour un utilisateur. On le
              * remplace par un message explicite qui pointe vers SONAR_VERSION,
@@ -202,11 +203,11 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/12/2024 08:05:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function handleServerException(ServerException $e): array {
+    private function handleServerException(ServerException $e): array
+    {
         $response = $e->getResponse();
         $body = $response->getContent(false);
         $errorCode = $e->getCode();
@@ -242,11 +243,11 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 19/10/2025 09:09:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function handleGenericException(\Throwable $e): array {
+    private function handleGenericException(\Throwable $e): array
+    {
         $this->logger->error("Une erreur inattendue du serveur s'est produite : " . $e->getMessage());
 
         $messages = [
@@ -270,7 +271,6 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 17:43:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -291,17 +291,16 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 17/04/2024 18:46:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function httpSonarQube(string $url): array
     {
-        if (empty($this->params->get(self::$sonarToken)) && empty($this->params->get('sonar.user'))){
+        if (empty($this->params->get(self::$sonarToken)) && empty($this->params->get('sonar.user'))) {
             return [
-                    'code' => 401,
-                    'erreur' => self::$erreur401
-                    ];
+                'code' => 401,
+                'erreur' => self::$erreur401
+            ];
         }
 
         if (empty($this->params->get(self::$sonarToken))) {
@@ -315,7 +314,7 @@ class ClientService
         try {
             $ciphers = $this->params->get('ciphers');
             $verify_host = $this->params->get(self::$verifyHost);
-            $verify_peer =$this->params->get(self::$verifyPeer);
+            $verify_peer = $this->params->get(self::$verifyPeer);
 
             $options = [
                 'auth_basic' => [$user, $password],
@@ -330,8 +329,8 @@ class ClientService
 
             /** On a ajoute le proxy aux options s'il est défini*/
             $proxy = $this->params->get('proxy');
-            if (!empty($proxy)){
-                $options['proxy']=$proxy;
+            if (!empty($proxy)) {
+                $options['proxy'] = $proxy;
             }
 
             $json = null;
@@ -347,8 +346,8 @@ class ClientService
             } catch (\JsonException $e) {
                 // pas un JSON valide : on créé un tableau pour le texte brute
                 $json = !empty(trim($responseBody))
-                        ? ['texte' => $responseBody]
-                        : [ 'texte' => null ];
+                    ? ['texte' => $responseBody]
+                    : ['texte' => null];
             }
 
             /** Extraire les informations de la réponse */
@@ -394,7 +393,6 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 27/06/2024 21:02:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -403,13 +401,13 @@ class ClientService
         try {
             $ciphers = $this->params->get('ciphers');
             $verify_host = $this->params->get(self::$verifyHost);
-            $verify_peer =$this->params->get(self::$verifyPeer);
+            $verify_peer = $this->params->get(self::$verifyPeer);
 
             /** Options sans Auth_http_basic.
              * Timeout court (3s, au lieu des 45s génériques) : un point d'accès
              * Actuator est un appel "best effort" annexe à la collecte projet,
              * il ne doit jamais ralentir significativement le reste du batch. */
-            $options=[
+            $options = [
                 'timeout' => 3,
                 'headers' => $this->genericHeaders(),
                 # Définition des ciphers TLS1.3
@@ -420,11 +418,11 @@ class ClientService
             ];
 
             /** Si on a un login/password défini avec actuator */
-            $authHttpBasic=['auth_basic' => [$user, $password]];
+            $authHttpBasic = ['auth_basic' => [$user, $password]];
 
             /** On ajout Auth_http_basic si $user&&$password != null */
-            if($user!=null && $password!=null) {
-                $options=array_merge($options, $authHttpBasic);
+            if ($user != null && $password != null) {
+                $options = array_merge($options, $authHttpBasic);
             }
 
             $response = $this->client->request('GET', $url, $options);
@@ -473,15 +471,14 @@ class ClientService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 22/05/2024 15:03:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function httpActivity(string $url): array
     {
-        if (empty($this->params->get(self::$sonarActivityToken)) && empty($this->params->get('sonar.activity.user'))){
+        if (empty($this->params->get(self::$sonarActivityToken)) && empty($this->params->get('sonar.activity.user'))) {
             return [
-                'code'=> 401,
+                'code' => 401,
                 'erreur' => self::$erreur401
             ];
         }
@@ -497,7 +494,7 @@ class ClientService
         try {
             $ciphers = $this->params->get('ciphers');
             $verify_host = $this->params->get(self::$verifyHost);
-            $verify_peer =$this->params->get(self::$verifyPeer);
+            $verify_peer = $this->params->get(self::$verifyPeer);
 
             $options = [
                 'auth_basic' => [$user, $password],
@@ -512,8 +509,8 @@ class ClientService
 
             /** On a ajoute le proxy aux options s'il est défini*/
             $proxy = $this->params->get('proxy');
-            if (!empty($proxy)){
-                $options['proxy']=$proxy;
+            if (!empty($proxy)) {
+                $options['proxy'] = $proxy;
             }
 
             $response = $this->client->request('GET', $url, $options);
@@ -554,5 +551,4 @@ class ClientService
         // Ce point ne devrait jamais être atteint, donc on peut lancer une exception.
         throw new UnexpectedExecutionPathException(self::$exceptionInattendu . __METHOD__);
     }
-
 }

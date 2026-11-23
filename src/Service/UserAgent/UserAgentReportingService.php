@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\UserAgent;
@@ -43,11 +43,11 @@ class UserAgentReportingService
      *
      * @return void
      *
-     * Created at: 23/12/2025 11:29:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    private function logger(string $message, string $code, string $error){
+    private function logger(string $message, string $code, string $error)
+    {
         $this->logger->warning($message, [
             'code' => $code,
             'erreur' => $error
@@ -63,24 +63,23 @@ class UserAgentReportingService
      *
      * @return array{start: \DateTimeImmutable, end: \DateTimeImmutable, label: string}
      *
-     * Created at: 22/12/2025 16:24:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getWeekBounds(?string $week, \DateTimeImmutable $now, \DateTimeZone $tz): array
     {
         try {
-                if (!$week) {
-                        $now = new \DateTimeImmutable('now', $tz);
-                        $start = $now->modify('monday this week')->setTime(0, 0, 0);
-                    } else {
-                        [$year, $w] = explode('-W', $week);
-                        $start = (new \DateTimeImmutable('now', $tz))
-                            ->setISODate((int)$year, (int)$w)
-                            ->setTime(0, 0, 0);
-                    }
+            if (!$week) {
+                $now = new \DateTimeImmutable('now', $tz);
+                $start = $now->modify('monday this week')->setTime(0, 0, 0);
+            } else {
+                [$year, $w] = explode('-W', $week);
+                $start = (new \DateTimeImmutable('now', $tz))
+                    ->setISODate((int)$year, (int)$w)
+                    ->setTime(0, 0, 0);
+            }
 
-                $end = $start->modify('+6 days')->setTime(23, 59, 59);
+            $end = $start->modify('+6 days')->setTime(23, 59, 59);
         } catch (\Exception) {
             // MODIF 2026-06-09 : $end non initialisé en cas d'exception
             $start = $now->modify('monday this week')->setTime(0, 0, 0);
@@ -88,13 +87,14 @@ class UserAgentReportingService
         }
 
         return [
-                'start' => $start,
-                'end'   => $end,
-                'label' => sprintf(
-                    'Semaine du %s au %s',
-                    $start->format('d/m/Y'),
-                    $end->format('d/m/Y')),
-                ];
+            'start' => $start,
+            'end'   => $end,
+            'label' => sprintf(
+                'Semaine du %s au %s',
+                $start->format('d/m/Y'),
+                $end->format('d/m/Y')
+            ),
+        ];
     }
 
     /**
@@ -107,22 +107,21 @@ class UserAgentReportingService
      *
      * @return array{start: \DateTimeImmutable, end: \DateTimeImmutable, label: string}
      *
-     * Created at: 22/12/2025 16:24:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getMonthBounds(?string $month, \DateTimeImmutable $now, \DateTimeZone $tz): array
     {
         try {
-                if ($month) {
-                    $start = new \DateTimeImmutable($month . '-01', $tz);
-                } else {
-                    $start = (new \DateTimeImmutable('now', $tz))
-                        ->modify('first day of this month');
-                }
+            if ($month) {
+                $start = new \DateTimeImmutable($month . '-01', $tz);
+            } else {
+                $start = (new \DateTimeImmutable('now', $tz))
+                    ->modify('first day of this month');
+            }
 
-                $start = $start->setTime(0, 0, 0);
-                $end   = $start->modify('last day of this month')->setTime(23, 59, 59);
+            $start = $start->setTime(0, 0, 0);
+            $end   = $start->modify('last day of this month')->setTime(23, 59, 59);
         } catch (\Exception) {
             // MODIF 2026-06-09 : $end non initialisé en cas d'exception
             $start = $now->modify('first day of this month')->setTime(0, 0, 0);
@@ -130,10 +129,10 @@ class UserAgentReportingService
         }
 
         return [
-                'start' => $start,
-                'end'   => $end,
-                'label' => $start->format('F Y'),
-            ];
+            'start' => $start,
+            'end'   => $end,
+            'label' => $start->format('F Y'),
+        ];
     }
 
     /**
@@ -145,9 +144,8 @@ class UserAgentReportingService
      *
      * @return array{start: \DateTimeImmutable, end: \DateTimeImmutable, label: string}
      *
-     * Created at: 22/12/2025 16:23:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getPeriodBounds(string $period, ?string $week = null, ?string $month = null): array
     {
@@ -173,9 +171,8 @@ class UserAgentReportingService
      *
      * @return array{total: int|float, items: array<int, array<string, mixed>>}
      *
-     * Created at: 17/12/2025 14:14:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function normalizeStats(array $rows, int $top = 5): array
     {
@@ -216,11 +213,11 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 28/12/2025 10:33:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getUtilisateurActif(){
+    public function getUtilisateurActif()
+    {
         /** On récupère le nombre d'utilisateur ayant déjà fait une requête */
         $result = $this->userRepos->countUtilisateurActif();
         if ($result['code'] !== 200) {
@@ -242,9 +239,8 @@ class UserAgentReportingService
      *
      * @return array
      *
-     * Created at: 28/12/2025 11:26:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     /**
      * @return array<int|string, mixed>
@@ -276,9 +272,8 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 17/12/2025 14:16:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getOsStats(\DateTimeInterface $start, \DateTimeInterface $end, string $label): array
     {
@@ -305,9 +300,8 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 17/12/2025 14:44:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getBrowserStats(\DateTimeInterface $start, \DateTimeInterface $end, string $label): array
     {
@@ -335,9 +329,8 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 17/12/2025 14:45:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getDeviceStats(\DateTimeInterface $start, \DateTimeInterface $end, string $label): array
     {
@@ -365,53 +358,53 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/12/2025 12:47:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getSessionPagesReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label):array{
+    public function getSessionPagesReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label): array
+    {
         try {
-                $result = $this->userAgentRepos->selectSessionPagesStats($start, $end);
+            $result = $this->userAgentRepos->selectSessionPagesStats($start, $end);
 
-                if ($result['code'] !== 200) {
-                    $message = '[Statistique] ⚠️ Échec de la requête selectSessionPagesStats().';
-                    $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
-                    return $result;
-                }
+            if ($result['code'] !== 200) {
+                $message = '[Statistique] ⚠️ Échec de la requête selectSessionPagesStats().';
+                $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
+                return $result;
+            }
 
-                $uniqueUsers = (int) $result['kpi']['unique_users'];
-                $pageViews   = (int) $result['kpi']['page_views'];
-                $items       = $result['items'];
+            $uniqueUsers = (int) $result['kpi']['unique_users'];
+            $pageViews   = (int) $result['kpi']['page_views'];
+            $items       = $result['items'];
 
-                $pages = [];
-                foreach ($items as $row) {
-                    $total = (int) $row['total'];
-                    $pages[] = [
-                        'label' => $row['label'],
-                        'url' => $row['url'],
-                        'total' => $total,
-                        'percent' => $pageViews > 0
-                            ? round($total * 100 / $pageViews, 1)
-                            : 0
-                    ];
-                }
-
-                return [
-                    'code' => 200,
-                    'kpi' => [
-                        'unique_users' => $uniqueUsers,
-                        'page_views' => $pageViews,
-                        'pages_per_session' => $uniqueUsers > 0
-                            ? round($pageViews / $uniqueUsers, 1)
-                            : 0,
-                    ],
-                    'pages' => [
-                        'total' => $pageViews,
-                        'items' => $pages,
-                    ],
-                    'period_label' => $label,
+            $pages = [];
+            foreach ($items as $row) {
+                $total = (int) $row['total'];
+                $pages[] = [
+                    'label' => $row['label'],
+                    'url' => $row['url'],
+                    'total' => $total,
+                    'percent' => $pageViews > 0
+                        ? round($total * 100 / $pageViews, 1)
+                        : 0
                 ];
-            } catch (\Throwable $e) {
+            }
+
+            return [
+                'code' => 200,
+                'kpi' => [
+                    'unique_users' => $uniqueUsers,
+                    'page_views' => $pageViews,
+                    'pages_per_session' => $uniqueUsers > 0
+                        ? round($pageViews / $uniqueUsers, 1)
+                        : 0,
+                ],
+                'pages' => [
+                    'total' => $pageViews,
+                    'items' => $pages,
+                ],
+                'period_label' => $label,
+            ];
+        } catch (\Throwable $e) {
             return [
                 'code' => 500,
                 'erreur' => $e->getMessage(),
@@ -424,124 +417,128 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 22/12/2025 08:05:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getAvgSessionDurationReport():array{
+    public function getAvgSessionDurationReport(): array
+    {
         try {
-                $result = $this->userAgentRepos->selectAvgSessionDurationStats();
+            $result = $this->userAgentRepos->selectAvgSessionDurationStats();
 
-                if ($result['code'] !== 200) {
-                    $message = '[Statistique] ⚠️ Échec de la requête selectAvgSessionDurationStats().';
-                    $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
-                    return $result;
-                }
+            if ($result['code'] !== 200) {
+                $message = '[Statistique] ⚠️ Échec de la requête selectAvgSessionDurationStats().';
+                $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
+                return $result;
+            }
 
-                // Formatage pour le JS
-                $rows = $result['rows'];
-                if (empty($rows)) { return [ 'code' => 200, 'data' => [] ]; }
-                $data = [];
-                foreach ($rows as $row) {
-                    $data[] = [
-                        'date' => $row['session_date'],
-                        'avg'  => (float) $row['avg_duration_minutes'],
-                    ];
-                }
-
-                return [ 'code' => 200, 'data' => $data ];
-            } catch (\Throwable $e) {
-            return [
-                'code' => 500,
-                'erreur' => $e->getMessage(),
-                'data' => []
-            ];
-        }
-    }
-
-    /**
-     * [Description for getUniqueSessionReport]
-     *
-     * @return array<int|string, mixed>
-     *
-     * Created at: 22/12/2025 08:07:36 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getUniqueSessionReport():array{
-        try {
-                $result = $this->userAgentRepos->selectUniqueSessionStats();
-
-                if ($result['code'] !== 200) {
-                    $message = '[Statistique] ⚠️ Échec de la requête selectUniqueSessionStats().';
-                    $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
-                    return $result;
-                }
-
-                // Formatage pour le JS
-                $rows = $result['rows'];
-                if (empty($rows)) { return [ 'code' => 200, 'data' => [] ];}
-
-                $data = [];
-                foreach ($rows as $row) {
-                    $data[] = [
-                        'date' => $row['session_date'],
-                        'session'  => (float) $row['nb_sessions'],
-                    ];
-                }
-
-                return [ 'code' => 200, 'data' => $data ];
-            } catch (\Throwable $e) {
-            return [
-                'code' => 500,
-                'erreur' => $e->getMessage(),
-                'data' => []
-            ];
-        }
-    }
-
-    /**
-     * [Description for getUniqueSessionReport]
-     *
-     * @return array<int|string, mixed>
-     *
-     * Created at: 22/12/2025 08:07:36 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getUniqueSessionByCategoryReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label):array{
-
-        try {
-                $result = $this->userAgentRepos->selectSessionDurationByCategoryStats($start, $end);
-
-                if ($result['code'] !== 200) {
-                    $message = '[Statistique] ⚠️ Échec de la requête selectSessionDurationByCategoryStats().';
-                    $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
-                    return $result;
-                }
-
-                $totalSessions = count($result['rows']);
-
-                $items = array_map(function ($row) use ($totalSessions) {
-                    return [
-                        'first' => new \DateTime($row['session_start']),
-                        'last'  => new \DateTime($row['session_end']),
-                        'minute' => (float) $row['duration_minutes'],
-                        'hour'   => (float) $row['duration_hours'],
-                        'category' => $row['session_length_category'],
-                        'percent' => $totalSessions > 0
-                            ? round(100 / $totalSessions, 1)
-                            : 0,
-                    ];
-                }, $result['rows']);
-
-                return [
-                    'code' => 200,
-                    'total' => $totalSessions,
-                    'items' => $items,
-                    'period_label' => $label,
+            // Formatage pour le JS
+            $rows = $result['rows'];
+            if (empty($rows)) {
+                return ['code' => 200, 'data' => []];
+            }
+            $data = [];
+            foreach ($rows as $row) {
+                $data[] = [
+                    'date' => $row['session_date'],
+                    'avg'  => (float) $row['avg_duration_minutes'],
                 ];
-            } catch (\Throwable $e) {
+            }
+
+            return ['code' => 200, 'data' => $data];
+        } catch (\Throwable $e) {
+            return [
+                'code' => 500,
+                'erreur' => $e->getMessage(),
+                'data' => []
+            ];
+        }
+    }
+
+    /**
+     * [Description for getUniqueSessionReport]
+     *
+     * @return array<int|string, mixed>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function getUniqueSessionReport(): array
+    {
+        try {
+            $result = $this->userAgentRepos->selectUniqueSessionStats();
+
+            if ($result['code'] !== 200) {
+                $message = '[Statistique] ⚠️ Échec de la requête selectUniqueSessionStats().';
+                $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
+                return $result;
+            }
+
+            // Formatage pour le JS
+            $rows = $result['rows'];
+            if (empty($rows)) {
+                return ['code' => 200, 'data' => []];
+            }
+
+            $data = [];
+            foreach ($rows as $row) {
+                $data[] = [
+                    'date' => $row['session_date'],
+                    'session'  => (float) $row['nb_sessions'],
+                ];
+            }
+
+            return ['code' => 200, 'data' => $data];
+        } catch (\Throwable $e) {
+            return [
+                'code' => 500,
+                'erreur' => $e->getMessage(),
+                'data' => []
+            ];
+        }
+    }
+
+    /**
+     * [Description for getUniqueSessionReport]
+     *
+     * @return array<int|string, mixed>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
+    public function getUniqueSessionByCategoryReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label): array
+    {
+
+        try {
+            $result = $this->userAgentRepos->selectSessionDurationByCategoryStats($start, $end);
+
+            if ($result['code'] !== 200) {
+                $message = '[Statistique] ⚠️ Échec de la requête selectSessionDurationByCategoryStats().';
+                $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
+                return $result;
+            }
+
+            $totalSessions = count($result['rows']);
+
+            $items = array_map(function ($row) use ($totalSessions) {
+                return [
+                    'first' => new \DateTime($row['session_start']),
+                    'last'  => new \DateTime($row['session_end']),
+                    'minute' => (float) $row['duration_minutes'],
+                    'hour'   => (float) $row['duration_hours'],
+                    'category' => $row['session_length_category'],
+                    'percent' => $totalSessions > 0
+                        ? round(100 / $totalSessions, 1)
+                        : 0,
+                ];
+            }, $result['rows']);
+
+            return [
+                'code' => 200,
+                'total' => $totalSessions,
+                'items' => $items,
+                'period_label' => $label,
+            ];
+        } catch (\Throwable $e) {
             return [
                 'code' => 500,
                 'erreur' => $e->getMessage(),
@@ -558,40 +555,40 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 22/12/2025 11:32:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getCategoryByUniqueSessionReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label):array{
+    public function getCategoryByUniqueSessionReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label): array
+    {
         try {
-                $result = $this->userAgentRepos->selectCategoryByUniqueSessionStats($start, $end);
+            $result = $this->userAgentRepos->selectCategoryByUniqueSessionStats($start, $end);
 
-                if ($result['code'] !== 200) {
-                    $message = '[Statistique] ⚠️ Échec de la requête selectCategoryByUniqueSessionStats().';
-                    $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
-                    return $result;
-                }
+            if ($result['code'] !== 200) {
+                $message = '[Statistique] ⚠️ Échec de la requête selectCategoryByUniqueSessionStats().';
+                $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
+                return $result;
+            }
 
-                $totalCategory = count($result['rows']);
+            $totalCategory = count($result['rows']);
 
-                $items = array_map(function ($row) use ($totalCategory) {
-                    return [
-                        'category' => $row['category'],
-                        'session'  => $row['session_count'],
-                        'average' => (float) $row['avg_duration_min'],
-                        'percent' => $totalCategory > 0
-                            ? round(100 / $totalCategory, 1)
-                            : 0,
-                    ];
-                }, $result['rows']);
-
+            $items = array_map(function ($row) use ($totalCategory) {
                 return [
-                    'code' => 200,
-                    'total' => $totalCategory,
-                    'items' => $items,
-                    'period_label' => $label,
+                    'category' => $row['category'],
+                    'session'  => $row['session_count'],
+                    'average' => (float) $row['avg_duration_min'],
+                    'percent' => $totalCategory > 0
+                        ? round(100 / $totalCategory, 1)
+                        : 0,
                 ];
-            } catch (\Throwable $e) {
+            }, $result['rows']);
+
+            return [
+                'code' => 200,
+                'total' => $totalCategory,
+                'items' => $items,
+                'period_label' => $label,
+            ];
+        } catch (\Throwable $e) {
             return [
                 'code' => 500,
                 'erreur' => $e->getMessage(),
@@ -608,46 +605,45 @@ class UserAgentReportingService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 22/12/2025 14:46:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getSessionDurationByPeriodStats(\DateTimeInterface $start, \DateTimeInterface $end, string $label):array{
+    public function getSessionDurationByPeriodStats(\DateTimeInterface $start, \DateTimeInterface $end, string $label): array
+    {
 
         try {
-                $result = $this->userAgentRepos->selectSessionDurationByPeriodStats($start,$end);
+            $result = $this->userAgentRepos->selectSessionDurationByPeriodStats($start, $end);
 
-                if ($result['code'] !== 200) {
-                    $message = '[Statistique] ⚠️ Échec de la requête selectSessionDurationByPeriodStats().';
-                    $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
-                    return $result;
-                }
+            if ($result['code'] !== 200) {
+                $message = '[Statistique] ⚠️ Échec de la requête selectSessionDurationByPeriodStats().';
+                $this->logger($message, $result['code'], $result['erreur'] ?? self::NOERROR);
+                return $result;
+            }
 
-                $total = count($result['liste']);
-                $rows = $result['liste'];
-                $items = [];
+            $total = count($result['liste']);
+            $rows = $result['liste'];
+            $items = [];
 
-                foreach ($rows as $row) {
-                    $items[] = [
-                        'date' => $row['session_date'],
-                        'minute' => $row['avg_duration_minutes'],
-                        'hour' => $row['avg_duration_hours'],
-                        'percent' => $row['percent_of_total_avg']
-                    ];
-                }
-
-                return [
-                    'code' => 200,
-                    'total' => $total,
-                    'items' => $items,
-                    'period_label' => $label,
+            foreach ($rows as $row) {
+                $items[] = [
+                    'date' => $row['session_date'],
+                    'minute' => $row['avg_duration_minutes'],
+                    'hour' => $row['avg_duration_hours'],
+                    'percent' => $row['percent_of_total_avg']
                 ];
-            } catch (\Throwable $e) {
+            }
+
+            return [
+                'code' => 200,
+                'total' => $total,
+                'items' => $items,
+                'period_label' => $label,
+            ];
+        } catch (\Throwable $e) {
             return [
                 'code' => 500,
                 'erreur' => $e->getMessage(),
             ];
         }
     }
-
 }

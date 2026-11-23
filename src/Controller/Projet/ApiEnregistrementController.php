@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Projet;
@@ -38,9 +38,8 @@ class ApiEnregistrementController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 15/12/2022, 21:25:23 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -56,9 +55,8 @@ class ApiEnregistrementController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:44:09 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/enregistrement', name: 'enregistrement', methods: ['PUT'])]
     public function enregistrement(Request $request): JsonResponse
@@ -108,14 +106,16 @@ class ApiEnregistrementController extends AbstractController
         $getVersionSonar = $this->getSonarVersionService->getSonarQubeVersion();
         $sonarqube_server_version = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
 
-        /* MODIF 2026-05-17 : lecture depuis clean_code pour
+        /**
+         * MODIF 2026-05-17 : lecture depuis clean_code pour
          * alimenter les colonnes historique (retro-compatible : null si pas de collecte). */
         $cleanCodeRepos = $this->em->getRepository(CleanCode::class);
         $cleanCodeResult = $cleanCodeRepos->selectCleanCode(['maven_key' => $data->maven_key]);
         $cc = (!empty($cleanCodeResult['liste'])) ? $cleanCodeResult['liste'][0] : [];
 
         try {
-            /* MODIF 2026-07-23 : $json valait auparavant toujours [] — actuator_info
+            /**
+             * MODIF 2026-07-23 : $json valait auparavant toujours [] — actuator_info
              * n'était donc jamais persisté par ce chemin d'enregistrement interactif
              * (seul le batch/cron CollecteController écrivait réellement dans cette
              * colonne). Même pattern de décodage que logger_breakdown ci-dessous. */
@@ -159,7 +159,8 @@ class ApiEnregistrementController extends AbstractController
                 'bugs' => $data->bugs,
                 'vulnerabilities' => $data->vulnerabilities,
                 'code_smells' => $data->code_smells,
-                /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
+                /**
+                 * MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
                  * même flux que les autres indicateurs (DOM -> payload, pas de relecture serveur). */
                 'scope_main' => $data->scope_main ?? null,
                 'scope_test' => $data->scope_test ?? null,
@@ -184,7 +185,8 @@ class ApiEnregistrementController extends AbstractController
                 'code_smell_major' => $data->code_smell_major,
                 'code_smell_minor' => $data->code_smell_minor,
                 'code_smell_info' => $data->code_smell_info,
-                /* MODIF 2026-10-11 : ?? null — la ligne anomalie peut ne jamais avoir
+                /**
+                 * MODIF 2026-10-11 : ?? null — la ligne anomalie peut ne jamais avoir
                  * existé (aucune collecte), pas seulement "module inconnu = 0". */
                 'repartition_frontend' => $data->repartition_frontend ?? null,
                 'repartition_backend' => $data->repartition_backend ?? null,
@@ -206,15 +208,17 @@ class ApiEnregistrementController extends AbstractController
                 'menace_potentielle_reviewed_high' => $data->menace_potentielle_reviewed_high,
                 'menace_potentielle_reviewed_medium' => $data->menace_potentielle_reviewed_medium,
                 'menace_potentielle_reviewed_low' => $data->menace_potentielle_reviewed_low,
-                /* MODIF 2026-05-06 : nouveaux champs propages depuis ApiPeintureController
-                * via window.peintureData (cf. peinture.js + enregistrement.js).
-                * Tous en `?? null` pour rester retro-compatible si le
-                * payload JS n'envoie pas le champ (anciennes versions du client). */
+                /**
+                 * MODIF 2026-05-06 : nouveaux champs propages depuis ApiPeintureController
+                 * via window.peintureData (cf. peinture.js + enregistrement.js).
+                 * Tous en `?? null` pour rester retro-compatible si le
+                 * payload JS n'envoie pas le champ (anciennes versions du client). */
                 'alert_status' => $data->alert_status ?? null,
                 'statements' => $data->statements ?? null,
-                /* MODIF 2026-05-06 : ApiPeintureController pre-parse ncloc_language_distribution
-                * en array (pour l'affichage des langages dans la modale Ajouter).
-                * Mais la colonne historique attend un string format SonarQube "java=12345;js=3000". On reconstitue. */
+                /**
+                 * MODIF 2026-05-06 : ApiPeintureController pre-parse ncloc_language_distribution
+                 * en array (pour l'affichage des langages dans la modale Ajouter).
+                 * Mais la colonne historique attend un string format SonarQube "java=12345;js=3000". On reconstitue. */
                 'ncloc_language_distribution' => self::serializeLanguageDistribution($data->ncloc_language_distribution ?? null),
                 /* Commentaires */
                 'comment_lines' => $data->comment_lines ?? null,
@@ -281,8 +285,10 @@ class ApiEnregistrementController extends AbstractController
                 /* Hotspots */
                 'security_hotspots' => $data->security_hotspots ?? null,
                 'security_hotspots_reviewed' => $data->security_hotspots_reviewed ?? null,
-                /* MODIF 2026-05-06 : nouveaux champs propagés depuis ApiPeintureController via window.peintureData
-                 * Counts NoSonar et To.do par langage,  `suppress_warning` est deja mappé (legacy total) — on le laisse pour compatibilité, le payload peinture l’écrasera. */
+                /**
+                 * MODIF 2026-05-06 : nouveaux champs propagés depuis ApiPeintureController via window.peintureData
+                 * Counts NoSonar et To.do par langage,  `suppress_warning` est deja mappé (legacy total) — on le laisse pour
+                 * compatibilité, le payload peinture l’écrasera. */
                 'java_no_sonar' => $data->java_no_sonar ?? null,
                 'python_no_sonar' => $data->python_no_sonar ?? null,
                 'php_no_sonar' => $data->php_no_sonar ?? null,
@@ -296,7 +302,8 @@ class ApiEnregistrementController extends AbstractController
                 'javascript_todo' => $data->javascript_todo ?? null,
                 'typescript_todo' => $data->typescript_todo ?? null,
                 'ruby_todo' => $data->ruby_todo ?? null,
-                /* MODIF 2026-05-17 : indicateurs SonarQube 10+
+                /**
+                 * MODIF 2026-05-17 : indicateurs SonarQube 10+
                  * lus depuis clean_code (null si pas encore collectés). */
                 'cc_consistent' => isset($cc['cc_consistent']) ? (int) $cc['cc_consistent'] : null,
                 'cc_intentional' => isset($cc['cc_intentional']) ? (int) $cc['cc_intentional'] : null,
@@ -313,7 +320,8 @@ class ApiEnregistrementController extends AbstractController
                 'owasp_top10' => isset($cc['owasp_top10']) ? (int) $cc['owasp_top10'] : null,
                 'sans_top25' => isset($cc['sans_top25']) ? (int) $cc['sans_top25'] : null,
                 'cwe' => isset($cc['cwe']) ? (int) $cc['cwe'] : null,
-                /* MODIF 2026-10-06 : RCI suit le même flux que les autres indicateurs
+                /**
+                 * MODIF 2026-10-06 : RCI suit le même flux que les autres indicateurs
                  * (anomalie, nosonar, mesures...) — les valeurs sont chargées dans le DOM par peinture.js,
                  * puis enregistrement.js les relit et les envoie dans le payload. */
                 'rci_indicator' => $data->rci_indicator ?? null,
@@ -341,7 +349,8 @@ class ApiEnregistrementController extends AbstractController
                 'date_enregistrement' => $dateEnregistrement
             ];
 
-            /** Normalise les valeurs string 'null' / '' / null en vrai null PHP pour
+            /**
+             * Normalise les valeurs string 'null' / '' / null en vrai null PHP pour
              *  les champs numériques (Postgres refuse 'null' string sur INT/FLOAT).
              *  Les champs string conservés tels quels via la whitelist $stringKeys. */
             $stringKeys = [
@@ -363,7 +372,8 @@ class ApiEnregistrementController extends AbstractController
                 }
             }
 
-            /* MODIF 2026-05-15 : propagation du breakdown logger (level × framework) vers historique.logger_breakdown.
+            /**
+             * MODIF 2026-05-15 : propagation du breakdown logger (level × framework) vers historique.logger_breakdown.
              * Le payload JS contient `logger_breakdown` (cf data.breakdown
              * retourné par /api/secure/collecte/logger). Null si plugin v1.x
              * ou collecte non lancée. */
@@ -373,7 +383,7 @@ class ApiEnregistrementController extends AbstractController
                 $loggerBreakdown = $encodedBreakdown === false ? null : json_decode($encodedBreakdown, true);
             } elseif (property_exists($data, 'logger_breakdown') && is_array($data->logger_breakdown)) {
                 $loggerBreakdown = $data->logger_breakdown;
-            // MODIF 2026-05-26 : else terminal requis par S126 (logger_breakdown absent ou null = plugin v1.x).
+                // MODIF 2026-05-26 : else terminal requis par S126 (logger_breakdown absent ou null = plugin v1.x).
             } else {
                 $this->logger->debug('[Enregistrement] 🔍 logger_breakdown absent ou null (plugin v1.x ou collecte non lancée).');
             }
@@ -427,16 +437,15 @@ class ApiEnregistrementController extends AbstractController
      *
      * Cas d'entrée :
      *   - string deja au format SonarQube       -> retourne tel quel (idempotent)
-     *   - object/array (parse cote ApiPeinture) -> reserialise
+     *   - object/array (parse cote ApiPeinture) -> re-sérialise
      *   - null / vide                           -> null
      *
      * @param mixed $value
      *
      * @return string|null
      *
-     * Created at: 12/07/2026 11:11:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function serializeLanguageDistribution(mixed $value): ?string
     {

@@ -28,9 +28,8 @@ class DateTools
      *
      * return ($jour * 24 * 60) + ($heure * 60) + intval($minute)
      *
-     * Created at: 15/12/2022, 21:25:32 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function dateToMinute(string $str): int
     {
@@ -76,9 +75,8 @@ class DateTools
      *
      * @return string
      *
-     * Created at: 15/12/2022, 21:26:17 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     /* MODIF 2026-05-04 : signature `string $minutes` → `int $minutes`.
      * Tous les callers passent un int (effortTotal typé int dans Owasp.php),
@@ -105,7 +103,6 @@ class DateTools
      *
      * @return string
      *
-     * Created at: 20/05/2024 17:18:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -122,5 +119,4 @@ class DateTools
 
         return sprintf('%dd, %dh:%dm', $j, $h, $m); // Pas d'espace entre les jours et 'd'
     }
-
 }

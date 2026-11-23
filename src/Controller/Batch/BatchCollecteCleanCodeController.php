@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Batch;
@@ -19,16 +19,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\CleanCode;
 use App\Service\{ExtractName, ClientService, UrlBuilderService, GetSonarVersionService};
 
-/* MODIF 2026-05-17 : collecte des indicateurs
+
+/**
+ * [Description BatchCollecteCleanCodeController]
+ *
+ * MODIF 2026-05-17 : collecte des indicateurs
  * SonarQube 10+ via les facettes cleanCodeAttributeCategories,
  * impactSeverities, impactSoftwareQualities + 3 appels compliance
  * (OWASP Top 10 2021, SANS Top 25, CWE).
  * Appelé depuis ApiCollecteController::apiCollecteAnomalie() après
  * BatchCollecteAnomalieController — silencieux en cas d'échec (SQ < 10). */
-
-/**
- * [Description BatchCollecteCleanCodeController]
- */
 class BatchCollecteCleanCodeController extends AbstractController
 {
     private static string $sonarUrl = "sonar.url";
@@ -49,9 +49,8 @@ class BatchCollecteCleanCodeController extends AbstractController
      * @param array<int|string, mixed> $queryParams
      * @return array<int|string, mixed>
      *
-     * Created at: 17/05/2026 12:28:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function makeRequest(array $queryParams): array
     {
@@ -79,9 +78,8 @@ class BatchCollecteCleanCodeController extends AbstractController
      *
      * @return array<string, int>
      *
-     * Created at: 17/05/2026 12:29:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractFacetCounts(array $facets, string $property): array
     {
@@ -107,9 +105,9 @@ class BatchCollecteCleanCodeController extends AbstractController
      * @param string $utilisateur_collecte
      *
      * @return array<int|string, mixed>
-     * Created at: 17/05/2026 12:30:47 (Europe/Paris)
+     *
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteCleanCode(
         string $maven_key,
@@ -136,7 +134,8 @@ class BatchCollecteCleanCodeController extends AbstractController
         $mainResult = $this->makeRequest([
             $componentKeyParam => $maven_key,
             'facets' => 'cleanCodeAttributeCategories,impactSeverities,impactSoftwareQualities',
-            'p' => 1, 'ps' => 1,
+            'p' => 1,
+            'ps' => 1,
             $issueStatus['param'] => $issueStatus['value'],
         ]);
 
@@ -162,7 +161,8 @@ class BatchCollecteCleanCodeController extends AbstractController
         $owaspResult = $this->makeRequest([
             $componentKeyParam => $maven_key,
             'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10',
-            'p' => 1, 'ps' => 1,
+            'p' => 1,
+            'ps' => 1,
             $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($owaspResult['code'])) {
@@ -172,7 +172,8 @@ class BatchCollecteCleanCodeController extends AbstractController
         $sansResult = $this->makeRequest([
             $componentKeyParam => $maven_key,
             'sansTop25' => 'insecure-interaction,risky-resource,porous-defenses',
-            'p' => 1, 'ps' => 1,
+            'p' => 1,
+            'ps' => 1,
             $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($sansResult['code'])) {
@@ -183,7 +184,8 @@ class BatchCollecteCleanCodeController extends AbstractController
         $cweResult = $this->makeRequest([
             $componentKeyParam => $maven_key,
             'facets' => 'cwe',
-            'p' => 1, 'ps' => 1,
+            'p' => 1,
+            'ps' => 1,
             $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($cweResult['code'])) {

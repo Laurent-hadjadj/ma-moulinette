@@ -22,8 +22,7 @@ use App\Entity\{Portefeuille, Batch, BatchTraitement};
 
 /**
  * @extends AbstractCrudController<Portefeuille>
- */
-/* MODIF 2026-07-20 : restriction serveur manquante — seule la carte du
+ * MODIF 2026-07-20 : restriction serveur manquante — seule la carte du
  * dashboard (home.html.twig, is_granted('ROLE_BATCH')) filtrait l'accès. */
 #[IsGranted('ROLE_BATCH', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
 class PortefeuilleCrudController extends AbstractCrudController
@@ -32,23 +31,18 @@ class PortefeuilleCrudController extends AbstractCrudController
 
     /**
      * [Description for __construct]
-     *
-     * Created at: 02/01/2023, 18:35:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function __construct(private EntityManagerInterface $emm)
-    {
-    }
+    public function __construct(private EntityManagerInterface $emm) {}
 
     /**
      * [Description for getEntityFqcn]
      *
      * @return string
      *
-     * Created at: 02/01/2023, 18:36:05 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getEntityFqcn(): string
     {
@@ -58,13 +52,13 @@ class PortefeuilleCrudController extends AbstractCrudController
     /**
      * [Description for configureCrud]
      * Ajout d'un custom filtre pour sélectionner/désélectionner des éléments dans une liste.
+     *
      * @param Assets $assets
      *
      * @return Assets
      *
-     * Created at: 26/10/2025 13:15:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureAssets(Assets $assets): Assets
     {
@@ -136,9 +130,8 @@ JS);
      *
      * @return Crud
      *
-     * Created at: 04/06/2026 09:19:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureCrud(Crud $crud): Crud
     {
@@ -146,7 +139,7 @@ JS);
             ->setPageTitle(Crud::PAGE_INDEX, 'Liste des portefeuilles')
             ->setPageTitle(Crud::PAGE_NEW, 'Créer un portefeuille')
             ->setPageTitle(Crud::PAGE_EDIT, function ($entity) {
-                            return sprintf('Modifier le portefeuille "%s"', $entity->getPortefeuille());
+                return sprintf('Modifier le portefeuille "%s"', $entity->getPortefeuille());
             })
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détail du portefeuille')
             ->setFormThemes([
@@ -164,9 +157,8 @@ JS);
      *
      * @return Filters
      *
-     * Created at: 02/01/2023, 18:36:11 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -183,9 +175,8 @@ JS);
      *
      * @return iterable<\EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface>
      *
-     * Created at: 02/01/2023, 18:36:30 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function configureFields(string $pageName): iterable
     {
@@ -299,9 +290,8 @@ JS);
      *
      * @return void
      *
-     * Created at: 02/01/2023, 18:36:49 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -327,7 +317,8 @@ JS);
             return;
         }
 
-        /* MODIF 2026-07-19 : Portefeuille n'a pas de contrainte #[UniqueEntity] (contrairement
+        /**
+         * MODIF 2026-07-19 : Portefeuille n'a pas de contrainte #[UniqueEntity] (contrairement
          * à GroupeUtilisateur/GroupeFonctionnel) — sans ce flash, un nom déjà utilisé était
          * silencieusement ignoré : aucune écriture, mais EasyAdmin affichait quand même son
          * message de succès par défaut. */
@@ -338,9 +329,8 @@ JS);
      * [Description for deleteEntity]
      * Bloque la suppression si des traitements référencent ce portefeuille.
      *
-     * Created at: 10/06/2026 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function deleteEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -376,9 +366,8 @@ JS);
      *
      * @return void
      *
-     * Created at: 02/01/2023, 18:37:02 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -396,7 +385,8 @@ JS);
         try {
             parent::persistEntity($em, $entityInstance);
 
-            /* MODIF 2026-07-19 : Batch.portefeuille/BatchTraitement.portefeuille stockent en
+            /**
+             * MODIF 2026-07-19 : Batch.portefeuille/BatchTraitement.portefeuille stockent en
              * réalité le slug du groupe fonctionnel, pas le nom du portefeuille (voir le
              * commentaire "$data->portefeuille = groupe_fonctionnel (slug)" dans
              * BatchAutoController::traitementListe()) — la recherche/mise à jour ci-dessous
@@ -419,5 +409,4 @@ JS);
             $this->addFlash('danger', 'Une erreur est survenue lors de la mise à jour du portefeuille : ' . $e->getMessage());
         }
     }
-
 }

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -26,6 +26,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * (ex. "90004-2" Cross-Origin-Embedder-Policy et "90004-3"
  * Cross-Origin-Opener-Policy partagent pluginid=90004) : pluginid identifie
  * une famille de règles, alert_ref identifie la règle réellement unique.
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: ZapRuleRepository::class)]
 #[ORM\Table(name: 'zap_rule', schema: 'ma_moulinette')]

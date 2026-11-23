@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -41,6 +41,7 @@ use Psr\Log\LoggerInterface;
  *    ClientService::httpActuator (pas par un 'code' embarqué dans le JSON décodé,
  *    qui était du code mort : ClientService catch déjà ces cas en interne).
  */
+
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteActuatorControllerTest extends TestCase
 {
@@ -224,7 +225,11 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
-                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => self::URL, 'id' => self::ACTUATOR_ID,
+                'code' => 200,
+                'user' => 'u',
+                'password' => 'p',
+                'url' => self::URL,
+                'id' => self::ACTUATOR_ID,
             ]);
 
         $this->client->expects($this->once())
@@ -253,8 +258,20 @@ class BatchCollecteActuatorControllerTest extends TestCase
     public static function httpErrorCodesProvider(): array
     {
         return [
-            [400], [401], [403], [404], [407], [414], [418], [422], [429],
-            [500], [502], [503], [504], [505],
+            [400],
+            [401],
+            [403],
+            [404],
+            [407],
+            [414],
+            [418],
+            [422],
+            [429],
+            [500],
+            [502],
+            [503],
+            [504],
+            [505],
         ];
     }
 
@@ -263,7 +280,11 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
-                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => self::URL, 'id' => self::ACTUATOR_ID,
+                'code' => 200,
+                'user' => 'u',
+                'password' => 'p',
+                'url' => self::URL,
+                'id' => self::ACTUATOR_ID,
             ]);
 
         $this->client->expects($this->once())
@@ -289,7 +310,11 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
-                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => self::URL, 'id' => self::ACTUATOR_ID,
+                'code' => 200,
+                'user' => 'u',
+                'password' => 'p',
+                'url' => self::URL,
+                'id' => self::ACTUATOR_ID,
             ]);
 
         $dataJson = ['app' => ['version' => '2.0.0']];

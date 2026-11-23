@@ -49,11 +49,15 @@ class ProjetCosuiService
     }
 
     /**
+     * [Description for generateRender]
      * Génère le tableau final de rendu COSUI pour un projet donné.
      *
      * @param string   $maven_key        Clé du projet
      *
      * @return array<int|string, mixed>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function generateRender(string $maven_key): array
     {
@@ -121,19 +125,19 @@ class ProjetCosuiService
 
         // 3. Setup
         try {
-                $setup = $this->setup($maven_key);
-            } catch (\Throwable $e) {
-                $render['setup'] = 'inconnu';
-                $message = '🔴 Erreur lors de la récupération du setup';
-                $messageLog = '🔴 [COSUI] Erreur lors de la récupération du setup';
-                $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
-                return [
-                        'code' => 500,
-                        'type' => 'critical',
-                        'message' => $message,
-                        'trace' => null
-                ];
-            }
+            $setup = $this->setup($maven_key);
+        } catch (\Throwable $e) {
+            $render['setup'] = 'inconnu';
+            $message = '🔴 Erreur lors de la récupération du setup';
+            $messageLog = '🔴 [COSUI] Erreur lors de la récupération du setup';
+            $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
+            return [
+                'code' => 500,
+                'type' => 'critical',
+                'message' => $message,
+                'trace' => null
+            ];
+        }
 
         // setup() peut retourner un échec métier (repository en erreur) sans lever d'exception
         if (isset($setup['code'])) {
@@ -153,7 +157,8 @@ class ProjetCosuiService
             : null;
 
         // 4. Traitement des anomalies
-        /* MODIF 2026-07-28 : le préfixe 'bug' sert à construire le nom de
+        /**
+         * MODIF 2026-07-28 : le préfixe 'bug' sert à construire le nom de
          * propriété Doctrine (frontendBugBlocker, cf. traitement()), mais la
          * clé de rendu attendue par le template (et par
          * initializeEvolutionRender(), qui utilise déjà 'reliability') est
@@ -174,12 +179,12 @@ class ProjetCosuiService
 
                         // Création du tableau map avec les données nécessaires
                         $map = [
-                                'module' => $bloc,
-                                'prefix' => $prefixLabels[$prefix],
-                                'severity' => strtolower($severity),
-                                'data' => $result[0]['value'] ?? 0
-                            ];
-                        $this->logger->debug("🛠️ [COSUI] Valeur de map : ",$map);
+                            'module' => $bloc,
+                            'prefix' => $prefixLabels[$prefix],
+                            'severity' => strtolower($severity),
+                            'data' => $result[0]['value'] ?? 0
+                        ];
+                        $this->logger->debug("🛠️ [COSUI] Valeur de map : ", $map);
 
                         // Injection des données dans la structure de rendu
                         $this->injectRepartition($render, $map);
@@ -187,16 +192,16 @@ class ProjetCosuiService
                 }
             }
         } catch (\Throwable $e) {
-        $message = '🔴 Erreur durant le traitement des anomalies.';
-        $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
-        $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
-        return [
-            'code' => 500,
-            'type' => 'critical',
-            'message' => $message,
-            'trace' => null
-        ];
-    }
+            $message = '🔴 Erreur durant le traitement des anomalies.';
+            $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
+            $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
+            return [
+                'code' => 500,
+                'type' => 'critical',
+                'message' => $message,
+                'trace' => null
+            ];
+        }
 
         $this->calculerEvolutions($render);
         $this->construireRadarChart($render);
@@ -210,7 +215,6 @@ class ProjetCosuiService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 29/07/2025 19:40:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -229,25 +233,23 @@ class ProjetCosuiService
 
     /**
      * [Description for genericRender]
-     *
      * Retourne les paramètres génériques de rendu (logo, marque, version, etc.).
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 29/07/2025 19:39:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
         $data = [
-        'type_footer' => null,
-        'logo_entreprise' => $this->logoEntreprise,
-        'marque_entreprise_short' => $this->marqueEntrepriseShort,
-        'marque_entreprise_long' => $this->marqueEntrepriseLong,
-        'env' => $this->environnement,
-        'version' => $this->version,
-        'date_copyright' => $this->dateCopyright,
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright,
         ];
 
         $this->logger->debug('🛠️ [COSUI] Préparation des paramètres de rendu générique', $data);
@@ -268,7 +270,6 @@ class ProjetCosuiService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/07/2025 15:12:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -284,12 +285,10 @@ class ProjetCosuiService
 
     /**
      * [Description for initializeNotesRender]
-     *
      * Initialise le tableau de rendu des notes avec des valeurs par défaut.
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 29/07/2025 20:09:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -345,12 +344,10 @@ class ProjetCosuiService
 
     /**
      * [Description for initializeReferenceRender]
-     *
      * Initialise les données de référence avec des valeurs par défaut.
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 29/07/2025 20:10:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -398,12 +395,10 @@ class ProjetCosuiService
 
     /**
      * [Description for initializeEvolutionRender]
-     *
      * Initialise les valeurs d’évolution entre deux versions (référence vs actuelle).
      *
      * @return array<string, int>
      *
-     * Created at: 29/07/2025 20:12:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -430,12 +425,10 @@ class ProjetCosuiService
 
     /**
      * [Description for initializeChartRender]
-     *
      * Initialise les données de rendu d’un graphique avec deux jeux de données vides.
      *
      * @return array<string, string>
      *
-     * Created at: 29/07/2025 20:14:44 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -460,7 +453,6 @@ class ProjetCosuiService
      *
      * @return void
      *
-     * Created at: 30/07/2025 15:14:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -499,7 +491,6 @@ class ProjetCosuiService
      *
      * @return void
      *
-     * Created at: 30/07/2025 15:14:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -533,7 +524,6 @@ class ProjetCosuiService
      *
      * @return void
      *
-     * Created at: 30/07/2025 15:14:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -541,7 +531,8 @@ class ProjetCosuiService
     {
         $render["{$map['module']}_{$map['prefix']}_{$map['severity']}"] = $map['data'] ?? '--';
         $this->logger->debug("🛠️ [COSUI] Injection des données dans le render : ", [
-            "{$map['module']}_{$map['prefix']}_{$map['severity']}" => $map['data'] ]);
+            "{$map['module']}_{$map['prefix']}_{$map['severity']}" => $map['data']
+        ]);
     }
 
     /**
@@ -551,7 +542,6 @@ class ProjetCosuiService
      *
      * @return void
      *
-     * Created at: 30/07/2025 15:11:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -575,7 +565,6 @@ class ProjetCosuiService
      *
      * @return void
      *
-     * Created at: 30/07/2025 15:11:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -603,13 +592,11 @@ class ProjetCosuiService
 
     /**
      * [Description for setup]
-     *
      * Récupère la version du dernier setup pour un projet donné via son mavenKey.
      *
      * @param string $maven_key
-     * @return array<int|string, mixed>
      *
-     * Created at: 29/07/2025 19:55:02 (Europe/Paris)
+     * @return array<int|string, mixed>
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -644,19 +631,21 @@ class ProjetCosuiService
             return ['NaN'];
         }
 
-        $this->logger->info("ℹ️ [COSUI] Dernier setup récupéré avec succès",
-            ['mavenKey' => $maven_key, 'setup' => $setup, 'control' => $control]);
+        $this->logger->info(
+            "ℹ️ [COSUI] Dernier setup récupéré avec succès",
+            ['mavenKey' => $maven_key, 'setup' => $setup, 'control' => $control]
+        );
         return [$setup, $control];
     }
 
     /**
+     * [Description for controlToPercent]
      * Convertit le champ `control` de la table `repartition` en pourcentage de complétude.
      *
      * @param string|null $control
      *
      * @return int|null null si l'information de complétude est absente/inconnue.
      *
-     * Created at: 16/07/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -679,7 +668,6 @@ class ProjetCosuiService
      * @param string $note
      * @return int
      *
-     * Created at: 29/07/2025 19:41:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -707,12 +695,16 @@ class ProjetCosuiService
     }
 
     /**
+     * [Description for controlToPercent]
      * Détermine la tendance d'évolution d'une métrique (ex : anomalies) entre deux versions.
      * Une baisse est positive → "up", une hausse est négative → "down".
      *
      * @param int|float $ancienneValeur
      * @param int|float $nouvelleValeur
      * @return string 'up', 'down' ou 'equal'
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function variation(float|int $ancienneValeur, float|int $nouvelleValeur): string
     {
@@ -743,13 +735,11 @@ class ProjetCosuiService
 
     /**
      * [Description for notes]
-     *
      * Récupère les indicateurs qualité du dernier historique pour un projet donné.
      *
      * @param string $maven_key
      * @return array<int|string, mixed>
      *
-     * Created at: 29/07/2025 20:00:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -821,13 +811,11 @@ class ProjetCosuiService
 
     /**
      * [Description for reference]
-     *
      * Récupère les indicateurs du projet de référence à partir de l’historique.
      *
      * @param string $maven_key
      * @return array<int|string, mixed>
      *
-     * Created at: 29/07/2025 20:02:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -896,40 +884,40 @@ class ProjetCosuiService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 15/12/2022, 22:17:46 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function traitement(string $maven_key, string $setup, string $module, string $prefix, string $severity): array
     {
-        if ($setup === 'NaN'){ return []; }
+        if ($setup === 'NaN') {
+            return [];
+        }
         /**
          * On récupère la répartition frontend, backend, autre et inconnu
          *  des BUG, VULNERABILITY, CODE_SMELL
          *  pour la severity : BLOCKER, CRITICAL, MAJOR,..
          */
         try {
-                $prefix = ($prefix == 'code_smell') ? 'CodeSmell' : ucfirst($prefix);
-                $severity = ucfirst($severity);
-                $columnName = "{$module}{$prefix}{$severity}";
+            $prefix = ($prefix == 'code_smell') ? 'CodeSmell' : ucfirst($prefix);
+            $severity = ucfirst($severity);
+            $columnName = "{$module}{$prefix}{$severity}";
 
-                $qb = $this->em->createQueryBuilder()
-                        ->select("r.$columnName AS value")
-                        ->from(Repartition::class, 'r')
-                        ->where('r.mavenKey = :mavenKey')
-                        ->andWhere('r.setup = :setup')
-                        ->setParameter('mavenKey', $maven_key)
-                        ->setParameter('setup', $setup);
-                $query = $qb->getQuery();
-                $result = $query->getArrayResult();
-                //"$trace = $querry->getSQL();
-                $this->logger->debug("🛠️ Query Result: " . json_encode($result));
+            $qb = $this->em->createQueryBuilder()
+                ->select("r.$columnName AS value")
+                ->from(Repartition::class, 'r')
+                ->where('r.mavenKey = :mavenKey')
+                ->andWhere('r.setup = :setup')
+                ->setParameter('mavenKey', $maven_key)
+                ->setParameter('setup', $setup);
+            $query = $qb->getQuery();
+            $result = $query->getArrayResult();
+            //"$trace = $querry->getSQL();
+            $this->logger->debug("🛠️ Query Result: " . json_encode($result));
 
-                return $result;
-        } catch(\Throwable $e) {
+            return $result;
+        } catch (\Throwable $e) {
             $this->logger->critical('🔴 Erreur dans le createQueryBuilder : ' . $e->getMessage());
         }
         return [];
     }
-
 }

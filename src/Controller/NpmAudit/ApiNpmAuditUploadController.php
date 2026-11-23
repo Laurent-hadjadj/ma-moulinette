@@ -16,9 +16,10 @@ declare(strict_types=1);
 namespace App\Controller\NpmAudit;
 
 use App\Entity\NpmProcessingQueue;
-use App\Exception\UnexpectedExecutionPathException;
+use App\Exception\Npm\NpmAuditPayloadDecodeException;
+use App\Exception\Npm\NpmAuditIngestException;
 use App\Repository\NpmProcessingQueueRepository;
-use App\Service\NpmAudit\{NpmAuditPayloadDecodeException, NpmAuditPayloadDecoder};
+use App\Service\NpmAudit\NpmAuditPayloadDecoder;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -48,6 +49,16 @@ class ApiNpmAuditUploadController extends AbstractController
         private readonly LoggerInterface $logger,
     ) {}
 
+    /**
+     * [Description for upload]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route(path: '/api/secure/npm-audit/upload', name: 'api_npm_audit_upload', methods: ['POST'])]
     public function upload(Request $request): JsonResponse
     {
@@ -120,7 +131,7 @@ class ApiNpmAuditUploadController extends AbstractController
         // ------- 4. Insertion en queue --------------------------------------
         $payloadGz = gzencode($decoded->jsonString, 6);
         if ($payloadGz === false) {
-            throw new UnexpectedExecutionPathException('Échec de la compression gzip du payload.');
+            throw new NpmAuditIngestException('Échec de la compression gzip du payload.');
         }
 
         $entry = (new NpmProcessingQueue())
@@ -187,6 +198,16 @@ class ApiNpmAuditUploadController extends AbstractController
         );
     }
 
+    /**
+     * [Description for status]
+     *
+     * @param string $ulid
+     *
+     * @return JsonResponse
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     #[Route(
         path: '/api/secure/npm-audit/status/{ulid}',
         name: 'api_npm_audit_status',
@@ -238,6 +259,16 @@ class ApiNpmAuditUploadController extends AbstractController
         return new JsonResponse($payload, Response::HTTP_OK);
     }
 
+    /**
+     * [Description for httpStatusToType]
+     *
+     * @param int $status
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function httpStatusToType(int $status): string
     {
         if ($status >= 500) {
@@ -249,6 +280,17 @@ class ApiNpmAuditUploadController extends AbstractController
         return 'warning';
     }
 
+    /**
+     * [Description for trimHeader]
+     *
+     * @param string|null $raw
+     * @param int $maxLength
+     *
+     * @return string|null
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function trimHeader(?string $raw, int $maxLength): ?string
     {
         if ($raw === null) {

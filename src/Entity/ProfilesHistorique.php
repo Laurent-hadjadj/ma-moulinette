@@ -18,6 +18,12 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * [Description profilesHistorique]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ */
 #[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
 #[ORM\Table(name: "profiles_historique", schema: "ma_moulinette")]
 #[ORM\UniqueConstraint(

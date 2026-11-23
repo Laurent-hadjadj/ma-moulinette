@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Validator;
@@ -35,7 +35,7 @@ class ProfilesHistoriqueValidatorTest extends KernelTestCase
 
   private function getEntity(): ProfilesHistorique
   {
-      return (new profilesHistorique())
+    return (new profilesHistorique())
       ->setDateCourte(new \DateTimeImmutable(self::$dateCourte))
       ->setLanguage(self::$language)
       ->setDate(new \DateTimeImmutable(self::$date))
@@ -54,7 +54,7 @@ class ProfilesHistoriqueValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -81,9 +81,9 @@ class ProfilesHistoriqueValidatorTest extends KernelTestCase
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 10);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 10);
   }
 }

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * [Description LoggerDetails]
  * MODIF 2026-05-15 : entité pour stocker le détail
  * des loggers détectés par le plugin track-logger-method v2+. 1 ligne
  * par occurrence (fichier × ligne). Table dropped/refilled a chaque
@@ -26,6 +27,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * Convention alignée sur Logger (mavenKey 255, modeCollecte 32,
  * utilisateurCollecte 320, dateEnregistrement DATETIMETZ_IMMUTABLE).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: LoggerDetailRepository::class)]
 #[ORM\Table(name: 'logger_details', schema: 'ma_moulinette')]

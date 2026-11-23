@@ -21,7 +21,7 @@ namespace App\Security;
  * **Refus par défaut** : une route absente de cette liste est interdite, y compris une route ajoutée plus tard. Il ne
  * suffit pas de filtrer par méthode HTTP, car de nombreuses routes de lecture sont en `POST` (`/api/secure/peinture/*`,
  * `/api/secure/liste/...`) tandis que certaines routes `GET` écrivent (`/profil/details`, `/repartition`,
- * `/api/secure/utilisateur/change-me`, qui n'est autorisée qu'en `POST`, voir {@see self::MOTIFS_POST_SESSION}).
+ * `/api/secure/utilisateur/change-me`, qui n'est autorisée qu'en `POST`, voir {see self::MOTIFS_POST_SESSION}).
  *
  * Chaque motif a été retenu après lecture du contrôleur (aucune écriture en base, aucun appel sortant autre que vers
  * `SONAR_URL`, invalide en démo). Les routes de collecte, d'enregistrement, d'administration, de dépôt de rapports,
@@ -110,14 +110,20 @@ final class ModeDemo
     }
 
     /**
+     * [Description for autorise]
      * Indique si une requête est autorisée en mode démo.
      *
-     * @param string $methode méthode HTTP (casse indifférente)
+     * @param string $method méthode HTTP (casse indifférente)
      * @param string $chemin  chemin de la requête (`Request::getPathInfo()`)
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public static function autorise(string $methode, string $chemin): bool
+    public static function autorise(string $method, string $chemin): bool
     {
-        $methode = strtoupper($methode);
+        $method = strtoupper($method);
 
         // Normalisation : un « / » final ou des « // » ne doivent pas contourner un motif ni en élargir la portée.
         $chemin = '/' . trim((string) preg_replace('#/{2,}#', '/', $chemin), '/');
@@ -127,16 +133,16 @@ final class ModeDemo
             return false;
         }
 
-        if (\in_array($methode, self::LECTURE, true)) {
+        if (\in_array($method, self::LECTURE, true)) {
             return self::correspond($chemin, self::MOTIFS_LECTURE);
         }
 
-        if ($methode === 'POST') {
+        if ($method === 'POST') {
             return self::correspond($chemin, self::MOTIFS_POST_LECTURE)
                 || self::correspond($chemin, self::MOTIFS_POST_SESSION);
         }
 
-        if ($methode === 'PUT') {
+        if ($method === 'PUT') {
             return self::correspond($chemin, self::MOTIFS_PUT);
         }
 
@@ -144,7 +150,15 @@ final class ModeDemo
     }
 
     /**
+     * [Description for correspond]
+     *
+     * @param string $chemin
      * @param list<string> $motifs
+     *
+     * @return bool
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function correspond(string $chemin, array $motifs): bool
     {

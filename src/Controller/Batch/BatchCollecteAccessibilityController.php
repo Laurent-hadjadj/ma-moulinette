@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -53,6 +53,9 @@ class BatchCollecteAccessibilityController extends AbstractController
      * Langages Accessibilité suivis : code SonarQube => suffixe de colonne/clé.
      *
      * @var array<string, string>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static array $langues = [
         'css' => 'css',
@@ -65,8 +68,8 @@ class BatchCollecteAccessibilityController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -86,9 +89,8 @@ class BatchCollecteAccessibilityController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function makeRequest(string $endpoint, array $queryParams): array
     {
@@ -127,9 +129,8 @@ class BatchCollecteAccessibilityController extends AbstractController
      *
      * @return string|null null si ncloc est nul/absent (ratio non calculable)
      *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getAccessibilityRating(?int $detteMinute, ?int $ncloc): ?string
     {
@@ -165,9 +166,8 @@ class BatchCollecteAccessibilityController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteAccessibility(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {

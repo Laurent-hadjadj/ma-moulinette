@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -29,6 +29,9 @@ use Doctrine\DBAL\Types\Types;
  * - le user-agent est stocké brut
  * - aucune analyse n'est faite ici
  * - seules les colonnes de statut peuvent évoluer
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: UserAgentEventRepository::class)]
 #[ORM\Table(name: "user_agent_event", schema: "ma_moulinette")]
@@ -38,7 +41,8 @@ use Doctrine\DBAL\Types\Types;
 #[ORM\Index(name: "idx_event_user_id", columns: ["user_id"])]
 #[ORM\Index(name: "idx_event_session_id", columns: ["session_id"])]
 #[ORM\Index(name: "idx_event_visitor_id", columns: ["visitor_id"])]
-class UserAgentEvent {
+class UserAgentEvent
+{
 
     /**
      * [Description for $id]
@@ -370,5 +374,4 @@ class UserAgentEvent {
         $this->processedAt = $processedAt;
         return $this;
     }
-
 }

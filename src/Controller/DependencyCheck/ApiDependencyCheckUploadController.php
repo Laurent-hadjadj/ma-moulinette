@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\DependencyCheck;
@@ -26,8 +26,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Ulid;
 
 /**
-* [Description ApiDependencyCheckUploadController]
-* MODIF 2026-05-08  : endpoint reception rapports OWASP DependencyCheck.
+ * [Description ApiDependencyCheckUploadController]
+ * MODIF 2026-05-08  : endpoint reception rapports OWASP DependencyCheck.
  *
  * Flux :
  *   1. CI GitLab POST le rapport (JSON brut, gzip, zip ou tgz)
@@ -54,12 +54,10 @@ class ApiDependencyCheckUploadController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 10/05/2026 23:23:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    #[Route(
-        path: '/api/secure/dependency-check/upload', name: 'api_dc_upload', methods: ['POST'])]
+    #[Route(path: '/api/secure/dependency-check/upload',name: 'api_dc_upload',methods: ['POST'])]
     public function upload(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/dependency-check/upload");
@@ -112,7 +110,8 @@ class ApiDependencyCheckUploadController extends AbstractController
             );
         }
 
-        /* MODIF 2026-05-12 : lecture des headers
+        /**
+         * MODIF 2026-05-12 : lecture des headers
          * optionnels d'archétype/parent envoyés par la CI. Toute valeur
          * absente ou vide reste NULL en base. Tronquage défensif aux
          * longueurs DB pour éviter une erreur SQL en cas de chaîne anormale. */
@@ -168,9 +167,11 @@ class ApiDependencyCheckUploadController extends AbstractController
         } catch (\Throwable $e) {
             $this->logger->critical('[DC-Ingest] ❌ Erreur insertion queue.', ['error' => $e->getMessage()]);
             return new JsonResponse(
-                [   'code' => 500,
+                [
+                    'code' => 500,
                     'type' => 'critical',
-                    'message' => 'Erreur insertion en base.'],
+                    'message' => 'Erreur insertion en base.'
+                ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -213,11 +214,10 @@ class ApiDependencyCheckUploadController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 10/05/2026 23:26:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    #[Route(path: '/api/secure/dependency-check/status/{ulid}', name: 'api_dc_status',methods: ['GET'], requirements: ['ulid' => '[A-HJKMNP-TV-Z0-9]{26}']
+    #[Route(path: '/api/secure/dependency-check/status/{ulid}',name: 'api_dc_status',methods: ['GET'],requirements: ['ulid' => '[A-HJKMNP-TV-Z0-9]{26}']
     )]
     public function status(string $ulid): JsonResponse
     {
@@ -244,7 +244,8 @@ class ApiDependencyCheckUploadController extends AbstractController
             'ulid'         => $entry->getUlid(),
             'status'       => $entry->getStatus(),
             'sha256'       => $entry->getPayloadSha256(),
-            'project'      => sprintf('%s:%s:%s',
+            'project'      => sprintf(
+                '%s:%s:%s',
                 $entry->getProjectGroup(),
                 $entry->getProjectArtifact(),
                 $entry->getProjectVersion()
@@ -275,9 +276,8 @@ class ApiDependencyCheckUploadController extends AbstractController
      *
      * @return string
      *
-     * Created at: 10/05/2026 23:31:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function httpStatusToType(int $status): string
     {
@@ -302,9 +302,8 @@ class ApiDependencyCheckUploadController extends AbstractController
      *
      * @return string|null
      *
-     * Created at: 15/05/2026 08:49:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function trimHeader(?string $raw, int $maxLength): ?string
     {

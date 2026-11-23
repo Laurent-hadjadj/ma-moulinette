@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Repository;
 use App\Entity\DcProcessingQueue;
 use App\Repository\DcProcessingQueueRepository;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException,UniqueConstraintViolationException};
+use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException, UniqueConstraintViolationException};
 use Doctrine\DBAL\{ParameterType, Result, Statement};
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -72,7 +72,10 @@ class DcProcessingQueueRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionConnection(): void
     {
         $exception = new class('SQLSTATE[08006]') extends ConnectionException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
         $result = $this->repo->handleDatabaseException($exception);
         $this->assertSame(500, $result['code']);
@@ -82,7 +85,10 @@ class DcProcessingQueueRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionNotNullKeepsMessage(): void
     {
         $exception = new class('payload_sha256 not null') extends NotNullConstraintViolationException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
         $result = $this->repo->handleDatabaseException($exception);
         $this->assertSame(500, $result['code']);
@@ -92,7 +98,10 @@ class DcProcessingQueueRepositoryTest extends TestCase
     public function testHandleDatabaseExceptionUniqueReturnsCustomCode(): void
     {
         $exception = new class('dup ulid') extends UniqueConstraintViolationException {
-            public function __construct(string $message) { \Exception::__construct($message); }
+            public function __construct(string $message)
+            {
+                \Exception::__construct($message);
+            }
         };
         $result = $this->repo->handleDatabaseException($exception);
         $this->assertSame(23505, $result['code']);

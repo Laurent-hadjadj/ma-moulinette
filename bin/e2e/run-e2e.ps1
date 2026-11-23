@@ -6,7 +6,7 @@
 #   .\bin\e2e\run-e2e.ps1 -Headed               # avec navigateur visible
 #   .\bin\e2e\run-e2e.ps1 -Spec "01-smoke"      # un spec en particulier (substring match)
 #   .\bin\e2e\run-e2e.ps1 -SkipRebuild          # garder la DB existante (debug)
-#   .\bin\e2e\run-e2e.ps1 -SkipServer           # ne pas demarrer Symfony serve (deja up ailleurs)
+#   .\bin\e2e\run-e2e.ps1 -SkipServer           # ne pas démarrer Symfony serve (deja up ailleurs)
 #   .\bin\e2e\run-e2e.ps1 -Port 8080            # port custom (defaut 8000)
 #   .\bin\e2e\run-e2e.ps1 -UseBuiltinServer     # secours php -S si symfony serve échoue
 #                                                 (verrou transitoire log symfony-cli)

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -59,9 +59,9 @@ class MaMoulinetteRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(MaMoulinetteRepository::class)
-                    ->setConstructorArgs([$registry])
-                    ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                    ->getMock();
+            ->setConstructorArgs([$registry])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         // 6) On s'attend à handleDatabaseException() appelé une fois avec notre exception
         $expected = ['code' => 500, 'erreur' => 'test-error'];
@@ -78,5 +78,4 @@ class MaMoulinetteRepositoryHandlerTest extends TestCase
         // 9) Vérification
         $this->assertSame($expected, $result);
     }
-
 }

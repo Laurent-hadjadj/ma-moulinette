@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -39,10 +39,8 @@ class DcProcessingQueueRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 08/05/2026 18:33:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -72,10 +70,8 @@ class DcProcessingQueueRepository extends ServiceEntityRepository
      * @param string $sha256
      *
      * @return DcProcessingQueue|null
-     *
-     * Created at: 08/05/2026 18:34:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findByPayloadSha256(string $sha256): ?DcProcessingQueue
     {
@@ -89,10 +85,8 @@ class DcProcessingQueueRepository extends ServiceEntityRepository
      * @param string $ulid
      *
      * @return DcProcessingQueue|null
-     *
-     * Created at: 08/05/2026 18:34:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findByUlid(string $ulid): ?DcProcessingQueue
     {
@@ -116,10 +110,8 @@ class DcProcessingQueueRepository extends ServiceEntityRepository
      * @param int $batchSize
      *
      * @return DcProcessingQueue[]
-     *
-     * Created at: 08/05/2026 18:35:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function claimNextBatch(int $batchSize = 5): array
     {
@@ -171,10 +163,8 @@ class DcProcessingQueueRepository extends ServiceEntityRepository
      * @param int $timeoutSeconds
      *
      * @return int
-     *
-     * Created at: 08/05/2026 18:36:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function reclaimStaleProcessing(int $timeoutSeconds = 300): int
     {
@@ -206,10 +196,8 @@ class DcProcessingQueueRepository extends ServiceEntityRepository
      * @param bool $dryRun si true, retourne juste le compte sans supprimer
      *
      * @return int nombre de rows supprimées (ou candidates en mode dry-run)
-     *
-     * Created at: 08/05/2026 18:37:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function purgeTerminatedBefore(\DateTimeImmutable $threshold, bool $dryRun = false): int
     {
@@ -239,10 +227,8 @@ class DcProcessingQueueRepository extends ServiceEntityRepository
      * Compte les lignes par statut (pour métrologie / point d'accès health).
      *
      * @return array<string, int>
-     *
-     * Created at: 08/05/2026 18:38:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countByStatus(): array
     {

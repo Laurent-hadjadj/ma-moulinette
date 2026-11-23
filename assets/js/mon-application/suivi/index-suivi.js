@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 import 'foundation-sites/dist/css/foundation.min.css';
@@ -54,18 +54,18 @@ import { modalSafe } from '../../common/safeModal.js';
 
 /**
  * [Description for dessineMoiUnMouton]
- * Affiche le graphique des sources *
+ * Affiche le graphique des sources
+ *
  * @param array labels
  * @param array data1
  * @param array data2
  * @param array data3
  *
- * @return [type]
+ * @return void
  *
- * Created at: 19/12/2022, 22:58:54 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-
 const dessineMoiUnMouton= function( labels, data1, data2, data3) {
   // Convertir les labels en objets Date
   const convertedLabels = labels.map(date => new Date(date));
@@ -828,9 +828,8 @@ $('.js-enregistrer-analyse').on('click', async () => {
  *
  *  return json
  *
- * Created at: 30/04/2026 20:19:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const versionListe = async function(){
 

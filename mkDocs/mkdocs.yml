@@ -3,7 +3,7 @@ site_name: Documentation Ma-Moulinette
 extra:
   generator: false
 
-copyright: CC 4.0 - Copyright &copy; 2015 - 2026 Ma-Moulinette by Lilmod & Lelamed
+copyright: AGPL 3.0-or-later - Copyright &copy; 2015 - 2026 Ma-Moulinette
 
 nav:
     - Accueil: index.md

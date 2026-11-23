@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -17,6 +17,12 @@ use App\Repository\UserRoleLogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * [Description UserRoleLog]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ */
 #[ORM\Entity(repositoryClass: UserRoleLogRepository::class)]
 #[ORM\Table(name: "user_role_log", schema: "ma_moulinette")]
 class UserRoleLog
@@ -27,7 +33,8 @@ class UserRoleLog
         name: "id",
         type: Types::INTEGER,
         nullable: false,
-            options: ['comment' => 'ID unique pour la table user_role_log'])]
+        options: ['comment' => 'ID unique pour la table user_role_log']
+    )]
     private int $id;
 
     #[ORM\Column(
@@ -35,7 +42,8 @@ class UserRoleLog
         type: Types::STRING,
         length: 320,
         nullable: false,
-        options: ['comment' => "Adresse de courriel, de l'utilisateur dont les rôles ont été modifiés"])]
+        options: ['comment' => "Adresse de courriel, de l'utilisateur dont les rôles ont été modifiés"]
+    )]
     private string $userEmail;
 
     #[ORM\Column(
@@ -43,7 +51,8 @@ class UserRoleLog
         type: Types::STRING,
         length: 320,
         nullable: false,
-        options: ['comment' => "Adresse de courriel de l'éditeur ayant modifié les rôles de l'utilisateur"])]
+        options: ['comment' => "Adresse de courriel de l'éditeur ayant modifié les rôles de l'utilisateur"]
+    )]
     private string $editorEmail;
 
     /**
@@ -52,7 +61,8 @@ class UserRoleLog
     #[ORM\Column(
         name: "old_roles",
         type: 'json',
-        options: ['comment' => "Rôles anciens de l'utilisateur"])]
+        options: ['comment' => "Rôles anciens de l'utilisateur"]
+    )]
     private array $oldRoles = [];
 
     /**
@@ -61,19 +71,22 @@ class UserRoleLog
     #[ORM\Column(
         name: "new_roles",
         type: 'json',
-        options: ['comment' => "Nouveaux rôles de l'utilisateur"])]
+        options: ['comment' => "Nouveaux rôles de l'utilisateur"]
+    )]
     private array $newRoles = [];
 
     #[ORM\Column(
         name: "old_active",
         type: Types::BOOLEAN,
-        options: ['comment' => "Ancien statut actif de l'utilisateur"])]
+        options: ['comment' => "Ancien statut actif de l'utilisateur"]
+    )]
     private bool $oldActive;
 
     #[ORM\Column(
         name: "new_active",
         type: Types::BOOLEAN,
-        options: ['comment' => "Nouveau statut actif de l'utilisateur"])]
+        options: ['comment' => "Nouveau statut actif de l'utilisateur"]
+    )]
     private bool $newActive;
 
     /**
@@ -83,19 +96,21 @@ class UserRoleLog
         name: "alerts",
         type: 'json',
         nullable: true,
-        options: ['comment' => "Alertes associées au log"])]
+        options: ['comment' => "Alertes associées au log"]
+    )]
     private array $alerts = [];
 
     #[ORM\Column(
         name: "created_at",
         type: Types::DATETIME_IMMUTABLE,
-        options: ['comment' => "Date de création du log"])]
+        options: ['comment' => "Date de création du log"]
+    )]
     private \DateTimeImmutable $createdAt;
-/**
- * @param array<int, string> $oldRoles
- * @param array<int, string> $newRoles
- * @param array<int, string> $alerts
- */
+    /**
+     * @param array<int, string> $oldRoles
+     * @param array<int, string> $newRoles
+     * @param array<int, string> $alerts
+     */
 
     public function __construct(string $userEmail, string $editorEmail, array $oldRoles, array $newRoles, bool $oldActive, bool $newActive, array $alerts)
     {

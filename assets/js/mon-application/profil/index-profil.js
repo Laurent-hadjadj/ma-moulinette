@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -69,9 +69,8 @@ const path = `<path d="M9.142.079c-.932.228-1.804 1.055-2.07 1.963l-.08.288h-.98
  *
  * @return void
  *
- * Created at: 07/05/2023, 21:02:59 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author    Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const refreshQuality = async function() {
   const $boutonRefreshProfil = $('#bouton-refresh-profil');
@@ -225,9 +224,8 @@ const refreshQuality = async function() {
   *
   * @return void
   *
-  * Created at: 15/07/2025 09:04:03 (Europe/Paris)
-  * @author     Laurent HADJADJ <laurent_h@me.com>
-  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+* @author    Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
   */
 const autreProfil = async function(langage) {
   const dataRefresh = { langage };
@@ -316,8 +314,8 @@ $('#js-container-langage').on('click', '.js-bouton-autre-profil', (e) => {
  *
  * @return array
  *
- * Created at: 19/12/2022, 21:51:11 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+* @author    Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const shuffle = function(a) {
   let j, x, i;
@@ -340,8 +338,8 @@ const shuffle = function(a) {
  *
  * @return array
  *
- * Created at: 19/12/2022, 21:52:05 (Europe/Paris)
- * @author Laurent HADJADJ <laurent_h@me.com>
+* @author    Laurent HADJADJ <laurent_h@me.com>
+* @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const palette=function() {
   const nouvellePalette = [];
@@ -361,8 +359,8 @@ const palette=function() {
  *
  * @return object
  *
- * Created at: 19/12/2022, 21:53:26 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @author    Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const dessineMoiUnMouton=function(label, dataset) {
   const nouvellePalette = palette();

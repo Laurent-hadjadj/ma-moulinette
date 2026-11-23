@@ -18,6 +18,12 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * [Description Historique]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ */
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
 #[ORM\Table(
     name: 'historique',
@@ -1722,136 +1728,591 @@ class Historique
     private \DateTimeImmutable $dateEnregistrement;
 
     /* MODIF 2026-05-17 : getters/setters clean code */
-    public function getCcConsistent(): ?int { return $this->ccConsistent; }
-    public function setCcConsistent(?int $v): static { $this->ccConsistent = $v; return $this; }
-    public function getCcIntentional(): ?int { return $this->ccIntentional; }
-    public function setCcIntentional(?int $v): static { $this->ccIntentional = $v; return $this; }
-    public function getCcAdaptable(): ?int { return $this->ccAdaptable; }
-    public function setCcAdaptable(?int $v): static { $this->ccAdaptable = $v; return $this; }
-    public function getCcResponsible(): ?int { return $this->ccResponsible; }
-    public function setCcResponsible(?int $v): static { $this->ccResponsible = $v; return $this; }
-    public function getQualityMaintainability(): ?int { return $this->qualityMaintainability; }
-    public function setQualityMaintainability(?int $v): static { $this->qualityMaintainability = $v; return $this; }
-    public function getQualityReliability(): ?int { return $this->qualityReliability; }
-    public function setQualityReliability(?int $v): static { $this->qualityReliability = $v; return $this; }
-    public function getQualitySecurity(): ?int { return $this->qualitySecurity; }
-    public function setQualitySecurity(?int $v): static { $this->qualitySecurity = $v; return $this; }
-    public function getImpactBlocker(): ?int { return $this->impactBlocker; }
-    public function setImpactBlocker(?int $v): static { $this->impactBlocker = $v; return $this; }
-    public function getImpactHigh(): ?int { return $this->impactHigh; }
-    public function setImpactHigh(?int $v): static { $this->impactHigh = $v; return $this; }
-    public function getImpactMedium(): ?int { return $this->impactMedium; }
-    public function setImpactMedium(?int $v): static { $this->impactMedium = $v; return $this; }
-    public function getImpactLow(): ?int { return $this->impactLow; }
-    public function setImpactLow(?int $v): static { $this->impactLow = $v; return $this; }
-    public function getImpactInfo(): ?int { return $this->impactInfo; }
-    public function setImpactInfo(?int $v): static { $this->impactInfo = $v; return $this; }
-    public function getOwaspTop10(): ?int { return $this->owaspTop10; }
-    public function setOwaspTop10(?int $v): static { $this->owaspTop10 = $v; return $this; }
-    public function getSansTop25(): ?int { return $this->sansTop25; }
-    public function setSansTop25(?int $v): static { $this->sansTop25 = $v; return $this; }
-    public function getCwe(): ?int { return $this->cwe; }
-    public function setCwe(?int $v): static { $this->cwe = $v; return $this; }
-    public function getRciIndicator(): ?float { return $this->rciIndicator; }
-    public function setRciIndicator(?float $v): static { $this->rciIndicator = $v; return $this; }
-    public function getRciRating(): ?string { return $this->rciRating; }
-    public function setRciRating(?string $v): static { $this->rciRating = $v; return $this; }
-    public function getRciNcloc(): ?int { return $this->rciNcloc; }
-    public function setRciNcloc(?int $v): static { $this->rciNcloc = $v; return $this; }
-    public function getRciWeight(): ?int { return $this->rciWeight; }
-    public function setRciWeight(?int $v): static { $this->rciWeight = $v; return $this; }
-    public function getRciFrontendIndicator(): ?float { return $this->rciFrontendIndicator; }
-    public function setRciFrontendIndicator(?float $v): static { $this->rciFrontendIndicator = $v; return $this; }
-    public function getRciFrontendRating(): ?string { return $this->rciFrontendRating; }
-    public function setRciFrontendRating(?string $v): static { $this->rciFrontendRating = $v; return $this; }
-    public function getRciFrontendNcloc(): ?int { return $this->rciFrontendNcloc; }
-    public function setRciFrontendNcloc(?int $v): static { $this->rciFrontendNcloc = $v; return $this; }
-    public function getRciFrontendWeight(): ?int { return $this->rciFrontendWeight; }
-    public function setRciFrontendWeight(?int $v): static { $this->rciFrontendWeight = $v; return $this; }
-    public function getRciBackendIndicator(): ?float { return $this->rciBackendIndicator; }
-    public function setRciBackendIndicator(?float $v): static { $this->rciBackendIndicator = $v; return $this; }
-    public function getRciBackendRating(): ?string { return $this->rciBackendRating; }
-    public function setRciBackendRating(?string $v): static { $this->rciBackendRating = $v; return $this; }
-    public function getRciBackendNcloc(): ?int { return $this->rciBackendNcloc; }
-    public function setRciBackendNcloc(?int $v): static { $this->rciBackendNcloc = $v; return $this; }
-    public function getRciBackendWeight(): ?int { return $this->rciBackendWeight; }
-    public function setRciBackendWeight(?int $v): static { $this->rciBackendWeight = $v; return $this; }
-    public function getRciAutreIndicator(): ?float { return $this->rciAutreIndicator; }
-    public function setRciAutreIndicator(?float $v): static { $this->rciAutreIndicator = $v; return $this; }
-    public function getRciAutreRating(): ?string { return $this->rciAutreRating; }
-    public function setRciAutreRating(?string $v): static { $this->rciAutreRating = $v; return $this; }
-    public function getRciAutreNcloc(): ?int { return $this->rciAutreNcloc; }
-    public function setRciAutreNcloc(?int $v): static { $this->rciAutreNcloc = $v; return $this; }
-    public function getRciAutreWeight(): ?int { return $this->rciAutreWeight; }
-    public function setRciAutreWeight(?int $v): static { $this->rciAutreWeight = $v; return $this; }
-    public function getRciInconnuIndicator(): ?float { return $this->rciInconnuIndicator; }
-    public function setRciInconnuIndicator(?float $v): static { $this->rciInconnuIndicator = $v; return $this; }
-    public function getRciInconnuRating(): ?string { return $this->rciInconnuRating; }
-    public function setRciInconnuRating(?string $v): static { $this->rciInconnuRating = $v; return $this; }
-    public function getRciInconnuNcloc(): ?int { return $this->rciInconnuNcloc; }
-    public function setRciInconnuNcloc(?int $v): static { $this->rciInconnuNcloc = $v; return $this; }
-    public function getRciInconnuWeight(): ?int { return $this->rciInconnuWeight; }
-    public function setRciInconnuWeight(?int $v): static { $this->rciInconnuWeight = $v; return $this; }
-    public function getEcoAnomalies(): ?int { return $this->ecoAnomalies; }
-    public function setEcoAnomalies(?int $v): static { $this->ecoAnomalies = $v; return $this; }
-    public function getEcoDetteMinute(): ?int { return $this->ecoDetteMinute; }
-    public function setEcoDetteMinute(?int $v): static { $this->ecoDetteMinute = $v; return $this; }
-    public function getEcoRating(): ?string { return $this->ecoRating; }
-    public function setEcoRating(?string $v): static { $this->ecoRating = $v; return $this; }
-    public function getEcoJavaAnomalies(): ?int { return $this->ecoJavaAnomalies; }
-    public function setEcoJavaAnomalies(?int $v): static { $this->ecoJavaAnomalies = $v; return $this; }
-    public function getEcoJavaDetteMinute(): ?int { return $this->ecoJavaDetteMinute; }
-    public function setEcoJavaDetteMinute(?int $v): static { $this->ecoJavaDetteMinute = $v; return $this; }
-    public function getEcoJavaRating(): ?string { return $this->ecoJavaRating; }
-    public function setEcoJavaRating(?string $v): static { $this->ecoJavaRating = $v; return $this; }
-    public function getEcoJavascriptAnomalies(): ?int { return $this->ecoJavascriptAnomalies; }
-    public function setEcoJavascriptAnomalies(?int $v): static { $this->ecoJavascriptAnomalies = $v; return $this; }
-    public function getEcoJavascriptDetteMinute(): ?int { return $this->ecoJavascriptDetteMinute; }
-    public function setEcoJavascriptDetteMinute(?int $v): static { $this->ecoJavascriptDetteMinute = $v; return $this; }
-    public function getEcoJavascriptRating(): ?string { return $this->ecoJavascriptRating; }
-    public function setEcoJavascriptRating(?string $v): static { $this->ecoJavascriptRating = $v; return $this; }
-    public function getEcoPhpAnomalies(): ?int { return $this->ecoPhpAnomalies; }
-    public function setEcoPhpAnomalies(?int $v): static { $this->ecoPhpAnomalies = $v; return $this; }
-    public function getEcoPhpDetteMinute(): ?int { return $this->ecoPhpDetteMinute; }
-    public function setEcoPhpDetteMinute(?int $v): static { $this->ecoPhpDetteMinute = $v; return $this; }
-    public function getEcoPhpRating(): ?string { return $this->ecoPhpRating; }
-    public function setEcoPhpRating(?string $v): static { $this->ecoPhpRating = $v; return $this; }
-    public function getEcoPythonAnomalies(): ?int { return $this->ecoPythonAnomalies; }
-    public function setEcoPythonAnomalies(?int $v): static { $this->ecoPythonAnomalies = $v; return $this; }
-    public function getEcoPythonDetteMinute(): ?int { return $this->ecoPythonDetteMinute; }
-    public function setEcoPythonDetteMinute(?int $v): static { $this->ecoPythonDetteMinute = $v; return $this; }
-    public function getEcoPythonRating(): ?string { return $this->ecoPythonRating; }
-    public function setEcoPythonRating(?string $v): static { $this->ecoPythonRating = $v; return $this; }
-    public function getAccessibilityAnomalies(): ?int { return $this->accessibilityAnomalies; }
-    public function setAccessibilityAnomalies(?int $v): static { $this->accessibilityAnomalies = $v; return $this; }
-    public function getAccessibilityDetteMinute(): ?int { return $this->accessibilityDetteMinute; }
-    public function setAccessibilityDetteMinute(?int $v): static { $this->accessibilityDetteMinute = $v; return $this; }
-    public function getAccessibilityRating(): ?string { return $this->accessibilityRating; }
-    public function setAccessibilityRating(?string $v): static { $this->accessibilityRating = $v; return $this; }
-    public function getAccessibilityCssAnomalies(): ?int { return $this->accessibilityCssAnomalies; }
-    public function setAccessibilityCssAnomalies(?int $v): static { $this->accessibilityCssAnomalies = $v; return $this; }
-    public function getAccessibilityCssDetteMinute(): ?int { return $this->accessibilityCssDetteMinute; }
-    public function setAccessibilityCssDetteMinute(?int $v): static { $this->accessibilityCssDetteMinute = $v; return $this; }
-    public function getAccessibilityCssRating(): ?string { return $this->accessibilityCssRating; }
-    public function setAccessibilityCssRating(?string $v): static { $this->accessibilityCssRating = $v; return $this; }
-    public function getAccessibilityWebAnomalies(): ?int { return $this->accessibilityWebAnomalies; }
-    public function setAccessibilityWebAnomalies(?int $v): static { $this->accessibilityWebAnomalies = $v; return $this; }
-    public function getAccessibilityWebDetteMinute(): ?int { return $this->accessibilityWebDetteMinute; }
-    public function setAccessibilityWebDetteMinute(?int $v): static { $this->accessibilityWebDetteMinute = $v; return $this; }
-    public function getAccessibilityWebRating(): ?string { return $this->accessibilityWebRating; }
-    public function setAccessibilityWebRating(?string $v): static { $this->accessibilityWebRating = $v; return $this; }
-    public function getAccessibilityJavascriptAnomalies(): ?int { return $this->accessibilityJavascriptAnomalies; }
-    public function setAccessibilityJavascriptAnomalies(?int $v): static { $this->accessibilityJavascriptAnomalies = $v; return $this; }
-    public function getAccessibilityJavascriptDetteMinute(): ?int { return $this->accessibilityJavascriptDetteMinute; }
-    public function setAccessibilityJavascriptDetteMinute(?int $v): static { $this->accessibilityJavascriptDetteMinute = $v; return $this; }
-    public function getAccessibilityJavascriptRating(): ?string { return $this->accessibilityJavascriptRating; }
-    public function setAccessibilityJavascriptRating(?string $v): static { $this->accessibilityJavascriptRating = $v; return $this; }
-    public function getAccessibilityTypescriptAnomalies(): ?int { return $this->accessibilityTypescriptAnomalies; }
-    public function setAccessibilityTypescriptAnomalies(?int $v): static { $this->accessibilityTypescriptAnomalies = $v; return $this; }
-    public function getAccessibilityTypescriptDetteMinute(): ?int { return $this->accessibilityTypescriptDetteMinute; }
-    public function setAccessibilityTypescriptDetteMinute(?int $v): static { $this->accessibilityTypescriptDetteMinute = $v; return $this; }
-    public function getAccessibilityTypescriptRating(): ?string { return $this->accessibilityTypescriptRating; }
-    public function setAccessibilityTypescriptRating(?string $v): static { $this->accessibilityTypescriptRating = $v; return $this; }
+    public function getCcConsistent(): ?int
+    {
+        return $this->ccConsistent;
+    }
+    public function setCcConsistent(?int $v): static
+    {
+        $this->ccConsistent = $v;
+        return $this;
+    }
+    public function getCcIntentional(): ?int
+    {
+        return $this->ccIntentional;
+    }
+    public function setCcIntentional(?int $v): static
+    {
+        $this->ccIntentional = $v;
+        return $this;
+    }
+    public function getCcAdaptable(): ?int
+    {
+        return $this->ccAdaptable;
+    }
+    public function setCcAdaptable(?int $v): static
+    {
+        $this->ccAdaptable = $v;
+        return $this;
+    }
+    public function getCcResponsible(): ?int
+    {
+        return $this->ccResponsible;
+    }
+    public function setCcResponsible(?int $v): static
+    {
+        $this->ccResponsible = $v;
+        return $this;
+    }
+    public function getQualityMaintainability(): ?int
+    {
+        return $this->qualityMaintainability;
+    }
+    public function setQualityMaintainability(?int $v): static
+    {
+        $this->qualityMaintainability = $v;
+        return $this;
+    }
+    public function getQualityReliability(): ?int
+    {
+        return $this->qualityReliability;
+    }
+    public function setQualityReliability(?int $v): static
+    {
+        $this->qualityReliability = $v;
+        return $this;
+    }
+    public function getQualitySecurity(): ?int
+    {
+        return $this->qualitySecurity;
+    }
+    public function setQualitySecurity(?int $v): static
+    {
+        $this->qualitySecurity = $v;
+        return $this;
+    }
+    public function getImpactBlocker(): ?int
+    {
+        return $this->impactBlocker;
+    }
+    public function setImpactBlocker(?int $v): static
+    {
+        $this->impactBlocker = $v;
+        return $this;
+    }
+    public function getImpactHigh(): ?int
+    {
+        return $this->impactHigh;
+    }
+    public function setImpactHigh(?int $v): static
+    {
+        $this->impactHigh = $v;
+        return $this;
+    }
+    public function getImpactMedium(): ?int
+    {
+        return $this->impactMedium;
+    }
+    public function setImpactMedium(?int $v): static
+    {
+        $this->impactMedium = $v;
+        return $this;
+    }
+    public function getImpactLow(): ?int
+    {
+        return $this->impactLow;
+    }
+    public function setImpactLow(?int $v): static
+    {
+        $this->impactLow = $v;
+        return $this;
+    }
+    public function getImpactInfo(): ?int
+    {
+        return $this->impactInfo;
+    }
+    public function setImpactInfo(?int $v): static
+    {
+        $this->impactInfo = $v;
+        return $this;
+    }
+    public function getOwaspTop10(): ?int
+    {
+        return $this->owaspTop10;
+    }
+    public function setOwaspTop10(?int $v): static
+    {
+        $this->owaspTop10 = $v;
+        return $this;
+    }
+    public function getSansTop25(): ?int
+    {
+        return $this->sansTop25;
+    }
+    public function setSansTop25(?int $v): static
+    {
+        $this->sansTop25 = $v;
+        return $this;
+    }
+    public function getCwe(): ?int
+    {
+        return $this->cwe;
+    }
+    public function setCwe(?int $v): static
+    {
+        $this->cwe = $v;
+        return $this;
+    }
+    public function getRciIndicator(): ?float
+    {
+        return $this->rciIndicator;
+    }
+    public function setRciIndicator(?float $v): static
+    {
+        $this->rciIndicator = $v;
+        return $this;
+    }
+    public function getRciRating(): ?string
+    {
+        return $this->rciRating;
+    }
+    public function setRciRating(?string $v): static
+    {
+        $this->rciRating = $v;
+        return $this;
+    }
+    public function getRciNcloc(): ?int
+    {
+        return $this->rciNcloc;
+    }
+    public function setRciNcloc(?int $v): static
+    {
+        $this->rciNcloc = $v;
+        return $this;
+    }
+    public function getRciWeight(): ?int
+    {
+        return $this->rciWeight;
+    }
+    public function setRciWeight(?int $v): static
+    {
+        $this->rciWeight = $v;
+        return $this;
+    }
+    public function getRciFrontendIndicator(): ?float
+    {
+        return $this->rciFrontendIndicator;
+    }
+    public function setRciFrontendIndicator(?float $v): static
+    {
+        $this->rciFrontendIndicator = $v;
+        return $this;
+    }
+    public function getRciFrontendRating(): ?string
+    {
+        return $this->rciFrontendRating;
+    }
+    public function setRciFrontendRating(?string $v): static
+    {
+        $this->rciFrontendRating = $v;
+        return $this;
+    }
+    public function getRciFrontendNcloc(): ?int
+    {
+        return $this->rciFrontendNcloc;
+    }
+    public function setRciFrontendNcloc(?int $v): static
+    {
+        $this->rciFrontendNcloc = $v;
+        return $this;
+    }
+    public function getRciFrontendWeight(): ?int
+    {
+        return $this->rciFrontendWeight;
+    }
+    public function setRciFrontendWeight(?int $v): static
+    {
+        $this->rciFrontendWeight = $v;
+        return $this;
+    }
+    public function getRciBackendIndicator(): ?float
+    {
+        return $this->rciBackendIndicator;
+    }
+    public function setRciBackendIndicator(?float $v): static
+    {
+        $this->rciBackendIndicator = $v;
+        return $this;
+    }
+    public function getRciBackendRating(): ?string
+    {
+        return $this->rciBackendRating;
+    }
+    public function setRciBackendRating(?string $v): static
+    {
+        $this->rciBackendRating = $v;
+        return $this;
+    }
+    public function getRciBackendNcloc(): ?int
+    {
+        return $this->rciBackendNcloc;
+    }
+    public function setRciBackendNcloc(?int $v): static
+    {
+        $this->rciBackendNcloc = $v;
+        return $this;
+    }
+    public function getRciBackendWeight(): ?int
+    {
+        return $this->rciBackendWeight;
+    }
+    public function setRciBackendWeight(?int $v): static
+    {
+        $this->rciBackendWeight = $v;
+        return $this;
+    }
+    public function getRciAutreIndicator(): ?float
+    {
+        return $this->rciAutreIndicator;
+    }
+    public function setRciAutreIndicator(?float $v): static
+    {
+        $this->rciAutreIndicator = $v;
+        return $this;
+    }
+    public function getRciAutreRating(): ?string
+    {
+        return $this->rciAutreRating;
+    }
+    public function setRciAutreRating(?string $v): static
+    {
+        $this->rciAutreRating = $v;
+        return $this;
+    }
+    public function getRciAutreNcloc(): ?int
+    {
+        return $this->rciAutreNcloc;
+    }
+    public function setRciAutreNcloc(?int $v): static
+    {
+        $this->rciAutreNcloc = $v;
+        return $this;
+    }
+    public function getRciAutreWeight(): ?int
+    {
+        return $this->rciAutreWeight;
+    }
+    public function setRciAutreWeight(?int $v): static
+    {
+        $this->rciAutreWeight = $v;
+        return $this;
+    }
+    public function getRciInconnuIndicator(): ?float
+    {
+        return $this->rciInconnuIndicator;
+    }
+    public function setRciInconnuIndicator(?float $v): static
+    {
+        $this->rciInconnuIndicator = $v;
+        return $this;
+    }
+    public function getRciInconnuRating(): ?string
+    {
+        return $this->rciInconnuRating;
+    }
+    public function setRciInconnuRating(?string $v): static
+    {
+        $this->rciInconnuRating = $v;
+        return $this;
+    }
+    public function getRciInconnuNcloc(): ?int
+    {
+        return $this->rciInconnuNcloc;
+    }
+    public function setRciInconnuNcloc(?int $v): static
+    {
+        $this->rciInconnuNcloc = $v;
+        return $this;
+    }
+    public function getRciInconnuWeight(): ?int
+    {
+        return $this->rciInconnuWeight;
+    }
+    public function setRciInconnuWeight(?int $v): static
+    {
+        $this->rciInconnuWeight = $v;
+        return $this;
+    }
+    public function getEcoAnomalies(): ?int
+    {
+        return $this->ecoAnomalies;
+    }
+    public function setEcoAnomalies(?int $v): static
+    {
+        $this->ecoAnomalies = $v;
+        return $this;
+    }
+    public function getEcoDetteMinute(): ?int
+    {
+        return $this->ecoDetteMinute;
+    }
+    public function setEcoDetteMinute(?int $v): static
+    {
+        $this->ecoDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoRating(): ?string
+    {
+        return $this->ecoRating;
+    }
+    public function setEcoRating(?string $v): static
+    {
+        $this->ecoRating = $v;
+        return $this;
+    }
+    public function getEcoJavaAnomalies(): ?int
+    {
+        return $this->ecoJavaAnomalies;
+    }
+    public function setEcoJavaAnomalies(?int $v): static
+    {
+        $this->ecoJavaAnomalies = $v;
+        return $this;
+    }
+    public function getEcoJavaDetteMinute(): ?int
+    {
+        return $this->ecoJavaDetteMinute;
+    }
+    public function setEcoJavaDetteMinute(?int $v): static
+    {
+        $this->ecoJavaDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoJavaRating(): ?string
+    {
+        return $this->ecoJavaRating;
+    }
+    public function setEcoJavaRating(?string $v): static
+    {
+        $this->ecoJavaRating = $v;
+        return $this;
+    }
+    public function getEcoJavascriptAnomalies(): ?int
+    {
+        return $this->ecoJavascriptAnomalies;
+    }
+    public function setEcoJavascriptAnomalies(?int $v): static
+    {
+        $this->ecoJavascriptAnomalies = $v;
+        return $this;
+    }
+    public function getEcoJavascriptDetteMinute(): ?int
+    {
+        return $this->ecoJavascriptDetteMinute;
+    }
+    public function setEcoJavascriptDetteMinute(?int $v): static
+    {
+        $this->ecoJavascriptDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoJavascriptRating(): ?string
+    {
+        return $this->ecoJavascriptRating;
+    }
+    public function setEcoJavascriptRating(?string $v): static
+    {
+        $this->ecoJavascriptRating = $v;
+        return $this;
+    }
+    public function getEcoPhpAnomalies(): ?int
+    {
+        return $this->ecoPhpAnomalies;
+    }
+    public function setEcoPhpAnomalies(?int $v): static
+    {
+        $this->ecoPhpAnomalies = $v;
+        return $this;
+    }
+    public function getEcoPhpDetteMinute(): ?int
+    {
+        return $this->ecoPhpDetteMinute;
+    }
+    public function setEcoPhpDetteMinute(?int $v): static
+    {
+        $this->ecoPhpDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoPhpRating(): ?string
+    {
+        return $this->ecoPhpRating;
+    }
+    public function setEcoPhpRating(?string $v): static
+    {
+        $this->ecoPhpRating = $v;
+        return $this;
+    }
+    public function getEcoPythonAnomalies(): ?int
+    {
+        return $this->ecoPythonAnomalies;
+    }
+    public function setEcoPythonAnomalies(?int $v): static
+    {
+        $this->ecoPythonAnomalies = $v;
+        return $this;
+    }
+    public function getEcoPythonDetteMinute(): ?int
+    {
+        return $this->ecoPythonDetteMinute;
+    }
+    public function setEcoPythonDetteMinute(?int $v): static
+    {
+        $this->ecoPythonDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoPythonRating(): ?string
+    {
+        return $this->ecoPythonRating;
+    }
+    public function setEcoPythonRating(?string $v): static
+    {
+        $this->ecoPythonRating = $v;
+        return $this;
+    }
+    public function getAccessibilityAnomalies(): ?int
+    {
+        return $this->accessibilityAnomalies;
+    }
+    public function setAccessibilityAnomalies(?int $v): static
+    {
+        $this->accessibilityAnomalies = $v;
+        return $this;
+    }
+    public function getAccessibilityDetteMinute(): ?int
+    {
+        return $this->accessibilityDetteMinute;
+    }
+    public function setAccessibilityDetteMinute(?int $v): static
+    {
+        $this->accessibilityDetteMinute = $v;
+        return $this;
+    }
+    public function getAccessibilityRating(): ?string
+    {
+        return $this->accessibilityRating;
+    }
+    public function setAccessibilityRating(?string $v): static
+    {
+        $this->accessibilityRating = $v;
+        return $this;
+    }
+    public function getAccessibilityCssAnomalies(): ?int
+    {
+        return $this->accessibilityCssAnomalies;
+    }
+    public function setAccessibilityCssAnomalies(?int $v): static
+    {
+        $this->accessibilityCssAnomalies = $v;
+        return $this;
+    }
+    public function getAccessibilityCssDetteMinute(): ?int
+    {
+        return $this->accessibilityCssDetteMinute;
+    }
+    public function setAccessibilityCssDetteMinute(?int $v): static
+    {
+        $this->accessibilityCssDetteMinute = $v;
+        return $this;
+    }
+    public function getAccessibilityCssRating(): ?string
+    {
+        return $this->accessibilityCssRating;
+    }
+    public function setAccessibilityCssRating(?string $v): static
+    {
+        $this->accessibilityCssRating = $v;
+        return $this;
+    }
+    public function getAccessibilityWebAnomalies(): ?int
+    {
+        return $this->accessibilityWebAnomalies;
+    }
+    public function setAccessibilityWebAnomalies(?int $v): static
+    {
+        $this->accessibilityWebAnomalies = $v;
+        return $this;
+    }
+    public function getAccessibilityWebDetteMinute(): ?int
+    {
+        return $this->accessibilityWebDetteMinute;
+    }
+    public function setAccessibilityWebDetteMinute(?int $v): static
+    {
+        $this->accessibilityWebDetteMinute = $v;
+        return $this;
+    }
+    public function getAccessibilityWebRating(): ?string
+    {
+        return $this->accessibilityWebRating;
+    }
+    public function setAccessibilityWebRating(?string $v): static
+    {
+        $this->accessibilityWebRating = $v;
+        return $this;
+    }
+    public function getAccessibilityJavascriptAnomalies(): ?int
+    {
+        return $this->accessibilityJavascriptAnomalies;
+    }
+    public function setAccessibilityJavascriptAnomalies(?int $v): static
+    {
+        $this->accessibilityJavascriptAnomalies = $v;
+        return $this;
+    }
+    public function getAccessibilityJavascriptDetteMinute(): ?int
+    {
+        return $this->accessibilityJavascriptDetteMinute;
+    }
+    public function setAccessibilityJavascriptDetteMinute(?int $v): static
+    {
+        $this->accessibilityJavascriptDetteMinute = $v;
+        return $this;
+    }
+    public function getAccessibilityJavascriptRating(): ?string
+    {
+        return $this->accessibilityJavascriptRating;
+    }
+    public function setAccessibilityJavascriptRating(?string $v): static
+    {
+        $this->accessibilityJavascriptRating = $v;
+        return $this;
+    }
+    public function getAccessibilityTypescriptAnomalies(): ?int
+    {
+        return $this->accessibilityTypescriptAnomalies;
+    }
+    public function setAccessibilityTypescriptAnomalies(?int $v): static
+    {
+        $this->accessibilityTypescriptAnomalies = $v;
+        return $this;
+    }
+    public function getAccessibilityTypescriptDetteMinute(): ?int
+    {
+        return $this->accessibilityTypescriptDetteMinute;
+    }
+    public function setAccessibilityTypescriptDetteMinute(?int $v): static
+    {
+        $this->accessibilityTypescriptDetteMinute = $v;
+        return $this;
+    }
+    public function getAccessibilityTypescriptRating(): ?string
+    {
+        return $this->accessibilityTypescriptRating;
+    }
+    public function setAccessibilityTypescriptRating(?string $v): static
+    {
+        $this->accessibilityTypescriptRating = $v;
+        return $this;
+    }
 
     public function __construct()
     {
@@ -1896,10 +2357,8 @@ class Historique
      * @param string $mavenKey
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 17:58:55 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setMavenKey(string $mavenKey): \App\Entity\Historique
     {
@@ -1913,10 +2372,8 @@ class Historique
      * @param string $version
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 17:58:34 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setVersion(string $version): \App\Entity\Historique
     {
@@ -1930,10 +2387,8 @@ class Historique
      * @param string $dateVersion
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 17:58:08 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setDateVersion(string $dateVersion): \App\Entity\Historique
     {
@@ -1945,10 +2400,8 @@ class Historique
      * [Description for getVersion]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 17:53:53 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getVersion(): ?string
     {
@@ -1959,10 +2412,8 @@ class Historique
      * [Description for getDateVersion]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 17:53:55 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getDateVersion(): ?string
     {
@@ -1973,8 +2424,6 @@ class Historique
      * [Description for getSonarqubeServerVersion]
      *
      * @return string
-     *
-     * Created at: 08/10/2026 17:43:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -1989,8 +2438,6 @@ class Historique
      * @param string $sonarqubeServerVersion
      *
      * @return static
-     *
-     * Created at: 08/10/2026 17:45:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -2005,10 +2452,8 @@ class Historique
      * [Description for getNomProjet]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 17:53:57 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getNomProjet(): ?string
     {
@@ -2021,10 +2466,8 @@ class Historique
      * @param string $nomProjet
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 17:53:59 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setNomProjet(string $nomProjet): \App\Entity\Historique
     {
@@ -2795,22 +3238,78 @@ class Historique
         return $this;
     }
 
-    public function getScopeMain(): ?int { return $this->scopeMain; }
-    public function setScopeMain(?int $v): static { $this->scopeMain = $v; return $this; }
-    public function getScopeTest(): ?int { return $this->scopeTest; }
-    public function setScopeTest(?int $v): static { $this->scopeTest = $v; return $this; }
-    public function getBugScopeMain(): ?int { return $this->bugScopeMain; }
-    public function setBugScopeMain(?int $v): static { $this->bugScopeMain = $v; return $this; }
-    public function getBugScopeTest(): ?int { return $this->bugScopeTest; }
-    public function setBugScopeTest(?int $v): static { $this->bugScopeTest = $v; return $this; }
-    public function getVulnerabilityScopeMain(): ?int { return $this->vulnerabilityScopeMain; }
-    public function setVulnerabilityScopeMain(?int $v): static { $this->vulnerabilityScopeMain = $v; return $this; }
-    public function getVulnerabilityScopeTest(): ?int { return $this->vulnerabilityScopeTest; }
-    public function setVulnerabilityScopeTest(?int $v): static { $this->vulnerabilityScopeTest = $v; return $this; }
-    public function getCodeSmellScopeMain(): ?int { return $this->codeSmellScopeMain; }
-    public function setCodeSmellScopeMain(?int $v): static { $this->codeSmellScopeMain = $v; return $this; }
-    public function getCodeSmellScopeTest(): ?int { return $this->codeSmellScopeTest; }
-    public function setCodeSmellScopeTest(?int $v): static { $this->codeSmellScopeTest = $v; return $this; }
+    public function getScopeMain(): ?int
+    {
+        return $this->scopeMain;
+    }
+    public function setScopeMain(?int $v): static
+    {
+        $this->scopeMain = $v;
+        return $this;
+    }
+    public function getScopeTest(): ?int
+    {
+        return $this->scopeTest;
+    }
+    public function setScopeTest(?int $v): static
+    {
+        $this->scopeTest = $v;
+        return $this;
+    }
+    public function getBugScopeMain(): ?int
+    {
+        return $this->bugScopeMain;
+    }
+    public function setBugScopeMain(?int $v): static
+    {
+        $this->bugScopeMain = $v;
+        return $this;
+    }
+    public function getBugScopeTest(): ?int
+    {
+        return $this->bugScopeTest;
+    }
+    public function setBugScopeTest(?int $v): static
+    {
+        $this->bugScopeTest = $v;
+        return $this;
+    }
+    public function getVulnerabilityScopeMain(): ?int
+    {
+        return $this->vulnerabilityScopeMain;
+    }
+    public function setVulnerabilityScopeMain(?int $v): static
+    {
+        $this->vulnerabilityScopeMain = $v;
+        return $this;
+    }
+    public function getVulnerabilityScopeTest(): ?int
+    {
+        return $this->vulnerabilityScopeTest;
+    }
+    public function setVulnerabilityScopeTest(?int $v): static
+    {
+        $this->vulnerabilityScopeTest = $v;
+        return $this;
+    }
+    public function getCodeSmellScopeMain(): ?int
+    {
+        return $this->codeSmellScopeMain;
+    }
+    public function setCodeSmellScopeMain(?int $v): static
+    {
+        $this->codeSmellScopeMain = $v;
+        return $this;
+    }
+    public function getCodeSmellScopeTest(): ?int
+    {
+        return $this->codeSmellScopeTest;
+    }
+    public function setCodeSmellScopeTest(?int $v): static
+    {
+        $this->codeSmellScopeTest = $v;
+        return $this;
+    }
 
     public function getSoftwareQualityBlockerIssues(): ?int
     {

@@ -3,10 +3,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -45,9 +45,8 @@ Chart.register(ChartDataLabels);
  *
  * @return string
  *
- * Created at: 18/05/2025 12:00:03 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const darkenColor = function(rgba, factor = 0.6) {
     const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
@@ -59,22 +58,21 @@ const darkenColor = function(rgba, factor = 0.6) {
 /**
  * [Description for generateChart]
  *
- * @param mixed canvasId
- * @param mixed plugins
- * @param mixed type
- * @param mixed labels
- * @param mixed datasets
- * @param mixed data
- * @param mixed label
- * @param mixed color
+ * @param string canvasId
+ * @param array plugins
+ * @param string type
+ * @param array labels
+ * @param array datasets
+ * @param array data
+ * @param string label
+ * @param string color
  * @param mixed extraOptions
  * @param boolean debug
  *
  * @return void
  *
- * Created at: 16/05/2025 14:16:37 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const generateChart = function({
     canvasId,

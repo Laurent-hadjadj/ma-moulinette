@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Projet;
@@ -38,10 +38,8 @@ class ApiProjetController extends AbstractController
 
     /**
      * [Description for __construct]
-     *
-     * Created at: 15/12/2022, 21:25:23 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -57,9 +55,8 @@ class ApiProjetController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:27:08 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/favori', name: 'favori', methods: ['POST'])]
     public function favori(Request $request): JsonResponse
@@ -135,9 +132,8 @@ class ApiProjetController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:28:07 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/favori/check', name: 'favori_check', methods: ['POST'])]
     public function favoriCheck(Request $request): JsonResponse
@@ -196,9 +192,8 @@ class ApiProjetController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 21:28:51 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/projet/liste', name: 'projet_liste', methods: ['POST'])]
     public function liste_projet(Request $request): JsonResponse
@@ -269,7 +264,7 @@ class ApiProjetController extends AbstractController
             'nombre_projets' => count($projets)
         ]);
 
-        /* MODIF 29/10/2026 : pastille "déjà collecté" sur le sélecteur de la page Projet —
+        /** MODIF 29/10/2026 : pastille "déjà collecté" sur le sélecteur de la page Projet —
          * information_projet est toujours la première table peuplée par n'importe quelle
          * collecte (interactive ou batch), avant tout autre indicateur. Une seule requête
          * groupée (pas de N+1 par projet) ; en cas d'échec, on reste en best-effort : la

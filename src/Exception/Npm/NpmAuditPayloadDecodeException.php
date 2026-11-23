@@ -11,7 +11,7 @@
  *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-namespace App\Service\NpmAudit;
+namespace App\Exception\Npm;
 
 /**
  * [Description NpmAuditPayloadDecodeException]

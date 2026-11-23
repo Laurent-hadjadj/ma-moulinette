@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\CommandRebuildHistorique;
@@ -24,9 +24,8 @@ class SonarMetricsCatalogService
      *
      * @return array<string, array{domaine: string, version: int|null, type: string, description: string}>
      *
-     * Created at: 19/03/2026 17:29:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function metricsDefinition(): array
     {
@@ -601,7 +600,7 @@ class SonarMetricsCatalogService
                 'version' => null,
                 'type' => 'string',
                 'description' => 'Clé unique du projet, souvent project_key (fr.monapplication:ma-moulinette).'
-                ],
+            ],
             'analyse_key' => [
                 'domaine' => 'SonarQube',
                 'version' => 8,
@@ -613,144 +612,170 @@ class SonarMetricsCatalogService
                 'version' => null,
                 'type' => 'string',
                 'description' => 'Version du projet.'
-                ],
+            ],
             'date_version' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'string',
-                'description' => "Date de l'analyse du projet"],
+                'description' => "Date de l'analyse du projet"
+            ],
             'nom_projet' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'string',
-                'description' => 'Nom du projet i.e. extrait de la maven_key.'],
+                'description' => 'Nom du projet i.e. extrait de la maven_key.'
+            ],
             'version_release' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de version de type RELEASE.'],
+                'description' => 'Nombre de version de type RELEASE.'
+            ],
             'version_snapshot' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de version de type SNAPSHOT.'],
+                'description' => 'Nombre de version de type SNAPSHOT.'
+            ],
             'version_autre' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de version de type RC, ALPHA, BETA,...'],
+                'description' => 'Nombre de version de type RC, ALPHA, BETA,...'
+            ],
             'java_no_sonar' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de noSonar pour JAVA (java:S1309).'],
+                'description' => 'Nombre de noSonar pour JAVA (java:S1309).'
+            ],
             'python_no_sonar' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de noSonar pour PYTHON (python:S1309).'],
+                'description' => 'Nombre de noSonar pour PYTHON (python:S1309).'
+            ],
             'php_no_sonar' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de noSonar pour PHP (php:S1309).'],
+                'description' => 'Nombre de noSonar pour PHP (php:S1309).'
+            ],
             'check_style' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de checkstyle:off pour JAVA (java:S1315).'],
+                'description' => 'Nombre de checkstyle:off pour JAVA (java:S1315).'
+            ],
             'no_pmd' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de noPMD pour JAVA (java:S1310).'],
+                'description' => 'Nombre de noPMD pour JAVA (java:S1310).'
+            ],
             'suppress_warning' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de suppressWarning pour JAVA (java:S1309).'],
+                'description' => 'Nombre de suppressWarning pour JAVA (java:S1309).'
+            ],
             'javascript_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour javascript (javascript:S1135).'],
+                'description' => 'Nombre de todo pour javascript (javascript:S1135).'
+            ],
             'xml_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour xml (xml:S1135).'],
+                'description' => 'Nombre de todo pour xml (xml:S1135).'
+            ],
             'typescript_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour typescript (typescript:S1135).'],
+                'description' => 'Nombre de todo pour typescript (typescript:S1135).'
+            ],
             'web_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour web (web:S1135).'],
+                'description' => 'Nombre de todo pour web (web:S1135).'
+            ],
             'java_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour java (java:S1135).'],
+                'description' => 'Nombre de todo pour java (java:S1135).'
+            ],
             'php_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour php (php:S1135).'],
+                'description' => 'Nombre de todo pour php (php:S1135).'
+            ],
             'ruby_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour ruby (ruby:S1135).'],
+                'description' => 'Nombre de todo pour ruby (ruby:S1135).'
+            ],
             'python_todo' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de todo pour python (python:S1135).'],
+                'description' => 'Nombre de todo pour python (python:S1135).'
+            ],
             'logger_info' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de logger de type INFO.'],
+                'description' => 'Nombre de logger de type INFO.'
+            ],
             'logger_warn' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de logger de type WARN.'],
+                'description' => 'Nombre de logger de type WARN.'
+            ],
             'logger_error' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de logger de type ERROR.'],
+                'description' => 'Nombre de logger de type ERROR.'
+            ],
             'logger_debug' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de logger de type DEBUG.'],
+                'description' => 'Nombre de logger de type DEBUG.'
+            ],
             'repartition_frontend' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de signalement FRONTEND.'],
+                'description' => 'Nombre de signalement FRONTEND.'
+            ],
             'repartition_backend' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de signalement BACKEND.'],
+                'description' => 'Nombre de signalement BACKEND.'
+            ],
             'repartition_autre' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de signalement AUTRE (autre modules).'],
+                'description' => 'Nombre de signalement AUTRE (autre modules).'
+            ],
             'repartition_inconnu' => [
                 'domaine' => 'ma-moulinette',
                 'version' => null,
                 'type' => 'int',
-                'description' => 'Nombre de signalement INCONNU.'],
+                'description' => 'Nombre de signalement INCONNU.'
+            ],
 
         ];
     }
-
 }

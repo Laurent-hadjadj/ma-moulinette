@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -36,15 +36,15 @@ class ProfilesHistoriqueCaseTest extends TestCase
     private function getEntity(): ProfilesHistorique
     {
         return (new profilesHistorique())
-        ->setDateCourte(new \DateTimeImmutable(self::$dateCourte))
-        ->setLanguage(self::$language)
-        ->setDate(new \DateTimeImmutable(self::$date))
-        ->setAction(self::$action)
-        ->setAuteur(self::$auteur)
-        ->setRule(self::$rule)
-        ->setDescription(self::$description)
-        ->setDetail(self::$detail)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setDateCourte(new \DateTimeImmutable(self::$dateCourte))
+            ->setLanguage(self::$language)
+            ->setDate(new \DateTimeImmutable(self::$date))
+            ->setAction(self::$action)
+            ->setAuteur(self::$auteur)
+            ->setRule(self::$rule)
+            ->setDescription(self::$description)
+            ->setDetail(self::$detail)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -61,7 +61,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingDateCourte(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateCourte);
+        $newDate = new \DateTimeImmutable(self::$dateCourte);
         $this->profilesHistorique->setDateCourte($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDateCourte());
     }
@@ -74,7 +74,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingDate(): void
     {
-        $newDate=new \DateTimeImmutable(self::$date);
+        $newDate = new \DateTimeImmutable(self::$date);
         $this->profilesHistorique->setDate($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDate());
     }
@@ -111,7 +111,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->profilesHistorique->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDateEnregistrement());
     }

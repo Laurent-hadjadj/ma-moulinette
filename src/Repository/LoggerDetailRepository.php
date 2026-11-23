@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -68,10 +68,8 @@ class LoggerDetailRepository extends ServiceEntityRepository
      *
      * @param array<int|string, mixed> $map
      * @return array{code: 200, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 15/05/2026 09:12:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function deleteLoggerDetailMavenKey(array $map): array
     {
@@ -97,10 +95,8 @@ class LoggerDetailRepository extends ServiceEntityRepository
      *
      * @param array<int, array<string, mixed>> $rows
      * @return array{code: 200, erreur: string, nombre: int}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 15/05/2026 09:12:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function insertLoggerDetailBatch(array $rows): array
     {
@@ -156,10 +152,8 @@ class LoggerDetailRepository extends ServiceEntityRepository
      * @param string $mavenKey
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 15/05/2026 09:13:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function selectByMavenKey(string $mavenKey): array
     {
@@ -186,10 +180,8 @@ class LoggerDetailRepository extends ServiceEntityRepository
      * @param string $mavenKey
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 15/05/2026 09:13:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countByMavenKeyGroupedByLevel(string $mavenKey): array
     {
@@ -218,10 +210,8 @@ class LoggerDetailRepository extends ServiceEntityRepository
      * @param string $mavenKey
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 15/05/2026 09:14:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countByMavenKeyGroupedByLevelAndFramework(string $mavenKey): array
     {
@@ -248,10 +238,8 @@ class LoggerDetailRepository extends ServiceEntityRepository
      * @param string $mavenKey
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 15/05/2026 09:15:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countByMavenKeyGroupedByFramework(string $mavenKey): array
     {

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\{Request,RequestStack};
+use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -102,7 +102,11 @@ class RepartitionControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'security.authorization_checker', 'security.token_storage', 'request_stack', 'parameter_bag',
+                'twig',
+                'security.authorization_checker',
+                'security.token_storage',
+                'request_stack',
+                'parameter_bag',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -245,7 +249,11 @@ class RepartitionControllerTest extends TestCase
             ->method('CollecteRepartitionModule')
             ->willReturn([
                 'code' => 200,
-                'blocker' => 1, 'critical' => 2, 'major' => 3, 'minor' => 4, 'info' => 5,
+                'blocker' => 1,
+                'critical' => 2,
+                'major' => 3,
+                'minor' => 4,
+                'info' => 5,
             ]);
 
         $this->extractName->expects($this->once())
@@ -285,7 +293,11 @@ class RepartitionControllerTest extends TestCase
 
         $this->batchCollecte->method('CollecteRepartitionModule')->willReturn([
             'code' => 200,
-            'blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 0, 'info' => 0,
+            'blocker' => 0,
+            'critical' => 0,
+            'major' => 0,
+            'minor' => 0,
+            'info' => 0,
         ]);
         $this->extractName->method('extractNameFromMavenKey')->willReturn('app');
 

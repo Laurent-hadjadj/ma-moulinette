@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -70,10 +70,8 @@ class DcScanRepository extends ServiceEntityRepository
      * @param \DateTimeImmutable $scanDate
      *
      * @return DcScan|null
-     *
-     * Created at: 13/07/2026 09:26:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findByProjectVersionDate(
         string $group,
@@ -98,10 +96,8 @@ class DcScanRepository extends ServiceEntityRepository
      * @param string $version
      *
      * @return DcScan|null
-     *
-     * Created at: 08/05/2026 18:40:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findLatestForProject(string $group, string $artifact, string $version): ?DcScan
     {
@@ -129,10 +125,8 @@ class DcScanRepository extends ServiceEntityRepository
      *
      * @param string $mavenKey format "group:artifact"
      * @return DcScan|null
-     *
-     * Created at: 11/05/2026 10:14:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findLatestByMavenKey(string $mavenKey): ?DcScan
     {
@@ -563,10 +557,8 @@ class DcScanRepository extends ServiceEntityRepository
      * @param bool                      $permissive       (cf. doc)
      *
      * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 14/05/2026 10:30:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function listLatestPerCoupleForView(string $mode, ?array $allowedMavenKeys = null, bool $permissive = false): array
     {
@@ -679,10 +671,8 @@ class DcScanRepository extends ServiceEntityRepository
      * @param array<int, string>|null $allowedMavenKeys
      *
      * @return array{code: 200, liste: array<int, array{id: int, maven_key: string, project_group: string, project_artifact: string, project_version: string, scan_date: \DateTimeImmutable, dep_count_total: int, dep_count_vulnerable: int, cve_count_total: int, cve_count_critical: int, cve_count_high: int, cve_count_medium: int, cve_count_low: int, parent_label: string|null, parent_version: string|null, archetype_version: string|null}>, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 08/05/2026 18:40:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function listLatestPerProject(?array $allowedMavenKeys = null): array
     {

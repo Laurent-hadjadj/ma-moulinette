@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Repartition;
@@ -50,9 +50,8 @@ class RepartitionController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 15/12/2022, 22:32:06 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -75,9 +74,8 @@ class RepartitionController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -102,9 +100,8 @@ class RepartitionController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 28/08/2025 08:52:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
     {
@@ -123,9 +120,8 @@ class RepartitionController extends AbstractController
      *
      * @return string|null
      *
-     * Created at: 14/02/2025 12:20:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeToken(string $token): ?string
     {
@@ -145,9 +141,8 @@ class RepartitionController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 15/12/2022, 22:32:12 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/repartition', name: 'repartition', methods: ['GET'])]
     public function repartition(Request $request): Response
@@ -202,7 +197,8 @@ class RepartitionController extends AbstractController
             return $this->addFlashAndRender('error', self::$erreur400, $debug, $render);
         }
 
-        /* MODIF 2026-07-22 : ajout du filtrage par groupe fonctionnel, aligné sur
+        /**
+         * MODIF 2026-07-22 : ajout du filtrage par groupe fonctionnel, aligné sur
          * OwaspController/CosuiController/CleanCodeController — jusqu'ici seul
          * ROLE_COLLECTE protégeait cette page, sans vérification que la
          * maven_key décodée du token appartienne bien au périmètre de

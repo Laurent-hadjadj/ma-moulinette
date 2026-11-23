@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -63,7 +63,10 @@ class BatchCollecteTodoControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteTodoController(
-            $this->em, $this->client, $this->urlBuilder, $this->logger
+            $this->em,
+            $this->client,
+            $this->urlBuilder,
+            $this->logger
         );
         $this->controller->setContainer($container);
     }
@@ -117,8 +120,8 @@ class BatchCollecteTodoControllerTest extends TestCase
             ['rule' => 'java:S1135',       'component' => 'x:b.java', 'line' => 20],
             ['rule' => 'python:S1135',    'component' => 'x:a.py',   'line' => 30],
             ['rule' => 'php:S1135',       'component' => 'x:a.php',  'line' => null],
-            ['rule' => 'javascript:S1135','component' => 'x:a.js',   'line' => 50],
-            ['rule' => 'typescript:S1135','component' => 'x:a.ts',   'line' => 60],
+            ['rule' => 'javascript:S1135', 'component' => 'x:a.js',   'line' => 50],
+            ['rule' => 'typescript:S1135', 'component' => 'x:a.ts',   'line' => 60],
             ['rule' => 'ruby:S1135',      'component' => 'x:a.rb',   'line' => 70],
             ['rule' => 'web:S1135',       'component' => 'x:a.html', 'line' => 80],
             ['rule' => 'xml:S1315',       'component' => 'x:a.xml',  'line' => 90],
@@ -182,8 +185,18 @@ class BatchCollecteTodoControllerTest extends TestCase
 
         $this->assertSame(200, $result['code']);
         // Chaque clé doit être un int (0), pas null/undefined → garantit l'init
-        foreach (['java_todo', 'python_todo', 'php_todo', 'xml_todo', 'web_todo',
-                  'javascript_todo', 'typescript_todo', 'ruby_todo'] as $k) {
+        foreach (
+            [
+                'java_todo',
+                'python_todo',
+                'php_todo',
+                'xml_todo',
+                'web_todo',
+                'javascript_todo',
+                'typescript_todo',
+                'ruby_todo'
+            ] as $k
+        ) {
             $this->assertIsInt($result['historique'][$k], "$k devrait être initialisé à 0");
             $this->assertSame(0, $result['historique'][$k], "$k devrait valoir 0 (aucune règle connue)");
         }

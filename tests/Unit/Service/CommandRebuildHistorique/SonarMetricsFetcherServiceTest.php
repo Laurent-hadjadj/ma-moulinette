@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -135,7 +135,7 @@ class SonarMetricsFetcherServiceTest extends TestCase
             ->method('error')
             ->with(
                 '[SonarMetricsFetcher] ❌ Erreur lors de l\'appel API SonarQube',
-                $this->callback(fn (array $ctx) => $ctx['status'] === 503)
+                $this->callback(fn(array $ctx) => $ctx['status'] === 503)
             );
 
         try {
@@ -167,7 +167,7 @@ class SonarMetricsFetcherServiceTest extends TestCase
             ->method('warning')
             ->with(
                 $this->stringContains('Aucune metrics trouvée'),
-                $this->callback(fn (array $ctx) => $ctx['project_key'] === 'fr.ma-moulinette:ma-moulinette')
+                $this->callback(fn(array $ctx) => $ctx['project_key'] === 'fr.ma-moulinette:ma-moulinette')
             );
         $this->logger->expects($this->never())->method('error');
 
@@ -192,7 +192,7 @@ class SonarMetricsFetcherServiceTest extends TestCase
             ->method('info')
             ->with(
                 '[SonarMetricsFetcher] Analyse sans métriques',
-                $this->callback(fn (array $ctx) => $ctx['project_key'] === 'fr.ma-moulinette:ma-moulinette')
+                $this->callback(fn(array $ctx) => $ctx['project_key'] === 'fr.ma-moulinette:ma-moulinette')
             );
 
         $this->assertSame([], $this->service->fetchMetrics('fr.ma-moulinette:ma-moulinette', 'AY123'));

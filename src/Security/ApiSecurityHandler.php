@@ -29,9 +29,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
     public function __construct(
         private LoggerInterface $logger,
         private TokenStorageInterface $tokenStorage
-    )
-    {
-    }
+    ) {}
 
     /**
      * [Description for start]
@@ -42,7 +40,6 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
      *
      * @return Response
      *
-     * Created at: 03/09/2025 17:34:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -50,7 +47,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
     {
         $this->logger->error('[API-Auth] ☠️ Tentative d’accès non autorisée à une API', [
             'path' => $request->getPathInfo(),
-            'ip' =>$request->getClientIp(),
+            'ip' => $request->getClientIp(),
             'message' => $authException?->getMessage(),
         ]);
 
@@ -78,7 +75,6 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
      *
      * @return Response
      *
-     * Created at: 03/09/2025 17:34:08 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -94,10 +90,10 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
         }
 
         $this->logger->error('[API-Credential] 👻 Accès refusé à une ressource API', [
-                'path' => $request->getPathInfo(),
-                'ip' => $request->getClientIp(),
-                'user' => $request->getUser(),
-                'message' => $accessDeniedException->getMessage(),
+            'path' => $request->getPathInfo(),
+            'ip' => $request->getClientIp(),
+            'user' => $request->getUser(),
+            'message' => $accessDeniedException->getMessage(),
         ]);
 
         // Récupère le rôle requis depuis l'attribut de la route
@@ -106,7 +102,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
         $web_message = $requiredRole
             ? "Vous devez avoir le rôle <strong>$requiredRole</strong> pour accéder à cette ressource (Erreur 403)."
             : "Vous n’avez pas les droits pour accéder à cette ressource.";
-            $api_message = '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.';
+        $api_message = '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.';
 
         // Vérifie un header spécifique pour décider si on renvoie HTTP 200 ou 403
         $useHttp200 = (bool) $request->headers->get('X-Api-Custom-403');

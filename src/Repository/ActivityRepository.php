@@ -62,22 +62,20 @@ class ActivityRepository extends ServiceEntityRepository
      * On récupère la liste de toute les activités
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function selectActivity(int|string $year): array
     {
         $sql = "SELECT *
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
-            try {
-                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(self::$year, $year);
-                    $liste = $stmt->executeQuery()->fetchAllAssociative();
-            } catch (\Throwable $e) {
-                return $this->handleDatabaseException($e);
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$year, $year);
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
         return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
@@ -92,10 +90,8 @@ class ActivityRepository extends ServiceEntityRepository
      *                          executed_at: \DateTimeInterface, execution_time: mixed}> $data
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function insertActivity(array $data): array
     {
@@ -109,19 +105,19 @@ class ActivityRepository extends ServiceEntityRepository
                     :started_at, :executed_at, :execution_time)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                foreach ($data as $ref) {
+            foreach ($data as $ref) {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $ref['maven_key']);
-                        $stmt->bindValue(':project_name', $ref['project_name']);
-                        $stmt->bindValue(':analyse_id', $ref['analyse_id']);
-                        $stmt->bindValue(':status', $ref['status']);
-                        $stmt->bindValue(':submitter_login', $ref['submitter_login']);
-                        $stmt->bindValue(':submitted_at', $ref['submitted_at']->format(self::$formatDate));
-                        $stmt->bindValue(':started_at', $ref['started_at']->format(self::$formatDate));
-                        $stmt->bindValue(':executed_at', $ref['executed_at']->format(self::$formatDate));
-                        $stmt->bindValue(':execution_time', $ref['execution_time']);
-                        $stmt->executeStatement();
-                }
+                $stmt->bindValue(':maven_key', $ref['maven_key']);
+                $stmt->bindValue(':project_name', $ref['project_name']);
+                $stmt->bindValue(':analyse_id', $ref['analyse_id']);
+                $stmt->bindValue(':status', $ref['status']);
+                $stmt->bindValue(':submitter_login', $ref['submitter_login']);
+                $stmt->bindValue(':submitted_at', $ref['submitted_at']->format(self::$formatDate));
+                $stmt->bindValue(':started_at', $ref['started_at']->format(self::$formatDate));
+                $stmt->bindValue(':executed_at', $ref['executed_at']->format(self::$formatDate));
+                $stmt->bindValue(':execution_time', $ref['execution_time']);
+                $stmt->executeStatement();
+            }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
@@ -135,10 +131,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On compte le nombre de jour pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function nombreJourAnneeDonnee(int|string $year): array
     {
@@ -146,9 +140,9 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$year, $year);
-                $request = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$year, $year);
+            $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -160,10 +154,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On recherche du temps max d'execution pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function tempsExecutionMax(int|string $year): array
     {
@@ -171,9 +163,9 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue("year", $year);
-                $request = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue("year", $year);
+            $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -185,10 +177,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On compte le nombre de status (SUCCESS,FAILED) envoyer pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function nombreStatus(int|string $year, string $status): array
     {
@@ -198,10 +188,10 @@ class ActivityRepository extends ServiceEntityRepository
                 AND status LIKE :status";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$year, $year);
-                    $stmt->bindValue(':status', $status);
-                $request = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$year, $year);
+            $stmt->bindValue(':status', $status);
+            $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -213,10 +203,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On compte le nombre d'analyse pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function nombreAnalyse(int|string $year): array
     {
@@ -225,9 +213,9 @@ class ActivityRepository extends ServiceEntityRepository
                 WHERE EXTRACT(YEAR FROM started_at) = :year";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$year, $year);
-                $request = $stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$year, $year);
+            $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -239,10 +227,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On récupère la date la plus récente dans la table pour une année donnée ou non
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function dernierDate(int|string|null $year = null): array
     {
@@ -276,10 +262,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function premiereDate(int|string|null $year = null): array
     {
@@ -323,10 +307,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeProjectAnalyse(int|string|null $year = null): array
     {
@@ -355,10 +337,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeAnalyseJour(int|string|null $year = null): array
     {
@@ -386,10 +366,8 @@ class ActivityRepository extends ServiceEntityRepository
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function listeAnalyseProjet(int|string|null $year = null): array
     {
@@ -423,8 +401,6 @@ class ActivityRepository extends ServiceEntityRepository
      * @param \DateTimeImmutable $debut
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -455,8 +431,6 @@ class ActivityRepository extends ServiceEntityRepository
      * @param \DateTimeImmutable $debut
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -484,8 +458,6 @@ class ActivityRepository extends ServiceEntityRepository
      * @param int $limit
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -517,8 +489,6 @@ class ActivityRepository extends ServiceEntityRepository
      * @param int $limit
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -552,8 +522,6 @@ class ActivityRepository extends ServiceEntityRepository
      * @param \DateTimeImmutable $finJour
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 19/11/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -585,8 +553,6 @@ class ActivityRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -609,8 +575,6 @@ class ActivityRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int nombre de lignes supprimées
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

@@ -37,8 +37,6 @@ class InformationProjetRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 18/12/2024 15:51:18 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -71,8 +69,6 @@ class InformationProjetRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 16/03/2024 21:06:43 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -102,8 +98,6 @@ class InformationProjetRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 27/02/2024 21:44:39 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -137,8 +131,6 @@ class InformationProjetRepository extends ServiceEntityRepository
    * Projet (pastille) : une seule requête groupée, pas de N+1 par projet.
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 29/10/2026 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -162,8 +154,6 @@ class InformationProjetRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 11/03/2024 19:03:15 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -191,8 +181,6 @@ class InformationProjetRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 20/05/2024 23:09:33 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */

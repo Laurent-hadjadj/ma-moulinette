@@ -5,11 +5,12 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
+
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\BatchTraitement;
@@ -18,7 +19,7 @@ use Symfony\Component\Uid\{Ulid};
 
 /**
  * [Description BatchTraitementCaseTest]
-*/
+ */
 class BatchTraitementCaseTest extends TestCase
 {
     private BatchTraitement $batchTraitement;
@@ -45,16 +46,17 @@ class BatchTraitementCaseTest extends TestCase
             self::$responsable,
             self::$responsableShort,
             self::$modeCollecte,
-            self::$nombreProjet))
-        ->setActivated(self::$activated)
-        ->setSuccess(self::$success)
-        ->setPending(self::$pending)
-        ->setInProgress(self::$inProgress)
-        ->setDebutTraitement(new \DateTimeImmutable(self::$debutTraitement))
-        ->setFinTraitement(new \DateTimeImmutable(self::$finTraitement))
-        /* MODIF 2026-05-05 : setTraitementId attend un objet Ulid (entite L275), pas une string. */
-        ->setTraitementId(new Ulid())
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            self::$nombreProjet
+        ))
+            ->setActivated(self::$activated)
+            ->setSuccess(self::$success)
+            ->setPending(self::$pending)
+            ->setInProgress(self::$inProgress)
+            ->setDebutTraitement(new \DateTimeImmutable(self::$debutTraitement))
+            ->setFinTraitement(new \DateTimeImmutable(self::$finTraitement))
+            /* MODIF 2026-05-05 : setTraitementId attend un objet Ulid (entite L275), pas une string. */
+            ->setTraitementId(new Ulid())
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -167,5 +169,4 @@ class BatchTraitementCaseTest extends TestCase
         $this->batchTraitement->setDateEnregistrement($newDateEnregistrement);
         $this->assertEquals($newDateEnregistrement, $this->batchTraitement->getDateEnregistrement());
     }
-
 }

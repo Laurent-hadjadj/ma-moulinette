@@ -19,17 +19,15 @@ namespace App\Service;
 class ExtractName
 {
 
-/**
- * [Description for extractNameFromMavenKey]
- * Extraction du nom du projet depuis une mavenKey
- *
- *
- * @return string
- *
- * Created at: 20/05/2024 16:33:15 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
- */
+    /**
+     * [Description for extractNameFromMavenKey]
+     * Extraction du nom du projet depuis une mavenKey
+     *
+     * @return string
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     */
     public function extractNameFromMavenKey(?string $mavenKey): string
     {
         // Vérifier que la mavenKey n'est pas null avant de la traiter

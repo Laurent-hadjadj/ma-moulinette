@@ -29,9 +29,8 @@ namespace App\Security;
  * production/recette (où la CSP est active), sans aucune trace dans l'onglet
  * Réseau des DevTools (le blocage a lieu avant toute requête HTTP).
  *
- * Created at: 03/11/2026
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 class CspNonceProvider
 {
@@ -42,9 +41,8 @@ class CspNonceProvider
      *
      * @return string
      *
-     * Created at: 03/11/2026
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     * @copyright   Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getNonce(): string
     {

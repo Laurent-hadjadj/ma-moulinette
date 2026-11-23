@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -38,10 +38,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
      * Création des utilisateurs en base depuis les fixtures
      *
      * @return void
-     *
-     * Created at: 05/05/2024 18:15:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function setUp(): void
     {
@@ -105,10 +103,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
      * [Description for testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 15:41:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse(): void
     {
@@ -151,10 +147,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
      * [Description for testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse2]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 15:43:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse2(): void
     {
@@ -212,10 +206,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
      * [Description for testUpdateUtilisateurFavoriProjet_Errer400]
      *
      * @return void
-     *
-     * Created at: 06/07/2025 15:04:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testUpdateUtilisateurFavoriProjet_Errer400(): void
     {
@@ -362,10 +354,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
      *  Teste la mise à jour du paramètre resetPassword pour le reset du password
      *
      * @return void
-     *
-     * Created at: 06/05/2024 13:55:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function testUpdateUtilisateurResetPassword(): void
     {

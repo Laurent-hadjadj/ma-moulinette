@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -39,8 +39,8 @@ class BatchCollecteRepartitionController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -48,8 +48,7 @@ class BatchCollecteRepartitionController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for batchAnalyseAnomalie]
@@ -60,9 +59,8 @@ class BatchCollecteRepartitionController extends AbstractController
      *
      * @return array<string, mixed>
      *
-     * Created at: 04/12/2022, 09:00:59 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      *
      */
     private function batchAnalyseAnomalie(array $elements, string $maven_key)
@@ -75,19 +73,19 @@ class BatchCollecteRepartitionController extends AbstractController
         /** On calcule la répartition pour les application java et ?Php */
         $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnu = 0;
 
-        if (empty($elements)){
+        if (empty($elements)) {
             $this->logger->info('[Batch Répartition Analyse] ℹ️ Tableau vide. Valeurs par défaut prisent.', [
                 'maven_key' => $maven_key
             ]);
 
             return [
-                    'code' => 200,
-                    'frontend' => $scoreFrontend,
-                    'backend' => $scoreBackend,
-                    'autre' => $scoreAutre,
-                    'inconnu' => $scoreInconnu,
-                    'total' => $scoreFrontend + $scoreBackend + $scoreAutre + $scoreInconnu
-                ];
+                'code' => 200,
+                'frontend' => $scoreFrontend,
+                'backend' => $scoreBackend,
+                'autre' => $scoreAutre,
+                'inconnu' => $scoreInconnu,
+                'total' => $scoreFrontend + $scoreBackend + $scoreAutre + $scoreInconnu
+            ];
         }
 
         /** On récupère la liste des clés pour chaque module */
@@ -143,13 +141,13 @@ class BatchCollecteRepartitionController extends AbstractController
         ]);
 
         return [
-                'code' => 200,
-                'frontend' => $scoreFrontend,
-                'backend' => $scoreBackend,
-                'autre' => $scoreAutre,
-                'inconnu' => $scoreInconnu,
-                'total' => $scoreFrontend + $scoreBackend + $scoreAutre + $scoreInconnu
-            ];
+            'code' => 200,
+            'frontend' => $scoreFrontend,
+            'backend' => $scoreBackend,
+            'autre' => $scoreAutre,
+            'inconnu' => $scoreInconnu,
+            'total' => $scoreFrontend + $scoreBackend + $scoreAutre + $scoreInconnu
+        ];
     }
 
     /**
@@ -171,15 +169,15 @@ class BatchCollecteRepartitionController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 04/12/2022, 09:02:29 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    private function batchCollecteAnomalie(string $maven_key, $index, $batchSize, string $category, string $severity) :array
+    private function batchCollecteAnomalie(string $maven_key, $index, $batchSize, string $category, string $severity): array
     {
 
-         /** Sécurisation de l'URL */
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+        /** Sécurisation de l'URL */
+        /**
+         * MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
          * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $issueStatus = $this->sonarVersion->issueStatusParam();
@@ -193,7 +191,8 @@ class BatchCollecteRepartitionController extends AbstractController
                 'asc' => 'no',
                 'types' => $category,
                 'severities' => $severity,
-                'p' => $index, 'ps' => $batchSize
+                'p' => $index,
+                'ps' => $batchSize
             ]
         );
 
@@ -225,12 +224,10 @@ class BatchCollecteRepartitionController extends AbstractController
     /**
      * [Description for batchCollecteInformation]
      *
-     *
      * @return array<int|string, mixed>
      *
-     * Created at: 11/02/2025 14:09:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function batchCollecteInformation(string $maven_key, string $category): array
     {
@@ -285,9 +282,8 @@ class BatchCollecteRepartitionController extends AbstractController
      *
      * @return array<int, array<string, mixed>>
      *
-     * Created at: 28/09/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractFacetValues(array $facets, string $property): array
     {
@@ -306,11 +302,11 @@ class BatchCollecteRepartitionController extends AbstractController
      * @param string $maven_key
      *
      * @return array<int|string, mixed>
+     *
      * INFO,MINOR,MAJOR,CRITICAL,BLOCKER
      *
-     * Created at: 04/12/2022, 09:03:46 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function collecteRepartitionModule(string $maven_key, string $category): array
     {
@@ -325,15 +321,15 @@ class BatchCollecteRepartitionController extends AbstractController
 
         if (isset($result['code']) && $result['code'] != 200) {
             $this->logger->error('[Batch Répartition Module] ❌ Erreur lors de collecte des informations ', [
-                    'maven_key' => $maven_key,
-                    'category' => $category,
-                    'code' => $result['code'],
-                    'erreur' => $result['erreur']
+                'maven_key' => $maven_key,
+                'category' => $category,
+                'code' => $result['code'],
+                'erreur' => $result['erreur']
             ]);
 
             return [
-                    'code' => $result['code'],
-                    'erreur' => $result['erreur']
+                'code' => $result['code'],
+                'erreur' => $result['erreur']
             ];
         }
         /** On traite les données */
@@ -342,14 +338,14 @@ class BatchCollecteRepartitionController extends AbstractController
         // les facettes demandées (severities,scopes) — on sélectionne 'severities'
         // par son nom plutôt que de supposer qu'elle est en première position.
         $severityValues = $this->extractFacetValues($result, 'severities');
-        if (!empty($severityValues)){
+        if (!empty($severityValues)) {
             $this->logger->debug('[Batch Répartition Module] 🛠️ Informations disponibles dans les facets : ', [
-                    'maven_key' => $maven_key,
-                    'category' => $category,
-                    'response' => $result
+                'maven_key' => $maven_key,
+                'category' => $category,
+                'response' => $result
             ]);
 
-            foreach($severityValues as $value){
+            foreach ($severityValues as $value) {
                 if ($value['val'] === 'INFO') {
                     $info = $value['count'] ?? 0;
                 }
@@ -379,15 +375,15 @@ class BatchCollecteRepartitionController extends AbstractController
         ]);
 
         return [
-                'code' => 200,
-                'total' => $total,
-                'category' => $category,
-                'blocker' => $blocker,
-                'critical' => $critical,
-                'major' => $major,
-                'minor' => $minor,
-                'info' => $info
-            ];
+            'code' => 200,
+            'total' => $total,
+            'category' => $category,
+            'blocker' => $blocker,
+            'critical' => $critical,
+            'major' => $major,
+            'minor' => $minor,
+            'info' => $info
+        ];
     }
 
     /**
@@ -397,12 +393,8 @@ class BatchCollecteRepartitionController extends AbstractController
      * @param array<int|string, mixed> $fields
      * @param array<int|string, mixed> $map
      *
-     *
-     * Created at: 17/02/2025 17:09:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     * @param array<int|string, mixed> $groupData
-     * @param array<int|string, mixed> $fields
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function flattenGroupData(array $groupData, array $fields, array &$map): void
     {
@@ -432,9 +424,8 @@ class BatchCollecteRepartitionController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/05/2024 22:25:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function batchCollecteRepartition(string $maven_key, string $category, string $severity, string $setup): array
     {
@@ -459,13 +450,13 @@ class BatchCollecteRepartitionController extends AbstractController
 
         $checkExistData = $repartitionTempRepos->checkExistData($map);
 
-        if ($checkExistData['total'] > 0){
+        if ($checkExistData['total'] > 0) {
             $this->logger->info('[Batch Répartition] ℹ️ Les données pour ce setup existe déjà.');
 
             return [
-                    'code' => 201,
-                    'type' => 'primary',
-                    'message' => self::$reference . "Les données pour la clé <strong>{$maven_key}</strong> et le setup <strong>{$setup}</strong> existent déjà.",
+                'code' => 201,
+                'type' => 'primary',
+                'message' => self::$reference . "Les données pour la clé <strong>{$maven_key}</strong> et le setup <strong>{$setup}</strong> existent déjà.",
             ];
         }
 
@@ -486,20 +477,20 @@ class BatchCollecteRepartitionController extends AbstractController
             ]);
 
             return [
-                    'code' => 200,
-                    'message' => '',
-                    'data' => [
-                        'total' => 0,
-                        'category' => $category,
-                        'severity' => $severity,
-                        'setup' => $setup,
-                        'temps' => 2,
-                    ]
+                'code' => 200,
+                'message' => '',
+                'data' => [
+                    'total' => 0,
+                    'category' => $category,
+                    'severity' => $severity,
+                    'setup' => $setup,
+                    'temps' => 2,
+                ]
             ];
         }
 
         // Avant d'insérer les nouveaux enregistrements :
-        $map = [ 'maven_key' => $maven_key, 'setup' => $setup ];
+        $map = ['maven_key' => $maven_key, 'setup' => $setup];
         $delete = $repartitionTempRepos->deleteOldRecords($map);
 
         if ($delete['code'] !== 200) {
@@ -509,11 +500,11 @@ class BatchCollecteRepartitionController extends AbstractController
             ]);
 
             return [
-                    'code' => $delete['code'],
-                    'type' => 'error',
-                    'message' => self::$reference . "Échec de suppression des données pour la clé {$maven_key} et le setup {$setup} (Erreur {$delete['code']}).",
-                    'trace' => $delete['erreur'] ?? self::$noData
-                ];
+                'code' => $delete['code'],
+                'type' => 'error',
+                'message' => self::$reference . "Échec de suppression des données pour la clé {$maven_key} et le setup {$setup} (Erreur {$delete['code']}).",
+                'trace' => $delete['erreur'] ?? self::$noData
+            ];
         }
 
         $issues = [];
@@ -546,11 +537,11 @@ class BatchCollecteRepartitionController extends AbstractController
                 ]);
 
                 return [
-                        'code' => $batchInsert['code'],
-                        'type' => 'error',
-                        'message' => self::$reference . "[Batch Répartition] Échec de la mise à jour des données ({$batchInsert['erreur']}).",
-                        'trace' => $batchInsert['erreur'] ?? self::$noData
-                    ];
+                    'code' => $batchInsert['code'],
+                    'type' => 'error',
+                    'message' => self::$reference . "[Batch Répartition] Échec de la mise à jour des données ({$batchInsert['erreur']}).",
+                    'trace' => $batchInsert['erreur'] ?? self::$noData
+                ];
             }
 
             $this->logger->debug('🛠️ [Batch Répartition] Insertion réussie', ['page' => $i, 'count' => count($issues)]);
@@ -564,14 +555,14 @@ class BatchCollecteRepartitionController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $data = [
-                    'total' => $totalIssues,
-                    'category' => $category,
-                    'severity' => $severity,
-                    'setup' => $setup,
-                    'temps' => abs($dateStart - $dateEnd) + 2
-                ];
+            'total' => $totalIssues,
+            'category' => $category,
+            'severity' => $severity,
+            'setup' => $setup,
+            'temps' => abs($dateStart - $dateEnd) + 2
+        ];
 
-        $message =  "Collecte de " . $totalIssues . " pour la catégorie " . $category . " pour le setup : ". $setup;
+        $message =  "Collecte de " . $totalIssues . " pour la catégorie " . $category . " pour le setup : " . $setup;
         $this->logger->info('[Batch Répartition] ℹ️ Fin batchCollecteRepartition', $data);
         return [
             'code' => 200,
@@ -590,15 +581,15 @@ class BatchCollecteRepartitionController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 27/08/2025 15:26:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function batchCollecteRepartitionAnalyse(string $maven_key, string $category, string $severity, string $setup): array
     {
-        if ($maven_key === 'N.C' ){
+        if ($maven_key === 'N.C') {
             $this->logger->error("[Batch Répartition Analyse] ❌ La valeur pour la 'maven_key' n'est pas définie.", [
-                'maven_key' => $maven_key]);
+                'maven_key' => $maven_key
+            ]);
 
             return [
                 'code' => 400,
@@ -613,11 +604,11 @@ class BatchCollecteRepartitionController extends AbstractController
 
         //BUG BLOCKER "1756045191468" "fr.ma-moulinette:ma-moulinette"
         $map = [
-                'maven_key' => $maven_key,
-                'category' => $category,
-                'severity' => $severity,
-                'setup' => $setup
-            ];
+            'maven_key' => $maven_key,
+            'category' => $category,
+            'severity' => $severity,
+            'setup' => $setup
+        ];
 
         /** On récupère la liste des anomalies par catégorie et par severity */
         $repartition = $repartitionTempRepos->selectRepartitionByTypeAndSeverity($map);
@@ -654,17 +645,17 @@ class BatchCollecteRepartitionController extends AbstractController
         }
 
         $message = "Répartition des anomalies par module terminée ({$setup}).";
-        $this->logger->info('[Batch Répartition Analyse] ℹ️ Fin de l’analyse réussie', [ 'résultat' => $analyse ]);
+        $this->logger->info('[Batch Répartition Analyse] ℹ️ Fin de l’analyse réussie', ['résultat' => $analyse]);
 
         return [
-                'code' => 200,
-                'message' => $message,
-                'frontend' => $analyse['frontend'],
-                'backend' => $analyse['backend'],
-                'autre' => $analyse['autre'],
-                'inconnu' => $analyse['inconnu'],
-                'total' => $analyse['total'],
-            ];
+            'code' => 200,
+            'message' => $message,
+            'frontend' => $analyse['frontend'],
+            'backend' => $analyse['backend'],
+            'autre' => $analyse['autre'],
+            'inconnu' => $analyse['inconnu'],
+            'total' => $analyse['total'],
+        ];
     }
 
     /**
@@ -676,9 +667,8 @@ class BatchCollecteRepartitionController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 18/02/2025 09:11:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function batchCollecteRepartitionMaJ(string $maven_key, array $calcul, string $setup): array
     {
@@ -706,7 +696,7 @@ class BatchCollecteRepartitionController extends AbstractController
 
         /** Calcul du total par module */
         $moduleData = ['frontend' => 0, 'backend' => 0, 'autre' => 0, 'inconnu' => 0];
-        foreach ($calcul as $subArray){
+        foreach ($calcul as $subArray) {
             $moduleData['frontend'] += $subArray[2];
             $moduleData['backend'] += $subArray[3];
             $moduleData['autre'] += $subArray[4];
@@ -730,41 +720,86 @@ class BatchCollecteRepartitionController extends AbstractController
         }
 
         // On construit le statut à enregistrer dans l'attribut 'control'
-        $control_statut = [ 'complet (100%)', 'partiel (66%)', 'partiel (33%)' ];
+        $control_statut = ['complet (100%)', 'partiel (66%)', 'partiel (33%)'];
         $control = $control_statut[$missingSets] ?? 'inconnue';
 
         // Préparation des tableaux de champs pour chaque category
         $fieldsBug = [
-            'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnu_bug_blocker',
-            'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnu_bug_critical',
-            'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnu_bug_major',
-            'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnu_bug_minor',
-            'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnu_bug_info',
-            ];
+            'frontend_bug_blocker',
+            'backend_bug_blocker',
+            'autre_bug_blocker',
+            'inconnu_bug_blocker',
+            'frontend_bug_critical',
+            'backend_bug_critical',
+            'autre_bug_critical',
+            'inconnu_bug_critical',
+            'frontend_bug_major',
+            'backend_bug_major',
+            'autre_bug_major',
+            'inconnu_bug_major',
+            'frontend_bug_minor',
+            'backend_bug_minor',
+            'autre_bug_minor',
+            'inconnu_bug_minor',
+            'frontend_bug_info',
+            'backend_bug_info',
+            'autre_bug_info',
+            'inconnu_bug_info',
+        ];
 
         $fieldsVulnerability = [
-            'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnu_vulnerability_blocker',
-            'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnu_vulnerability_critical',
-            'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnu_vulnerability_major',
-            'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnu_vulnerability_minor',
-            'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnu_vulnerability_info',
+            'frontend_vulnerability_blocker',
+            'backend_vulnerability_blocker',
+            'autre_vulnerability_blocker',
+            'inconnu_vulnerability_blocker',
+            'frontend_vulnerability_critical',
+            'backend_vulnerability_critical',
+            'autre_vulnerability_critical',
+            'inconnu_vulnerability_critical',
+            'frontend_vulnerability_major',
+            'backend_vulnerability_major',
+            'autre_vulnerability_major',
+            'inconnu_vulnerability_major',
+            'frontend_vulnerability_minor',
+            'backend_vulnerability_minor',
+            'autre_vulnerability_minor',
+            'inconnu_vulnerability_minor',
+            'frontend_vulnerability_info',
+            'backend_vulnerability_info',
+            'autre_vulnerability_info',
+            'inconnu_vulnerability_info',
         ];
 
         $fieldsCodeSmell = [
-            'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnu_code_smell_blocker',
-            'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnu_code_smell_critical',
-            'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnu_code_smell_major',
-            'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnu_code_smell_minor',
-            'frontend_code_smell_info', 'backend_code_smell_info', 'autre_code_smell_info', 'inconnu_code_smell_info',
+            'frontend_code_smell_blocker',
+            'backend_code_smell_blocker',
+            'autre_code_smell_blocker',
+            'inconnu_code_smell_blocker',
+            'frontend_code_smell_critical',
+            'backend_code_smell_critical',
+            'autre_code_smell_critical',
+            'inconnu_code_smell_critical',
+            'frontend_code_smell_major',
+            'backend_code_smell_major',
+            'autre_code_smell_major',
+            'inconnu_code_smell_major',
+            'frontend_code_smell_minor',
+            'backend_code_smell_minor',
+            'autre_code_smell_minor',
+            'inconnu_code_smell_minor',
+            'frontend_code_smell_info',
+            'backend_code_smell_info',
+            'autre_code_smell_info',
+            'inconnu_code_smell_info',
         ];
 
         // Initialisation du tableau $map qui contiendra toutes les clés attendues par la requête
         $map = [
-                'maven_key' => $maven_key,
-                'setup' => $setup,
-                'control' => $control,
-                'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis))
-            ];
+            'maven_key' => $maven_key,
+            'setup' => $setup,
+            'control' => $control,
+            'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis))
+        ];
 
         // Aplatir les données pour chaque category
         $this->flattenGroupData($groupedData['BUG'], $fieldsBug, $map);
@@ -786,7 +821,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 'code' => $repartition['code'],
                 'erreur' => $repartition['erreur'] ?? self::$erreurInconnue
             ]);
-        return [
+            return [
                 'code' => $repartition['code'],
                 'type' => 'error',
                 'erreur' => $repartition['erreur']
@@ -797,8 +832,8 @@ class BatchCollecteRepartitionController extends AbstractController
         $this->logger->info('[Batch Répartition MaJ] ℹ️ Mise à jour réussie', ['message' => $message]);
 
         return [
-                'code' => 200,
-                'message' => $message
-            ];
+            'code' => 200,
+            'message' => $message
+        ];
     }
 }

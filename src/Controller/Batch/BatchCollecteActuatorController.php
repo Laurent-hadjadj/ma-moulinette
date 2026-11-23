@@ -35,23 +35,21 @@ class BatchCollecteActuatorController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
         private ClientService $client,
         private ActuatorInfoRepository $actuatorInfoRepository,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for BatchCollecteActuatorInfo]
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 25/06/2024 14:50:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -63,33 +61,35 @@ class BatchCollecteActuatorController extends AbstractController
         $this->logger->info("[Batch Actuator] ℹ️  Lancement de la collecte pour {$maven_key}");
 
         /** On regarde si, il y a une point d'accès défini pour le projet */
-        $map = [ 'maven_key' => $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $actuatorEndpoint = $actuatorRepos->findActuatorMavenKey($map);
 
         if (isset($actuatorEndpoint['code']) && in_array($actuatorEndpoint['code'], [23502, 23505, 500, 503])) {
             $this->logger->error("[Batch Actuator] ❌ Erreur de récupération du endpoint pour {$maven_key}", [
-                'erreur' => $actuatorEndpoint['erreur']]);
+                'erreur' => $actuatorEndpoint['erreur']
+            ]);
 
             return [
-                    'code' => $actuatorEndpoint['code'],
-                    'erreur' => $actuatorEndpoint['erreur'],
-                    'json' => [],
-                    'fatal' => true,
-                ];
+                'code' => $actuatorEndpoint['code'],
+                'erreur' => $actuatorEndpoint['erreur'],
+                'json' => [],
+                'fatal' => true,
+            ];
         }
 
         /** Il n'y a pas de endpoint pour ce projet : pas une erreur, JSON vide (pastille grise) */
-        if ($actuatorEndpoint['code'] === 404){
+        if ($actuatorEndpoint['code'] === 404) {
             $this->logger->warning("[Batch Actuator] ⚠️ Aucun endpoint défini pour le projet {$maven_key}");
             return [
-                    'code' => 404,
-                    'type' => 'warning',
-                    'message' => "Il n'y a pas de point-d'accès défini pour ce projet (Erreur 404).",
-                    'json' => [],
-                ];
+                'code' => 404,
+                'type' => 'warning',
+                'message' => "Il n'y a pas de point-d'accès défini pour ce projet (Erreur 404).",
+                'json' => [],
+            ];
         }
 
-        /* MODIF 2026-07-23 : l'URL enregistrée (Actuator::$url) est désormais TOUJOURS
+        /**
+         * MODIF 2026-07-23 : l'URL enregistrée (Actuator::$url) est désormais TOUJOURS
          * complète (auto-complétée avec /actuator/info à l'enregistrement, cf.
          * ActuatorController::completerUrlActuator) — on l'appelle telle quelle.
          * Avant cette évolution, UrlBuilderService::build() ajoutait ici le
@@ -105,11 +105,12 @@ class BatchCollecteActuatorController extends AbstractController
         $this->logger->debug("[Batch Actuator] 🛠️ Appel du point d'accès Actuator", ['url' => $url]);
         /** Appelle le clientActuator HTTP */
         try {
-                $actuatorInfo = $this->client->httpActuator($url, $actuatorUser, $actuatorPassword);
+            $actuatorInfo = $this->client->httpActuator($url, $actuatorUser, $actuatorPassword);
         } catch (\Throwable $e) {
             $message = 'Exception lors de l’appel HTTP : ' . $e->getMessage();
             $this->logger->critical("[Batch Actuator] 🔴 Exception lors de l'appel HTTP", [
-                'exception' => $e->getMessage()]);
+                'exception' => $e->getMessage()
+            ]);
 
             return [
                 'code' => 500,
@@ -119,7 +120,8 @@ class BatchCollecteActuatorController extends AbstractController
             ];
         }
 
-        /* MODIF 2026-07-23 : ClientService::httpActuator() catch déjà en interne les
+        /**
+         * MODIF 2026-07-23 : ClientService::httpActuator() catch déjà en interne les
          * erreurs HTTP (timeout, transport, 4xx/5xx) et renvoie alors {code, erreur}
          * SANS clé 'json' — l'ancien test `isset($dataJson['code']) && in_array(...)`
          * qui suivait ce bloc était du code mort (accès à une clé 'json' absente,
@@ -127,20 +129,20 @@ class BatchCollecteActuatorController extends AbstractController
          * il supposait que les erreurs HTTP remontaient dans le corps JSON décodé,
          * alors qu'elles interrompent l'exécution avant. */
         if (!isset($actuatorInfo['json'])) {
-                $code = (int) ($actuatorInfo['code'] ?? 500);
-                $erreurBrute = $actuatorInfo['erreur'] ?? 'Erreur HTTP non précisée.';
-                $message = is_array($erreurBrute) ? implode(', ', $erreurBrute) : (string) $erreurBrute;
+            $code = (int) ($actuatorInfo['code'] ?? 500);
+            $erreurBrute = $actuatorInfo['erreur'] ?? 'Erreur HTTP non précisée.';
+            $message = is_array($erreurBrute) ? implode(', ', $erreurBrute) : (string) $erreurBrute;
 
-                $this->logger->error("[Batch Actuator] ❌ Erreur HTTP détectée", [
-                    'code' => $code,
-                    'details' => $message
-                ]);
+            $this->logger->error("[Batch Actuator] ❌ Erreur HTTP détectée", [
+                'code' => $code,
+                'details' => $message
+            ]);
 
-                return [
-                        'code' => $code,
-                        'erreur' => $erreurBrute,
-                        'json' => $this->buildFailureJson($code, $message),
-                    ];
+            return [
+                'code' => $code,
+                'erreur' => $erreurBrute,
+                'json' => $this->buildFailureJson($code, $message),
+            ];
         }
 
         $dataJson = $actuatorInfo['json'];
@@ -190,7 +192,6 @@ class BatchCollecteActuatorController extends AbstractController
      *
      * @return array<string, mixed>
      *
-     * Created at: 24/07/2026 17:42:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -213,7 +214,6 @@ class BatchCollecteActuatorController extends AbstractController
      *
      * @return mixed
      *
-     * Created at: 24/07/2026 17:43:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Accueil;
 
 use App\Controller\Accueil\AccueilController;
-use App\Entity\{Historique, ListeProjet, MaMoulinette, Profiles, Properties, Utilisateur };
+use App\Entity\{Historique, ListeProjet, MaMoulinette, Profiles, Properties, Utilisateur};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Service\UserAgent\UserAgentAnalysisService;
 use App\Repository\{HistoriqueRepository, ListeProjetRepository, MaMoulinetteRepository, ProfilesRepository, PropertiesRepository};
@@ -111,7 +111,11 @@ class AccueilControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'request_stack', 'parameter_bag', 'security.authorization_checker', 'security.token_storage',
+                'twig',
+                'request_stack',
+                'parameter_bag',
+                'security.authorization_checker',
+                'security.token_storage',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -123,8 +127,13 @@ class AccueilControllerTest extends TestCase
         ]);
 
         $this->controller = new AccueilController(
-            $this->em, $this->client, $this->params, $this->urlBuilder,
-            $this->logger, $this->tracking, $this->analysis
+            $this->em,
+            $this->client,
+            $this->params,
+            $this->urlBuilder,
+            $this->logger,
+            $this->tracking,
+            $this->analysis
         );
         $this->controller->setContainer($container);
     }
@@ -143,7 +152,8 @@ class AccueilControllerTest extends TestCase
     public function testGetCountProjetBDReturnsTotalWhenAvailable(): void
     {
         $this->listeProjetRepo->method('countListeProjet')->willReturn([
-            'code' => 200, 'request' => [['total' => 42]],
+            'code' => 200,
+            'request' => [['total' => 42]],
         ]);
 
         $this->assertSame(42, $this->controller->getCountProjetBD());
@@ -166,7 +176,8 @@ class AccueilControllerTest extends TestCase
     public function testGetCountProjetSonarReturnsMinusOneOnSonarFailure(): void
     {
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 503, 'erreur' => 'timeout',
+            'code' => 503,
+            'erreur' => 'timeout',
         ]);
         $this->flashBag->expects($this->once())->method('add');
 
@@ -239,7 +250,8 @@ class AccueilControllerTest extends TestCase
     {
         $this->propertiesRepo->method('getProperties')->willReturn(['request' => []]);
         $this->propertiesRepo->method('insertProperties')->willReturn([
-            'code' => 500, 'erreur' => 'db fail',
+            'code' => 500,
+            'erreur' => 'db fail',
         ]);
         $this->flashBag->expects($this->once())->method('add');
 
@@ -252,8 +264,10 @@ class AccueilControllerTest extends TestCase
     {
         $this->propertiesRepo->method('getProperties')->willReturn([
             'request' => [[
-                'projet_bd' => 10, 'projet_sonar' => 11,
-                'profil_bd' => 5, 'profil_sonar' => 5,
+                'projet_bd' => 10,
+                'projet_sonar' => 11,
+                'profil_bd' => 5,
+                'profil_sonar' => 5,
                 'date_modification_projet' => '2026-04-10',
                 'date_modification_profil' => '2026-04-10',
             ]],
@@ -277,8 +291,10 @@ class AccueilControllerTest extends TestCase
         $today = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
         $this->propertiesRepo->method('getProperties')->willReturn([
             'request' => [[
-                'projet_bd' => 10, 'projet_sonar' => 10,
-                'profil_bd' => 5, 'profil_sonar' => 5,
+                'projet_bd' => 10,
+                'projet_sonar' => 10,
+                'profil_bd' => 5,
+                'profil_sonar' => 5,
                 'date_modification_projet' => $today,
                 'date_modification_profil' => $today,
             ]],
@@ -310,12 +326,14 @@ class AccueilControllerTest extends TestCase
         // Le favori 'acme:app' EST présent dans l'historique (clé 'liste' + 'mavenkey',
         // forme réelle renvoyée par selectHistoriqueProjetFavori) → aucune désync.
         $this->historiqueRepo->method('selectHistoriqueProjetFavori')->willReturn([
-            'code' => 200, 'liste' => [['mavenkey' => 'acme:app']],
+            'code' => 200,
+            'liste' => [['mavenkey' => 'acme:app']],
         ]);
 
         // SonarQube version lookup
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 200, 'json' => ['texte' => '10.4'],
+            'code' => 200,
+            'json' => ['texte' => '10.4'],
         ]);
 
         // isGranted
@@ -347,8 +365,10 @@ class AccueilControllerTest extends TestCase
         $today = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
         $this->propertiesRepo->method('getProperties')->willReturn([
             'request' => [[
-                'projet_bd' => 10, 'projet_sonar' => 10,
-                'profil_bd' => 5, 'profil_sonar' => 5,
+                'projet_bd' => 10,
+                'projet_sonar' => 10,
+                'profil_bd' => 5,
+                'profil_sonar' => 5,
                 'date_modification_projet' => $today,
                 'date_modification_profil' => $today,
             ]],
@@ -375,20 +395,23 @@ class AccueilControllerTest extends TestCase
 
         // Historique VIDE pour ce favori → 'acme:ghost' est orphelin.
         $this->historiqueRepo->method('selectHistoriqueProjetFavori')->willReturn([
-            'code' => 200, 'liste' => [],
+            'code' => 200,
+            'liste' => [],
         ]);
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 200, 'json' => ['texte' => '10.4'],
+            'code' => 200,
+            'json' => ['texte' => '10.4'],
         ]);
         $this->authChecker->method('isGranted')->willReturn(true);
 
         // Un flash 'notice' de type warning nommant explicitement le favori orphelin.
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($m) =>
+            ->with('notice', $this->callback(
+                fn($m) =>
                 is_array($m)
-                && ($m['type'] ?? null) === 'warning'
-                && str_contains($m['message'] ?? '', 'acme:ghost')
+                    && ($m['type'] ?? null) === 'warning'
+                    && str_contains($m['message'] ?? '', 'acme:ghost')
             ));
 
         $this->twig->method('render')->willReturn('<html>desync</html>');
@@ -402,8 +425,10 @@ class AccueilControllerTest extends TestCase
         $today = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
         $this->propertiesRepo->method('getProperties')->willReturn([
             'request' => [[
-                'projet_bd' => 10, 'projet_sonar' => 10,
-                'profil_bd' => 5, 'profil_sonar' => 5,
+                'projet_bd' => 10,
+                'projet_sonar' => 10,
+                'profil_bd' => 5,
+                'profil_sonar' => 5,
                 'date_modification_projet' => $today,
                 'date_modification_profil' => $today,
             ]],
@@ -429,7 +454,8 @@ class AccueilControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($user);
 
         $this->client->method('httpSonarQube')->willReturn([
-            'code' => 200, 'json' => ['texte' => '10.4'],
+            'code' => 200,
+            'json' => ['texte' => '10.4'],
         ]);
 
         // we expect at least one flash call for the version warning
@@ -449,18 +475,20 @@ class AccueilControllerTest extends TestCase
         // Empty properties, insert fails → returns early at line 634 with render
         $this->propertiesRepo->method('getProperties')->willReturn(['request' => []]);
         $this->propertiesRepo->method('insertProperties')->willReturn([
-            'code' => 500, 'erreur' => 'db fail',
+            'code' => 500,
+            'erreur' => 'db fail',
         ]);
 
         $this->flashBag->expects($this->atLeastOnce())->method('add');
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('accueil/index.html.twig', $this->callback(fn($ctx) =>
+            ->with('accueil/index.html.twig', $this->callback(
+                fn($ctx) =>
                 $ctx['projet_bd'] === 0 && $ctx['composant'] === 0
-                // MODIF 2026-07-15 : sur retour anticipé, la version serveur doit être
-                // le sentinel « inconnu » explicite, pas un 0 trompeur.
-                && $ctx['version_serveur_sonar'] === 'Version inconnue.'
+                    // MODIF 2026-07-15 : sur retour anticipé, la version serveur doit être
+                    // le sentinel « inconnu » explicite, pas un 0 trompeur.
+                    && $ctx['version_serveur_sonar'] === 'Version inconnue.'
             ))
             ->willReturn('<html>early</html>');
 

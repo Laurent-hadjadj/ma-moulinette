@@ -50,9 +50,8 @@ class AccueilController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 15/12/2022, 22:06:26 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -79,7 +78,6 @@ class AccueilController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -136,7 +134,6 @@ class AccueilController extends AbstractController
      *
      * @return int
      *
-     * Created at: 15/12/2022, 22:06:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -162,7 +159,6 @@ class AccueilController extends AbstractController
      *
      * @return int
      *
-     * Created at: 15/12/2022, 22:07:31 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -215,10 +211,8 @@ class AccueilController extends AbstractController
      * Récupère le nombre de profil enregistré en base
      *
      * @return int
-     *
-     * Created at: 15/12/2022, 22:07:46 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function countProfilBD(): int
     {
@@ -240,9 +234,8 @@ class AccueilController extends AbstractController
      *
      * @return int
      *
-     * Created at: 15/12/2022, 22:07:58 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function countProfilSonar(): int
     {
@@ -286,9 +279,8 @@ class AccueilController extends AbstractController
      *
      * @return void
      *
-     * Created at: 15/12/2022, 22:08:18 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function majProperties(string $type, int $bd, int $sonar)
     {
@@ -325,9 +317,8 @@ class AccueilController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 15/12/2022, 22:08:36 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getProperties(): array
     {
@@ -390,9 +381,8 @@ class AccueilController extends AbstractController
      *
      * @return string
      *
-     * Created at: 15/12/2022, 22:09:07 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getVersion(): string
     {
@@ -410,7 +400,6 @@ class AccueilController extends AbstractController
      *
      * @return int|string
      *
-     * Created at: 21/10/2025 10:56:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -454,9 +443,8 @@ class AccueilController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 14/06/2023, 06:35:37 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getListeFavoriProjet(): JsonResponse
     {
@@ -518,9 +506,8 @@ class AccueilController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 14/06/2023, 07:09:32 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function getListeFavoriVersion(): JsonResponse
     {
@@ -570,7 +557,6 @@ class AccueilController extends AbstractController
      *
      * @return void
      *
-     * Created at: 14/07/2026 09:59:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -584,7 +570,7 @@ class AccueilController extends AbstractController
             'type' => 'warning',
             'message' => sprintf(
                 "⚠️ Favori désynchronisé — absent de l'historique : %s. "
-                . "\nRelancez une collecte de ce projet, ou retirez-le depuis la page Préférences.",
+                    . "\nRelancez une collecte de ce projet, ou retirez-le depuis la page Préférences.",
                 implode(', ', $orphelins)
             ),
         ]);
@@ -594,10 +580,8 @@ class AccueilController extends AbstractController
      * [Description for index]
      * Affiche ma page d'accueil
      *
-     *
-     * Created at: 15/12/2022, 22:09:19 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/accueil', name: 'accueil', methods: 'GET')]
     public function index(): Response

@@ -53,7 +53,8 @@ class ResetPasswordController extends AbstractController
         ParameterBagInterface $params,
         private LoggerInterface $logger,
         private UserPasswordHasherInterface $passwordHasher,
-        private UserAgentTrackingFacade $tracking) {
+        private UserAgentTrackingFacade $tracking
+    ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -67,7 +68,6 @@ class ResetPasswordController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/12/2024 21:16:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -93,7 +93,6 @@ class ResetPasswordController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 01/02/2024 20:07:33 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -189,7 +188,6 @@ class ResetPasswordController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 07/02/2024 12:11:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

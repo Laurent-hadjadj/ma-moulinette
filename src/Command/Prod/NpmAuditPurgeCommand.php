@@ -49,6 +49,14 @@ class NpmAuditPurgeCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * [Description for configure]
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function configure(): void
     {
         $this
@@ -56,6 +64,17 @@ class NpmAuditPurgeCommand extends Command
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Affiche le nombre de rows qui seraient purgées sans rien supprimer.');
     }
 
+    /**
+     * [Description for execute]
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

@@ -5,17 +5,19 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-/* MODIF 2026-05-24 : remplace le trio Messenger
+/**
+ * MODIF 2026-05-24 : remplace le trio Messenger
  * (ActivityMessage / ActivityHandler / ProcessTaskHandler)
  * + ActivityYesterdaySchedule par une Command synchrone.
  * Avantages : 1 seule classe, debug direct sans queue, options CLI,
  * rattrapage auto depuis la dernière date enregistrée en base. */
+
 namespace App\Command\Prod;
 
 use App\Entity\Activity;
@@ -80,43 +82,48 @@ class ActivityCollecteCommand extends Command
      *
      * @return void
      *
-     * Created at: 24/05/2026 14:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function configure(): void
     {
         $this
             ->addOption(
-                'from-date', null,
+                'from-date',
+                null,
                 InputOption::VALUE_REQUIRED,
                 'Date de début (Y-m-d). Auto-calculée depuis dernierDate() si absente.'
             )
             ->addOption(
-                'to-date', null,
+                'to-date',
+                null,
                 InputOption::VALUE_REQUIRED,
                 'Date de fin (Y-m-d). Défaut = hier (J-1).'
             )
             ->addOption(
-                'catch-up-days', null,
+                'catch-up-days',
+                null,
                 InputOption::VALUE_REQUIRED,
                 'Largeur max de chaque fenêtre de rattrapage (jours).',
                 self::DEFAULT_WINDOW_DAYS
             )
             ->addOption(
-                'init-days', null,
+                'init-days',
+                null,
                 InputOption::VALUE_REQUIRED,
                 'Profondeur du backfill quand la base est vide (jours d\'historique à balayer).',
                 self::DEFAULT_INIT_DAYS
             )
             ->addOption(
-                'page-size', null,
+                'page-size',
+                null,
                 InputOption::VALUE_REQUIRED,
                 'Taille de page API SonarQube (max 1000).',
                 1000
             )
             ->addOption(
-                'dry-run', null,
+                'dry-run',
+                null,
                 InputOption::VALUE_NONE,
                 'Affiche les fenêtres calculées sans appeler l\'API ni persister.'
             );
@@ -130,9 +137,8 @@ class ActivityCollecteCommand extends Command
      *
      * @return int
      *
-     * Created at: 24/05/2026 14:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -250,9 +256,8 @@ class ActivityCollecteCommand extends Command
      *
      * @return array<array{\DateTimeImmutable, \DateTimeImmutable}>
      *
-     * Created at: 24/05/2026 14:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function splitWindows(
         \DateTimeImmutable $from,
@@ -297,11 +302,11 @@ class ActivityCollecteCommand extends Command
      *
      * @param array<string, mixed> $infos  (passage par référence pour le rapport)
      * @param array<string>        $errors (passage par référence pour le rapport)
+     *
      * @return array{tasks: int, inserted: int, skipped: int, errors: int}
      *
-     * Created at: 24/05/2026 14:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function collectWindow(
         string $fromDate,
@@ -337,7 +342,7 @@ class ActivityCollecteCommand extends Command
                     if (str_contains($detail, '10000') || str_contains($detail, '10 000')) {
                         $io->warning(sprintf(
                             'Page %d — plafond SonarQube (10 000 résultats) atteint sur cette fenêtre. '
-                            . 'Relancez avec un --catch-up-days plus petit (ex. 1) pour tout récupérer.',
+                                . 'Relancez avec un --catch-up-days plus petit (ex. 1) pour tout récupérer.',
                             $pageIndex
                         ));
                     } else {
@@ -406,9 +411,8 @@ class ActivityCollecteCommand extends Command
      * @param array<string, mixed> $task
      * @param array<string>        $errors (passage par référence)
      *
-     * Created at: 24/05/2026 14:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function persistTask(array $task, array &$errors): string
     {

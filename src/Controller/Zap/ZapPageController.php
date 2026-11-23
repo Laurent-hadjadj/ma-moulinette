@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Zap;
@@ -55,9 +55,8 @@ class ZapPageController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         ParameterBagInterface $params,
@@ -79,9 +78,8 @@ class ZapPageController extends AbstractController
      *
      * @return array<string, mixed>
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -105,9 +103,8 @@ class ZapPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function addFlashAndRender(string $type, string $message, array $render): Response
     {
@@ -125,9 +122,8 @@ class ZapPageController extends AbstractController
      *
      * @return string|null
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeToken(string $token): ?string
     {
@@ -161,9 +157,8 @@ class ZapPageController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/zap', name: 'zap', methods: ['GET'])]
     public function index(Request $request): Response
@@ -247,9 +242,8 @@ class ZapPageController extends AbstractController
      *
      * @return array<int, array{referential: int, categories: array<int, array{n: int, label: string, count: int}>}>
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildCategoryChartData(array $owaspByReferential): array
     {
@@ -280,9 +274,8 @@ class ZapPageController extends AbstractController
      *
      * @return array<int, array{date: string, high: int, medium: int, low: int, informational: int}>
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildHistoryChartData(array $history): array
     {
@@ -304,9 +297,8 @@ class ZapPageController extends AbstractController
      *
      * @return array<int, array<int, string>>
      *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function categoryLabels(): array
     {
@@ -347,9 +339,8 @@ class ZapPageController extends AbstractController
      *
      * @return string
      *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function extractProjectName(string $mavenKey): string
     {
@@ -366,10 +357,8 @@ class ZapPageController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     *
-     * Created at: 16/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/zap/rapport/pdf', name: 'zap_rapport_pdf', methods: ['GET'])]
     public function rapportPdf(Request $request): Response
@@ -391,10 +380,11 @@ class ZapPageController extends AbstractController
             throw $this->createNotFoundException($perimetre['message'] ?? 'Projet hors périmètre.');
         }
 
-        // MODIF 26/10/2026 : un maven_key peut recouvrir plusieurs cibles DAST
-        // (voir index() ci-dessus) — target_url précise la lane à exporter ;
-        // sans ce paramètre (lien historique, ou lien externe), on prend la
-        // cible la plus récemment scannée toutes cibles confondues.
+        /**
+         * MODIF 26/10/2026 : un maven_key peut recouvrir plusieurs cibles DAST
+         * (voir index() ci-dessus) — target_url précise la lane à exporter ;
+         * sans ce paramètre (lien historique, ou lien externe), on prend la
+         * cible la plus récemment scannée toutes cibles confondues.*/
         $scanRepository = $this->em->getRepository(ZapScan::class);
         $targetUrl = $request->query->get('target_url');
         if ($targetUrl === null) {
@@ -472,7 +462,8 @@ class ZapPageController extends AbstractController
         $pdfContent = $this->pdfExportService->generateZapPdf($rapport, 'Document Interne');
 
         $disposition = $download ? ResponseHeaderBag::DISPOSITION_ATTACHMENT : ResponseHeaderBag::DISPOSITION_INLINE;
-        $filename = sprintf('rapport_zap_%s_%s.pdf',
+        $filename = sprintf(
+            'rapport_zap_%s_%s.pdf',
             preg_replace('/[^a-z0-9_-]/i', '_', $maven_key),
             date('Y-m-d_H-i')
         );

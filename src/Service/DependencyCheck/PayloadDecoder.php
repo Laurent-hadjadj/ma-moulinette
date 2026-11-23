@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\DependencyCheck;
@@ -47,9 +47,8 @@ class PayloadDecoder
      *
      * @return PayloadDecodeResult
      *
-     * Created at: 11/05/2026 00:09:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function decode(string $rawBody, ?string $declaredContentType): PayloadDecodeResult
     {
@@ -103,13 +102,13 @@ class PayloadDecoder
         $sha256 = hash('sha256', $jsonString);
 
         return new PayloadDecodeResult(
-            jsonString:      $jsonString,
-            decodedSize:     $decodedSize,
-            contentType:     $detectedFormat,
-            sha256:          $sha256,
-            projectGroup:    $project['groupID'],
+            jsonString: $jsonString,
+            decodedSize: $decodedSize,
+            contentType: $detectedFormat,
+            sha256: $sha256,
+            projectGroup: $project['groupID'],
             projectArtifact: $project['artifactID'],
-            projectVersion:  $project['version'],
+            projectVersion: $project['version'],
         );
     }
 
@@ -121,9 +120,8 @@ class PayloadDecoder
      *
      * @return string
      *
-     * Created at: 11/05/2026 00:10:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function detectFormat(string $body): string
     {
@@ -156,9 +154,8 @@ class PayloadDecoder
      *
      * @return bool
      *
-     * Created at: 11/05/2026 00:11:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function probeGzipForTar(string $body): bool
     {
@@ -179,9 +176,8 @@ class PayloadDecoder
      *
      * @return void
      *
-     * Created at: 11/05/2026 00:11:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function assertFormatMatchesContentType(string $detected, ?string $declared): void
     {
@@ -210,9 +206,8 @@ class PayloadDecoder
      *
      * @return string
      *
-     * Created at: 11/05/2026 00:12:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeGzip(string $body): string
     {
@@ -229,10 +224,8 @@ class PayloadDecoder
      * @param string $body
      *
      * @return string
-     *
-     * Created at: 11/05/2026 00:13:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeZip(string $body): string
     {
@@ -281,9 +274,8 @@ class PayloadDecoder
      *
      * @return string
      *
-     * Created at: 11/05/2026 00:13:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeTgz(string $body): string
     {
@@ -331,9 +323,8 @@ class PayloadDecoder
      *
      * @return string
      *
-     * Created at: 11/05/2026 00:13:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function readStreamWithLimit($stream, int $limit): string
     {
@@ -360,9 +351,8 @@ class PayloadDecoder
      *
      * @return array{groupID: string, artifactID: string, version: string}
      *
-     * Created at: 11/05/2026 00:14:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractProjectInfo(array $parsed): array
     {

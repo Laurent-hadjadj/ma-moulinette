@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -33,16 +33,15 @@ class BatchCollecteTodoController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for batchCollecte]
@@ -52,15 +51,14 @@ class BatchCollecteTodoController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 22/07/2025 18:51:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    private function batchCollecte(string $maven_key, int $index, int $batchSize) :array
+    private function batchCollecte(string $maven_key, int $index, int $batchSize): array
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
-       /** Sécurisation de l'URL */
+        /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
@@ -105,9 +103,8 @@ class BatchCollecteTodoController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 31/05/2024 20:28:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteTodo(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -136,7 +133,7 @@ class BatchCollecteTodoController extends AbstractController
         $maxPages = 20;
 
         // On efface les données du projet :
-        $map = [ 'maven_key' => $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $this->logger->debug('[Batch Todo] 🛠️ Suppression des anciennes entrées TODO');
 
         $delete = $todoRepository->deleteTodoMavenKey($map);
@@ -270,16 +267,16 @@ class BatchCollecteTodoController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $historique = [
-                'java_todo' => $java_todo,
-                'python_todo' => $python_todo,
-                'php_todo' => $php_todo,
-                'xml_todo' => $xml_todo,
-                'web_todo' => $web_todo,
-                'javascript_todo' => $javascript_todo,
-                'typescript_todo' => $typescript_todo,
-                'ruby_todo' => $ruby_todo,
-                'total_todo' => $nombre,
-            ];
+            'java_todo' => $java_todo,
+            'python_todo' => $python_todo,
+            'php_todo' => $php_todo,
+            'xml_todo' => $xml_todo,
+            'web_todo' => $web_todo,
+            'javascript_todo' => $javascript_todo,
+            'typescript_todo' => $typescript_todo,
+            'ruby_todo' => $ruby_todo,
+            'total_todo' => $nombre,
+        ];
 
         /** On enregistre les données */
         return [

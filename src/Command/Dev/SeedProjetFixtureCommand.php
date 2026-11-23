@@ -5,22 +5,23 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Dev. */
+
 namespace App\Command\Dev;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\{InputArgument,InputInterface};
+use Symfony\Component\Console\Input\{InputArgument, InputInterface};
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -61,6 +62,14 @@ class SeedProjetFixtureCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * [Description for configure]
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function configure(): void
     {
         $this->addArgument(
@@ -78,10 +87,8 @@ class SeedProjetFixtureCommand extends Command
      * @param OutputInterface $output
      *
      * @return int
-     *
-     * Created at: 15/05/2026 08:21:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -161,22 +168,29 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:21:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function purge(Connection $conn, string $mavenKey, OutputInterface $output): void
     {
         $output->writeln(' [PURGE] DELETE existantes pour maven_key...');
-        foreach ([
-            'logger_details', 'logger',
-            'no_sonar', 'todo',
-            'anomalie_details', 'anomalie',
-            'hotspot_details', 'hotspot_owasp', 'hotspots',
-            'mesures', 'information_projet',
-            'clean_code',
-            'liste_projet',
-        ] as $table) {
+        foreach (
+            [
+                'logger_details',
+                'logger',
+                'no_sonar',
+                'todo',
+                'anomalie_details',
+                'anomalie',
+                'hotspot_details',
+                'hotspot_owasp',
+                'hotspots',
+                'mesures',
+                'information_projet',
+                'clean_code',
+                'liste_projet',
+            ] as $table
+        ) {
             $conn->executeStatement(
                 "DELETE FROM ma_moulinette.$table WHERE maven_key = :mk",
                 ['mk' => $mavenKey]
@@ -192,9 +206,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:22:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedUtilisateurEtGroupe(Connection $conn, OutputInterface $output): void
     {
@@ -269,9 +282,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:22:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedListeProjet(Connection $conn, string $mavenKey, string $artifact, OutputInterface $output): void
     {
@@ -301,10 +313,8 @@ class SeedProjetFixtureCommand extends Command
      * @param OutputInterface $output
      *
      * @return void
-     *
-     * Created at: 15/05/2026 08:22:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedInformationProjet(
         Connection $conn,
@@ -351,9 +361,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:22:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedMesures(
         Connection $conn,
@@ -429,7 +438,7 @@ class SeedProjetFixtureCommand extends Command
             'software_quality_maintainability_issues'            => 'sq_mainta',
             'software_quality_maintainability_rating'            => '2',
             'software_quality_maintainability_debt_ratio'        => 3.91,
-            'software_quality_maintainability_remediation_effort'=> 4520,
+            'software_quality_maintainability_remediation_effort' => 4520,
             'effort_to_reach_software_quality_maintainability_rating_a' => 1180,
             'bugs'                                               => 12,
             'reliability_issues'                                 => 'rel',
@@ -454,7 +463,7 @@ class SeedProjetFixtureCommand extends Command
         ];
 
         $colNames = implode(', ', array_keys($cols));
-        $placeholders = implode(', ', array_map(static fn (string $k): string => ":$k", array_keys($cols)));
+        $placeholders = implode(', ', array_map(static fn(string $k): string => ":$k", array_keys($cols)));
         $conn->executeStatement(
             "INSERT INTO ma_moulinette.mesures ($colNames) VALUES ($placeholders)",
             $cols
@@ -472,9 +481,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:22:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedNoSonar(Connection $conn, string $mavenKey, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
@@ -484,7 +492,7 @@ class SeedProjetFixtureCommand extends Command
             ['rule' => 'java:S1310',    'component' => 'src/main/java/com/example/B.java',  'line' => 47],
             ['rule' => 'java:S1315',    'component' => 'src/main/java/com/example/C.java',  'line' => 83],
             ['rule' => 'java:NoSonar',  'component' => 'src/main/java/com/example/D.java',  'line' => 19],
-            ['rule' => 'python:NoSonar','component' => 'src/main/python/util.py',           'line' => 35],
+            ['rule' => 'python:NoSonar', 'component' => 'src/main/python/util.py',           'line' => 35],
             ['rule' => 'php:NoSonar',   'component' => 'src/main/php/controller.php',       'line' => 124],
         ];
         foreach ($rules as $r) {
@@ -492,8 +500,13 @@ class SeedProjetFixtureCommand extends Command
                 INSERT INTO ma_moulinette.no_sonar (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES (:mk, :rule, :comp, :line, :mc, :uc, :de)
             SQL, [
-                'mk' => $mavenKey, 'rule' => $r['rule'], 'comp' => $r['component'], 'line' => $r['line'],
-                'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+                'mk' => $mavenKey,
+                'rule' => $r['rule'],
+                'comp' => $r['component'],
+                'line' => $r['line'],
+                'mc' => $modeCollecte,
+                'uc' => self::FIXTURE_USER_EMAIL,
+                'de' => $dateEnreg,
             ]);
         }
     }
@@ -509,16 +522,21 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:22:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedTodo(Connection $conn, string $mavenKey, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
         $output->writeln(' [SEED] todo (8 langages : java, python, php, xml, web, javascript, typescript, ruby)...');
         $rules = [
-            'java:S1135', 'python:S1135', 'php:S1135', 'xml:S1135',
-            'web:S1135', 'javascript:S1135', 'typescript:S1135', 'ruby:S1135',
+            'java:S1135',
+            'python:S1135',
+            'php:S1135',
+            'xml:S1135',
+            'web:S1135',
+            'javascript:S1135',
+            'typescript:S1135',
+            'ruby:S1135',
         ];
         $line = 10;
         foreach ($rules as $rule) {
@@ -526,9 +544,13 @@ class SeedProjetFixtureCommand extends Command
                 INSERT INTO ma_moulinette.todo (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES (:mk, :rule, :comp, :line, :mc, :uc, :de)
             SQL, [
-                'mk' => $mavenKey, 'rule' => $rule,
+                'mk' => $mavenKey,
+                'rule' => $rule,
                 'comp' => 'src/test/' . str_replace(':', '_', $rule) . '.txt',
-                'line' => $line, 'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+                'line' => $line,
+                'mc' => $modeCollecte,
+                'uc' => self::FIXTURE_USER_EMAIL,
+                'de' => $dateEnreg,
             ]);
             $line += 5;
         }
@@ -545,9 +567,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:23:08 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedLogger(Connection $conn, string $mavenKey, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
@@ -557,11 +578,31 @@ class SeedProjetFixtureCommand extends Command
             VALUES (:mk, :info, :warn, :err, :debug, :mc, :uc, :de)
         SQL, [
             'mk' => $mavenKey,
-            'info' => 14, 'warn' => 3, 'err' => 33, 'debug' => 6,
-            'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+            'info' => 14,
+            'warn' => 3,
+            'err' => 33,
+            'debug' => 6,
+            'mc' => $modeCollecte,
+            'uc' => self::FIXTURE_USER_EMAIL,
+            'de' => $dateEnreg,
         ]);
     }
 
+    /**
+     * [Description for seedLoggerDetails]
+     *
+     * @param Connection $conn
+     * @param string $mavenKey
+     * @param string $version
+     * @param string $dateEnreg
+     * @param string $modeCollecte
+     * @param OutputInterface $output
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function seedLoggerDetails(Connection $conn, string $mavenKey, string $version, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
         $output->writeln(' [SEED] logger_details (mix SLF4J + Commons Logging + null)...');
@@ -580,8 +621,10 @@ class SeedProjetFixtureCommand extends Command
                 $fw = $frameworks[$i % 4];
                 $fp = $files[$i % 3];
                 $rows[] = [
-                    'maven_key' => $mavenKey, 'project_version' => $version,
-                    'level' => $level, 'framework' => $fw,
+                    'maven_key' => $mavenKey,
+                    'project_version' => $version,
+                    'level' => $level,
+                    'framework' => $fw,
                     'file_path' => $fp,
                     'file_name' => basename($fp),
                     'class_name' => pathinfo($fp, PATHINFO_FILENAME),
@@ -615,9 +658,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:23:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedAnomalie(Connection $conn, string $mavenKey, string $artifact, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
@@ -635,14 +677,32 @@ class SeedProjetFixtureCommand extends Command
                     :bl, :ct, :mj, :inf, :mn, :bug, :vuln, :cs,
                     :mc, :uc, :de)
         SQL, [
-            'mk' => $mavenKey, 'pn' => $artifact,
+            'mk' => $mavenKey,
+            'pn' => $artifact,
             'total' => 89,
-            'dm' => 4320, 'drm' => 720, 'dvm' => 480, 'dcsm' => 3120,
-            'dr' => '12h', 'dv' => '8h', 'd' => '3j 2h', 'dcs' => '2j 4h',
-            'fe' => 24, 'be' => 51, 'au' => 9, 'in' => 5,
-            'bl' => 1, 'ct' => 8, 'mj' => 27, 'inf' => 12, 'mn' => 41,
-            'bug' => 12, 'vuln' => 5, 'cs' => 56,
-            'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+            'dm' => 4320,
+            'drm' => 720,
+            'dvm' => 480,
+            'dcsm' => 3120,
+            'dr' => '12h',
+            'dv' => '8h',
+            'd' => '3j 2h',
+            'dcs' => '2j 4h',
+            'fe' => 24,
+            'be' => 51,
+            'au' => 9,
+            'in' => 5,
+            'bl' => 1,
+            'ct' => 8,
+            'mj' => 27,
+            'inf' => 12,
+            'mn' => 41,
+            'bug' => 12,
+            'vuln' => 5,
+            'cs' => 56,
+            'mc' => $modeCollecte,
+            'uc' => self::FIXTURE_USER_EMAIL,
+            'de' => $dateEnreg,
         ]);
     }
 
@@ -658,9 +718,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:23:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedAnomalieDetails(Connection $conn, string $mavenKey, string $artifact, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
@@ -678,11 +737,26 @@ class SeedProjetFixtureCommand extends Command
                     :csb, :csc, :csi, :csma, :csmi,
                     :mc, :uc, :de)
         SQL, [
-            'mk' => $mavenKey, 'name' => $artifact,
-            'bb' => 1, 'bc' => 3, 'bi' => 1, 'bma' => 5, 'bmi' => 2,
-            'vb' => 1, 'vc' => 2, 'vi' => 1, 'vma' => 1, 'vmi' => 0,
-            'csb' => 0, 'csc' => 3, 'csi' => 10, 'csma' => 21, 'csmi' => 22,
-            'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+            'mk' => $mavenKey,
+            'name' => $artifact,
+            'bb' => 1,
+            'bc' => 3,
+            'bi' => 1,
+            'bma' => 5,
+            'bmi' => 2,
+            'vb' => 1,
+            'vc' => 2,
+            'vi' => 1,
+            'vma' => 1,
+            'vmi' => 0,
+            'csb' => 0,
+            'csc' => 3,
+            'csi' => 10,
+            'csma' => 21,
+            'csmi' => 22,
+            'mc' => $modeCollecte,
+            'uc' => self::FIXTURE_USER_EMAIL,
+            'de' => $dateEnreg,
         ]);
     }
 
@@ -699,9 +773,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:23:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedHotspots(Connection $conn, string $mavenKey, string $version, string $dateAnalyse, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
@@ -710,8 +783,8 @@ class SeedProjetFixtureCommand extends Command
         $rows = [
             ['cat' => 'auth',         'rule' => 'java:S2092', 'prob' => 'HIGH',   'st' => 'TO_REVIEW', 'res' => 'PENDING', 'niv' => 1],
             ['cat' => 'encryption',   'rule' => 'java:S4423', 'prob' => 'HIGH',   'st' => 'TO_REVIEW', 'res' => 'PENDING', 'niv' => 1],
-            ['cat' => 'sql_injection','rule' => 'java:S2077', 'prob' => 'MEDIUM', 'st' => 'TO_REVIEW', 'res' => 'PENDING', 'niv' => 2],
-            ['cat' => 'log_injection','rule' => 'java:S5145', 'prob' => 'LOW',    'st' => 'REVIEWED',  'res' => 'FIXED',   'niv' => 3],
+            ['cat' => 'sql_injection', 'rule' => 'java:S2077', 'prob' => 'MEDIUM', 'st' => 'TO_REVIEW', 'res' => 'PENDING', 'niv' => 2],
+            ['cat' => 'log_injection', 'rule' => 'java:S5145', 'prob' => 'LOW',    'st' => 'REVIEWED',  'res' => 'FIXED',   'niv' => 3],
             ['cat' => 'others',       'rule' => 'java:S2068', 'prob' => 'MEDIUM', 'st' => 'REVIEWED',  'res' => 'FIXED',   'niv' => 2],
         ];
         foreach ($rows as $i => $r) {
@@ -720,11 +793,19 @@ class SeedProjetFixtureCommand extends Command
                     (maven_key, version, date_version, hotspot_key, security_category, rule_key, probability, status, resolution, niveau, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES (:mk, :v, :dv, :hk, :cat, :rk, :prob, :st, :res, :niv, :mc, :uc, :de)
             SQL, [
-                'mk' => $mavenKey, 'v' => $version, 'dv' => $dateAnalyse,
+                'mk' => $mavenKey,
+                'v' => $version,
+                'dv' => $dateAnalyse,
                 'hk' => 'HS-' . substr(md5("$mavenKey-$i"), 0, 12),
-                'cat' => $r['cat'], 'rk' => $r['rule'], 'prob' => $r['prob'],
-                'st' => $r['st'], 'res' => $r['res'], 'niv' => $r['niv'],
-                'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+                'cat' => $r['cat'],
+                'rk' => $r['rule'],
+                'prob' => $r['prob'],
+                'st' => $r['st'],
+                'res' => $r['res'],
+                'niv' => $r['niv'],
+                'mc' => $modeCollecte,
+                'uc' => self::FIXTURE_USER_EMAIL,
+                'de' => $dateEnreg,
             ]);
         }
     }
@@ -742,9 +823,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:23:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedHotspotDetails(Connection $conn, string $mavenKey, string $version, string $dateAnalyse, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
@@ -753,8 +833,8 @@ class SeedProjetFixtureCommand extends Command
         $rows = [
             ['cat' => 'auth',         'sev' => 'HIGH',   'niv' => 1],
             ['cat' => 'encryption',   'sev' => 'HIGH',   'niv' => 1],
-            ['cat' => 'sql_injection','sev' => 'MEDIUM', 'niv' => 2],
-            ['cat' => 'log_injection','sev' => 'LOW',    'niv' => 3],
+            ['cat' => 'sql_injection', 'sev' => 'MEDIUM', 'niv' => 2],
+            ['cat' => 'log_injection', 'sev' => 'LOW',    'niv' => 3],
             ['cat' => 'others',       'sev' => 'MEDIUM', 'niv' => 2],
         ];
         foreach ($rows as $i => $r) {
@@ -763,18 +843,27 @@ class SeedProjetFixtureCommand extends Command
                     (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES (:mk, :v, :dv, :cat, :rk, :rn, :sev, :st, :res, :niv, :fe, :be, :au, :fn, :fp, :line, :msg, :hk, :mc, :uc, :de)
             SQL, [
-                'mk' => $mavenKey, 'v' => $version, 'dv' => $dateAnalyse,
-                'cat' => $r['cat'], 'rk' => 'java:S' . (2000 + $i),
+                'mk' => $mavenKey,
+                'v' => $version,
+                'dv' => $dateAnalyse,
+                'cat' => $r['cat'],
+                'rk' => 'java:S' . (2000 + $i),
                 'rn'  => 'Rule label ' . $r['cat'],
                 'sev' => $r['sev'],
-                'st'  => 'TO_REVIEW', 'res' => 'PENDING', 'niv' => $r['niv'],
-                'fe' => $i === 0 ? 1 : 0, 'be' => $i % 2,'au' => 0,
+                'st'  => 'TO_REVIEW',
+                'res' => 'PENDING',
+                'niv' => $r['niv'],
+                'fe' => $i === 0 ? 1 : 0,
+                'be' => $i % 2,
+                'au' => 0,
                 'fn' => 'File' . $i . '.java',
                 'fp' => 'src/main/java/com/example/File' . $i . '.java',
                 'line' => 30 + $i * 7,
                 'msg' => 'Detail hotspot ' . $r['cat'],
                 'hk'  => 'HS-' . substr(md5("$mavenKey-$i"), 0, 12),
-                'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+                'mc' => $modeCollecte,
+                'uc' => self::FIXTURE_USER_EMAIL,
+                'de' => $dateEnreg,
             ]);
         }
     }
@@ -792,9 +881,8 @@ class SeedProjetFixtureCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:23:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function seedHotspotOwasp(Connection $conn, string $mavenKey, string $version, string $dateAnalyse, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
@@ -810,16 +898,39 @@ class SeedProjetFixtureCommand extends Command
                     (referential_owasp, maven_key, version, date_version, menace, security_category, rule_key, probability, status, resolution, niveau, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES (:ref, :mk, :v, :dv, :m, :cat, :rk, :prob, :st, :res, :niv, :mc, :uc, :de)
             SQL, [
-                'ref' => 2021, 'mk' => $mavenKey, 'v' => $version, 'dv' => $dateAnalyse,
+                'ref' => 2021,
+                'mk' => $mavenKey,
+                'v' => $version,
+                'dv' => $dateAnalyse,
                 'm'   => 'A' . ($i + 1),
-                'cat' => $cat, 'rk' => 'java:S' . (3000 + $i),
+                'cat' => $cat,
+                'rk' => 'java:S' . (3000 + $i),
                 'prob' => $probs[$i],
-                'st' => 'TO_REVIEW', 'res' => 'PENDING', 'niv' => $nivs[$i],
-                'mc' => $modeCollecte, 'uc' => self::FIXTURE_USER_EMAIL, 'de' => $dateEnreg,
+                'st' => 'TO_REVIEW',
+                'res' => 'PENDING',
+                'niv' => $nivs[$i],
+                'mc' => $modeCollecte,
+                'uc' => self::FIXTURE_USER_EMAIL,
+                'de' => $dateEnreg,
             ]);
         }
     }
 
+    /**
+     * [Description for seedCleanCode]
+     *
+     * @param Connection $conn
+     * @param string $mavenKey
+     * @param string $artifact
+     * @param string $dateEnreg
+     * @param string $modeCollecte
+     * @param OutputInterface $output
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     private function seedCleanCode(Connection $conn, string $mavenKey, string $artifact, string $dateEnreg, string $modeCollecte, OutputInterface $output): void
     {
         $output->writeln(' [SEED] clean_code (15 indicateurs SonarQube 10+, valeurs distinctes)...');

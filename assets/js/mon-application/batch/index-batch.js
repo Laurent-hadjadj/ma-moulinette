@@ -59,7 +59,6 @@ let suppressClick = false;
  *
  * @return array
  *
- * Created at: 14/06/2024 16:23:54 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  */
@@ -219,9 +218,8 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
  *
  * @return void
  *
- * Created at: 07/02/2023, 15:05:56 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  */
 const traitementInformation = async function(traitement_id){
   /** On lance le processus */

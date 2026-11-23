@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -27,6 +27,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * (Bloquant/Critique/Majeur/Mineur/Info). Une ligne par (scan, référentiel) —
  * contrairement à `owasp` qui écrase à chaque collecte, ici chaque scan
  * ingéré ajoute ses lignes (historisation native par scan, cf. ZapScan).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: OwaspDastRepository::class)]
 #[ORM\Table(name: 'owasp_dast', schema: 'ma_moulinette')]
@@ -193,16 +196,22 @@ class OwaspDast
      * @param int $category
      *
      * @return int
-     *
-     * Created at: 13/10/2026 21:12:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getCategoryCount(int $category): int
     {
         return match ($category) {
-            1 => $this->a1, 2 => $this->a2, 3 => $this->a3, 4 => $this->a4, 5 => $this->a5,
-            6 => $this->a6, 7 => $this->a7, 8 => $this->a8, 9 => $this->a9, 10 => $this->a10,
+            1 => $this->a1,
+            2 => $this->a2,
+            3 => $this->a3,
+            4 => $this->a4,
+            5 => $this->a5,
+            6 => $this->a6,
+            7 => $this->a7,
+            8 => $this->a8,
+            9 => $this->a9,
+            10 => $this->a10,
             default => throw new \InvalidArgumentException("Catégorie OWASP invalide : {$category}."),
         };
     }
@@ -220,10 +229,8 @@ class OwaspDast
      * @param int $category 1 à 10
      * @param string $riskLabel 'informational' | 'low' | 'medium' | 'high'
      *
-     * @return void
-     * Created at: 13/10/2026 21:11:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @return void     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function incrementCategory(int $category, string $riskLabel): void
     {

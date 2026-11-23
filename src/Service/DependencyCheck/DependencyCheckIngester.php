@@ -18,11 +18,13 @@ use App\Entity\DcDependency;
 use App\Entity\DcFinding;
 use App\Entity\DcProcessingQueue;
 use App\Entity\DcScan;
-use App\Exception\DependencyCheck\{DcEmptyPayloadException,
+use App\Exception\DependencyCheck\{
+    DcEmptyPayloadException,
     DcGzipDecodeException,
     DcInvalidJsonException,
     DcInvalidStructureException,
-    DcPayloadException};
+    DcPayloadException
+};
 use App\Repository\DcCveRepository;
 use App\Repository\DcDependencyRepository;
 use App\Repository\DcScanRepository;
@@ -102,9 +104,8 @@ class DependencyCheckIngester
      *         de \RuntimeException pour rester compatibles avec les catch historiques)
      * @return DcScan
      *
-     * Created at: 11/05/2026 00:01:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function ingest(DcProcessingQueue $queue): DcScan
     {
@@ -145,7 +146,9 @@ class DependencyCheckIngester
             $depsVulnerable = 0;
 
             foreach ($parsed['dependencies'] ?? [] as $depRaw) {
-                if (!is_array($depRaw)) { continue; }
+                if (!is_array($depRaw)) {
+                    continue;
+                }
                 $depsTotal++;
 
                 $vulns = $depRaw['vulnerabilities'] ?? [];
@@ -157,7 +160,9 @@ class DependencyCheckIngester
                 $depEntity = $this->findOrCreateDependency($depRaw);
 
                 foreach ($vulns as $vulnRaw) {
-                    if (!is_array($vulnRaw)) { continue; }
+                    if (!is_array($vulnRaw)) {
+                        continue;
+                    }
 
                     $cveEntity = $this->findOrCreateCve($vulnRaw);
 
@@ -199,13 +204,13 @@ class DependencyCheckIngester
 
             // Mise a jour des compteurs sur le scan
             $scan->setDepCountTotal($depsTotal)
-                    ->setDepCountVulnerable($depsVulnerable)
-                    ->setCveCountCritical($stats['CRITICAL'])
-                    ->setCveCountHigh($stats['HIGH'])
-                    ->setCveCountMedium($stats['MEDIUM'])
-                    ->setCveCountLow($stats['LOW'])
-                    ->setCveCountInfo($stats['INFO'])
-                    ->setCveCountTotal(array_sum($stats));
+                ->setDepCountVulnerable($depsVulnerable)
+                ->setCveCountCritical($stats['CRITICAL'])
+                ->setCveCountHigh($stats['HIGH'])
+                ->setCveCountMedium($stats['MEDIUM'])
+                ->setCveCountLow($stats['LOW'])
+                ->setCveCountInfo($stats['INFO'])
+                ->setCveCountTotal(array_sum($stats));
 
             $this->em->flush();
             $this->em->commit();
@@ -258,9 +263,8 @@ class DependencyCheckIngester
      *
      * @return string
      *
-     * Created at: 14/07/2026 20:05:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractJson(DcProcessingQueue $queue): string
     {
@@ -309,9 +313,8 @@ class DependencyCheckIngester
      *
      * @return \DateTimeImmutable
      *
-     * Created at: 11/05/2026 00:04:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function parseReportDate(string $raw): \DateTimeImmutable
     {
@@ -336,9 +339,8 @@ class DependencyCheckIngester
      *
      * @return DcScan
      *
-     * Created at: 11/05/2026 00:04:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function createScan(
         DcProcessingQueue $queue,
@@ -374,9 +376,8 @@ class DependencyCheckIngester
      *
      * @return DcDependency
      *
-     * Created at: 11/05/2026 00:05:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function findOrCreateDependency(array $depRaw): DcDependency
     {
@@ -430,9 +431,8 @@ class DependencyCheckIngester
      *
      * @return array{0: ?string, 1: ?string, 2: ?string} [vendor, product, version]
      *
-     * Created at: 11/05/2026 00:06:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function parsePurl(?string $purl): array
     {
@@ -458,9 +458,11 @@ class DependencyCheckIngester
             $vendor  = null;
             $product = $segments[0] ?? null;
         }
-        return [$vendor !== null ? substr($vendor, 0, 255) : null,
-                $product !== null ? substr($product, 0, 255) : null,
-                $version !== null ? substr($version, 0, 64) : null];
+        return [
+            $vendor !== null ? substr($vendor, 0, 255) : null,
+            $product !== null ? substr($product, 0, 255) : null,
+            $version !== null ? substr($version, 0, 64) : null
+        ];
     }
 
     /**
@@ -470,9 +472,8 @@ class DependencyCheckIngester
      *
      * @return DcCve
      *
-     * Created at: 11/05/2026 00:06:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function findOrCreateCve(array $vulnRaw): DcCve
     {
@@ -530,9 +531,8 @@ class DependencyCheckIngester
      *
      * @return string
      *
-     * Created at: 11/05/2026 00:07:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function normalizeSeverity(string $raw): string
     {
@@ -546,5 +546,4 @@ class DependencyCheckIngester
             default    => DcCve::SEVERITY_UNKNOWN,
         };
     }
-
 }

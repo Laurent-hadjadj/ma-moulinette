@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller;
@@ -49,9 +49,8 @@ class FooterController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/12/2024 23:25:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -71,9 +70,8 @@ class FooterController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 03/02/2024 23:14:34 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/plan-du-site', name: 'plan_du_site')]
     public function planDuSite(): Response
@@ -88,9 +86,8 @@ class FooterController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 03/02/2024 23:14:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/mention-legale', name: 'mention_legal')]
     public function mentionLegal(): Response
@@ -111,9 +108,8 @@ class FooterController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 21/12/2024 23:32:34 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/donnees-personnelles', name: 'donnees_personnelles')]
     public function donneesPersonnelles(): Response

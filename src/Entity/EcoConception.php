@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -18,15 +18,16 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/* MODIF 2026-10-08 : entité pour l'Empreinte Écologique (plugins SonarQube
+/**
+ * [Description EcoConception]
+ * MODIF 2026-10-08 : entité pour l'Empreinte Écologique (plugins SonarQube
  * Creedengo creedengo-java/javascript/php/python, activable via la propriété
  * CREEDENGO_ENABLED). Snapshot courant, une ligne par maven_key.
  * Ajout de la note A-E (seuils SQALE 5/10/20/50%, identiques au RCI)
  * et du détail par langage.
- */
-
-/**
- * [Description EcoConception]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: EcoConceptionRepository::class)]
 #[ORM\Table(name: "eco_conception", schema: "ma_moulinette")]
@@ -171,40 +172,145 @@ class EcoConception
         return $this;
     }
 
-    public function getEcoAnomalies(): ?int { return $this->ecoAnomalies; }
-    public function setEcoAnomalies(?int $v): static { $this->ecoAnomalies = $v; return $this; }
-    public function getEcoDetteMinute(): ?int { return $this->ecoDetteMinute; }
-    public function setEcoDetteMinute(?int $v): static { $this->ecoDetteMinute = $v; return $this; }
-    public function getEcoRating(): ?string { return $this->ecoRating; }
-    public function setEcoRating(?string $v): static { $this->ecoRating = $v; return $this; }
+    public function getEcoAnomalies(): ?int
+    {
+        return $this->ecoAnomalies;
+    }
+    public function setEcoAnomalies(?int $v): static
+    {
+        $this->ecoAnomalies = $v;
+        return $this;
+    }
+    public function getEcoDetteMinute(): ?int
+    {
+        return $this->ecoDetteMinute;
+    }
+    public function setEcoDetteMinute(?int $v): static
+    {
+        $this->ecoDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoRating(): ?string
+    {
+        return $this->ecoRating;
+    }
+    public function setEcoRating(?string $v): static
+    {
+        $this->ecoRating = $v;
+        return $this;
+    }
 
-    public function getEcoJavaAnomalies(): ?int { return $this->ecoJavaAnomalies; }
-    public function setEcoJavaAnomalies(?int $v): static { $this->ecoJavaAnomalies = $v; return $this; }
-    public function getEcoJavaDetteMinute(): ?int { return $this->ecoJavaDetteMinute; }
-    public function setEcoJavaDetteMinute(?int $v): static { $this->ecoJavaDetteMinute = $v; return $this; }
-    public function getEcoJavaRating(): ?string { return $this->ecoJavaRating; }
-    public function setEcoJavaRating(?string $v): static { $this->ecoJavaRating = $v; return $this; }
+    public function getEcoJavaAnomalies(): ?int
+    {
+        return $this->ecoJavaAnomalies;
+    }
+    public function setEcoJavaAnomalies(?int $v): static
+    {
+        $this->ecoJavaAnomalies = $v;
+        return $this;
+    }
+    public function getEcoJavaDetteMinute(): ?int
+    {
+        return $this->ecoJavaDetteMinute;
+    }
+    public function setEcoJavaDetteMinute(?int $v): static
+    {
+        $this->ecoJavaDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoJavaRating(): ?string
+    {
+        return $this->ecoJavaRating;
+    }
+    public function setEcoJavaRating(?string $v): static
+    {
+        $this->ecoJavaRating = $v;
+        return $this;
+    }
 
-    public function getEcoJavascriptAnomalies(): ?int { return $this->ecoJavascriptAnomalies; }
-    public function setEcoJavascriptAnomalies(?int $v): static { $this->ecoJavascriptAnomalies = $v; return $this; }
-    public function getEcoJavascriptDetteMinute(): ?int { return $this->ecoJavascriptDetteMinute; }
-    public function setEcoJavascriptDetteMinute(?int $v): static { $this->ecoJavascriptDetteMinute = $v; return $this; }
-    public function getEcoJavascriptRating(): ?string { return $this->ecoJavascriptRating; }
-    public function setEcoJavascriptRating(?string $v): static { $this->ecoJavascriptRating = $v; return $this; }
+    public function getEcoJavascriptAnomalies(): ?int
+    {
+        return $this->ecoJavascriptAnomalies;
+    }
+    public function setEcoJavascriptAnomalies(?int $v): static
+    {
+        $this->ecoJavascriptAnomalies = $v;
+        return $this;
+    }
+    public function getEcoJavascriptDetteMinute(): ?int
+    {
+        return $this->ecoJavascriptDetteMinute;
+    }
+    public function setEcoJavascriptDetteMinute(?int $v): static
+    {
+        $this->ecoJavascriptDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoJavascriptRating(): ?string
+    {
+        return $this->ecoJavascriptRating;
+    }
+    public function setEcoJavascriptRating(?string $v): static
+    {
+        $this->ecoJavascriptRating = $v;
+        return $this;
+    }
 
-    public function getEcoPhpAnomalies(): ?int { return $this->ecoPhpAnomalies; }
-    public function setEcoPhpAnomalies(?int $v): static { $this->ecoPhpAnomalies = $v; return $this; }
-    public function getEcoPhpDetteMinute(): ?int { return $this->ecoPhpDetteMinute; }
-    public function setEcoPhpDetteMinute(?int $v): static { $this->ecoPhpDetteMinute = $v; return $this; }
-    public function getEcoPhpRating(): ?string { return $this->ecoPhpRating; }
-    public function setEcoPhpRating(?string $v): static { $this->ecoPhpRating = $v; return $this; }
+    public function getEcoPhpAnomalies(): ?int
+    {
+        return $this->ecoPhpAnomalies;
+    }
+    public function setEcoPhpAnomalies(?int $v): static
+    {
+        $this->ecoPhpAnomalies = $v;
+        return $this;
+    }
+    public function getEcoPhpDetteMinute(): ?int
+    {
+        return $this->ecoPhpDetteMinute;
+    }
+    public function setEcoPhpDetteMinute(?int $v): static
+    {
+        $this->ecoPhpDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoPhpRating(): ?string
+    {
+        return $this->ecoPhpRating;
+    }
+    public function setEcoPhpRating(?string $v): static
+    {
+        $this->ecoPhpRating = $v;
+        return $this;
+    }
 
-    public function getEcoPythonAnomalies(): ?int { return $this->ecoPythonAnomalies; }
-    public function setEcoPythonAnomalies(?int $v): static { $this->ecoPythonAnomalies = $v; return $this; }
-    public function getEcoPythonDetteMinute(): ?int { return $this->ecoPythonDetteMinute; }
-    public function setEcoPythonDetteMinute(?int $v): static { $this->ecoPythonDetteMinute = $v; return $this; }
-    public function getEcoPythonRating(): ?string { return $this->ecoPythonRating; }
-    public function setEcoPythonRating(?string $v): static { $this->ecoPythonRating = $v; return $this; }
+    public function getEcoPythonAnomalies(): ?int
+    {
+        return $this->ecoPythonAnomalies;
+    }
+    public function setEcoPythonAnomalies(?int $v): static
+    {
+        $this->ecoPythonAnomalies = $v;
+        return $this;
+    }
+    public function getEcoPythonDetteMinute(): ?int
+    {
+        return $this->ecoPythonDetteMinute;
+    }
+    public function setEcoPythonDetteMinute(?int $v): static
+    {
+        $this->ecoPythonDetteMinute = $v;
+        return $this;
+    }
+    public function getEcoPythonRating(): ?string
+    {
+        return $this->ecoPythonRating;
+    }
+    public function setEcoPythonRating(?string $v): static
+    {
+        $this->ecoPythonRating = $v;
+        return $this;
+    }
 
     public function getModeCollecte(): ?string
     {

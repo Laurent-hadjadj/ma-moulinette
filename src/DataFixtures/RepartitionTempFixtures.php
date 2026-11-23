@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -19,7 +19,8 @@ use App\Entity\RepartitionTemp;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/* MODIF 2026-05-08 : creation RepartitionTempFixtures.
+/**
+ * MODIF 2026-05-08 : creation RepartitionTempFixtures.
  * Contrat : 15 lignes RepartitionTemp pour le couple
  * (maven_key=fr.ma-moulinette:ma-moulinette, setup=1000000000001) afin de satisfaire :
  *   - RepartitionTempKernelTest::testRepartitionTempCount (assertCount(15) sur findBy setup),

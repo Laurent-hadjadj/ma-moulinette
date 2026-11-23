@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -229,7 +229,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
 
         $this->ruleClassifier->expects($this->once())
             ->method('classify')
-            ->with($this->callback(fn (array $issues) => count($issues) === 501))
+            ->with($this->callback(fn(array $issues) => count($issues) === 501))
             ->willReturn($this->emptyClassification());
 
         $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => ['date' => '2026-04-22', 'version' => '1.0']]);
@@ -469,7 +469,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
             ->with(
                 self::SONAR_URL,
                 '/api/issues/search',
-                $this->callback(fn (array $params) => $params['rules'] === 'java:S2077,findsecbugs:SQL_INJECTION_JPA')
+                $this->callback(fn(array $params) => $params['rules'] === 'java:S2077,findsecbugs:SQL_INJECTION_JPA')
             )
             ->willReturn(self::BUILT_URL);
 
@@ -654,12 +654,24 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->client->method('httpSonarQube')->willReturn(['code' => 200, 'json' => $this->page([], 0)]);
 
         $detailRow2017 = [
-            'rule' => 'java:S2077', 'categories' => 'A1', 'severity' => 'CRITICAL', 'source' => 'core',
-            'component' => self::MAVEN_KEY . ':webapp/Foo.java', 'module' => 'frontend', 'line' => 10, 'message' => 'msg',
+            'rule' => 'java:S2077',
+            'categories' => 'A1',
+            'severity' => 'CRITICAL',
+            'source' => 'core',
+            'component' => self::MAVEN_KEY . ':webapp/Foo.java',
+            'module' => 'frontend',
+            'line' => 10,
+            'message' => 'msg',
         ];
         $detailRow2021 = [
-            'rule' => 'java:S2077', 'categories' => 'A3', 'severity' => 'CRITICAL', 'source' => 'core',
-            'component' => self::MAVEN_KEY . ':webapp/Foo.java', 'module' => 'frontend', 'line' => 10, 'message' => 'msg',
+            'rule' => 'java:S2077',
+            'categories' => 'A3',
+            'severity' => 'CRITICAL',
+            'source' => 'core',
+            'component' => self::MAVEN_KEY . ':webapp/Foo.java',
+            'module' => 'frontend',
+            'line' => 10,
+            'message' => 'msg',
         ];
         $classified = $this->emptyClassification();
         $classified['details'] = [2017 => [$detailRow2017], 2021 => [$detailRow2021]];

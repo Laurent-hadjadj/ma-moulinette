@@ -34,8 +34,8 @@ class BatchCollecteAnomalieController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -45,8 +45,7 @@ class BatchCollecteAnomalieController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for batchAnalyseAnomalie]
@@ -57,7 +56,6 @@ class BatchCollecteAnomalieController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 28/07/2025 15:45:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -110,7 +108,8 @@ class BatchCollecteAnomalieController extends AbstractController
             }
         } catch (\Exception $e) {
             $this->logger->critical("[Batch Anomalie] 🔴 Exception lors de l'analyse du chemin", [
-                'exception' => $e->getMessage()]);
+                'exception' => $e->getMessage()
+            ]);
 
             return [
                 'code' => 500,
@@ -135,12 +134,12 @@ class BatchCollecteAnomalieController extends AbstractController
         ]);
 
         return [
-                'code' => 200,
-                'frontend' => $scoreFrontend,
-                'backend' => $scoreBackend,
-                'autre' => $scoreAutre,
-                'inconnu' => $scoreInconnu
-            ];
+            'code' => 200,
+            'frontend' => $scoreFrontend,
+            'backend' => $scoreBackend,
+            'autre' => $scoreAutre,
+            'inconnu' => $scoreInconnu
+        ];
     }
 
     /**
@@ -151,37 +150,36 @@ class BatchCollecteAnomalieController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 09/08/2024 07:52:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function makeRequest(array $queryParams): array
-        {
-            /** Sécurisation de l'URL */
-            $url = $this->urlBuilder->build(
-                $this->getParameter(self::$sonarUrl),
-                '/api/issues/search',
-                $queryParams
-            );
+    {
+        /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(self::$sonarUrl),
+            '/api/issues/search',
+            $queryParams
+        );
 
-            $this->logger->debug("[Batch Anomalie] 🛠️ Appel API SonarQube", ['url' => $url]);
-            $result = $this->client->httpSonarQube($url);
+        $this->logger->debug("[Batch Anomalie] 🛠️ Appel API SonarQube", ['url' => $url]);
+        $result = $this->client->httpSonarQube($url);
 
-            if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
-                $this->logger->error("[Batch Anomalie] ❌ Erreur API SonarQube", [
-                    'url' => $url,
-                    'code' => $result['code'],
-                    'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
-                ]);
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
+            $this->logger->error("[Batch Anomalie] ❌ Erreur API SonarQube", [
+                'url' => $url,
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ]);
 
-                return [
-                    'code' => $result['code'],
-                    'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
-                ];
-            }
-
-            return $result['json'] ?? [];
+            return [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ];
         }
+
+        return $result['json'] ?? [];
+    }
 
     /**
      * [Description for BatchCollecteAnomalie]
@@ -191,7 +189,6 @@ class BatchCollecteAnomalieController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/05/2024 23:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -213,12 +210,14 @@ class BatchCollecteAnomalieController extends AbstractController
         $app = $this->serviceExtractName->extractNameFromMavenKey($maven_key);
 
         /* Tableau des paramètres pour les requêtes HTTP */
-        /* MODIF 2026-10-06 : ajout du facet 'scopes' (MAIN/TEST) sur les 3 appels
+        /**
+         * MODIF 2026-10-06 : ajout du facet 'scopes' (MAIN/TEST) sur les 3 appels
          * par catégorie — réutilise les appels déjà existants (aucun appel HTTP
          * supplémentaire). 'statuses'/'issueStatuses' aligné sur $issueStatus (comme
          * 'general') pour que les comptages scopes par catégorie correspondent au même
          * périmètre d'issues que le reste de la collecte. */
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2
+        /**
+         * MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2
          * (deprecatedKey, même sémantique). statuses renommée issueStatuses depuis la
          * 10.4 (pas un simple renommage, cf. GetSonarVersionService::issueStatusParam()
          * et mkDocs/docs/ma-moulinette/application/projet.md pour la règle complète).
@@ -227,14 +226,37 @@ class BatchCollecteAnomalieController extends AbstractController
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
         $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParamsList = [
-            'general' => [ $componentKeyParam => $maven_key, 'facets' => 'directories,types,severities',
-                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'] ],
-            'BUG' => [ $componentKeyParam => $maven_key, 'types' => 'BUG', 'p' => 1, 'ps' => 1,
-                $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ],
-            'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'types' => 'VULNERABILITY',
-                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ],
-            'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'types' => 'CODE_SMELL',
-                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ]
+            'general' => [
+                $componentKeyParam => $maven_key,
+                'facets' => 'directories,types,severities',
+                'p' => 1,
+                'ps' => 1,
+                $issueStatus['param'] => $issueStatus['value']
+            ],
+            'BUG' => [
+                $componentKeyParam => $maven_key,
+                'types' => 'BUG',
+                'p' => 1,
+                'ps' => 1,
+                $issueStatus['param'] => $issueStatus['value'],
+                'facets' => 'scopes'
+            ],
+            'VULNERABILITY' => [
+                $componentKeyParam => $maven_key,
+                'types' => 'VULNERABILITY',
+                'p' => 1,
+                'ps' => 1,
+                $issueStatus['param'] => $issueStatus['value'],
+                'facets' => 'scopes'
+            ],
+            'CODE_SMELL' => [
+                $componentKeyParam => $maven_key,
+                'types' => 'CODE_SMELL',
+                'p' => 1,
+                'ps' => 1,
+                $issueStatus['param'] => $issueStatus['value'],
+                'facets' => 'scopes'
+            ]
         ];
 
         /**
@@ -246,11 +268,11 @@ class BatchCollecteAnomalieController extends AbstractController
         if (isset($results['general']['code'])) {
             $this->logger->error("[Batch Anomalie] ❌ Erreur API [general]", ['erreur' => $results['general']]);
             return [
-                    'code' => $results['general']['code'],
-                    'erreur' => $results['general']['erreur'],
-                    'type' => 'general'
-                ];
-            }
+                'code' => $results['general']['code'],
+                'erreur' => $results['general']['erreur'],
+                'type' => 'general'
+            ];
+        }
 
         // Appels BUG, VULNERABILITY, CODE_SMELL
         /* MODIF 2026-10-06 : répartition scopes (MAIN/TEST) par catégorie, lue
@@ -287,7 +309,7 @@ class BatchCollecteAnomalieController extends AbstractController
         if ($results['general']['paging']['total'] != 0) {
 
             /** On supprime les résultats pour la maven_key. */
-            $map = [ 'maven_key' => $maven_key ];
+            $map = ['maven_key' => $maven_key];
 
             $this->logger->info('[batch Anomalie] 🧹 Suppression des anomalies précédentes');
             $delete = $anomalieRepos->deleteAnomalieMavenKey($map);
@@ -338,7 +360,7 @@ class BatchCollecteAnomalieController extends AbstractController
                         break;
                     default:
                         $this->logger->critical("[Batch Anomalie] 🔴 On ne devrait pas arriver dans le default du switch.");
-                    break;
+                        break;
                 }
             }
         }
@@ -392,37 +414,38 @@ class BatchCollecteAnomalieController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $historique = [
-                    'violations' => $anomalieTotal ?? 0,
-                    'dette' => $detteMinute ?? 0,
-                    'nombre_bug' => $types['BUG'] ?? 0,
-                    'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
-                    'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
-                    /* MODIF 2026-10-06 : correction d'une régression réelle — ces clés
-                     * étaient en bare 'frontend'/'backend'/'autre'/'inconnu', qui ne
-                     * correspondent à aucune colonne de la whitelist de
-                     * HistoriqueRepository (seule 'repartition_frontend' etc. existe).
-                     * CollecteController::collecte() fusionnant ce tableau tel quel,
-                     * ces 4 colonnes restaient toujours NULL pour toute collecte
-                     * batch/cron, alors que le flux interactif (enregistrement.js)
-                     * les renomme déjà correctement avant l'envoi au serveur. */
-                    'repartition_frontend' => $analyse['frontend'] ?? 0,
-                    'repartition_backend' => $analyse['backend'] ?? 0,
-                    'repartition_autre' => $analyse['autre'] ?? 0,
-                    'repartition_inconnu' => $analyse['inconnu'] ?? 0,
-                    'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
-                    'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
-                    'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
-                    'nombre_anomalie_majeur' => $severities['MAJOR'] ?? 0,
-                    'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0,
-                    'scope_main' => $scopeMainTotal,
-                    'scope_test' => $scopeTestTotal,
-                    'bug_scope_main' => $scopeMainByType['BUG'],
-                    'bug_scope_test' => $scopeTestByType['BUG'],
-                    'vulnerability_scope_main' => $scopeMainByType['VULNERABILITY'],
-                    'vulnerability_scope_test' => $scopeTestByType['VULNERABILITY'],
-                    'code_smell_scope_main' => $scopeMainByType['CODE_SMELL'],
-                    'code_smell_scope_test' => $scopeTestByType['CODE_SMELL']
-                ];
+            'violations' => $anomalieTotal ?? 0,
+            'dette' => $detteMinute ?? 0,
+            'nombre_bug' => $types['BUG'] ?? 0,
+            'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
+            'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
+            /**
+             * MODIF 2026-10-06 : correction d'une régression réelle — ces clés
+             * étaient en bare 'frontend'/'backend'/'autre'/'inconnu', qui ne
+             * correspondent à aucune colonne de la whitelist de
+             * HistoriqueRepository (seule 'repartition_frontend' etc. existe).
+             * CollecteController::collecte() fusionnant ce tableau tel quel,
+             * ces 4 colonnes restaient toujours NULL pour toute collecte
+             * batch/cron, alors que le flux interactif (enregistrement.js)
+             * les renomme déjà correctement avant l'envoi au serveur. */
+            'repartition_frontend' => $analyse['frontend'] ?? 0,
+            'repartition_backend' => $analyse['backend'] ?? 0,
+            'repartition_autre' => $analyse['autre'] ?? 0,
+            'repartition_inconnu' => $analyse['inconnu'] ?? 0,
+            'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
+            'nombre_anomalie_critique' => $severities['CRITICAL'] ?? 0,
+            'nombre_anomalie_info' => $severities['INFO'] ?? 0,
+            'nombre_anomalie_majeur' => $severities['MAJOR'] ?? 0,
+            'nombre_anomalie_mineur' => $severities['MINOR'] ?? 0,
+            'scope_main' => $scopeMainTotal,
+            'scope_test' => $scopeTestTotal,
+            'bug_scope_main' => $scopeMainByType['BUG'],
+            'bug_scope_test' => $scopeTestByType['BUG'],
+            'vulnerability_scope_main' => $scopeMainByType['VULNERABILITY'],
+            'vulnerability_scope_test' => $scopeTestByType['VULNERABILITY'],
+            'code_smell_scope_main' => $scopeMainByType['CODE_SMELL'],
+            'code_smell_scope_test' => $scopeTestByType['CODE_SMELL']
+        ];
 
         $this->logger->info('[Batch Anomalie] ℹ️ Collecte des anomalies réussie', [
             'maven_key' => $maven_key,

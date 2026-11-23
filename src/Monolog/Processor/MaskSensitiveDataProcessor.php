@@ -31,7 +31,6 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
      *
      * @return LogRecord
      *
-     * Created at: 18/09/2024 08:01:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -74,7 +73,6 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
      *
      * @return string
      *
-     * Created at: 05/02/2026 14:56:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -96,7 +94,6 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
      *
      * @return array<string, mixed>
      *
-     * Created at: 05/02/2026 14:56:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

@@ -17,7 +17,10 @@ use RuntimeException;
 
 /**
  * [Description SqlRequestException]
- */
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 class SqlRequestException extends RuntimeException
 {
     private int $errorCode;

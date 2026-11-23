@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -90,7 +90,9 @@ class BatchControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'security.authorization_checker', 'twig', 'request_stack',
+                'security.authorization_checker',
+                'twig',
+                'request_stack',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -186,7 +188,8 @@ class BatchControllerTest extends TestCase
             'traitement' => ['traitement_id' => 'abc'],
         ]);
         $this->batchExecutionRepo->method('selectBatchExecutionLastTraitementId')->willReturn([
-            'code' => 200, 'id' => '',
+            'code' => 200,
+            'id' => '',
         ]);
 
         $response = $this->controller->traitementInformation($this->jsonRequest(['traitement_id' => 'abc']));
@@ -215,13 +218,18 @@ class BatchControllerTest extends TestCase
             ],
         ]);
         $this->batchExecutionRepo->method('selectBatchExecutionLastTraitementId')->willReturn([
-            'code' => 200, 'id' => 7,
+            'code' => 200,
+            'id' => 7,
         ]);
         $this->batchJournalRepo->method('countBatchExecutionJournalCode')->willReturn([
-            'code' => 200, 'ok' => 3, 'ko' => 1, 'oko' => 1,
+            'code' => 200,
+            'ok' => 3,
+            'ko' => 1,
+            'oko' => 1,
         ]);
         $this->batchJournalRepo->method('selectBatchExecutionJournalNomProjetAndStatus')->willReturn([
-            'code' => 200, 'liste' => [['nom_projet' => 'App', 'code' => 200]],
+            'code' => 200,
+            'liste' => [['nom_projet' => 'App', 'code' => 200]],
         ]);
 
         $response = $this->controller->traitementInformation($this->jsonRequest(['traitement_id' => 'abc']));
@@ -274,7 +282,8 @@ class BatchControllerTest extends TestCase
     {
         $this->authChecker->method('isGranted')->willReturn(true);
         $this->batchJournalRepo->method('selectBatchExecutionJournalByJob')->willReturn([
-            'code' => 200, 'journal' => [['compte_rendu' => null]],
+            'code' => 200,
+            'journal' => [['compte_rendu' => null]],
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
@@ -293,7 +302,8 @@ class BatchControllerTest extends TestCase
         rewind($stream);
 
         $this->batchJournalRepo->method('selectBatchExecutionJournalByJob')->willReturn([
-            'code' => 200, 'journal' => [['compte_rendu' => $stream]],
+            'code' => 200,
+            'journal' => [['compte_rendu' => $stream]],
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
@@ -316,7 +326,8 @@ class BatchControllerTest extends TestCase
         rewind($stream);
 
         $this->batchJournalRepo->method('selectBatchExecutionJournalByJob')->willReturn([
-            'code' => 200, 'journal' => [['compte_rendu' => $stream]],
+            'code' => 200,
+            'journal' => [['compte_rendu' => $stream]],
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
@@ -338,7 +349,8 @@ class BatchControllerTest extends TestCase
         rewind($stream);
 
         $this->batchJournalRepo->method('selectBatchExecutionJournalByJob')->willReturn([
-            'code' => 200, 'journal' => [['compte_rendu' => $stream]],
+            'code' => 200,
+            'journal' => [['compte_rendu' => $stream]],
         ]);
 
         $response = $this->controller->traitementJournal($this->jsonRequest(['job' => 1, 'nom_projet' => 'X']));
@@ -388,7 +400,8 @@ class BatchControllerTest extends TestCase
     {
         $this->authChecker->method('isGranted')->willReturn(true);
         $this->batchTraitementRepo->method('selectBatchTraitementActivated')->willReturn([
-            'code' => 200, 'liste' => [],
+            'code' => 200,
+            'liste' => [],
         ]);
 
         $this->flashBag->expects($this->once())

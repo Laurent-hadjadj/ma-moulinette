@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -61,6 +61,8 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
      * Langages Creedengo suivis : code SonarQube => suffixe de colonne/clé.
      *
      * @var array<string, string>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static array $langues = [
         'java' => 'java',
@@ -72,8 +74,6 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
     /**
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
-     *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
     public function __construct(
@@ -84,8 +84,7 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for makeRequest]
@@ -95,9 +94,8 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function makeRequest(string $endpoint, array $queryParams): array
     {
@@ -136,9 +134,8 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
      *
      * @return string|null null si ncloc est nul/absent (ratio non calculable)
      *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function getEcoRating(?int $detteMinute, ?int $ncloc): ?string
     {
@@ -148,10 +145,18 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
 
         $ratio = (($detteMinute ?? 0) / ($ncloc * self::$costPerLine)) * 100;
 
-        if ($ratio <= 5) { return 'A'; }
-        if ($ratio <= 10) { return 'B'; }
-        if ($ratio <= 20) { return 'C'; }
-        if ($ratio <= 50) { return 'D'; }
+        if ($ratio <= 5) {
+            return 'A';
+        }
+        if ($ratio <= 10) {
+            return 'B';
+        }
+        if ($ratio <= 20) {
+            return 'C';
+        }
+        if ($ratio <= 50) {
+            return 'D';
+        }
         return 'E';
     }
 
@@ -171,9 +176,8 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 08/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteEmpreinteEcologique(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {

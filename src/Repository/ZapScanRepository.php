@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -39,10 +39,8 @@ class ZapScanRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array{code: int, erreur: string}
-     *
-     * Created at: 13/10/2026 21:08:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -74,10 +72,8 @@ class ZapScanRepository extends ServiceEntityRepository
      * @param \DateTimeImmutable $generatedAt
      *
      * @return ZapScan|null
-     *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findByUniqueKey(
         string $mavenKey,
@@ -110,10 +106,8 @@ class ZapScanRepository extends ServiceEntityRepository
      * @param string $mavenKey
      *
      * @return array<int, string|null>
-     *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function listDistinctTargetUrlsByMavenKey(string $mavenKey): array
     {
@@ -150,10 +144,8 @@ class ZapScanRepository extends ServiceEntityRepository
      * @param string|null $targetUrl
      *
      * @return ZapScan|null
-     *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function findLatestByMavenKey(string $mavenKey, ?string $targetUrl): ?ZapScan
     {
@@ -190,10 +182,8 @@ class ZapScanRepository extends ServiceEntityRepository
      * @param int $limit
      *
      * @return ZapScan[]
-     *
-     * Created at: 13/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function listHistoryByMavenKey(string $mavenKey, ?string $targetUrl, int $limit = 20): array
     {

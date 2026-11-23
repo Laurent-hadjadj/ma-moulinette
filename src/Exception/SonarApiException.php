@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2024-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 
@@ -24,7 +24,10 @@ use Exception;
  *
  * Created at: 2026-05-01  — classe ajoutée pour corriger PHPStan class.notFound
  * dans SonarMetricsFetcherService::fetchMetrics().
- */
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 class SonarApiException extends Exception
 {
     /** @var array<int|string, mixed> */

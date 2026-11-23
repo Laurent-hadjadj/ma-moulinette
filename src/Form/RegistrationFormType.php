@@ -41,7 +41,6 @@ class RegistrationFormType extends AbstractType
      *
      * @return void
      *
-     * Created at: 22/12/2024 13:40:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -51,11 +50,11 @@ class RegistrationFormType extends AbstractType
             ->add('nom', TextType::class, [
                 'required' => true,
                 'attr' => [
-                            'maxlength' => 32,
-                            'placeholder' => 'placeholder.nom',
-                            'class' => 'color-bleu',
-                            'autocomplete' => 'family-name'
-                        ],
+                    'maxlength' => 32,
+                    'placeholder' => 'placeholder.nom',
+                    'class' => 'color-bleu',
+                    'autocomplete' => 'family-name'
+                ],
                 'label' => 'label.nom',
                 'trim' => true,
                 'constraints' => [
@@ -72,10 +71,12 @@ class RegistrationFormType extends AbstractType
                 'required' => true,
                 'label' => 'label.prenom',
                 'trim' => true,
-                'attr' => [ 'maxlength' => 32,
-                            'placeholder' => 'placeholder.prenom',
-                            'class' => 'color-bleu',
-                            'autocomplete' => 'given-name' ],
+                'attr' => [
+                    'maxlength' => 32,
+                    'placeholder' => 'placeholder.prenom',
+                    'class' => 'color-bleu',
+                    'autocomplete' => 'given-name'
+                ],
                 'constraints' => [
                     new NotBlank(message: 'Merci de saisir votre prénom.'),
                     new Length(
@@ -95,7 +96,9 @@ class RegistrationFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'steeve@gmail.com',
                     'autocomplete' => 'off',
-                    'class' => 'email']])
+                    'class' => 'email'
+                ]
+            ])
 
             //RFC 3696.
             ->add('courriel', EmailType::class, [
@@ -120,8 +123,9 @@ class RegistrationFormType extends AbstractType
                         'placeholder' => 'placeholder.motdepasse',
                         'class' => 'color-bleu margin-bottom-05',
                         'autocomplete' => 'off',
-                        'aria-label'=>'Mot de passe',
-                        'aria-describedby'=>'registration_form_plainPassword_first'],
+                        'aria-label' => 'Mot de passe',
+                        'aria-describedby' => 'registration_form_plainPassword_first'
+                    ],
                     'constraints' => [
                         new NotBlank(message: 'Merci de saisir ton mot de passe.'),
                         new Length(
@@ -139,8 +143,9 @@ class RegistrationFormType extends AbstractType
                         'placeholder' => 'placeholder.remotdepasse',
                         'class' => 'color-bleu',
                         'autocomplete' => 'off',
-                        'aria-label'=>'Vérification mot de passe',
-                        'aria-describedby'=>'registration_form_plainPassword_second' ],
+                        'aria-label' => 'Vérification mot de passe',
+                        'aria-describedby' => 'registration_form_plainPassword_second'
+                    ],
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Merci de re-saisir ton mot de passe.'),
@@ -159,6 +164,16 @@ class RegistrationFormType extends AbstractType
             ]);
     }
 
+    /**
+     * [Description for configureOptions]
+     *
+     * @param OptionsResolver $resolver
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         /** on met null pour ne pas se baser sur la class Utilisateur, car tout les attributs ne sont pas utilisés. */

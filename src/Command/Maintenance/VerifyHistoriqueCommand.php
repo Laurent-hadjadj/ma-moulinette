@@ -5,15 +5,16 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Maintenance. */
+
 namespace App\Command\Maintenance;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,7 +56,11 @@ class VerifyHistoriqueCommand extends Command
      * Colonnes exclues de l'audit "drift" car légitimement nullable/zero.
      */
     private const EXCLUDED_COLS = [
-        'id', 'initial', 'date_enregistrement', 'mode_collecte', 'utilisateur_collecte',
+        'id',
+        'initial',
+        'date_enregistrement',
+        'mode_collecte',
+        'utilisateur_collecte',
         'actuator_info',     // null si pas d'actuator remonté
         'logger_breakdown',  // null si plugin v1.x
         'date_modification',
@@ -66,6 +71,14 @@ class VerifyHistoriqueCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * [Description for configure]
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function configure(): void
     {
         $this->addArgument(
@@ -84,9 +97,8 @@ class VerifyHistoriqueCommand extends Command
      *
      * @return int
      *
-     * Created at: 15/05/2026 08:06:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

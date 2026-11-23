@@ -24,10 +24,9 @@ class TokenService
 {
 
     public function __construct(
-      private CsrfTokenManagerInterface $csrfTokenManager,
-      private LoggerInterface $logger)
-    {
-    }
+        private CsrfTokenManagerInterface $csrfTokenManager,
+        private LoggerInterface $logger
+    ) {}
 
     /**
      * [Description for generateToken]
@@ -36,7 +35,6 @@ class TokenService
      *
      * @return string
      *
-     * Created at: 08/09/2025 16:27:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -55,7 +53,6 @@ class TokenService
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 08/09/2025 16:27:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

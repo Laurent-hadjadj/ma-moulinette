@@ -3,10 +3,10 @@
    *  --------------
    *  Copyright (c) 2021-2024.
    *  Laurent HADJADJ <laurent_h@me.com>.
-   *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+   *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    *  ---
    *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-   *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+   *  https://www.gnu.org/licenses/agpl-3.0.html
    */
 
 
@@ -23,8 +23,8 @@
    *
    * @return void
    *
-   * Created at: 13/12/2022, 12:58:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   const log = function(txt) {
     const textarea = document.getElementById('log');
@@ -33,24 +33,26 @@
     dateOptions).format(new Date())} ${txt}\n`;
   };
 
+
   /**
-  * [Description for enregistrement]
-  * Fonction de remplissage des tableaux.
-  *
-  * @param mixed mavenKey
-  *
-  * @return [type]
-  *
-  * Created at: 13/12/2022, 12:59:18 (Europe/Paris)
-  * @author     Laurent HADJADJ <laurent_h@me.com>
-  */
-  /* MODIF 2026-09-13 : la quasi-totalité des
+    * [Description for enregistrement]
+    * Fonction de remplissage des tableaux.
+    *
+    * @param mixed mavenKey
+    *
+    * @return void
+    *
+    * @author     Laurent HADJADJ <laurent_h@me.com>
+    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+    */
+  export const clean_screen = function(type) {
+  /**
+   *  MODIF 2026-09-13 : la quasi-totalité des
    * Les sélecteurs ciblaient les anciens IDs (sans préfixe js-), retirés lors du renommage des IDs du 2026-05-18.
    * clean_screen() ne nettoyait donc quasiment plus rien à l'écran : chaque $('#...') matchait un ensemble jQuery
    * vide, sans erreur JS (no-op silencieux).
    * Réalignement complet sur les IDs réels (templates/projet/*.html.twig) et les data-attributes posés par peinture.js
    * (remplissage / afficheHotspotDetails). */
-  export const clean_screen = function(type) {
   /** Bloc information générale */
   $('#js-nom-projet').text('');
   $('#js-key-analyse').text('').removeAttr('data-analyse-key');

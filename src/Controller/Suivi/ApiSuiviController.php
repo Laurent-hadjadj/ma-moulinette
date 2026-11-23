@@ -61,9 +61,8 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:35:41 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/liste/v1.0/version', name: 'liste_v1_version', methods: ['POST'])]
     public function listeVersionV1(Request $request): JsonResponse
@@ -133,7 +132,6 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 12/07/2026 21:34:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -184,11 +182,12 @@ class ApiSuiviController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On adapte la réponse SonarQube au format attendu par
-         *  SonarAnalysisFetcherService::computeVersionCounters (clés
-         *  analysisKey/date/version). Le service calcule les compteurs
-         *  cumulés version_release/snapshot/autre à la date de chaque
-         *  analyse (métrique custom ma-moulinette). */
+        /**
+         * On adapte la réponse SonarQube au format attendu par
+         * SonarAnalysisFetcherService::computeVersionCounters (clés
+         * analysisKey/date/version). Le service calcule les compteurs
+         * cumulés version_release/snapshot/autre à la date de chaque
+         * analyse (métrique custom ma-moulinette). */
         $adapted = array_map(static fn(array $a): array => [
             'analysisKey' => $a['key'] ?? null,
             'date' => $a['date'] ?? null,
@@ -197,12 +196,13 @@ class ApiSuiviController extends AbstractController
         ], $result['json']['analyses'] ?? []);
         $adapted = $this->analysisFetcher->computeVersionCounters($adapted);
 
-        /** Tri pour le sélecteur : version desc (natural sort, "1.0.10" > "1.0.9")
-         *  puis date desc en tiebreaker.
-         *  MODIF 2026-05-06 : retour au tri version d'abord (revert du fix-suivi-modale-tri-date)
-         *  car le tri par date mélangeait des numéros de version (1.3.2 puis 0.0.0)
-         *  difficiles a lire. La date reste affichée dans le `text` du select2 pour
-         *  permettre a l'utilisateur de repérer une éventuelle incoherence date/version. */
+        /**
+         * Tri pour le sélecteur : version desc (natural sort, "1.0.10" > "1.0.9")
+         * puis date desc en tiebreaker.
+         * MODIF 2026-05-06 : retour au tri version d'abord (revert du fix-suivi-modale-tri-date)
+         * car le tri par date mélangeait des numéros de version (1.3.2 puis 0.0.0)
+         * difficiles a lire. La date reste affichée dans le `text` du select2 pour
+         * permettre a l'utilisateur de repérer une éventuelle incoherence date/version. */
         usort($adapted, static function (array $a, array $b): int {
             $cmp = strnatcmp($b['version'] ?? '', $a['version'] ?? '');
             if ($cmp !== 0) {
@@ -213,9 +213,10 @@ class ApiSuiviController extends AbstractController
 
         $liste = [];
         $id = 0;
-        /** objet select2 = { id, text, ...metadata cachée } — analyse_key et
-         *  les compteurs version_* sont attachés à l'option et récupérés via
-         *  $('#liste-version').select2('data')[0] au moment du change. */
+        /**
+         * objet select2 = { id, text, ...metadata cachée } — analyse_key et
+         * les compteurs version_* sont attachés à l'option et récupérés via
+         * $('#liste-version').select2('data')[0] au moment du change. */
         foreach ($adapted as $analysis) {
             $ts = new \DateTime($analysis['date'], new \DateTimeZone(self::$europeParis));
             $cc = $ts->format('d-m-Y H:i:sO');
@@ -245,9 +246,8 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:36:17 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/get/version', name: 'get_version', methods: ['POST'])]
     public function getVersion(Request $request): JsonResponse
@@ -282,9 +282,10 @@ class ApiSuiviController extends AbstractController
         $sonarUrl = $this->getParameter(self::$sonarUrl);
         $url = rtrim(is_string($sonarUrl) ? $sonarUrl : '', '/');
 
-        /** Catalogue version-aware des métriques (Core SonarQube 8/9 + LTA 10
-         *  + LTA 24/26 selon la version configurée). Source unique partagée
-         *  avec BatchCollecteMesureController et RebuildHistoriqueCommand. */
+        /**
+         * Catalogue version-aware des métriques (Core SonarQube 8/9 + LTA 10
+         * + LTA 24/26 selon la version configurée). Source unique partagée
+         * avec BatchCollecteMesureController et RebuildHistoriqueCommand. */
         $sonarVersion = (int) trim((string) $this->getParameter('sonar.version'));
         $metricsKeys = (string) $this->buildMap->metricsKey($sonarVersion);
         // dd($metricsKeys);  // 🔍 debug temporaire — décommente pour voir le catalogue version-aware
@@ -313,9 +314,10 @@ class ApiSuiviController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On aplatit la réponse en [metric => raw_value]. Une entrée history
-         *  peut ne pas avoir de 'value' (métrique non calculée pour cette
-         *  analyse) — on skippe silencieusement (régression 2026-05-03). */
+        /**
+         * On aplatit la réponse en [metric => raw_value]. Une entrée history
+         * peut ne pas avoir de 'value' (métrique non calculée pour cette
+         * analyse) — on skippe silencieusement (régression 2026-05-03). */
         $rawMetrics = [];
         foreach ($apiResult['json']['measures'] ?? [] as $measure) {
             foreach ($measure['history'] ?? [] as $history) {
@@ -353,9 +355,8 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:37:32 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
     public function suiviMiseAJour(Request $request): JsonResponse
@@ -386,14 +387,16 @@ class ApiSuiviController extends AbstractController
         /** On créé objet date */
         $dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
-        /** Map = toutes les propriétés du payload JS (déjà aligné SonarQube
-         *  via populerMetriques + metricsRebuild) + injection des méta de
-         *  collecte. Le repo `insertHistoriqueAjoutProjet` utilise sa
-         *  whitelist de colonnes : les champs absents du payload deviennent
-         *  null (colonnes nullable), les champs en trop sont ignorés. */
+        /**
+         * Map = toutes les propriétés du payload JS (déjà aligné SonarQube
+         * via populerMetriques + metricsRebuild) + injection des méta de
+         * collecte. Le repo `insertHistoriqueAjoutProjet` utilise sa
+         * whitelist de colonnes : les champs absents du payload deviennent
+         * null (colonnes nullable), les champs en trop sont ignorés. */
         $map = (array) $data;
         $map['analyse_key'] = $data->analyse_key ?? '-';
-        /* MODIF 2026-05-06 : tag 'REBUILD' au lieu de
+        /**
+         * MODIF 2026-05-06 : tag 'REBUILD' au lieu de
          * 'COLLECTE' — cette route ajoute une version reconstituée depuis SonarQube
          * search_history, donc avec des indicateurs PARTIELS (pas de comment_lines_rating,
          * complexity_rating, cognitive_complexity_rating, etc.). 'COLLECTE' reste
@@ -408,12 +411,13 @@ class ApiSuiviController extends AbstractController
 
         $map['date_enregistrement'] = $dateEnregistrement;
 
-        /** Normalise les valeurs string 'null' / '' / null en vrai null PHP pour
-         *  les champs numériques (Postgres refuse 'null' string sur INT/FLOAT)
-         *  ET pour les ratings (varchar nullable — on ne veut pas y stocker
-         *  le littéral 'null'). populerMetriques côté JS écrit null dans
-         *  dataset.* → DOM coerce en string "null" → on le retraduit.
-         *  Whitelist limitée aux vraies clés textuelles métier. */
+        /**
+         * Normalise les valeurs string 'null' / '' / null en vrai null PHP pour
+         * les champs numériques (Postgres refuse 'null' string sur INT/FLOAT)
+         * ET pour les ratings (varchar nullable — on ne veut pas y stocker
+         * le littéral 'null'). populerMetriques côté JS écrit null dans
+         * dataset.* → DOM coerce en string "null" → on le retraduit.
+         * Whitelist limitée aux vraies clés textuelles métier. */
         $stringKeys = [
             'maven_key',
             'analyse_key',
@@ -480,9 +484,8 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:38:29 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/liste', name: 'suivi_version_liste', methods: ['POST'])]
     public function suiviVersionListe(Request $request): JsonResponse
@@ -570,7 +573,6 @@ class ApiSuiviController extends AbstractController
      *
      * @return array<int, string>
      *
-     * Created at: 26/07/2024 11:34:08 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -593,9 +595,8 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:39:11 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/favori', name: 'suivi_projet_favori', methods: ['PUT'])]
     public function suiviVersionFavori(Request $request): JsonResponse
@@ -671,9 +672,8 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:40:34 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
     public function suiviVersionReference(Request $request): JsonResponse
@@ -741,9 +741,8 @@ class ApiSuiviController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      *
-     * Created at: 2026-06-11 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/suivi', name: 'suivi_version_suivi', methods: ['POST'])]
     public function suiviVersionSuivi(Request $request): JsonResponse
@@ -817,9 +816,8 @@ class ApiSuiviController extends AbstractController
      *
      * @return JsonResponse
      *
-     * Created at: 15/12/2022, 22:41:09 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     #[Route('/api/secure/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
     public function suiviVersionPoubelle(Request $request): JsonResponse

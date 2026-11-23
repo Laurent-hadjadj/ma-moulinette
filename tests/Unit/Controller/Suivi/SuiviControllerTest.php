@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -95,7 +95,11 @@ class SuiviControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'router', 'request_stack', 'parameter_bag', 'security.token_storage',
+                'twig',
+                'router',
+                'request_stack',
+                'parameter_bag',
+                'security.token_storage',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -343,20 +347,24 @@ class SuiviControllerTest extends TestCase
             'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
-            'code' => 200, 'nombre' => 5,
+            'code' => 200,
+            'nombre' => 5,
         ]);
         $this->historiqueRepo->method('selectUnionHistoriqueProjet')->willReturn([
             'code' => 200,
             'request' => [['nom' => 'App']],
         ]);
         $this->historiqueRepo->method('selectUnionHistoriqueMesure')->willReturn([
-            'code' => 200, 'request' => [],
+            'code' => 200,
+            'request' => [],
         ]);
         $this->historiqueRepo->method('selectUnionHistoriqueAnomalie')->willReturn([
-            'code' => 200, 'request' => [],
+            'code' => 200,
+            'request' => [],
         ]);
         $this->historiqueRepo->method('selectUnionHistoriqueDetails')->willReturn([
-            'code' => 200, 'request' => [],
+            'code' => 200,
+            'request' => [],
         ]);
         $this->historiqueRepo->method('selectHistoriqueAnomalieGraphique')->willReturn([
             'code' => 200,
@@ -402,19 +410,24 @@ class SuiviControllerTest extends TestCase
             'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
-            'code' => 200, 'nombre' => 5,
+            'code' => 200,
+            'nombre' => 5,
         ]);
         $this->historiqueRepo->method('selectHistoriqueProjetParVersions')->willReturn([
-            'code' => 200, 'request' => [['nom' => 'App']],
+            'code' => 200,
+            'request' => [['nom' => 'App']],
         ]);
         $this->historiqueRepo->method('selectHistoriquesMesureParVersions')->willReturn([
-            'code' => 200, 'request' => [],
+            'code' => 200,
+            'request' => [],
         ]);
         $this->historiqueRepo->method('selectHistoriqueAnomalieParVersions')->willReturn([
-            'code' => 200, 'request' => [],
+            'code' => 200,
+            'request' => [],
         ]);
         $this->historiqueRepo->method('selectHistoriqueDetailsParVersions')->willReturn([
-            'code' => 200, 'request' => [],
+            'code' => 200,
+            'request' => [],
         ]);
 
         // La variante ParVersions du graphique doit être appelée...
@@ -446,11 +459,13 @@ class SuiviControllerTest extends TestCase
             'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
-            'code' => 200, 'nombre' => 5,
+            'code' => 200,
+            'nombre' => 5,
         ]);
         // The first fetchData throws
         $this->historiqueRepo->method('selectUnionHistoriqueProjet')->willReturn([
-            'code' => 500, 'erreur' => 'boom',
+            'code' => 500,
+            'erreur' => 'boom',
         ]);
 
         $this->flashBag->expects($this->once())
@@ -514,7 +529,8 @@ class SuiviControllerTest extends TestCase
             'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
-            'code' => 200, 'nombre' => 3,
+            'code' => 200,
+            'nombre' => 3,
         ]);
         $this->historiqueRepo->method('selectHistoriqueProjetForRapport')->willReturn([
             'code' => 200,

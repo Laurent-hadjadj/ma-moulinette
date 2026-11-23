@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Exception;
@@ -20,7 +20,10 @@ namespace App\Exception;
  *
  * Erreur de configuration : elle est levée à la construction du service, donc au
  * démarrage du conteneur, et n'est pas censée être rattrapée à l'exécution.
- */
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+*/
 class InvalidCipherKeyException extends ActuatorCipherException
 {
     public function __construct(?\Throwable $previous = null)

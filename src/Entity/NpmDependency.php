@@ -25,6 +25,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * npm n'a pas de fichier binaire unique à hasher, et la version exacte
  * installée n'est pas restituée de façon fiable par npm audit --json
  * (seulement une plage de version vulnérable, stockée sur NpmFinding).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: NpmDependencyRepository::class)]
 #[ORM\Table(name: 'npm_dependency', schema: 'ma_moulinette')]

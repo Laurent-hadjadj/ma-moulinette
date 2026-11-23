@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -119,8 +119,10 @@ class DcExecutiveAnalyticsServiceTest extends TestCase
     public function testTopCwesRespectsLimit(): void
     {
         $findings = [
-            $this->f(['cwes' => ['CWE-1']]), $this->f(['cwes' => ['CWE-2']]),
-            $this->f(['cwes' => ['CWE-3']]), $this->f(['cwes' => ['CWE-4']]),
+            $this->f(['cwes' => ['CWE-1']]),
+            $this->f(['cwes' => ['CWE-2']]),
+            $this->f(['cwes' => ['CWE-3']]),
+            $this->f(['cwes' => ['CWE-4']]),
         ];
         $top = $this->svc->computeTopCwes($findings, 2);
         $this->assertCount(2, $top);
@@ -316,7 +318,8 @@ class DcExecutiveAnalyticsServiceTest extends TestCase
     public function testJustificationContainsSeverityAndVector(): void
     {
         $findings = [$this->f([
-            'severity' => 'HIGH', 'cvss_v3_attack_vector' => 'NETWORK',
+            'severity' => 'HIGH',
+            'cvss_v3_attack_vector' => 'NETWORK',
         ])];
         $just = $this->svc->computeCveDecisions($findings)[0]['justification'];
         $this->assertStringContainsString('Sévérité HIGH', $just);
@@ -327,7 +330,8 @@ class DcExecutiveAnalyticsServiceTest extends TestCase
     {
         // Le shape de retour expose le vecteur pour le template.
         $findings = [$this->f([
-            'severity' => 'HIGH', 'cvss_v3_attack_vector' => 'NETWORK',
+            'severity' => 'HIGH',
+            'cvss_v3_attack_vector' => 'NETWORK',
         ])];
         $row = $this->svc->computeCveDecisions($findings)[0];
         $this->assertSame('NETWORK', $row['attack_vector']);

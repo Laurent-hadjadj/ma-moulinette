@@ -24,13 +24,12 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class MesProjets
 {
-    public static string $erreur406 = "Je n'ai pas trouvé de projets pour ton groupe fonctionnel. ".
-                                "Vérifies le nom du tag utilisé dans SonarQube (erreur 406).";
+    public static string $erreur406 = "Je n'ai pas trouvé de projets pour ton groupe fonctionnel. " .
+        "Vérifies le nom du tag utilisé dans SonarQube (erreur 406).";
 
     public function __construct(
         private EntityManagerInterface $em,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for listeProjet]
@@ -39,7 +38,6 @@ class MesProjets
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 24/09/2024 14:54:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -63,5 +61,4 @@ class MesProjets
 
         return ['code' => 200, 'projets' => $projets];
     }
-
 }

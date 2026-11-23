@@ -21,13 +21,16 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
  * [Description ExceptionListener]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 class ExceptionListener
 {
 
     public function __construct(
         private LoggerInterface $logger
-    ){}
+    ) {}
 
     /**
      * [Description for onKernelException]
@@ -36,7 +39,6 @@ class ExceptionListener
      *
      * @return void
      *
-     * Created at: 17/09/2024 17:13:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -63,7 +65,6 @@ class ExceptionListener
      *
      * @return string
      *
-     * Created at: 20/10/2025 20:38:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -86,5 +87,4 @@ class ExceptionListener
 
         return $content;
     }
-
 }

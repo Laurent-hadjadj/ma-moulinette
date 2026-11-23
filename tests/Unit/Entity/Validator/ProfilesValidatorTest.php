@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Validator;
@@ -33,7 +33,7 @@ class ProfilesValidatorTest extends KernelTestCase
 
   private function getEntity(): Profiles
   {
-      return (new profiles())
+    return (new profiles())
       ->setKey(self::$key)
       ->setName(self::$name)
       ->setLanguageName(self::$languageName)
@@ -50,7 +50,7 @@ class ProfilesValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -73,7 +73,7 @@ class ProfilesValidatorTest extends KernelTestCase
   {
     // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
     $this->assertHasErrors($this->getEntity()->setActiveRuleCount(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
@@ -81,7 +81,7 @@ class ProfilesValidatorTest extends KernelTestCase
   public function testInvalidIntegerEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setActiveRuleCount(-1), 1);
-    }
+  }
 
   public function testValidBooleanEntity(): void
   {
@@ -90,9 +90,9 @@ class ProfilesValidatorTest extends KernelTestCase
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 8);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 8);
   }
 }

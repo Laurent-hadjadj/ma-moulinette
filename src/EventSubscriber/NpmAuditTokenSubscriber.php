@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
+ * [Description NpmAuditTokenSubscriber]
  * MODIF 2026-11-20 : authentification bearer pour les endpoints
  * /api/secure/npm-audit/*, même rôle que DependencyCheckTokenSubscriber /
  * ZapIngestTokenSubscriber (flux machine-to-machine CI, sans session).
@@ -30,6 +31,9 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  * celui-ci utilise {@see ClientTokenVerifier} — classe factorisée depuis le
  * même besoin, à adopter pour tout nouveau subscriber de ce type plutôt que
  * de dupliquer une 3ᵉ fois la logique inline.
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 class NpmAuditTokenSubscriber implements EventSubscriberInterface
 {
@@ -41,8 +45,14 @@ class NpmAuditTokenSubscriber implements EventSubscriberInterface
         private readonly LoggerInterface $logger,
     ) {}
 
+
     /**
+     * [Description for getSubscribedEvents]
+     *
      * @return array<class-string, array{0: string, 1: int}>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public static function getSubscribedEvents(): array
     {
@@ -53,6 +63,16 @@ class NpmAuditTokenSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * [Description for onKernelRequest]
+     *
+     * @param RequestEvent $event
+     *
+     * @return void
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();

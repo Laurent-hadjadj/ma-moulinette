@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 declare(strict_types=1);
@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * [Description OwaspRuleClassifierService]
- * 
+ *
  * MODIF 27/10/2026 : nouveau service, remplace la boucle par catégorie
  * (owaspTop10=aX) + le secours par tag (owasp-aXX) de BatchCollecteOwaspController 
  * pour les VULNÉRABILITÉS uniquement
@@ -31,15 +31,14 @@ class OwaspRuleClassifierService
 
     public function __construct(
         private readonly ParameterBagInterface $params,
-    ) {
-    }
+    ) {}
 
     /**
      * CORE_RULE_CATEGORIES
      *
-    * Règles SonarSource (repo `java`) classées OWASP par SonarQube lui-même (bloc structuré `securityStandards`, lu directement dans le JSON de la règle). 65 règles.
-    *
-    * @var array<string, array{owasp2017: string[], owasp2021: string[]}>
+     * Règles SonarSource (repo `java`) classées OWASP par SonarQube lui-même (bloc structuré `securityStandards`, lu directement dans le JSON de la règle). 65 règles.
+     *
+     * @var array<string, array{owasp2017: string[], owasp2021: string[]}>
      */
     /**
      * CORE_RULE_CATEGORIES
@@ -117,10 +116,10 @@ class OwaspRuleClassifierService
     /**
      * FINDSECBUGS_RULE_CATEGORIES_2017
      *
-    * Règles FindSecBugs (repo `findsecbugs`) classées uniquement via leur tag `owasp-aX` (OWASP 2013/2017, jamais 2021). 61 règles.
-    *
-    * @var array<string, string[]>
-    */
+     * Règles FindSecBugs (repo `findsecbugs`) classées uniquement via leur tag `owasp-aX` (OWASP 2013/2017, jamais 2021). 61 règles.
+     *
+     * @var array<string, string[]>
+     */
     private const FINDSECBUGS_RULE_CATEGORIES_2017 = [
         'findsecbugs:ANDROID_WEB_VIEW_JAVASCRIPT' => ['a3'],
         'findsecbugs:AWS_QUERY_INJECTION' => ['a1'],
@@ -191,9 +190,8 @@ class OwaspRuleClassifierService
      *
      * @return string[]
      *
-     * Created at: 28/10/2026 07:58:42 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function allRuleKeys(): array
     {
@@ -211,9 +209,8 @@ class OwaspRuleClassifierService
      *
      * @return int
      *
-     * Created at: 28/10/2026 07:59:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function ruleCount(int $referential): int
     {
@@ -254,9 +251,8 @@ class OwaspRuleClassifierService
      *     }
      * }
      *
-     * Created at: 28/10/2026 07:59:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function classify(array $issues): array
     {
@@ -271,7 +267,8 @@ class OwaspRuleClassifierService
         $categories = [2017 => [], 2021 => []];
         $categorySources = [2017 => [], 2021 => []];
         $details = [2017 => [], 2021 => []];
-        /* MODIF 28/10/2026 : BUG CORRIGÉ — la répartition par module était comptée
+        /**
+         * MODIF 28/10/2026 : BUG CORRIGÉ — la répartition par module était comptée
          * UNE SEULE FOIS globalement (toute issue matchant au moins un référentiel),
          * puis cette même valeur globale était stockée telle quelle sur la ligne
          * `owasp` de 2017 ET sur celle de 2021 (BatchCollecteOwaspController::$buildRow).
@@ -313,7 +310,13 @@ class OwaspRuleClassifierService
 
                 foreach ($matches[$referential] as $category) {
                     $categories[$referential][$category] ??= [
-                        'total' => 0, 'blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 0, 'info' => 0, 'source' => '',
+                        'total' => 0,
+                        'blocker' => 0,
+                        'critical' => 0,
+                        'major' => 0,
+                        'minor' => 0,
+                        'info' => 0,
+                        'source' => '',
                     ];
                     $categories[$referential][$category]['total']++;
                     $categories[$referential][$category][$severity]++;
@@ -359,9 +362,8 @@ class OwaspRuleClassifierService
      *
      * @return array{2017: string[], 2021: string[], origin: string}
      *
-     * Created at: 28/10/2026 08:00:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function categoriesForRule(string $ruleKey): array
     {
@@ -383,9 +385,8 @@ class OwaspRuleClassifierService
      *
      * @return array{0: string, 1: string, 2: string}
      *
-     * Created at: 28/10/2026 08:00:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function buildRegexModules(): array
     {
@@ -408,9 +409,8 @@ class OwaspRuleClassifierService
      *
      * @return string
      *
-     * Created at: 28/10/2026 08:00:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function classifieModule(string $path, array $regexModules): string
     {

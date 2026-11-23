@@ -5,10 +5,10 @@
 *  --------------
 *  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
 *  ---
 *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*  https://www.gnu.org/licenses/agpl-3.0.html
 */
 
 namespace App\Controller\Batch;
@@ -32,8 +32,8 @@ class BatchCollecteNoSonarController extends AbstractController
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         private EntityManagerInterface $em,
@@ -41,8 +41,7 @@ class BatchCollecteNoSonarController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for BatchCollecteNoSonar]
@@ -53,9 +52,8 @@ class BatchCollecteNoSonarController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 21/05/2024 22:25:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function BatchCollecteNoSonar(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
@@ -76,7 +74,8 @@ class BatchCollecteNoSonarController extends AbstractController
             '/api/issues/search',
             [
                 $this->sonarVersion->componentKeyParam() => $maven_key,
-                /* MODIF 2026-05-06 :
+                /**
+                 * MODIF 2026-05-06 :
                  * Filtre étendu pour collecter les 6 rules supportées par le switch
                  * en aval (java:S1310 = no_pmd, java:S1315 = check_style,
                  * python:NoSonar et php:NoSonar). Sans ces rules, les colonnes
@@ -90,7 +89,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $this->logger->debug('[Batch Logger] 🛠️ Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
-         /** On catch les erreurs HTTP :) */
+        /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error('[Batch NoSonar] ❌ Erreur SonarQube', [
                 'url' => $url,
@@ -123,7 +122,7 @@ class BatchCollecteNoSonarController extends AbstractController
          * dans le code alors on les dénombre
          */
         $java_no_sonar = $python_no_sonar = $php_no_sonar = $suppress_warning = $no_pmd = $check_style = $inconnu = 0;
-        $mapData=[];
+        $mapData = [];
         if ($result['json']['paging']['total'] !== 0) {
             foreach ($result['json']['issues'] as $issue) {
                 switch ($issue['rule']) {
@@ -145,7 +144,7 @@ class BatchCollecteNoSonarController extends AbstractController
                     case 'php:NoSonar':
                         $php_no_sonar++;
                         break;
-                default:
+                    default:
                         $inconnu++;
                         break;
                 }
@@ -203,14 +202,14 @@ class BatchCollecteNoSonarController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $historique = [
-                'java_no_sonar' => $java_no_sonar,
-                'python_no_sonar' => $python_no_sonar,
-                'php_no_sonar' => $php_no_sonar,
-                'check_style' => $check_style,
-                'no_pmd' => $no_pmd,
-                'suppress_warning' => $suppress_warning,
-                'total_no_sonar' => $java_no_sonar+$python_no_sonar+$php_no_sonar,
-            ];
+            'java_no_sonar' => $java_no_sonar,
+            'python_no_sonar' => $python_no_sonar,
+            'php_no_sonar' => $php_no_sonar,
+            'check_style' => $check_style,
+            'no_pmd' => $no_pmd,
+            'suppress_warning' => $suppress_warning,
+            'total_no_sonar' => $java_no_sonar + $python_no_sonar + $php_no_sonar,
+        ];
 
         return [
             'code' => 200,

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Unit\Entity\Case;
@@ -34,8 +34,10 @@ class GroupeFonctionnelCaseTest extends TestCase
     public function testIdHasNoSetter(): void
     {
         $entity = $this->getEntity();
-        $this->assertFalse(method_exists($entity, 'setId'),
-            'GroupeFonctionnel::setId() ne devrait pas exister (ID auto-genere).');
+        $this->assertFalse(
+            method_exists($entity, 'setId'),
+            'GroupeFonctionnel::setId() ne devrait pas exister (ID auto-genere).'
+        );
         $this->assertNull($entity->getId());
     }
 
@@ -94,12 +96,18 @@ class GroupeFonctionnelCaseTest extends TestCase
     {
         $reflection = new \ReflectionProperty(GroupeFonctionnel::class, 'description');
         $attributes = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
-        $this->assertCount(1, $attributes,
-            'GroupeFonctionnel::$description doit avoir un attribut #[ORM\\Column].');
+        $this->assertCount(
+            1,
+            $attributes,
+            'GroupeFonctionnel::$description doit avoir un attribut #[ORM\\Column].'
+        );
 
         $args = $attributes[0]->getArguments();
-        $this->assertSame(128, $args['length'] ?? null,
-            'GroupeFonctionnel::$description doit avoir length: 128 (alignement DDL).');
+        $this->assertSame(
+            128,
+            $args['length'] ?? null,
+            'GroupeFonctionnel::$description doit avoir length: 128 (alignement DDL).'
+        );
     }
 
     /* MODIF 2026-05-05 : test de regression.
@@ -109,14 +117,22 @@ class GroupeFonctionnelCaseTest extends TestCase
     {
         $reflection = new \ReflectionProperty(GroupeFonctionnel::class, 'groupeFonctionnel');
         $attributes = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
-        $this->assertCount(1, $attributes,
-            'GroupeFonctionnel::$groupeFonctionnel doit avoir un attribut #[ORM\\Column].');
+        $this->assertCount(
+            1,
+            $attributes,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir un attribut #[ORM\\Column].'
+        );
 
         $args = $attributes[0]->getArguments();
-        $this->assertSame(32, $args['length'] ?? null,
-            'GroupeFonctionnel::$groupeFonctionnel doit avoir length: 32 (alignement DDL+Validator).');
-        $this->assertTrue($args['unique'] ?? false,
-            'GroupeFonctionnel::$groupeFonctionnel doit avoir unique: true.');
+        $this->assertSame(
+            32,
+            $args['length'] ?? null,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir length: 32 (alignement DDL+Validator).'
+        );
+        $this->assertTrue(
+            $args['unique'] ?? false,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir unique: true.'
+        );
     }
 
     /* MODIF 2026-05-05 : verifie la coherence interne
@@ -129,11 +145,17 @@ class GroupeFonctionnelCaseTest extends TestCase
         $doctrineLength = $columnAttrs[0]->getArguments()['length'] ?? null;
 
         $validatorAttrs = $reflection->getAttributes(\Symfony\Component\Validator\Constraints\Length::class);
-        $this->assertCount(1, $validatorAttrs,
-            'GroupeFonctionnel::$groupeFonctionnel doit avoir un Assert\\Length.');
+        $this->assertCount(
+            1,
+            $validatorAttrs,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir un Assert\\Length.'
+        );
         $validatorMax = $validatorAttrs[0]->getArguments()['max'] ?? null;
 
-        $this->assertSame($doctrineLength, $validatorMax,
-            'Doctrine length et Validator max doivent etre identiques (mismatch interne sinon).');
+        $this->assertSame(
+            $doctrineLength,
+            $validatorMax,
+            'Doctrine length et Validator max doivent etre identiques (mismatch interne sinon).'
+        );
     }
 }

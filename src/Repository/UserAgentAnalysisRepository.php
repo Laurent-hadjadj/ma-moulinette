@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Repository;
@@ -36,10 +36,8 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      * @param \Throwable $e
      *
      * @return array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 14/12/2025 18:11:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function handleDatabaseException(\Throwable $e): array
     {
@@ -84,10 +82,8 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      * } $map
      *
      * @return array{code: 200, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
-     *
-     * Created at: 14/12/2025 18:12:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function insertUserAgentAnalysis(array $map): array
     {
@@ -107,20 +103,20 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
         try {
             $conn->beginTransaction();
 
-                $stmt = $conn->prepare($sql);
-                $stmt->bindValue(':event_type', $map['event_type']);
-                $stmt->bindValue(':url', $map['url']);
-                $stmt->bindValue(':session_id', $map['session_id']);
-                $stmt->bindValue(':user_id', $map['user_id']);
-                $stmt->bindValue(':visitor_id', $map['visitor_id']);
-                $stmt->bindValue(':device_type', $map['device_type']);
-                $stmt->bindValue(':os_name', $map['os_name']);
-                $stmt->bindValue(':os_version', $map['os_version']);
-                $stmt->bindValue(':browser_name', $map['browser_name']);
-                $stmt->bindValue(':browser_version', $map['browser_version']);
-                $stmt->bindValue(':is_bot', $map['is_bot'] ? 'true' : 'false', );
-                $stmt->bindValue(':detector_version', $map['detector_version']);
-                $stmt->bindValue(':created_at', $map['created_at']->format('Y-m-d H:i:sO'));
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':event_type', $map['event_type']);
+            $stmt->bindValue(':url', $map['url']);
+            $stmt->bindValue(':session_id', $map['session_id']);
+            $stmt->bindValue(':user_id', $map['user_id']);
+            $stmt->bindValue(':visitor_id', $map['visitor_id']);
+            $stmt->bindValue(':device_type', $map['device_type']);
+            $stmt->bindValue(':os_name', $map['os_name']);
+            $stmt->bindValue(':os_version', $map['os_version']);
+            $stmt->bindValue(':browser_name', $map['browser_name']);
+            $stmt->bindValue(':browser_version', $map['browser_version']);
+            $stmt->bindValue(':is_bot', $map['is_bot'] ? 'true' : 'false',);
+            $stmt->bindValue(':detector_version', $map['detector_version']);
+            $stmt->bindValue(':created_at', $map['created_at']->format('Y-m-d H:i:sO'));
 
             $stmt->executeStatement();
             $conn->commit();
@@ -140,10 +136,8 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function countOlderThan(int $days): int
     {
@@ -165,10 +159,8 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      * @param int $days
      *
      * @return int nombre de lignes supprimées
-     *
-     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function purge(int $days): int
     {

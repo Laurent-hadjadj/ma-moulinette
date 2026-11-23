@@ -38,31 +38,29 @@ class PropertiesRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
-
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -72,10 +70,8 @@ class PropertiesRepository extends ServiceEntityRepository
    * @param string $type
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 27/10/2023 14:06:11 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function getProperties($type): array
   {
@@ -84,12 +80,12 @@ class PropertiesRepository extends ServiceEntityRepository
             WHERE type=:type";
 
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(self::$type, $type);
-          $request = $stmt->executeQuery()->fetchAllAssociative();
-        return ['code' => 200, 'request' => $request, 'erreur' => ''];
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$type, $type);
+      $request = $stmt->executeQuery()->fetchAllAssociative();
+      return ['code' => 200, 'request' => $request, 'erreur' => ''];
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
   }
 
@@ -100,10 +96,8 @@ class PropertiesRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 27/10/2023 15:14:39 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function insertProperties(array $map): array
   {
@@ -122,22 +116,22 @@ class PropertiesRepository extends ServiceEntityRepository
                         :date_modification_profil,
                         :date_creation)";
     try {
-        $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(":type", 'properties');
-            $stmt->bindValue(":projet_bd", $map["projet_bd"]);
-            $stmt->bindValue(":projet_sonar", $map["projet_sonar"]);
-            $stmt->bindValue(":profil_bd", $map["profil_bd"]);
-            $stmt->bindValue(":profil_sonar", $map["profil_sonar"]);
-            /** Les dates sont déjà en string */
-            $stmt->bindValue(":date_modification_projet", $map["date_modification_projet"]->format(self::$horodatage));
-            $stmt->bindValue(":date_modification_profil", $map["date_modification_profil"]->format(self::$horodatage));
-            $stmt->bindValue(":date_creation", $map["date_creation"]->format(self::$horodatage));
-            $stmt->executeStatement();
-        $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(":type", 'properties');
+      $stmt->bindValue(":projet_bd", $map["projet_bd"]);
+      $stmt->bindValue(":projet_sonar", $map["projet_sonar"]);
+      $stmt->bindValue(":profil_bd", $map["profil_bd"]);
+      $stmt->bindValue(":profil_sonar", $map["profil_sonar"]);
+      /** Les dates sont déjà en string */
+      $stmt->bindValue(":date_modification_projet", $map["date_modification_projet"]->format(self::$horodatage));
+      $stmt->bindValue(":date_modification_profil", $map["date_modification_profil"]->format(self::$horodatage));
+      $stmt->bindValue(":date_creation", $map["date_creation"]->format(self::$horodatage));
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -149,10 +143,8 @@ class PropertiesRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 27/10/2023 15:23:33 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updatePropertiesProjet(array $map): array
   {
@@ -163,17 +155,17 @@ class PropertiesRepository extends ServiceEntityRepository
             WHERE type = :type";
 
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':projet_bd', $map['projet_bd']);
-              $stmt->bindValue(':projet_sonar', $map['projet_sonar']);
-              $stmt->bindValue(':date_modification_projet', $map['date_modification_projet']->format(self::$horodatage));
-              $stmt->bindValue(self::$type, 'properties');
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(':projet_bd', $map['projet_bd']);
+      $stmt->bindValue(':projet_sonar', $map['projet_sonar']);
+      $stmt->bindValue(':date_modification_projet', $map['date_modification_projet']->format(self::$horodatage));
+      $stmt->bindValue(self::$type, 'properties');
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -185,10 +177,8 @@ class PropertiesRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 27/10/2023 15:23:09 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+   * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function updatePropertiesProfiles(array $map): array
   {
@@ -199,17 +189,17 @@ class PropertiesRepository extends ServiceEntityRepository
             WHERE type=:type";
 
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':profil_bd', $map['profil_bd']);
-              $stmt->bindValue(':profil_sonar', $map['profil_sonar']);
-              $stmt->bindValue(':date_modification_profil', $map['date_modification_profil']->format(self::$horodatage));
-              $stmt->bindValue(self::$type, 'properties');
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(':profil_bd', $map['profil_bd']);
+      $stmt->bindValue(':profil_sonar', $map['profil_sonar']);
+      $stmt->bindValue(':date_modification_profil', $map['date_modification_profil']->format(self::$horodatage));
+      $stmt->bindValue(self::$type, 'properties');
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }

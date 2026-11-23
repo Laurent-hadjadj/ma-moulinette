@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -19,6 +19,7 @@ use App\Entity\DcDependency;
 use PHPUnit\Framework\TestCase;
 
 /* MODIF 2026-06-08 : couverture complète DcDependency (26 méthodes). */
+
 class DcDependencyTest extends TestCase
 {
     public function testConstructorInitializesDates(): void

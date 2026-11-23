@@ -56,9 +56,17 @@ const SEVERITY_COLORS = {
 };
 
 /**
+ * [Description for buildSeverityPie]
  * Pie chart : répartition des vulnérabilités du scan par sévérité.
  * Masque le label de pourcentage sous 5% pour éviter la surcharge visuelle
  * (même règle que buildDonut côté dependency-check).
+ *
+ * @param mixed severity
+ *
+ * @return mixed
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildSeverityPie = function (severity) {
   const ctx = document.getElementById('npm-dash-severity');
@@ -114,9 +122,19 @@ const SEVERITY_LABELS = {
 };
 
 /**
+ * [Description for buildStackedSeverityBar]
  * Bar chart empilé par sévérité, générique pour les graphiques "Origine" et
  * "Direct/Transitif" — même forme de données ({labels, severities}), seul
  * le canvas/titre changent.
+ *
+ * @param mixed canvasId
+ * @param mixed chartData
+ * @param mixed titleText
+ *
+ * @return mixed
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildStackedSeverityBar = function (canvasId, chartData, titleText) {
   const ctx = document.getElementById(canvasId);
@@ -159,8 +177,16 @@ const buildStackedSeverityBar = function (canvasId, chartData, titleText) {
 };
 
 /**
+ * [Description for buildTopPackagesBar]
  * Bar chart horizontal : top paquets du scan par nombre de findings.
  * Pattern buildFamilyBar (index-dependency-check-executive.js).
+ *
+ * @param mixed chartData
+ *
+ * @return mixed
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildTopPackagesBar = function (chartData) {
   const ctx = document.getElementById('npm-dash-top-packages');

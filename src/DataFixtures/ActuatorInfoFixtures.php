@@ -5,11 +5,12 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
+
 declare(strict_types=1);
 
 namespace App\DataFixtures;
@@ -21,7 +22,8 @@ use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
-/* MODIF 2026-05-08 : création ActuatorInfoFixtures.
+/**
+ * MODIF 2026-05-08 : création ActuatorInfoFixtures.
  * Contrat ActuatorInfoKernelTest :
  *  - testActuatorInfoFindOneBy : findOneBy actuator = 5 (id du parent attendu).
  *  - testActuatorInfoCount     : findAll = 4.
@@ -36,6 +38,7 @@ use Doctrine\Persistence\ObjectManager;
  * En contexte series : pas de reset, le 5e Actuator prend l'id 5 naturellement
  * (4 deja insères + 1 = 5).
  */
+
 class ActuatorInfoFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Tests\Integration\Repository;
@@ -57,8 +57,16 @@ class ActivityHistoriqueRepositoryTest extends KernelTestCase
         $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
-        $map = [ 2024 => ['day' => 326, 'analyse' => 1253,
-                'analyse_average' => 87.3, 'success' => 1249, 'failed' => 4, 'success_rate' => 0.99, 'max_time' => 34, 'date_enregistrement' => new  DateTime('2024-07-14 19:36:33+02')]];
+        $map = [2024 => [
+            'day' => 326,
+            'analyse' => 1253,
+            'analyse_average' => 87.3,
+            'success' => 1249,
+            'failed' => 4,
+            'success_rate' => 0.99,
+            'max_time' => 34,
+            'date_enregistrement' => new  DateTime('2024-07-14 19:36:33+02')
+        ]];
 
         $activityHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
         $r = $activityHistoriqueRepository->insertHistoriqueActivity($map);
@@ -77,8 +85,16 @@ class ActivityHistoriqueRepositoryTest extends KernelTestCase
         $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
-        $map=[ 2024 => ['day' => 326, 'analyse' => 1253,
-                'analyse_average' => 87.3, 'success' => 1249, 'failed' => 4, 'success_rate' => 0.99, 'max_time' => 34, 'date_enregistrement' => new  DateTime('2024-07-14 19:36:33+02')]];
+        $map = [2024 => [
+            'day' => 326,
+            'analyse' => 1253,
+            'analyse_average' => 87.3,
+            'success' => 1249,
+            'failed' => 4,
+            'success_rate' => 0.99,
+            'max_time' => 34,
+            'date_enregistrement' => new  DateTime('2024-07-14 19:36:33+02')
+        ]];
 
 
         $activiteHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
@@ -102,7 +118,7 @@ class ActivityHistoriqueRepositoryTest extends KernelTestCase
         $activityHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
         $r = $activityHistoriqueRepository->selectActivity($year);
 
-        $year=null;
+        $year = null;
         $r2 = $activityHistoriqueRepository->selectActivity($year);
 
         // Assert

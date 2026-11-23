@@ -3,7 +3,7 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *
  *  MODIF 2026-05-11 : entry JS pour le
  *  dashboard analytics DC. Lit le dataset injecte dans
@@ -15,7 +15,7 @@
  *
  *  ---
  *  Vous pouvez obtenir une copie de la licence a l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 /** Import des dépendances */
@@ -162,9 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
  *
  * @param mixed rows
  *
- * Created at: 12/05/2026 07:43:00 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildTimeseries = function(rows) {
   const ctx = document.getElementById('dc-dash-timeseries');
@@ -211,9 +210,8 @@ const buildTimeseries = function(rows) {
  *
  * @param mixed points
  *
- * Created at: 12/05/2026 07:43:57 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildScatter = function(points) {
   const ctx = document.getElementById('dc-dash-scatter');
@@ -265,9 +263,8 @@ const buildScatter = function(points) {
  *
  * @param mixed d
  *
- * Created at: 12/05/2026 07:46:49 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildStacked = function(d) {
   const ctx = document.getElementById('dc-dash-stacked');
@@ -313,9 +310,8 @@ const buildStacked = function(d) {
  *
  * @param mixed d
  *
- * Created at: 12/05/2026 07:47:18 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 const buildDonut = function(d) {
   const ctx = document.getElementById('dc-dash-donut');

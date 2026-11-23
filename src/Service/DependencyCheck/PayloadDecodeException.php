@@ -5,17 +5,17 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\DependencyCheck;
 
 /**
-* [Description PayloadDecodeException]
-* MODIF 2026-05-08 : exception portant un statut HTTP traduisible
+ * [Description PayloadDecodeException]
+ * MODIF 2026-05-08 : exception portant un statut HTTP traduisible
  * directement par le controller en JsonResponse.
  *
  * Permet a PayloadDecoder de remonter un code semantiquement correct

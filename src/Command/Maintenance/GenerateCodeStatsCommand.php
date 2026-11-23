@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -49,6 +49,17 @@ class GenerateCodeStatsCommand extends Command
         $this->committedStatsFile = $this->projectDir . '/migrations/admin-stats.json';
     }
 
+    /**
+     * [Description for execute]
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -88,7 +99,12 @@ class GenerateCodeStatsCommand extends Command
             ['Langage', 'Fichiers', 'Code', 'Commentaires', 'Vides', 'Total'],
             array_map(
                 fn(string $key, array $d) => [
-                    strtoupper($key), $d['fichier'], $d['code'], $d['comment'], $d['vide'], $d['total'],
+                    strtoupper($key),
+                    $d['fichier'],
+                    $d['code'],
+                    $d['comment'],
+                    $d['vide'],
+                    $d['total'],
                 ],
                 array_keys($cloc),
                 array_values($cloc)
@@ -112,9 +128,8 @@ class GenerateCodeStatsCommand extends Command
      *
      * @return array<string, array{fichier:int,code:int,comment:int,vide:int,total:int}>|null
      *
-     * Created at: 22/07/2026 11:18:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function runCloc(SymfonyStyle $io): ?array
     {
@@ -133,8 +148,8 @@ class GenerateCodeStatsCommand extends Command
         if (!$ok) {
             $io->error(
                 "cloc introuvable. Installez-le :\n" .
-                "  Windows : winget install AlDanial.Cloc\n" .
-                "  Linux   : sudo apt install cloc  (ou dnf/brew)"
+                    "  Windows : winget install AlDanial.Cloc\n" .
+                    "  Linux   : sudo apt install cloc  (ou dnf/brew)"
             );
             return null;
         }
@@ -192,9 +207,8 @@ class GenerateCodeStatsCommand extends Command
      *
      * @return array{0:bool, 1:array<string, array<string, int>>}
      *
-     * Created at: 22/07/2026 11:15:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function clocJson(array $relativePaths, string $passLabel, SymfonyStyle $io, array $extraArgs = []): array
     {
@@ -265,9 +279,8 @@ class GenerateCodeStatsCommand extends Command
      *
      * @return array{fichier: int, code: int, comment: int, vide: int, total: int}
      *
-     * Created at: 22/07/2026 11:15:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractSqlRow(array $data): array
     {
@@ -293,9 +306,8 @@ class GenerateCodeStatsCommand extends Command
      *
      * @return string|null
      *
-     * Created at: 22/07/2026 11:16:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function mapLang(string $langName, array $map): ?string
     {
@@ -309,9 +321,8 @@ class GenerateCodeStatsCommand extends Command
      *
      * @return array<string, array{count:int|null}>
      *
-     * Created at: 22/07/2026 11:17:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function countTests(SymfonyStyle $io): array
     {

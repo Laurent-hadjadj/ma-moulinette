@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Controller\Owasp;
@@ -52,9 +52,8 @@ class OwaspController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 13/02/2023, 08:57:23 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function __construct(
         ParameterBagInterface $params,
@@ -64,8 +63,8 @@ class OwaspController extends AbstractController
         private DcScanRepository $dcScanRepository,
         private ZapScanRepository $zapScanRepository,
         private OwaspRuleClassifierService $ruleClassifier,
-        private UserAgentTrackingFacade $tracking)
-    {
+        private UserAgentTrackingFacade $tracking
+    ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -79,9 +78,8 @@ class OwaspController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -106,9 +104,8 @@ class OwaspController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 10/05/2026 11:41:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
     {
@@ -135,9 +132,8 @@ class OwaspController extends AbstractController
      *
      * @return string|null
      *
-     * Created at: 10/05/2026 10:55:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function decodeToken(string $token): ?string
     {
@@ -160,7 +156,8 @@ class OwaspController extends AbstractController
             return null;
         }
 
-        /* MODIF 2026-07-18 : ne plus forcer la casse en minuscules — une
+        /**
+         * MODIF 2026-07-18 : ne plus forcer la casse en minuscules — une
          * clé Maven comme "fr.ma-moulinette:Ma-Moulinette" ne matchait
          * plus jamais l'entrée `liste_projet`/`historique` (comparaison stricte
          * dans ProjetPerimetreGuard/selectOwaspVersion), faussement rejetée en
@@ -180,9 +177,8 @@ class OwaspController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 15/12/2022, 22:14:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/owasp', name: 'owasp')]
     public function index(Request $request): Response
@@ -192,7 +188,8 @@ class OwaspController extends AbstractController
         /** On charge le template du render */
         $render = $this->genericRender();
 
-        /* MODIF 2026-07-18 : le template référence sonar_version/application/
+        /**
+         * MODIF 2026-07-18 : le template référence sonar_version/application/
          * application_version/has_dc_scan sans garde `is defined` (breadcrumb,
          * activation des boutons de référentiel, bouton Dependency-Check). Ces
          * clés n'étaient historiquement affectées qu'en toute fin de chemin
@@ -213,7 +210,8 @@ class OwaspController extends AbstractController
 
         $token = $request->query->get('token');
         if (empty($token)) {
-            /* MODIF 2026-07-22 : token absent = navigation sans contexte (lien nu,
+            /**
+             * MODIF 2026-07-22 : token absent = navigation sans contexte (lien nu,
              * page atteinte directement) — pas une anomalie, contrairement à un
              * token présent mais indécodable (cf. bloc suivant), qui reste une
              * vraie erreur 400. */
@@ -227,7 +225,8 @@ class OwaspController extends AbstractController
             return $this->addFlashAndRender('error', self::$erreur400, 'Problème de décodage du token.', $render);
         }
 
-        /* MODIF 2026-07-17 : ajout du filtrage par groupe fonctionnel, aligné sur
+        /*ù
+        MODIF 2026-07-17 : ajout du filtrage par groupe fonctionnel, aligné sur
          * SuiviController::suivi()/CosuiController::projetCosui() — jusqu'ici seul
          * le pare-feu (ROLE_UTILISATEUR) protégeait cette page, sans vérification
          * de périmètre. */
@@ -312,7 +311,8 @@ class OwaspController extends AbstractController
             ]);
         }
 
-        /* MODIF 2026-05-10 : split robuste de la maven_key
+        /**
+         * MODIF 2026-05-10 : split robuste de la maven_key
          * (group:artifact). On expose `application_group` en plus pour que
          * le template puisse construire le lien dc_projet. Garde-fou null :
          * `breadCrumb['application']` peut être null si selectOwaspVersion
@@ -324,7 +324,8 @@ class OwaspController extends AbstractController
         $render['owasp_2017'] = $owasp_2017;
         $render['owasp_2021'] = $owasp_2021;
         $render['owasp_2025'] = $owasp_2025;
-        /* MODIF 27/10/2026 : nombre de règles (core + FindSecBugs) couvrant
+        /**
+         * MODIF 27/10/2026 : nombre de règles (core + FindSecBugs) couvrant
          * chaque référentiel, pour le callout d'information de la page
          * (OwaspRuleClassifierService — donnée statique, indépendante du
          * projet consulté). */
@@ -334,7 +335,8 @@ class OwaspController extends AbstractController
         $render['application']         = $parts[1] ?? null;
         $render['application_version'] = $breadCrumb['version'] ?? null;
 
-        /* MODIF 2026-05-11 : le bouton DC est totalement
+        /**
+         * MODIF 2026-05-11 : le bouton DC est totalement
          * découplé du breadcrumb OWASP Sonar (qui peut être vide pour des projets
          * scannes DC mais sans analyse OWASP récente). On cherche le dernier scan
          * DC pour le maven_key decode du token et on expose `dc_link_*` depuis ce
@@ -352,7 +354,8 @@ class OwaspController extends AbstractController
             $render['dc_link_version']  = $latestDcScan->getProjectVersion();
         }
 
-        /* MODIF 2026-10-13 : ZapScan n'a qu'un maven_key composé : ZapPageController décode exactement le même format de token.
+        /*
+        MODIF 2026-10-13 : ZapScan n'a qu'un maven_key composé : ZapPageController décode exactement le même format de token.
          * MODIF 26/10/2026 : un maven_key peut recouvrir plusieurs cibles DAST (lanes) — on vérifie juste qu'au moins une
          * existe, la page /zap elle-même se charge de les restituer toutes. */
         if ($this->zapScanRepository->listDistinctTargetUrlsByMavenKey($maven_key) !== []) {
@@ -370,9 +373,8 @@ class OwaspController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 21/11/2024 20:16:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/owasp/detail/{id}', name: 'owasp_detail', condition: "params['id'] < 31", methods: ['GET', 'HEAD'])]
     public function details(int $id): Response
@@ -419,9 +421,8 @@ class OwaspController extends AbstractController
      *
      * @return array<int, array<int, string>>
      *
-     * Created at: 03/05/2026 16:57:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function owaspLabels(): array
     {
@@ -475,9 +476,8 @@ class OwaspController extends AbstractController
      *
      * @param Request $request
      *
-     * Created at: 2026-05-03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/owasp/rapport/pdf', name: 'owasp_rapport_pdf', methods: ['GET'])]
     public function rapportPdf(Request $request): Response
@@ -496,7 +496,8 @@ class OwaspController extends AbstractController
             throw $this->createNotFoundException('Clé Maven manquante.');
         }
 
-        /* MODIF 2026-07-17 : le rapport PDF ne vérifiait aucune appartenance au
+        /**
+         * MODIF 2026-07-17 : le rapport PDF ne vérifiait aucune appartenance au
          * groupe fonctionnel de l'utilisateur connecté, contrairement à la page
          * web /owasp — un utilisateur connaissant la clé Maven exacte d'un projet
          * hors de son périmètre pouvait en générer le PDF. Alignement sur
@@ -521,7 +522,8 @@ class OwaspController extends AbstractController
         $vuln = ['total' => 0, 'blocker' => 0, 'critical' => 0, 'major' => 0, 'minor' => 0];
         $version = null;
         $dateVersion = null;
-        /* MODIF 28/10/2026 : répartition par module des VULNÉRABILITÉS OWASP (colonnes
+        /**
+         * MODIF 28/10/2026 : répartition par module des VULNÉRABILITÉS OWASP (colonnes
          * owasp.module_frontend/backend/autre), même source que la page web depuis le
          * 27/10/2026 — jusqu'ici le PDF la calculait encore depuis hotspot_details
          * (ancienne répartition par hotspots, jamais mise à jour lors de ce changement). */
@@ -638,7 +640,8 @@ class OwaspController extends AbstractController
             }
         }
 
-        /* MODIF 28/10/2026 : détail des 10 vulnérabilités OWASP les plus critiques
+        /**
+         * MODIF 28/10/2026 : détail des 10 vulnérabilités OWASP les plus critiques
          * (triées par sévérité) + total réel — le tableau détaillé du PDF n'a
          * jusqu'ici jamais couvert que les Security Hotspots (ci-dessus),
          * jamais les vulnérabilités OWASP elles-mêmes. */
@@ -698,7 +701,8 @@ class OwaspController extends AbstractController
         $pdfContent = $this->pdfExportService->generateOwaspPdf($rapport, 'Document Interne');
 
         $disposition = $download ? ResponseHeaderBag::DISPOSITION_ATTACHMENT : ResponseHeaderBag::DISPOSITION_INLINE;
-        $filename = sprintf('rapport_owasp_%s_%s.pdf',
+        $filename = sprintf(
+            'rapport_owasp_%s_%s.pdf',
             preg_replace('/[^a-z0-9_-]/i', '_', $mavenKey),
             date('Y-m-d_H-i')
         );
@@ -717,9 +721,8 @@ class OwaspController extends AbstractController
      *
      * @return string
      *
-     * Created at: 12/07/2026 09:17:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function extractProjectName(string $mavenKey): string
     {
@@ -736,9 +739,8 @@ class OwaspController extends AbstractController
      *
      * @return string
      *
-     * Created at: 12/07/2026 09:19:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function computeFailleRating(array $sev): string
     {
@@ -767,9 +769,8 @@ class OwaspController extends AbstractController
      *
      * @return string
      *
-     * Created at: 12/07/2026 09:19:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function computeHotspotRating(int $count, int $total): string
     {
@@ -788,9 +789,8 @@ class OwaspController extends AbstractController
      *
      * @return string
      *
-     * Created at: 12/07/2026 09:18:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function computeHotspotNoteFromTaux(float $taux): string
     {

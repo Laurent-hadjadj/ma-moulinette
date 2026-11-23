@@ -1,15 +1,15 @@
 <?php
 
 /*
-*  Ma-Moulinette
-*  --------------
-*  Copyright (c) 2021-2026.
-*  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
-*  ---
-*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
-*/
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  https://www.gnu.org/licenses/agpl-3.0.html
+ */
 
 /**
  * Script de collecte des données SonarQube depuis Ma-Moulinette
@@ -120,7 +120,9 @@ $NO_PROXY = !is_string($noProxyEnv) || $noProxyEnv === ''
 // -----------------------------------------------------
 
 $logDir = __DIR__ . '/logs';
-if (!is_dir($logDir)) { mkdir($logDir, 0775, true); }
+if (!is_dir($logDir)) {
+    mkdir($logDir, 0775, true);
+}
 $logFile = sprintf('%s/ma_moulinette_%s.log', $logDir, gmdate('Ymd_His'));
 
 /**
@@ -130,12 +132,11 @@ $logFile = sprintf('%s/ma_moulinette_%s.log', $logDir, gmdate('Ymd_His'));
  * @param string $message
  *
  * @return void
- *
- * Created at: 09/11/2025 10:57:37 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-function logMessage(string $message, string $level = 'INFO'): void {
+function logMessage(string $message, string $level = 'INFO'): void
+{
     global $logFile;
     $date = gmdate('[Y-m-d H:i:s]');
     $level = strtoupper($level);
@@ -169,12 +170,11 @@ function logMessage(string $message, string $level = 'INFO'): void {
  * @param int $maxAgeDays
  *
  * @return void
- *
- * Created at: 07/11/2025 09:51:39 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-function rotateLogs(string $logDir, string $logFile, int $maxSize = 10485760, int $maxAgeDays = 7): void {
+function rotateLogs(string $logDir, string $logFile, int $maxSize = 10485760, int $maxAgeDays = 7): void
+{
     if (file_exists($logFile) && filesize($logFile) > $maxSize) {
         $backup = $logFile . '.' . date('Ymd_His') . '.bak';
         rename($logFile, $backup);
@@ -201,11 +201,21 @@ logMessage(" 🔗 Connexion à Ma-Moulinette : $MA_MOULINETTE_URL", 'INFO');
 logMessage(" 🧾 Conservation des logs : $KEEP_DAYS jour(s)", 'INFO');
 logMessage(" 📏 Taille max des logs : $MAX_LOG_SIZE Mo", 'INFO');
 logMessage(" 📂 Répertoire des logs : $logDir", 'INFO');
-if ($DRY_RUN) { logMessage(" ⚠️ Mode simulation activé.", 'INFO'); }
-if ($DEBUG) { logMessage("🛠️ Mode debug activé : toutes les requêtes/ réponses API seront affichées.\n", 'DEBUG'); }
-if ($DRY_RUN) { logMessage("🛠️ Flush activé tout les $FLUSH traitements", 'DEBUG'); }
-if ($USE_PROXY && $PROXY_URL) { logMessage(" 🌐 Proxy actif : $PROXY_URL", 'INFO'); }
-if (!empty($NO_PROXY)) { logMessage(" 🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY), 'WARN'); }
+if ($DRY_RUN) {
+    logMessage(" ⚠️ Mode simulation activé.", 'INFO');
+}
+if ($DEBUG) {
+    logMessage("🛠️ Mode debug activé : toutes les requêtes/ réponses API seront affichées.\n", 'DEBUG');
+}
+if ($DRY_RUN) {
+    logMessage("🛠️ Flush activé tout les $FLUSH traitements", 'DEBUG');
+}
+if ($USE_PROXY && $PROXY_URL) {
+    logMessage(" 🌐 Proxy actif : $PROXY_URL", 'INFO');
+}
+if (!empty($NO_PROXY)) {
+    logMessage(" 🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY), 'WARN');
+}
 
 // -----------------------------------------------------
 // === FONCTIONS UTILITAIRES ===
@@ -220,12 +230,11 @@ if (!empty($NO_PROXY)) { logMessage(" 🚫 Pas de proxy pour : " . implode(", ",
  * @param int $timeout
  *
  * @return array<int|string, mixed>
- *
- * Created at: 05/11/2025 10:22:52 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-function callApi(string $endpoint, array $params = [], string $method = 'GET', int $timeout = 600): array {
+function callApi(string $endpoint, array $params = [], string $method = 'GET', int $timeout = 600): array
+{
     global $MA_MOULINETTE_URL, $VERIFY_HOST, $VERIFY_PEER, $CIPHERS;
     global $USE_PROXY, $PROXY_URL, $PROXY_USER_PWD, $NO_PROXY, $DEBUG;
 
@@ -237,7 +246,7 @@ function callApi(string $endpoint, array $params = [], string $method = 'GET', i
     $ch = curl_init();
     $headers = ['Accept: application/json'];
 
-     // Pour POST on envoie du JSON (le back fait json_decode($request->getContent()))
+    // Pour POST on envoie du JSON (le back fait json_decode($request->getContent()))
     if ($method === 'POST') {
         $payload = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         $headers[] = 'Content-Type: application/json';
@@ -263,7 +272,9 @@ function callApi(string $endpoint, array $params = [], string $method = 'GET', i
     if ($USE_PROXY && !empty($PROXY_URL)) {
         curl_setopt($ch, CURLOPT_PROXY, $PROXY_URL);
         curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-        if (!empty($PROXY_USER_PWD)) { curl_setopt($ch, CURLOPT_PROXYUSERPWD, $PROXY_USER_PWD); }
+        if (!empty($PROXY_USER_PWD)) {
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $PROXY_USER_PWD);
+        }
     }
 
     // Ignorer le proxy pour certains domaines
@@ -307,12 +318,11 @@ function callApi(string $endpoint, array $params = [], string $method = 'GET', i
  * Récupère la liste des traitements automatiques non démarrés
  *
  * @return array<int|string, mixed>
- *
- * Created at: 07/11/2025 09:13:01 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-function getTraitementAutomatique():array {
+function getTraitementAutomatique(): array
+{
     global $TOKEN;
     $data = callApi("/api/public/traitement/automatique/liste", ["token" => $TOKEN], "POST");
 
@@ -339,12 +349,11 @@ function getTraitementAutomatique():array {
  *
  * @return array<int|string, mixed>
  *
- * Created at: 07/11/2025 09:24:05 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- * @param array<int|string, mixed> $traitement
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
-function startTraitement(array $traitement) {
+function startTraitement(array $traitement)
+{
     global $TOKEN, $DRY_RUN;
 
     $params = [
@@ -369,7 +378,7 @@ function startTraitement(array $traitement) {
 logMessage(" ℹ️ Début du batch Ma-Moulinette ($MA_MOULINETTE_URL)", 'INFO');
 
 $startGlobal = microtime(true);
-$memoryStart = round((memory_get_usage(true) /1024 /1024), 2);
+$memoryStart = round((memory_get_usage(true) / 1024 / 1024), 2);
 logMessage(" ℹ️ Mémoire au démarrage : {$memoryStart} MB", 'INFO');
 
 $traitements = getTraitementAutomatique();

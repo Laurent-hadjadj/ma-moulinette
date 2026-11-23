@@ -45,36 +45,34 @@ class RepartitionRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 12/02/2025 18:50:03 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
+    // state = '42703'
+    if ($e instanceof \Doctrine\DBAL\Exception\InvalidFieldNameException) {
+      return ['code' => 42703, 'erreur' => "Un attribut n'est pas présent dans la relation."];
+    }
 
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      // state = '42703'
-      if ($e instanceof \Doctrine\DBAL\Exception\InvalidFieldNameException){
-        return ['code' => 42703, 'erreur' => "Un attribut n'est pas présent dans la relation."];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -83,8 +81,6 @@ class RepartitionRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 14/02/2025 12:32:54 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -121,76 +117,76 @@ class RepartitionRepository extends ServiceEntityRepository
                 VALUES (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :setup, 'initial', :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            // Vérification d'existence
-            $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
-              $stmtCheck->bindValue(self::$mavenKey, $map['maven_key']);
-              $result = $stmtCheck->executeQuery();
-              $existingId = $result->fetchOne();
-            /** Si control = initial  on update */
-            if ($existingId) {
-                $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlUpdate));
-                  $stmtUpdate->bindValue(':name', $map['name']);
-                  $stmtUpdate->bindValue(self::$setup, $map['setup']);
-                  $stmtUpdate->bindValue(':bug_blocker', $map['bug_blocker']);
-                  $stmtUpdate->bindValue(':bug_critical', $map['bug_critical']);
-                  $stmtUpdate->bindValue(':bug_major', $map['bug_major']);
-                  $stmtUpdate->bindValue(':bug_minor', $map['bug_minor']);
-                  $stmtUpdate->bindValue(':bug_info', $map['bug_info']);
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      // Vérification d'existence
+      $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
+      $stmtCheck->bindValue(self::$mavenKey, $map['maven_key']);
+      $result = $stmtCheck->executeQuery();
+      $existingId = $result->fetchOne();
+      /** Si control = initial  on update */
+      if ($existingId) {
+        $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlUpdate));
+        $stmtUpdate->bindValue(':name', $map['name']);
+        $stmtUpdate->bindValue(self::$setup, $map['setup']);
+        $stmtUpdate->bindValue(':bug_blocker', $map['bug_blocker']);
+        $stmtUpdate->bindValue(':bug_critical', $map['bug_critical']);
+        $stmtUpdate->bindValue(':bug_major', $map['bug_major']);
+        $stmtUpdate->bindValue(':bug_minor', $map['bug_minor']);
+        $stmtUpdate->bindValue(':bug_info', $map['bug_info']);
 
-                  $stmtUpdate->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
-                  $stmtUpdate->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
-                  $stmtUpdate->bindValue(':vulnerability_major', $map['vulnerability_major']);
-                  $stmtUpdate->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
-                  $stmtUpdate->bindValue(':vulnerability_info', $map['vulnerability_info']);
+        $stmtUpdate->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
+        $stmtUpdate->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
+        $stmtUpdate->bindValue(':vulnerability_major', $map['vulnerability_major']);
+        $stmtUpdate->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
+        $stmtUpdate->bindValue(':vulnerability_info', $map['vulnerability_info']);
 
-                  $stmtUpdate->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
-                  $stmtUpdate->bindValue(':code_smell_critical', $map['code_smell_critical']);
-                  $stmtUpdate->bindValue(':code_smell_major', $map['code_smell_major']);
-                  $stmtUpdate->bindValue(':code_smell_minor', $map['code_smell_minor']);
-                  $stmtUpdate->bindValue(':code_smell_info', $map['code_smell_info']);
-                  $stmtUpdate->bindValue(':mode_collecte', $map['mode_collecte']);
-                  $stmtUpdate->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                  $stmtUpdate->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
-                  $stmtUpdate->bindValue('id', $existingId);
-                  $stmtUpdate->executeStatement();
-                $this->getEntityManager()->getConnection()->commit();
-                return ['code' => 200, 'erreur' => 'Mise à jour effectuée.'];
-            }
-
-          /** sinon on insert  */
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlInsert));
-            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $stmt->bindValue(':name', $map['name']);
-            $stmt->bindValue(self::$setup, $map['setup']);
-
-            $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
-            $stmt->bindValue(':bug_critical', $map['bug_critical']);
-            $stmt->bindValue(':bug_major', $map['bug_major']);
-            $stmt->bindValue(':bug_minor', $map['bug_minor']);
-            $stmt->bindValue(':bug_info', $map['bug_info']);
-
-            $stmt->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
-            $stmt->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
-            $stmt->bindValue(':vulnerability_major', $map['vulnerability_major']);
-            $stmt->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
-            $stmt->bindValue(':vulnerability_info', $map['vulnerability_info']);
-
-            $stmt->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
-            $stmt->bindValue(':code_smell_critical', $map['code_smell_critical']);
-            $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
-            $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
-            $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
-
-            $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-            $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-            $stmt->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
-            $stmt->executeStatement();
+        $stmtUpdate->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
+        $stmtUpdate->bindValue(':code_smell_critical', $map['code_smell_critical']);
+        $stmtUpdate->bindValue(':code_smell_major', $map['code_smell_major']);
+        $stmtUpdate->bindValue(':code_smell_minor', $map['code_smell_minor']);
+        $stmtUpdate->bindValue(':code_smell_info', $map['code_smell_info']);
+        $stmtUpdate->bindValue(':mode_collecte', $map['mode_collecte']);
+        $stmtUpdate->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+        $stmtUpdate->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
+        $stmtUpdate->bindValue('id', $existingId);
+        $stmtUpdate->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+        return ['code' => 200, 'erreur' => 'Mise à jour effectuée.'];
       }
+
+      /** sinon on insert  */
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlInsert));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(':name', $map['name']);
+      $stmt->bindValue(self::$setup, $map['setup']);
+
+      $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
+      $stmt->bindValue(':bug_critical', $map['bug_critical']);
+      $stmt->bindValue(':bug_major', $map['bug_major']);
+      $stmt->bindValue(':bug_minor', $map['bug_minor']);
+      $stmt->bindValue(':bug_info', $map['bug_info']);
+
+      $stmt->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
+      $stmt->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
+      $stmt->bindValue(':vulnerability_major', $map['vulnerability_major']);
+      $stmt->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
+      $stmt->bindValue(':vulnerability_info', $map['vulnerability_info']);
+
+      $stmt->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
+      $stmt->bindValue(':code_smell_critical', $map['code_smell_critical']);
+      $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
+      $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
+      $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
+
+      $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+      $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+      $stmt->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
+    } catch (\Throwable $e) {
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
+    }
 
     return ['code' => 200, 'erreur' => ''];
   }
@@ -201,8 +197,6 @@ class RepartitionRepository extends ServiceEntityRepository
    * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 30/07/2025 09:11:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -225,30 +219,74 @@ class RepartitionRepository extends ServiceEntityRepository
 
     $fieldsBug = [
       // BUG
-      'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnu_bug_blocker',
-      'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnu_bug_critical',
-      'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnu_bug_major',
-      'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnu_bug_minor',
-      'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnu_bug_info',
+      'frontend_bug_blocker',
+      'backend_bug_blocker',
+      'autre_bug_blocker',
+      'inconnu_bug_blocker',
+      'frontend_bug_critical',
+      'backend_bug_critical',
+      'autre_bug_critical',
+      'inconnu_bug_critical',
+      'frontend_bug_major',
+      'backend_bug_major',
+      'autre_bug_major',
+      'inconnu_bug_major',
+      'frontend_bug_minor',
+      'backend_bug_minor',
+      'autre_bug_minor',
+      'inconnu_bug_minor',
+      'frontend_bug_info',
+      'backend_bug_info',
+      'autre_bug_info',
+      'inconnu_bug_info',
     ];
 
     $fieldsVulnerability = [
-        // VULNERABILITY
-        'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnu_vulnerability_blocker',
-        'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnu_vulnerability_critical',
-        'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnu_vulnerability_major',
-        'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnu_vulnerability_minor',
-        'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnu_vulnerability_info',
+      // VULNERABILITY
+      'frontend_vulnerability_blocker',
+      'backend_vulnerability_blocker',
+      'autre_vulnerability_blocker',
+      'inconnu_vulnerability_blocker',
+      'frontend_vulnerability_critical',
+      'backend_vulnerability_critical',
+      'autre_vulnerability_critical',
+      'inconnu_vulnerability_critical',
+      'frontend_vulnerability_major',
+      'backend_vulnerability_major',
+      'autre_vulnerability_major',
+      'inconnu_vulnerability_major',
+      'frontend_vulnerability_minor',
+      'backend_vulnerability_minor',
+      'autre_vulnerability_minor',
+      'inconnu_vulnerability_minor',
+      'frontend_vulnerability_info',
+      'backend_vulnerability_info',
+      'autre_vulnerability_info',
+      'inconnu_vulnerability_info',
     ];
 
     $fieldsCodeSmell = [
-        // CODE_SMELL
-        'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnu_code_smell_blocker',
-        'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnu_code_smell_critical',
-        'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnu_code_smell_major',
-        'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnu_code_smell_minor',
-        'frontend_code_smell_info', 'backend_code_smell_info',
-        'autre_code_smell_info', 'inconnu_code_smell_info',
+      // CODE_SMELL
+      'frontend_code_smell_blocker',
+      'backend_code_smell_blocker',
+      'autre_code_smell_blocker',
+      'inconnu_code_smell_blocker',
+      'frontend_code_smell_critical',
+      'backend_code_smell_critical',
+      'autre_code_smell_critical',
+      'inconnu_code_smell_critical',
+      'frontend_code_smell_major',
+      'backend_code_smell_major',
+      'autre_code_smell_major',
+      'inconnu_code_smell_major',
+      'frontend_code_smell_minor',
+      'backend_code_smell_minor',
+      'autre_code_smell_minor',
+      'inconnu_code_smell_minor',
+      'frontend_code_smell_info',
+      'backend_code_smell_info',
+      'autre_code_smell_info',
+      'inconnu_code_smell_info',
     ];
 
     // Fusion de tous les champs dans un seul tableau
@@ -259,7 +297,7 @@ class RepartitionRepository extends ServiceEntityRepository
 
     // Ajout de tous les champs des trois types
     foreach ($allFields as $field) {
-        $setParts[] = "$field = :$field";
+      $setParts[] = "$field = :$field";
     }
 
     // Ajout des autres colonnes obligatoires
@@ -275,35 +313,35 @@ class RepartitionRepository extends ServiceEntityRepository
 
     try {
       $this->getEntityManager()->getConnection()->beginTransaction();
-          // Vérification de l'existence de l'enregistrement
-          $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
-            $stmtCheck->bindValue(':maven_key', $map['maven_key']);
-            $stmtCheck->bindValue(self::$setup, $map['setup']);
-            $result = $stmtCheck->executeQuery();
-            $existingId = $result->fetchOne();
-          if ($existingId) {
-              $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlUpdate));
-              // Pour chaque champ des 3 types, vérification dans $map,
-              // et affectation de -1 si la donnée n'est pas présente
-              foreach ($allFields as $field) {
-                  $value = isset($map[$field]) ? $map[$field] : -1;
-                  $stmtUpdate->bindValue(":$field", $value);
-              }
+      // Vérification de l'existence de l'enregistrement
+      $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
+      $stmtCheck->bindValue(':maven_key', $map['maven_key']);
+      $stmtCheck->bindValue(self::$setup, $map['setup']);
+      $result = $stmtCheck->executeQuery();
+      $existingId = $result->fetchOne();
+      if ($existingId) {
+        $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlUpdate));
+        // Pour chaque champ des 3 types, vérification dans $map,
+        // et affectation de -1 si la donnée n'est pas présente
+        foreach ($allFields as $field) {
+          $value = isset($map[$field]) ? $map[$field] : -1;
+          $stmtUpdate->bindValue(":$field", $value);
+        }
 
-              // Liaison des autres paramètres obligatoires
-              $stmtUpdate->bindValue(':control', $map['control']);
+        // Liaison des autres paramètres obligatoires
+        $stmtUpdate->bindValue(':control', $map['control']);
 
-              $stmtUpdate->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
-              $stmtUpdate->bindValue(':id', $existingId);
-              $stmtUpdate->bindValue(self::$setup, $map['setup']);
+        $stmtUpdate->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
+        $stmtUpdate->bindValue(':id', $existingId);
+        $stmtUpdate->bindValue(self::$setup, $map['setup']);
 
-              // Exécution de la mise à jour
-              $stmtUpdate->executeStatement();
-          }
-          $this->getEntityManager()->getConnection()->commit();
+        // Exécution de la mise à jour
+        $stmtUpdate->executeStatement();
+      }
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
       $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
@@ -314,14 +352,12 @@ class RepartitionRepository extends ServiceEntityRepository
    * @param string $maven_key
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 30/07/2025 09:23:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findLatestSetupByMavenKey(string $maven_key): array
   {
-      /* MODIF 2026-07-16 : ajout de la colonne control (état de complétude
+    /* MODIF 2026-07-16 : ajout de la colonne control (état de complétude
        * de la dernière répartition), utilisée par COSUI pour signaler un
        * cycle partiel.
        * MODIF 2026-07-16 (bis) : exclusion de control='initial' — cette valeur
@@ -331,17 +367,17 @@ class RepartitionRepository extends ServiceEntityRepository
        * page (aucun bouton cliqué) devenait le `setup` le plus récent et
        * masquait silencieusement une analyse complète précédente pour COSUI
        * (répartition_percent retombait à 0% alors qu'une analyse 100% existait). */
-      $sql = "SELECT setup, control
+    $sql = "SELECT setup, control
               FROM ma_moulinette.repartition
               WHERE maven_key = :maven_key AND control <> 'initial'
               ORDER BY setup DESC LIMIT 1";
 
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $maven_key);
-              $result = $stmt->executeQuery()->fetchAssociative();
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $maven_key);
+      $result = $stmt->executeQuery()->fetchAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'result' => $result ?: 'NaN', 'erreur' => ''];
   }
@@ -352,30 +388,27 @@ class RepartitionRepository extends ServiceEntityRepository
    * @param string $maven_key
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 28/08/2025 10:31:46 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
   public function findLatestMavenKeyWithControl(string $maven_key): array
   {
-      /* MODIF 2026-05-21 : ajout préfixe ma_moulinette. (manquant, identique aux autres requêtes). */
-      $sql = 'SELECT *
+    /* MODIF 2026-05-21 : ajout préfixe ma_moulinette. (manquant, identique aux autres requêtes). */
+    $sql = 'SELECT *
               FROM ma_moulinette.repartition
               WHERE control = :control AND maven_key = :maven_key
               ORDER BY date_enregistrement DESC
               limit 1';
 
-      /* MODIF 2026-05-04 : retrait du rollBack() (SELECT sans beginTransaction). */
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $maven_key);
-              $stmt->bindValue('control', "complet (100%)");
-              $result = $stmt->executeQuery()->fetchAllAssociative();
+    /* MODIF 2026-05-04 : retrait du rollBack() (SELECT sans beginTransaction). */
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $maven_key);
+      $stmt->bindValue('control', "complet (100%)");
+      $result = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-        return $this->handleDatabaseException($e);
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'result' => $result, 'erreur' => ''];
   }
-
 }

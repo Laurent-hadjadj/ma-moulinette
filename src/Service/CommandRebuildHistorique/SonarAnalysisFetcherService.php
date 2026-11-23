@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Service\CommandRebuildHistorique;
@@ -39,9 +39,8 @@ class SonarAnalysisFetcherService
      *
      * @return string
      *
-     * Created at: 17/03/2026 17:01:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function extractVersion(array $analysis): string
     {
@@ -70,9 +69,8 @@ class SonarAnalysisFetcherService
      *
      * @return array<int, array<string, mixed>>
      *
-     * Created at: 17/03/2026 17:00:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function fetchAnalyses(string $project_key): array
     {
@@ -123,13 +121,14 @@ class SonarAnalysisFetcherService
             $total = $response['json']['paging']['total'] ?? 0;
 
             $page++;
-
         } while (($page - 1) * $pageSize < $total);
 
         /**
          * Tri sécurisé (l’API Sonar ne garantit pas toujours l’ordre)
          */
-        usort($analyses, fn($a, $b) =>
+        usort(
+            $analyses,
+            fn($a, $b) =>
             strtotime($b['date']) <=> strtotime($a['date'])
         );
 
@@ -138,7 +137,6 @@ class SonarAnalysisFetcherService
         ]);
 
         return $analyses;
-
     }
 
     /**
@@ -148,9 +146,8 @@ class SonarAnalysisFetcherService
      *
      * @return array<int, array<string, mixed>>
      *
-     * Created at: 17/03/2026 16:39:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function fetchLatestAnalysesPerVersion(string $project_key): array
     {
@@ -183,9 +180,8 @@ class SonarAnalysisFetcherService
      *
      * @return string
      *
-     * Created at: 17/03/2026 23:36:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function detectVersionType(string $version): string
     {
@@ -214,13 +210,14 @@ class SonarAnalysisFetcherService
      *
      * @return array<int, array<string, mixed>>
      *
-     * Created at: 17/03/2026 23:36:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeVersionCounters(array $analyses): array
     {
-        usort($analyses, fn($a, $b) =>
+        usort(
+            $analyses,
+            fn($a, $b) =>
             strtotime($a['date']) <=> strtotime($b['date'])
         );
 
@@ -251,5 +248,4 @@ class SonarAnalysisFetcherService
 
         return $analyses;
     }
-
 }

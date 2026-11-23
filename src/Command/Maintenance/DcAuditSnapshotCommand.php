@@ -5,15 +5,16 @@
  *  --------------
  *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Maintenance. */
+
 namespace App\Command\Maintenance;
 
 use App\Repository\DcScanRepository;
@@ -56,6 +57,17 @@ class DcAuditSnapshotCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * [Description for execute]
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $conn = $this->em->getConnection();
@@ -110,13 +122,13 @@ class DcAuditSnapshotCommand extends Command
                 : '-';
             $output->writeln(
                 str_pad((string) $r['id'], 5) . ' | '
-                . str_pad(self::cap($r['maven_key'], 50), 50) . ' | '
-                . str_pad(self::cap($r['project_version'], 22), 22) . ' | '
-                . str_pad($depsCell, 10) . ' | '
-                . str_pad($sevCell, 22) . ' | '
-                . str_pad((string) $r['cve_count_total'], 7) . ' | '
-                . str_pad(self::cap($parentCell, 40), 40) . ' | '
-                . ($r['archetype_version'] ?? '-')
+                    . str_pad(self::cap($r['maven_key'], 50), 50) . ' | '
+                    . str_pad(self::cap($r['project_version'], 22), 22) . ' | '
+                    . str_pad($depsCell, 10) . ' | '
+                    . str_pad($sevCell, 22) . ' | '
+                    . str_pad((string) $r['cve_count_total'], 7) . ' | '
+                    . str_pad(self::cap($parentCell, 40), 40) . ' | '
+                    . ($r['archetype_version'] ?? '-')
             );
         }
 
@@ -129,10 +141,10 @@ class DcAuditSnapshotCommand extends Command
         $kos = 0;
         foreach ($rows as $r) {
             $expected = (int) $r['cve_count_critical']
-                        + (int) $r['cve_count_high']
-                        + (int) $r['cve_count_medium']
-                        + (int) $r['cve_count_low']
-                        + (int) $r['cve_count_info'];
+                + (int) $r['cve_count_high']
+                + (int) $r['cve_count_medium']
+                + (int) $r['cve_count_low']
+                + (int) $r['cve_count_info'];
             $actual = (int) $r['cve_count_total'];
             if ($expected !== $actual) {
                 $output->writeln(sprintf(
@@ -170,7 +182,9 @@ class DcAuditSnapshotCommand extends Command
             $output->writeln('');
             $output->writeln(sprintf('-- %s (%d scan(s)) --', $key, count($scans)));
             // tri par scan_date asc (utile pour visualiser l'ordre d'ingestion)
-            usort($scans, static fn(array $a, array $b): int =>
+            usort(
+                $scans,
+                static fn(array $a, array $b): int =>
                 strcmp((string) $a['scan_date'], (string) $b['scan_date'])
             );
             foreach ($scans as $r) {
@@ -188,19 +202,23 @@ class DcAuditSnapshotCommand extends Command
                     '    previous_same_version : %s',
                     $prevSame === null
                         ? self::AUCUN
-                        : sprintf('scan_id=%d  v=%s  date=%s',
+                        : sprintf(
+                            'scan_id=%d  v=%s  date=%s',
                             (int) $prevSame->getId(),
                             $prevSame->getProjectVersion(),
-                            $prevSame->getScanDate()->format('Y-m-d H:i:s'))
+                            $prevSame->getScanDate()->format('Y-m-d H:i:s')
+                        )
                 ));
                 $output->writeln(sprintf(
                     '    previous_any_version  : %s',
                     $prevAny === null
                         ? self::AUCUN
-                        : sprintf('scan_id=%d  v=%s  date=%s',
+                        : sprintf(
+                            'scan_id=%d  v=%s  date=%s',
                             (int) $prevAny->getId(),
                             $prevAny->getProjectVersion(),
-                            $prevAny->getScanDate()->format('Y-m-d H:i:s'))
+                            $prevAny->getScanDate()->format('Y-m-d H:i:s')
+                        )
                 ));
             }
         }
@@ -234,9 +252,8 @@ class DcAuditSnapshotCommand extends Command
      *
      * @return void
      *
-     * Created at: 15/05/2026 08:15:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function renderSectionD(array $rows, OutputInterface $output): void
     {
@@ -328,9 +345,8 @@ class DcAuditSnapshotCommand extends Command
      *
      * @return array<string, mixed>|null
      *
-     * Created at: 15/05/2026 08:16:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function findArchetypeScan(array $rows, string $label, string $version): ?array
     {
@@ -363,9 +379,8 @@ class DcAuditSnapshotCommand extends Command
      *
      * @return string
      *
-     * Created at: 15/05/2026 08:17:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function cap(?string $s, int $max): string
     {

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 namespace App\Entity;
@@ -23,6 +23,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * MODIF 2026-10-13 : un scan = un rapport ZAP (DAST) pour
  * (maven_key, project_version, target_url, generated_at). Compteurs
  * pre-calcules par niveau de risque ZAP (Informational/Low/Medium/High).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: ZapScanRepository::class)]
 #[ORM\Table(name: 'zap_scan', schema: 'ma_moulinette')]

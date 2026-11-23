@@ -31,7 +31,7 @@ class BuildMapHistoryService
      * METRICS
      * métriques que l'on souhaite historiser
      * pour éviter de faire des appels API inutiles et de stocker des données non pertinentes, on définit une liste de métriques à récupérer pour chaque analyse.
-    */
+     */
 
     /**
      * @var array<int, string>
@@ -184,7 +184,8 @@ class BuildMapHistoryService
         'security_review_rating',
     ];
 
-    /* MODIF 2026-10-11 : métriques "Issue Severity on Overall Code" apparues entre
+    /**
+     * MODIF 2026-10-11 : métriques "Issue Severity on Overall Code" apparues entre
      * SonarQube 26.3.0 et 26.9.0 — pas encore documentées par SonarSource (la doc
      * publique s'arrête à la LTS 2026.5.0), donc pas de seuil de version fiable à
      * leur associer. Volontairement EXCLUES de metricsKey()/CORE-10-2024 : une seule
@@ -212,7 +213,6 @@ class BuildMapHistoryService
      *
      * @return string
      *
-     * Created at: 17/03/2026 04:05:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -226,33 +226,33 @@ class BuildMapHistoryService
          */
 
         $sonar_core = implode(',', array_unique(array_merge(
-                self::QUALITY_GATE_CORE,
-                self::SIZE_CORE,
-                self::COMMENTS_CORE,
-                self::COMPLEXITY_CORE,
-                self::COVERAGE_CORE,
-                self::TESTS_CORE,
-                self::DUPLICATIONS_CORE,
-                self::ISSUES_STATUS_CORE,
-                self::SOFTWARE_QUALITY_CORE,
-                self::MAINTAINABILITY_CORE,
-                self::RELIABILITY_CORE,
-                self::SECURITY_CORE,
-                self::SECURITY_REVIEW_CORE
+            self::QUALITY_GATE_CORE,
+            self::SIZE_CORE,
+            self::COMMENTS_CORE,
+            self::COMPLEXITY_CORE,
+            self::COVERAGE_CORE,
+            self::TESTS_CORE,
+            self::DUPLICATIONS_CORE,
+            self::ISSUES_STATUS_CORE,
+            self::SOFTWARE_QUALITY_CORE,
+            self::MAINTAINABILITY_CORE,
+            self::RELIABILITY_CORE,
+            self::SECURITY_CORE,
+            self::SECURITY_REVIEW_CORE
         )));
 
         $sonar_10 = implode(',', array_unique(array_merge(
-                self::ISSUES_STATUS_CORE_10,
-                self::MAINTAINABILITY_10,
-                self::RELIABILITY_10,
-                self::SECURITY_10,
+            self::ISSUES_STATUS_CORE_10,
+            self::MAINTAINABILITY_10,
+            self::RELIABILITY_10,
+            self::SECURITY_10,
         )));
 
         $sonar_2024 = implode(',', array_unique(array_merge(
-                self::SOFTWARE_QUALITY_2024,
-                self::MAINTAINABILITY_2024,
-                self::RELIABILITY_2024,
-                self::SECURITY_2024,
+            self::SOFTWARE_QUALITY_2024,
+            self::MAINTAINABILITY_2024,
+            self::RELIABILITY_2024,
+            self::SECURITY_2024,
         )));
 
         // On récupère la version du serveur déclaré dans les properties.
@@ -278,7 +278,6 @@ class BuildMapHistoryService
      *
      * @return string
      *
-     * Created at: 11/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -298,19 +297,31 @@ class BuildMapHistoryService
      *
      * @return string
      *
-     * Created at: 25/03/2026 18:13:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function getCommentDensityRating(float $ratio): string {
+    private function getCommentDensityRating(float $ratio): string
+    {
         // Courbe en cloche : densité idéale 15-25%. Avant : trou (5, 15) qui
         // retournait '--' (fix 2026-05-03). Symétrie avec [35, 40) → D.
-        if ($ratio <= 5) { return 'E'; }
-        if ($ratio < 15) { return 'D'; }   // (5, 15) — documentation pauvre mais existante
-        if ($ratio < 25) { return 'A'; }   // [15, 25) — idéal
-        if ($ratio < 30) { return 'B'; }   // [25, 30)
-        if ($ratio < 35) { return 'C'; }   // [30, 35)
-        if ($ratio < 40) { return 'D'; }   // [35, 40)
+        if ($ratio <= 5) {
+            return 'E';
+        }
+        if ($ratio < 15) {
+            return 'D';
+        }   // (5, 15) — documentation pauvre mais existante
+        if ($ratio < 25) {
+            return 'A';
+        }   // [15, 25) — idéal
+        if ($ratio < 30) {
+            return 'B';
+        }   // [25, 30)
+        if ($ratio < 35) {
+            return 'C';
+        }   // [30, 35)
+        if ($ratio < 40) {
+            return 'D';
+        }   // [35, 40)
         return 'E';                        // ≥ 40 — verbiage excessif
     }
 
@@ -328,7 +339,6 @@ class BuildMapHistoryService
      *
      * @return string
      *
-     * Created at: 26/10/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -344,28 +354,28 @@ class BuildMapHistoryService
      *
      * @return string
      *
-     * Created at: 26/03/2026 18:25:42 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function getComplexityRating(float|null $ratio): string {
+    private function getComplexityRating(float|null $ratio): string
+    {
         // MODIF 2026-07-15 : le ratio est ncloc/complexité (lignes de code par point de
         // complexité) — un ratio FAIBLE signifie une complexité DENSE (mauvais signe),
         // un ratio ÉLEVÉ signifie du code plus simple (bon signe). Les lettres étaient
         // inversées (un ratio faible obtenait 'A', le meilleur) ; corrigé ici.
         if ($ratio === null) {
-                return '--';
+            return '--';
         }
         if ($ratio <= 3) {
-                return 'E';
+            return 'E';
         } elseif ($ratio > 3 && $ratio <= 7) {
-                return 'D';
+            return 'D';
         } elseif ($ratio > 7 && $ratio <= 12) {
-                return 'C';
+            return 'C';
         } elseif ($ratio > 12 && $ratio <= 18) {
-                return 'B';
+            return 'B';
         } elseif ($ratio > 18) {
-                return 'A';
+            return 'A';
         }
         return '--';
     }
@@ -377,13 +387,12 @@ class BuildMapHistoryService
      *
      * @return string
      *
-     * Created at: 21/03/2026 14:57:26 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function ratingToLetter(string $value): string
     {
-        return match((int)$value) {
+        return match ((int)$value) {
             1 => 'A',
             2 => 'B',
             3 => 'C',
@@ -400,7 +409,6 @@ class BuildMapHistoryService
      *
      * @return string|null
      *
-     * Created at: 29/03/2026 16:19:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -410,10 +418,18 @@ class BuildMapHistoryService
             return null;
         }
 
-        if ($coverage >= 80) { return 'A'; }
-        if ($coverage >= 70) { return 'B'; }
-        if ($coverage >= 50) { return 'C'; }
-        if ($coverage >= 30) { return 'D'; }
+        if ($coverage >= 80) {
+            return 'A';
+        }
+        if ($coverage >= 70) {
+            return 'B';
+        }
+        if ($coverage >= 50) {
+            return 'C';
+        }
+        if ($coverage >= 30) {
+            return 'D';
+        }
         return 'E';
     }
 
@@ -424,7 +440,6 @@ class BuildMapHistoryService
      *
      * @return string|null
      *
-     * Created at: 29/03/2026 16:36:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -434,10 +449,18 @@ class BuildMapHistoryService
             return null;
         }
 
-        if ($density <= 3) {return 'A';}
-        if ($density <= 5) { return 'B'; }
-        if ($density <= 10) { return 'C'; }
-        if ($density <= 20) { return 'D'; }
+        if ($density <= 3) {
+            return 'A';
+        }
+        if ($density <= 5) {
+            return 'B';
+        }
+        if ($density <= 10) {
+            return 'C';
+        }
+        if ($density <= 20) {
+            return 'D';
+        }
         return 'E';
     }
 
@@ -450,11 +473,11 @@ class BuildMapHistoryService
      *
      * @return array<string, null>
      *
-     * Created at: 25/03/2026 18:14:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
-    private function generateKeys(array $prefixes, array $suffixes): array {
+    private function generateKeys(array $prefixes, array $suffixes): array
+    {
         $keys = [];
         foreach ($prefixes as $p) {
             foreach ($suffixes as $s) {
@@ -472,7 +495,6 @@ class BuildMapHistoryService
      *
      * @return array<string, mixed>
      *
-     * Created at: 19/03/2026 19:25:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -498,21 +520,29 @@ class BuildMapHistoryService
             'version_snapshot' => isset($analysis['version_snapshot']) ? (int) $analysis['version_snapshot'] : null,
             'version_autre' => isset($analysis['version_autre']) ? (int) $analysis['version_autre'] : null,
         ] + array_fill_keys([
-            'suppress_warning','no_sonar','todo',
-            'logger_info','logger_warn','logger_error','logger_debug',
-            'repartition_frontend','repartition_backend','repartition_autre','repartition_inconnu',
+            'suppress_warning',
+            'no_sonar',
+            'todo',
+            'logger_info',
+            'logger_warn',
+            'logger_error',
+            'logger_debug',
+            'repartition_frontend',
+            'repartition_backend',
+            'repartition_autre',
+            'repartition_inconnu',
         ], null);
 
         $custom_metrics += self::generateKeys(
-            ['bug','vulnerability','code_smell'],
-            ['blocker','critical','major','minor','info']
+            ['bug', 'vulnerability', 'code_smell'],
+            ['blocker', 'critical', 'major', 'minor', 'info']
         );
 
         $custom_metrics += ['menace_potentielle_totale' => null];
 
         $custom_metrics += $this->generateKeys(
-            ['menace_potentielle_to_review','menace_potentielle_reviewed'],
-            ['high','medium','low']
+            ['menace_potentielle_to_review', 'menace_potentielle_reviewed'],
+            ['high', 'medium', 'low']
         );
 
         $size_core = [
@@ -597,13 +627,13 @@ class BuildMapHistoryService
         if ($complexity !== null && $complexity !== 0) {
             $complexity_ratio = round($ncloc / $complexity, 1);
         } else {
-                $complexity_ratio = null;
+            $complexity_ratio = null;
         }
 
         if ($cognitive_complexity !== null && $cognitive_complexity !== 0) {
             $cognitive_complexity_ratio = round($ncloc / $cognitive_complexity, 1);
         } else {
-                $cognitive_complexity_ratio = null;
+            $cognitive_complexity_ratio = null;
         }
 
         $complexity_core = [
@@ -680,7 +710,8 @@ class BuildMapHistoryService
             'alert_status' => isset($measures['alert_status']) ? $measures['alert_status'] : 'UNKNOWN',
         ];
 
-        /* MODIF 2026-10-11 : métriques "optionnelles" (cf. MAINTAINABILITY_OPTIONAL/
+        /**
+         * MODIF 2026-10-11 : métriques "optionnelles" (cf. MAINTAINABILITY_OPTIONAL/
          * RELIABILITY_OPTIONAL/SECURITY_OPTIONAL) — valeur brute, pas de conversion
          * en note A-E (sémantique de l'indice pas encore documentée par SonarSource). */
         $severity_optional = [

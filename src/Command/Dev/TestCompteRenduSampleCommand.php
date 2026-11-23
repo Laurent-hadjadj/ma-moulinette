@@ -12,6 +12,7 @@
 */
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Dev. */
+
 namespace App\Command\Dev;
 
 use App\Entity\BatchExecutionJournal;
@@ -48,7 +49,6 @@ class TestCompteRenduSampleCommand extends Command
      *
      * @return int
      *
-     * Created at: 12/11/2025 19:52:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */

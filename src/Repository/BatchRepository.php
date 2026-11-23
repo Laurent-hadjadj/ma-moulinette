@@ -27,7 +27,7 @@ class BatchRepository extends ServiceEntityRepository
 
   public function __construct(ManagerRegistry $registry)
   {
-      parent::__construct($registry, Batch::class);
+    parent::__construct($registry, Batch::class);
   }
 
   /**
@@ -36,8 +36,6 @@ class BatchRepository extends ServiceEntityRepository
    * @param \Throwable $e
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 26/10/2025 12:19:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -47,17 +45,17 @@ class BatchRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = self::$noDataBase;
+      $message = self::$noDataBase;
     }
 
     // state = '23502'
     if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-        $message = $e->getMessage();
+      $message = $e->getMessage();
     }
 
     // state = '23505'
     if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
     }
 
     return ['code' => 500, 'erreur' => $message];
@@ -67,8 +65,6 @@ class BatchRepository extends ServiceEntityRepository
    * [Description for selectBatchByStatut]
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 22/05/2024 18:04:17 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -78,13 +74,13 @@ class BatchRepository extends ServiceEntityRepository
                   nombre_projet as nombre
             FROM batch
             ORDER BY activated ASC";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -93,8 +89,6 @@ class BatchRepository extends ServiceEntityRepository
    * @param array{portefeuille: string, nombre_projet: int} $map
    *
    * @return array<int|string, mixed>
-   *
-   * Created at: 26/10/2025 13:05:57 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
    */
@@ -104,17 +98,17 @@ class BatchRepository extends ServiceEntityRepository
             SET nombre_projet = :nombre_projet
             WHERE portefeuille = :portefeuille";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':portefeuille', $map['portefeuille']);
-              $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
-            $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
-        } catch (\Throwable $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return $this->handleDatabaseException($e);
-        }
-        /** on prépare la réponse */
-        return ['code' => 200, 'erreur' => ''];
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(':portefeuille', $map['portefeuille']);
+      $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
+    } catch (\Throwable $e) {
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
+    }
+    /** on prépare la réponse */
+    return ['code' => 200, 'erreur' => ''];
   }
 }

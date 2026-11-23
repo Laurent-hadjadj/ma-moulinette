@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -54,9 +54,8 @@ class StatistiqueUtilisateurController extends AbstractController
      *
      * @return array<int|string, mixed>
      *
-     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function genericRender(): array
     {
@@ -81,11 +80,10 @@ class StatistiqueUtilisateurController extends AbstractController
      *
      * @return void
      *
-     * Created at: 23/12/2025 09:48:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    private function genericAddFlashMessage(string $type, string $message, int $code, string|null $error = null):void
+    private function genericAddFlashMessage(string $type, string $message, int $code, string|null $error = null): void
     {
         $this->addFlash('notice', ['type' => $type, 'message' => "{$message} ({$code})", 'trace' => $error]);
     }
@@ -96,9 +94,8 @@ class StatistiqueUtilisateurController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 04/09/2024 14:57:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     #[Route('/statistiques/utilisateur', name: 'statistiques_utilisateur', methods: ['GET'])]
     public function statistiques(Request $request): Response
@@ -137,12 +134,12 @@ class StatistiqueUtilisateurController extends AbstractController
             $period = 'day';
         }
         ['start' => $start, 'end' => $end, 'label' => $label] =
-        $this->reporting->getPeriodBounds($period, $week, $month);
+            $this->reporting->getPeriodBounds($period, $week, $month);
 
         /** On met à jour les informations pour le date-picker */
         $render['period'] = $period;
         $render['selected_week'] = $week;
-        $render['selected_month']= $month;
+        $render['selected_month'] = $month;
 
         /* Utilisateur disponible */
         $countUtilisateurDisponible = $this->reporting->getUtilisateurDisponible();
@@ -235,7 +232,8 @@ class StatistiqueUtilisateurController extends AbstractController
         $render['device'] = $deviceStats;
         $render['page_vue_unique'] = $sessionPagesStats;
         $render['session_duration'] = $sessionDurationByPeriodStats;
-        /* MODIF 2026-07-19 : session_category/session_unique_category étaient
+        /**
+         * MODIF 2026-07-19 : session_category/session_unique_category étaient
          * jusqu'ici calculés sur CURRENT_DATE côté SQL, indépendamment de la
          * période choisie à l'écran — désormais filtrés sur [$start, $end]. */
         $render['session_category'] = $categoryByUniqueSessionStats;
@@ -247,5 +245,4 @@ class StatistiqueUtilisateurController extends AbstractController
 
         return $this->render(self::$index, $render);
     }
-
 }

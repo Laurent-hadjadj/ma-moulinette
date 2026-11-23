@@ -21,6 +21,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * [Description Utilisateur]
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
+ */
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\Table(name: "utilisateur", schema: "ma_moulinette")]
 #[UniqueEntity(fields: ['courriel'], message: "La création de votre compte n'a pas aboutie.")]
@@ -199,10 +205,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getCourriel]
      *
      * @return string|null
-     *
-     * Created at: 14/02/2023, 00:10:16 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getCourriel(): ?string
     {
@@ -215,10 +219,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param string $courriel
      *
      * @return self
-     *
-     * Created at: 14/02/2023, 00:10:20 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setCourriel(string $courriel): \App\Entity\Utilisateur
     {
@@ -232,10 +234,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * The public representation of the user (e.g. a username, an email address, etc.)
      *
      * @return string
-     *
-     * Created at: 14/02/2023, 00:10:26 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getUserIdentifier(): string
     {
@@ -254,10 +254,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param array<int, string> $roles
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 18:11:49 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setRoles(array $roles): \App\Entity\Utilisateur
     {
@@ -270,10 +268,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getPassword]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 18:11:51 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPassword(): ?string
     {
@@ -286,10 +282,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param string $password
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 18:11:53 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setPassword(string $password): \App\Entity\Utilisateur
     {
@@ -304,10 +298,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param bool $actif
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 18:11:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setActif(bool $actif): \App\Entity\Utilisateur
     {
@@ -355,10 +347,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getDateModification]
      *
      * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:11:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getDateModification(): ?\DateTimeInterface
     {
@@ -371,8 +361,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param \DateTimeInterface $dateModification
      *
      * @return \App\Entity\Utilisateur
-     *
-     * Created at: 04/09/2025 08:46:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -390,10 +378,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getDateEnregistrement]
      *
      * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:12:00 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
     {
@@ -406,10 +392,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param \DateTimeImmutable $dateEnregistrement
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 18:12:02 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): \App\Entity\Utilisateur
     {
@@ -443,10 +427,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for isActif]
      *
      * @return bool|null
-     *
-     * Created at: 02/01/2023, 18:12:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function isActif(): ?bool
     {
@@ -457,10 +439,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getPrenom]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 18:12:12 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPrenom(): ?string
     {
@@ -473,10 +453,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param string $prenom
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 18:12:14 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setPrenom(string $prenom): \App\Entity\Utilisateur
     {
@@ -489,10 +467,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getNom]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 18:12:18 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getNom(): ?string
     {
@@ -505,10 +481,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param string $nom
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 18:12:22 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setNom(string $nom): \App\Entity\Utilisateur
     {
@@ -521,10 +495,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getPersonne]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 18:12:24 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPersonne(): ?string
     {
@@ -535,10 +507,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getAvatar]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 18:12:26 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getAvatar(): ?string
     {
@@ -551,10 +521,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param string|null $avatar
      *
      * @return self
-     *
-     * Created at: 02/01/2023, 18:12:27 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setAvatar(?string $avatar): \App\Entity\Utilisateur
     {
@@ -567,10 +535,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getAvatarUrl]
      *
      * @return string|null
-     *
-     * Created at: 02/01/2023, 18:12:29 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getAvatarUrl(): ?string
     {
@@ -603,10 +569,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * [Description for getPreference]
      *
      * @return array<int|string, mixed>
-     *
-     * Created at: 28/03/2023, 08:18:42 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function getPreference(): array
     {
@@ -619,10 +583,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @param array<int|string, mixed> $preference
      *
      * @return self
-     *
-     * Created at: 28/03/2023, 08:18:51 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     public function setPreference(array $preference): \App\Entity\Utilisateur
     {

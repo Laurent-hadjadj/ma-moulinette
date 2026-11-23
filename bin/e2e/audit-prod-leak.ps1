@@ -1,5 +1,5 @@
 # ==============================================================================
-# Ma-Moulinette - Audit residus E2E dans une base
+# Ma-Moulinette - Audit résidus E2E dans une base
 # ==============================================================================
 # Usage :
 #   .\bin\e2e\audit-prod-leak.ps1                       # par defaut : ma_moulinette (PROD)
@@ -11,7 +11,7 @@
 #   - projet tetris:TetrisGame, tag tetris-game
 #   - groupe fonctionnel tetris-game
 #
-# Sortie : compte par categorie + exit code 1 si un marqueur trouve en prod.
+# Sortie : compte par catégorie + exit code 1 si un marqueur trouvé en prod.
 # ==============================================================================
 
 [CmdletBinding()]
@@ -37,11 +37,11 @@ $queries = @(
     @{ Name = "users E2E (josh/nathan/sophie/aurelie/interne)"; Sql = @"
 SELECT COUNT(*) FROM utilisateur
 WHERE courriel IN (
-  'interne@ma-moulinette.fr',
-  'josh.liberman@ma-moulinette.fr',
-  'nathan.jones@ma-moulinette.fr',
-  'sophie.martin@ma-moulinette.fr',
-  'aurelie.petit-coeur@ma-moulinette.fr'
+    'interne@ma-moulinette.fr',
+    'josh.liberman@ma-moulinette.fr',
+    'nathan.jones@ma-moulinette.fr',
+    'sophie.martin@ma-moulinette.fr',
+    'aurelie.petit-coeur@ma-moulinette.fr'
 );
 "@ },
     @{ Name = "projet tetris:TetrisGame"; Sql = "SELECT COUNT(*) FROM liste_projet WHERE maven_key = 'tetris:TetrisGame';" },

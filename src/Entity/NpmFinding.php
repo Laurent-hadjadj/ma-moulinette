@@ -25,6 +25,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * isDirect (dépendance directe ou transitive), fixAvailable (source fiable
  * côté npm, contrairement au fixedVersion DC retiré faute de fiabilité),
  * isProd (nullable — voir commentaire sur la colonne).
+ *
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
  */
 #[ORM\Entity(repositoryClass: NpmFindingRepository::class)]
 #[ORM\Table(name: 'npm_finding', schema: 'ma_moulinette')]

@@ -5,10 +5,10 @@
  *  --------------
  *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Licensed under the GNU AGPL 3.0 or later (AGPL-3.0-or-later).
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
 declare(strict_types=1);
@@ -64,24 +64,40 @@ final class DcExecutiveAnalyticsService
         private readonly float $safetyMargin = 1.2,
         #[Autowire(param: 'dc.remediation.severity_bonus')]
         private readonly array $severityBonus = [
-            'CRITICAL' => 0.5, 'HIGH' => 0.3, 'MEDIUM' => 0.1, 'LOW' => 0.0, 'INFO' => 0.0,
+            'CRITICAL' => 0.5,
+            'HIGH' => 0.3,
+            'MEDIUM' => 0.1,
+            'LOW' => 0.0,
+            'INFO' => 0.0,
         ],
         #[Autowire(param: 'dc.remediation.test_effort_by_family')]
         private readonly array $testEffortByFamily = [
-            'Log4j' => 0.5, 'Apache Commons' => 0.5, 'XML / Woodstox' => 0.5,
-            'Jackson' => 1.0, 'AMQP' => 1.0, 'Apache (autre)' => 1.0, 'Autres' => 1.0,
-            'Apache CXF' => 1.5, 'Spring Framework' => 2.0,
+            'Log4j' => 0.5,
+            'Apache Commons' => 0.5,
+            'XML / Woodstox' => 0.5,
+            'Jackson' => 1.0,
+            'AMQP' => 1.0,
+            'Apache (autre)' => 1.0,
+            'Autres' => 1.0,
+            'Apache CXF' => 1.5,
+            'Spring Framework' => 2.0,
         ],
         /* MODIF 2026-05-14 : paramètres du
          * score sécurité par app (page KPI + comparer). Cf YAML pour
          * la formule complete. */
         #[Autowire(param: 'dc.score_secu.weights')]
         private readonly array $scoreSecuWeights = [
-            'CRITICAL' => 10.0, 'HIGH' => 3.0, 'MEDIUM' => 1.0, 'LOW' => 0.5,
+            'CRITICAL' => 10.0,
+            'HIGH' => 3.0,
+            'MEDIUM' => 1.0,
+            'LOW' => 0.5,
         ],
         #[Autowire(param: 'dc.score_secu.caps')]
         private readonly array $scoreSecuCaps = [
-            'CRITICAL' => 5, 'HIGH' => 10, 'MEDIUM' => 20, 'LOW' => 20,
+            'CRITICAL' => 5,
+            'HIGH' => 10,
+            'MEDIUM' => 20,
+            'LOW' => 20,
         ],
     ) {}
 
@@ -103,16 +119,15 @@ final class DcExecutiveAnalyticsService
      *
      * @return float Score entre 0.0 et 100.0
      *
-     * Created at: 14/05/2026 12:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeScoreSecu(int $crit, int $high, int $med, int $low): float
     {
         $penalty = $this->scoreSecuWeights['CRITICAL'] * min($crit, $this->scoreSecuCaps['CRITICAL'])
-                 + $this->scoreSecuWeights['HIGH']     * min($high, $this->scoreSecuCaps['HIGH'])
-                 + $this->scoreSecuWeights['MEDIUM']   * min($med,  $this->scoreSecuCaps['MEDIUM'])
-                 + $this->scoreSecuWeights['LOW']      * min($low,  $this->scoreSecuCaps['LOW']);
+            + $this->scoreSecuWeights['HIGH']     * min($high, $this->scoreSecuCaps['HIGH'])
+            + $this->scoreSecuWeights['MEDIUM']   * min($med,  $this->scoreSecuCaps['MEDIUM'])
+            + $this->scoreSecuWeights['LOW']      * min($low,  $this->scoreSecuCaps['LOW']);
         return max(0.0, 100.0 - $penalty);
     }
 
@@ -126,10 +141,8 @@ final class DcExecutiveAnalyticsService
      *   caps: array<string, int>,
      *   penalty_max: float
      * }
-     *
-     * Created at: 14/05/2026 12:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getScoreSecuRule(): array
     {
@@ -156,9 +169,8 @@ final class DcExecutiveAnalyticsService
      *
      * @return float
      *
-     * Created at: 15/05/2026 10:12:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeDepJh(string $family, string $sevMax): float
     {
@@ -181,9 +193,8 @@ final class DcExecutiveAnalyticsService
      *
      * @return string
      *
-     * Created at: 15/05/2026 10:13:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function getFamily(string $vendor, string $product): string
     {
@@ -196,45 +207,51 @@ final class DcExecutiveAnalyticsService
      * méthodologie + affichage des constantes effectives).
      *
      * @return array<string, float>
-     *
-     * Created at: 15/05/2026 10:13:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getSeverityBonus(): array { return $this->severityBonus; }
+    public function getSeverityBonus(): array
+    {
+        return $this->severityBonus;
+    }
 
     /**
      * [Description for getTestEffortByFamily]
      *
      * @return array<string, float>
-     *
-     * Created at: 15/05/2026 10:14:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getTestEffortByFamily(): array { return $this->testEffortByFamily; }
+    public function getTestEffortByFamily(): array
+    {
+        return $this->testEffortByFamily;
+    }
 
     /**
      * [Description for getUpgradeOverhead]
      *
      * @return float
      *
-     * Created at: 15/05/2026 10:15:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getUpgradeOverhead(): float { return $this->upgradeOverhead; }
+    public function getUpgradeOverhead(): float
+    {
+        return $this->upgradeOverhead;
+    }
 
     /**
      * [Description for getSafetyMargin]
      *
      * @return float
      *
-     * Created at: 15/05/2026 10:15:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
-    public function getSafetyMargin(): float { return $this->safetyMargin; }
+    public function getSafetyMargin(): float
+    {
+        return $this->safetyMargin;
+    }
 
     /**
      * [Description for computeCriticityCounts]
@@ -243,10 +260,8 @@ final class DcExecutiveAnalyticsService
      * @param array<int, array<string, mixed>> $findings
      * @return array<string, int>
      *
-     *
-     * Created at: 10/05/2026 23:46:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeCriticityCounts(array $findings): array
     {
@@ -267,16 +282,17 @@ final class DcExecutiveAnalyticsService
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{cwe: string, nb: int}>
      *
-     * Created at: 10/05/2026 23:46:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeTopCwes(array $findings, int $limit): array
     {
         $counts = [];
         foreach ($findings as $f) {
             foreach ((array) ($f['cwes'] ?? []) as $cwe) {
-                if (!is_string($cwe) || $cwe === '') { continue; }
+                if (!is_string($cwe) || $cwe === '') {
+                    continue;
+                }
                 $counts[$cwe] = ($counts[$cwe] ?? 0) + 1;
             }
         }
@@ -296,9 +312,8 @@ final class DcExecutiveAnalyticsService
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{family: string, nb_cves: int}>
      *
-     * Created at: 10/05/2026 23:47:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeFamilyBreakdown(array $findings): array
     {
@@ -329,9 +344,8 @@ final class DcExecutiveAnalyticsService
      *   sev_max: string,
      * }>
      *
-     * Created at: 10/05/2026 23:48:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeTopDepsBreakdown(array $findings, int $limit): array
     {
@@ -344,18 +358,30 @@ final class DcExecutiveAnalyticsService
                     'vendor'  => $f['vendor'] ?? null,
                     'version' => $f['dep_version'] ?? null,
                     'nb_cves' => 0,
-                    'nb_critical' => 0, 'nb_high' => 0, 'nb_medium' => 0, 'nb_low' => 0,
+                    'nb_critical' => 0,
+                    'nb_high' => 0,
+                    'nb_medium' => 0,
+                    'nb_low' => 0,
                     'sev_max' => 'INFO',
                 ];
             }
             $stats[$key]['nb_cves']++;
             $sev = strtoupper((string) ($f['severity'] ?? ''));
             switch ($sev) {
-                case 'CRITICAL': $stats[$key]['nb_critical']++; break;
-                case 'HIGH':     $stats[$key]['nb_high']++;     break;
-                case 'MEDIUM':   $stats[$key]['nb_medium']++;   break;
-                case 'LOW':      $stats[$key]['nb_low']++;      break;
-                default: break;
+                case 'CRITICAL':
+                    $stats[$key]['nb_critical']++;
+                    break;
+                case 'HIGH':
+                    $stats[$key]['nb_high']++;
+                    break;
+                case 'MEDIUM':
+                    $stats[$key]['nb_medium']++;
+                    break;
+                case 'LOW':
+                    $stats[$key]['nb_low']++;
+                    break;
+                default:
+                    break;
             }
             $rankCurrent = self::SEVERITY_RANK[$stats[$key]['sev_max']] ?? 99;
             $rankNew     = self::SEVERITY_RANK[$sev] ?? 99;
@@ -366,7 +392,9 @@ final class DcExecutiveAnalyticsService
         usort($stats, static function (array $a, array $b): int {
             $rankA = self::SEVERITY_RANK[$a['sev_max']] ?? 99;
             $rankB = self::SEVERITY_RANK[$b['sev_max']] ?? 99;
-            if ($rankA !== $rankB) { return $rankA <=> $rankB; }
+            if ($rankA !== $rankB) {
+                return $rankA <=> $rankB;
+            }
             return $b['nb_cves'] <=> $a['nb_cves'];
         });
         return array_slice($stats, 0, $limit);
@@ -379,9 +407,8 @@ final class DcExecutiveAnalyticsService
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{cve_id: string, severity: string, cvss: ?float, product: string, description: ?string}>
      *
-     * Created at: 10/05/2026 23:53:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeTopPriorityCves(array $findings, int $limit): array
     {
@@ -389,7 +416,9 @@ final class DcExecutiveAnalyticsService
         $seen = [];
         foreach ($findings as $f) {
             $key = (string) ($f['cve_id'] ?? '');
-            if ($key === '' || isset($seen[$key])) { continue; }
+            if ($key === '' || isset($seen[$key])) {
+                continue;
+            }
             $seen[$key] = true;
             $rows[] = [
                 'cve_id'      => $key,
@@ -402,7 +431,9 @@ final class DcExecutiveAnalyticsService
         usort($rows, static function (array $a, array $b): int {
             $aCvss = $a['cvss'] ?? -1.0;
             $bCvss = $b['cvss'] ?? -1.0;
-            if ($aCvss !== $bCvss) { return $bCvss <=> $aCvss; }
+            if ($aCvss !== $bCvss) {
+                return $bCvss <=> $aCvss;
+            }
             $rankA = self::SEVERITY_RANK[$a['severity']] ?? 99;
             $rankB = self::SEVERITY_RANK[$b['severity']] ?? 99;
             return $rankA <=> $rankB;
@@ -430,6 +461,9 @@ final class DcExecutiveAnalyticsService
      *   severity: string, attack_vector: ?string,
      *   decision: string, justification: string,
      * }>
+     *
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeCveDecisions(array $findings): array
     {
@@ -448,7 +482,8 @@ final class DcExecutiveAnalyticsService
                 'justification' => self::buildDecisionJustification($sev, $vector),
             ];
         }
-        /* MODIF 2026-05-12 : tri enrichi avec
+        /**
+         * MODIF 2026-05-12 : tri enrichi avec
          * `product` comme tie-breaker entre `severity` et `cve_id`. Détecte
          * en audit qualité : sur un scan avec 5 CVE meme sévérité sur cxf-core,
          * elles étaient dispersées entre d'autres deps de meme sévérité. Avec
@@ -457,9 +492,13 @@ final class DcExecutiveAnalyticsService
         usort($rows, static function (array $a, array $b): int {
             $rankA = self::SEVERITY_RANK[$a['severity']] ?? 99;
             $rankB = self::SEVERITY_RANK[$b['severity']] ?? 99;
-            if ($rankA !== $rankB) { return $rankA <=> $rankB; }
+            if ($rankA !== $rankB) {
+                return $rankA <=> $rankB;
+            }
             $productCmp = strcmp($a['product'], $b['product']);
-            if ($productCmp !== 0) { return $productCmp; }
+            if ($productCmp !== 0) {
+                return $productCmp;
+            }
             return strcmp($a['cve_id'], $b['cve_id']);
         });
         return $rows;
@@ -475,9 +514,8 @@ final class DcExecutiveAnalyticsService
      *
      * @return string
      *
-     * Created at: 12/05/2026 14:39:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function computeDecisionFromHeuristic(string $severity, string $attackVector): string
     {
@@ -508,9 +546,8 @@ final class DcExecutiveAnalyticsService
      *
      * @return string
      *
-     * Created at: 12/05/2026 14:40:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private static function buildDecisionJustification(string $severity, string $attackVector): string
     {
@@ -538,9 +575,8 @@ final class DcExecutiveAnalyticsService
      *   total_jh: float,
      * }
      *
-     * Created at: 15/05/2026 10:17:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeRemediationPlan(array $findings): array
     {
@@ -576,9 +612,8 @@ final class DcExecutiveAnalyticsService
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{product: string, version: ?string, sev_max: string, nb_cves: int, jh: float}>
      *
-     * Created at: 10/05/2026 23:57:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeTopActions(array $findings, int $limit): array
     {
@@ -600,7 +635,7 @@ final class DcExecutiveAnalyticsService
 
     /**
      * [Description for isUnchanged]
-      * MODIF 2026-05-12 : true si une diff
+     * MODIF 2026-05-12 : true si une diff
      * (issue de computeScanDiff) ne contient ni nouvelle CVE ni CVE corrigée.
      * Permet au template de distinguer "diff calculée et vraiment vide = pas
      * de changement depuis le dernier passage" (encart vert rassurant) du
@@ -610,9 +645,8 @@ final class DcExecutiveAnalyticsService
      *
      * @return bool
      *
-     * Created at: 12/05/2026 14:38:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function isUnchanged(array $diff): bool
     {
@@ -631,13 +665,13 @@ final class DcExecutiveAnalyticsService
      *   unchanged_count: int,
      * }
      *
-     * Created at: 15/05/2026 10:18:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     public function computeScanDiff(array $previousFindings, array $currentFindings): array
     {
-        /* MODIF 2026-05-12 : clé enrichie
+        /**
+         * MODIF 2026-05-12 : clé enrichie
          * `product|dep_version|cve_id` au lieu de `product|cve_id`. Détecte
          * en audit qualité : un projet multi-modules peut contenir plusieurs
          * versions de la meme lib (ex : log4j-core 2.14.0 et 2.13.0 côte à côte),
@@ -647,14 +681,18 @@ final class DcExecutiveAnalyticsService
          * (`new + unchanged == count(currents)` et
          * `fixed + unchanged == count(previous)`) ne tombaient pas juste. */
         $key = static fn(array $f): string =>
-            (string) ($f['product'] ?? '')
+        (string) ($f['product'] ?? '')
             . '|' . (string) ($f['dep_version'] ?? '')
             . '|' . (string) ($f['cve_id'] ?? '');
 
         $prevByKey = [];
-        foreach ($previousFindings as $f) { $prevByKey[$key($f)] = $f; }
+        foreach ($previousFindings as $f) {
+            $prevByKey[$key($f)] = $f;
+        }
         $currByKey = [];
-        foreach ($currentFindings as $f) { $currByKey[$key($f)] = $f; }
+        foreach ($currentFindings as $f) {
+            $currByKey[$key($f)] = $f;
+        }
 
         $new = $fixed = [];
         $unchanged = 0;
@@ -692,9 +730,8 @@ final class DcExecutiveAnalyticsService
      *
      * @return string
      *
-     * Created at: 10/05/2026 23:58:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 ou ultérieure (AGPL-3.0-or-later).
      */
     private function guessFamily(string $vendor, string $product): string
     {

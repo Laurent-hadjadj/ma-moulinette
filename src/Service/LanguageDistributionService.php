@@ -71,7 +71,6 @@ final class LanguageDistributionService
      *
      * @return array<string, int>
      *
-     * Created at: 14/07/2026 20:30:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -107,7 +106,6 @@ final class LanguageDistributionService
      *
      * @return string
      *
-     * Created at: 14/07/2026 20:30:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -128,8 +126,6 @@ final class LanguageDistributionService
      *     rows: array<int, array<string, mixed>>,  // par version : version, ncloc, parsed[code => int]
      *     chart: array{labels: list<string>, datasets: list<array{label: string, data: list<int>, backgroundColor: string}>}
      * }
-     *
-     * Created at: 14/07/2026 20:30:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
@@ -180,14 +176,15 @@ final class LanguageDistributionService
             $languages[$code] = $this->getLabel($code);
         }
 
-        /* MODIF 2026-05-06 : on n'inclut dans le
+        /**
+         * MODIF 2026-05-06 : on n'inclut dans le
          * graphique que les versions avec distribution non vide. SonarQube
          * search_history ne renvoie pas ncloc_language_distribution donc les
          * versions REBUILD ont parsed=[] et seraient des barres invisibles qui
          * décalent l'axe X. Le tableau garde toutes les versions (pour le contexte). */
         $chartRows = array_values(array_filter(
             $rows,
-            static fn (array $r): bool => $r['parsed'] !== []
+            static fn(array $r): bool => $r['parsed'] !== []
         ));
 
         // Datasets pour le bar chart empile (versions avec donnees seulement)
@@ -207,7 +204,7 @@ final class LanguageDistributionService
             $i++;
         }
 
-        $labels = array_map(static fn (array $r): string => (string) $r['version'], $chartRows);
+        $labels = array_map(static fn(array $r): string => (string) $r['version'], $chartRows);
 
         return [
             'languages' => $languages,
@@ -221,22 +218,44 @@ final class LanguageDistributionService
      * Palette de couleurs pour le bar chart empile.
      *
      * @return list<string>
-     *
-     * Created at: 07/05/2026 08:17:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - GNU AGPL 3.0 or later (AGPL-3.0-or-later).
      */
     private function palette(): array
     {
         return [
-            '#00445b', '#3b89a3', '#187e3d', '#b3b300',
-            '#e69500', '#971c09', '#c45d4e', '#7a4f9e',
-            '#0a8a8a', '#b08a3e', '#5e3b71', '#246b51',
-            '#0000CC', '#330000', '#333300', '#6600FF',
-            '#660066', '#990033', '#CC9933', '#FFFF00',
-            '#CC99FF', '#CC6699', '#246b51', '#000033',
-            '#00445b', '#3b89a3', '#187e3d', '#b3b300',
-            '#e69500', '#971c09', '#c45d4e', '#7a4f9e'
+            '#00445b',
+            '#3b89a3',
+            '#187e3d',
+            '#b3b300',
+            '#e69500',
+            '#971c09',
+            '#c45d4e',
+            '#7a4f9e',
+            '#0a8a8a',
+            '#b08a3e',
+            '#5e3b71',
+            '#246b51',
+            '#0000CC',
+            '#330000',
+            '#333300',
+            '#6600FF',
+            '#660066',
+            '#990033',
+            '#CC9933',
+            '#FFFF00',
+            '#CC99FF',
+            '#CC6699',
+            '#246b51',
+            '#000033',
+            '#00445b',
+            '#3b89a3',
+            '#187e3d',
+            '#b3b300',
+            '#e69500',
+            '#971c09',
+            '#c45d4e',
+            '#7a4f9e'
         ];
     }
 }
